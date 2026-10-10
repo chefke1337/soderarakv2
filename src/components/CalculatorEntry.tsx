@@ -29,7 +29,7 @@ export default function CalculatorEntry() {
             tájékoztató nettó összeget fuvarral együtt. Utána egy névvel és
             telefonszámmal ajánlatot kérhet.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap [&>a]:whitespace-nowrap">
             <Link href="/arkalkulator" className="btn btn-lg btn-cream">
               <IconCalculator size={20} className="btn-icon" />
               Árkalkulátor indítása
@@ -57,13 +57,13 @@ export default function CalculatorEntry() {
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-text-muted">Fuvar — {z.name}</dt>
-                <dd className="font-semibold">
+                <dd className="text-right font-semibold whitespace-nowrap">
                   {formatFt(z.fuelMin)} – {formatFt(z.fuelMax)}
                 </dd>
               </div>
               <div className="border-t-2 border-text pt-3">
                 <dt className="text-sm font-semibold">Összesen, nettó</dt>
-                <dd className="mt-1 font-display text-[1.875rem] leading-tight font-bold tracking-tight text-accent-deep md:text-[2.25rem]">
+                <dd className="mt-1 num font-display text-[1.5rem] leading-tight font-bold tracking-tight whitespace-nowrap text-accent-deep sm:text-[1.875rem] md:text-[2.25rem]">
                   {formatFt(material + z.fuelMin)} – {formatFt(material + z.fuelMax)}
                 </dd>
               </div>
