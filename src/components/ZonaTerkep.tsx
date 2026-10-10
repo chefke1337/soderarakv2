@@ -18,7 +18,7 @@ const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
   budafok: "left",
   torokbalint: "left",
   erd: "left",
-  pusztazamor: "left",
+  pusztazamor: "bottom",
   soskut: "top",
   diosd: "bottom",
   szigetszentmiklos: "left",
