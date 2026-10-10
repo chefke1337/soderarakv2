@@ -2,6 +2,7 @@ import Link from "next/link";
 import { company, nav } from "@/content/site";
 import { IconPhone } from "@/lib/ui";
 import NavLinks from "@/components/NavLinks";
+import { withBasePath } from "@/lib/basepath";
 
 /**
  * V2 fejléc — egyetlen sáv (a korábbi fekete topbar + fejléc + gradiens vonal
@@ -37,14 +38,14 @@ export default function Header() {
           </nav>
 
           <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
-            <p className="hidden text-right text-xs leading-tight text-ink-soft xl:block">
+            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft 2xl:block">
               Hívható
               <br />
               <span className="num font-medium text-ink">{company.hours.short.replace("H–P ", "H–P ")}</span>
             </p>
             <a
               href={`tel:${company.phone.raw}`}
-              className="num inline-flex min-h-11 items-center gap-2 rounded-sm bg-brand-dark px-4 font-semibold text-paper transition-colors hover:bg-brand-deep"
+              className="num inline-flex min-h-11 items-center gap-2 rounded-sm bg-brand-dark px-4 font-semibold whitespace-nowrap text-paper transition-colors hover:bg-brand-deep"
             >
               <IconPhone size={17} />
               {company.phone.display}
@@ -80,7 +81,7 @@ export default function Header() {
                   {nav.map((item) => (
                     <li key={item.href}>
                       <a
-                        href={`${item.href}/`}
+                        href={withBasePath(`${item.href}/`)}
                         className="flex min-h-12 items-center justify-between border-b border-line/70 py-3 text-base font-medium"
                       >
                         {item.label}

@@ -28,7 +28,7 @@ export default function Footer() {
           <ul className="mt-3 space-y-1 text-sm">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="inline-flex min-h-8 items-center hover:text-[#f0a274]">
+                <Link href={item.href} className="inline-flex min-h-8 items-center hover:text-brand-soft">
                   {item.label}
                 </Link>
               </li>
@@ -38,13 +38,13 @@ export default function Footer() {
 
         <div className="lg:col-span-3">
           <h2 className="text-sm font-medium text-paper/60">Kapcsolat</h2>
-          <PhoneLink className="num mt-3 block font-display text-xl font-bold hover:text-[#f0a274]" />
+          <PhoneLink className="num mt-3 block font-display text-xl font-bold hover:text-brand-soft" />
           <ul className="mt-2 space-y-1 text-sm">
             <li>
-              <MailLink className="inline-flex min-h-8 items-center hover:text-[#f0a274]" />
+              <MailLink className="inline-flex min-h-8 items-center hover:text-brand-soft" />
             </li>
             <li>
-              <a href={company.waste.url} className="inline-flex min-h-8 items-center hover:text-[#f0a274]">
+              <a href={company.waste.url} className="inline-flex min-h-8 items-center hover:text-brand-soft">
                 Hulladék, konténer: {company.waste.domain}
               </a>
             </li>
@@ -53,16 +53,16 @@ export default function Footer() {
 
         <div className="lg:col-span-3">
           <h2 className="text-sm font-medium text-paper/60">Útmutatók</h2>
-          <ul className="mt-3 space-y-1 text-sm">
+          <ul className="mt-2 text-sm">
             {guides.slice(0, FOOTER_GUIDES).map((g) => (
               <li key={g.slug}>
-                <Link href={`/utmutatok/${g.slug}`} className="inline-flex min-h-8 items-center leading-snug hover:text-[#f0a274]">
+                <Link href={`/utmutatok/${g.slug}`} className="block py-1 leading-snug hover:text-brand-soft">
                   {g.title}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/utmutatok" className="inline-flex min-h-8 items-center font-semibold hover:text-[#f0a274]">
+              <Link href="/utmutatok" className="inline-flex min-h-8 items-center font-semibold hover:text-brand-soft">
                 Összes útmutató ({guides.length})
               </Link>
             </li>

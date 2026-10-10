@@ -165,7 +165,7 @@ export default function HomePage() {
             </div>
             <figcaption className="mt-2 flex items-center gap-2 text-xs text-ink-soft">
               <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-[2px] bg-brand-dark" />
-              Telephely: {company.address.full}. Tájékoztató zónák, nem jogi határok.
+              Telephely: {company.address.full} Tájékoztató zónák, nem jogi határok.
             </figcaption>
           </figure>
 

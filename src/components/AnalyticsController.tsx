@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { withBasePath } from "@/lib/basepath";
 import { usePathname } from "next/navigation";
 import {
   initCallTracking,
@@ -65,7 +66,7 @@ export default function AnalyticsController() {
           Elutasítom
         </button>
         <a
-          href="/adatvedelem"
+          href={withBasePath("/adatvedelem/")}
           className="px-2 py-2 text-sm font-medium text-brand-deep underline underline-offset-2"
         >
           Adatkezelési tájékoztató
