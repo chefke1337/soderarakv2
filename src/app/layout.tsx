@@ -39,7 +39,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(`${company.site.url}/`),
+  // Csak az origin: a Next a fájl-konvenciós metaadat-útvonalakhoz (opengraph-image)
+  // maga teszi hozzá a basePath-ot — különben /soderarakv2/soderarakv2/… lenne.
+  metadataBase: new URL(new URL(company.site.url).origin),
   title: {
     default: "Sóderárak — sóder, homok, kavics, murva szállítás Budafokról",
     template: "%s | Sóderárak",
