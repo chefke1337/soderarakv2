@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>LOGO LAB v3 — sűrű ipari markok (Buda-Konténer műfaj, komoly)</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #e7e5e4; margin: 0; padding: 24px; }
+  h1 { font-size: 18px; } h2 { font-size: 14px; margin: 26px 0 8px; }
+  .row { display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
+  .cell { text-align: center; font-size: 10px; color: #57534e; }
+  .bg-paper { background: #faf6ef; padding: 12px; border: 1px solid #d6d3d1; border-radius: 8px; }
+  .bg-basalt { background: #1a1614; padding: 12px; border-radius: 8px; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; background: #dee1e6; border-radius: 8px 8px 0 0; padding: 5px 10px; font-size: 11px; color: #1a1614; }
+  .tab.dark { background: #202124; color: #e8eaed; }
+  .lockup { display: inline-flex; align-items: center; gap: 12px; }
+  .wm { font-family: 'Space Grotesk', system-ui, sans-serif; font-weight: 700; line-height: 0.92; letter-spacing: -0.01em; text-transform: uppercase; }
+  .wm .l1 { color: #1a1614; display: block; }
+  .wm .l2 { color: #ea580c; display: block; }
+  .note { font-size: 11px; color: #78716c; max-width: 720px; }
+  pre { font-size: 10px; line-height: 1.35; background: #fff; border: 1px solid #d6d3d1; padding: 10px; overflow-x: auto; max-width: 900px; }
+</style>
+</head>
+<body>
+<h1>LOGO LAB v3 — sűrű ipari markok</h1>
+<p class="note">Műfaj (Buda-Konténer, de komolyabb): FLAT sötét termékgrafika — felismerhető jármű/konténer sziluett sűrű, olvasható részletekkel (ablak, borda, rakat, futómű), NINCS gradiens, NINCS 3D, NINCS szöveg az SVG-ben. Paletta: #1a1614 sötét / #ea580c narancs / #faf6ef törött fehér. A wordmark valódi HTML tipó: SÓDER (sötét) / ÁRAK (narancs) két sorban.</p>
+<div id="lab"></div>
+<pre id="report">mérés fut…</pre>
+<script>
+var DARK = "#1a1614", ORANGE = "#ea580c", CREAM = "#faf6ef";
+
+/* ---------------- MARK VARIÁNSOK — sűrű flat grafika ---------------- */
+var MARKS = {
+  A: { name: "A — DÖMPER oldalt (rakat a billában, fülke-ablak, 3 kerék, narancs talp-sáv)", svg:
+'<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+  '<rect x="8" y="30" width="50" height="25" fill="' + DARK + '"/>' +
+  '<rect x="8" y="30" width="50" height="3.5" fill="' + CREAM + '"/>' +
+  '<rect x="24" y="36" width="2.5" height="12" fill="' + CREAM + '"/>' +
+  '<rect x="40" y="36" width="2.5" height="12" fill="' + CREAM + '"/>' +
+  '<rect x="8" y="47" width="50" height="8" fill="' + ORANGE + '"/>' +
+  '<circle cx="16" cy="27.5" r="4.5" fill="' + CREAM + '"/>' +
+  '<circle cx="27" cy="25.5" r="5.5" fill="' + CREAM + '"/>' +
+  '<circle cx="39" cy="26.5" r="5" fill="' + CREAM + '"/>' +
+  '<circle cx="50" cy="28" r="4.5" fill="' + CREAM + '"/>' +
+  '<circle cx="33" cy="29.5" r="4.5" fill="' + ORANGE + '"/>' +
+  '<path d="M60 54 V33 L66 26 H79 L84 33 V54 Z" fill="' + DARK + '"/>' +
+  '<path d="M63.5 32 L68 28.5 H76.5 L80.5 32 V38 H63.5 Z" fill="' + CREAM + '"/>' +
+  '<rect x="8" y="56" width="78" height="6" fill="' + DARK + '"/>' +
+  '<circle cx="20" cy="64" r="9" fill="' + DARK + '"/><circle cx="20" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+  '<circle cx="42" cy="64" r="9" fill="' + DARK + '"/><circle cx="42" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+  '<circle cx="72" cy="64" r="9" fill="' + DARK + '"/><circle cx="72" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+'</svg>' },
+
+  B: { name: "B — KONTÉNER skip rakattal (fehér perem + bordák, narancs talp, lábak)", svg:
+'<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+  '<circle cx="20" cy="31" r="5" fill="' + CREAM + '"/>' +
+  '<circle cx="32" cy="29" r="6" fill="' + CREAM + '"/>' +
+  '<circle cx="45" cy="28" r="6" fill="' + CREAM + '"/>' +
+  '<circle cx="58" cy="29" r="5.5" fill="' + CREAM + '"/>' +
+  '<circle cx="70" cy="31" r="4.5" fill="' + CREAM + '"/>' +
+  '<circle cx="51" cy="31.5" r="4" fill="' + ORANGE + '"/>' +
+  '<path d="M10 34 H86 L78 70 H18 Z" fill="' + DARK + '"/>' +
+  '<rect x="10" y="34" width="76" height="4" fill="' + CREAM + '"/>' +
+  '<path d="M30 41 L28.5 64 M50 41 L49 64 M70 41 L69 64" stroke="' + CREAM + '" stroke-width="3" fill="none"/>' +
+  '<path d="M18.6 63 L77.4 63 L78 70 H18 Z" fill="' + ORANGE + '"/>' +
+  '<rect x="23" y="70" width="9" height="5" fill="' + DARK + '"/>' +
+  '<rect x="64" y="70" width="9" height="5" fill="' + DARK + '"/>' +
+'</svg>' },
+
+  C: { name: "C — ZÁRT KONTÉNER platóval (bordás konténer, narancs sarok-oszlopok, fülke)", svg:
+'<svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+  '<rect x="8" y="22" width="58" height="30" fill="' + DARK + '"/>' +
+  '<rect x="8" y="22" width="58" height="6" fill="' + ORANGE + '"/>' +
+  '<rect x="8" y="22" width="5" height="30" fill="' + ORANGE + '"/>' +
+  '<rect x="61" y="22" width="5" height="30" fill="' + ORANGE + '"/>' +
+  '<rect x="22" y="30" width="2.5" height="18" fill="' + CREAM + '"/>' +
+  '<rect x="36" y="30" width="2.5" height="18" fill="' + CREAM + '"/>' +
+  '<rect x="50" y="30" width="2.5" height="18" fill="' + CREAM + '"/>' +
+  '<path d="M70 54 V38 L76 31 H84 L88 38 V54 Z" fill="' + DARK + '"/>' +
+  '<path d="M73.5 38.5 L77 34.5 H82.5 L85 38.5 V43 H73.5 Z" fill="' + CREAM + '"/>' +
+  '<rect x="6" y="56" width="84" height="6" fill="' + DARK + '"/>' +
+  '<circle cx="20" cy="64" r="9" fill="' + DARK + '"/><circle cx="20" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+  '<circle cx="40" cy="64" r="9" fill="' + DARK + '"/><circle cx="40" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+  '<circle cx="72" cy="64" r="9" fill="' + DARK + '"/><circle cx="72" cy="64" r="3.5" fill="' + CREAM + '"/>' +
+'</svg>' }
+};
+
+/* ---------------- LAB RENDER ---------------- */
+var SIZES = [96, 48, 24, 16];
+function svgAt(m, size) { return m.svg.replace("<svg ", '<svg width="' + size + '" height="' + size + '" '); }
+var lab = document.getElementById("lab");
+Object.keys(MARKS).forEach(function (key) {
+  var m = MARKS[key];
+  var h2 = document.createElement("h2"); h2.textContent = m.name; lab.appendChild(h2);
+  ["bg-paper", "bg-basalt"].forEach(function (bg) {
+    var row = document.createElement("div"); row.className = "row " + bg;
+    SIZES.forEach(function (s) {
+      var cell = document.createElement("div"); cell.className = "cell";
+      cell.innerHTML = svgAt(m, s);
+      var lbl = document.createElement("div"); lbl.textContent = s + "px"; cell.appendChild(lbl);
+      row.appendChild(cell);
+    });
+    lab.appendChild(row);
+  });
+  var tabs = document.createElement("div"); tabs.className = "row";
+  ["tab", "tab dark"].forEach(function (cls) {
+    var el = document.createElement("span"); el.className = cls;
+    el.innerHTML = svgAt(m, 16);
+    tabs.appendChild(el);
+  });
+  var tile = document.createElement("span");
+  tile.innerHTML = faviconTile(m, 28);
+  tabs.appendChild(tile);
+  lab.appendChild(tabs);
+});
+
+function faviconTile(m, size) {
+  var inner = m.svg.replace(/<svg[^>]*>/, "").replace("</svg>", "");
+  // egyszerre, egy menetben: sötét→narancs, narancs→fehér, fehér→sötét (invertált tile)
+  inner = inner.replace(new RegExp(DARK + "|" + ORANGE + "|" + CREAM, "g"), function (tok) {
+    return tok === DARK ? ORANGE : (tok === ORANGE ? CREAM : DARK);
+  });
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">' +
+    '<rect x="0" y="0" width="96" height="96" rx="18" fill="#1a1614"/>' +
+    '<g transform="translate(8,8) scale(0.83)">' + inner + "</g></svg>";
+}
+
+/* Lockup-előnézet: mark + SÓDER/ÁRAK stacked (valódi HTML tipó) */
+var h2l = document.createElement("h2"); h2l.textContent = "Lockup: mark + SÓDER/ÁRAK stacked wordmark (HTML tipó)"; lab.appendChild(h2l);
+["A", "B", "C"].forEach(function (key) {
+  ["bg-paper", "bg-basalt"].forEach(function (bg) {
+    var row = document.createElement("div"); row.className = "row " + bg;
+    var cell = document.createElement("div"); cell.className = "cell";
+    cell.innerHTML = '<span class="lockup">' + svgAt(MARKS[key], 44) +
+      '<span class="wm" style="font-size:26px"><span class="l1">Sóder</span><span class="l2">Árak</span></span></span>';
+    row.appendChild(cell);
+    lab.appendChild(row);
+  });
+});
+var h2h = document.createElement("h2"); h2h.textContent = "Header-méret (mark 48 + wordmark)"; lab.appendChild(h2h);
+["A", "B", "C"].forEach(function (key) {
+  var row = document.createElement("div"); row.className = "row bg-paper";
+  var cell = document.createElement("div"); cell.className = "cell";
+  cell.innerHTML = '<span class="lockup">' + svgAt(MARKS[key], 48) +
+    '<span class="wm" style="font-size:34px"><span class="l1">Sóder</span><span class="l2">Árak</span></span></span>';
+  row.appendChild(cell);
+  lab.appendChild(row);
+});
+
+/* ---------------- NUMERIKUS ELEMZÉS (canvas, measure-only) ---------------- */
+function loadImage(src) {
+  return new Promise(function (res, rej) {
+    var img = new Image();
+    img.onload = function () { res(img); };
+    img.onerror = function () { rej(new Error("img load fail")); };
+    img.src = src;
+  });
+}
+function rasterize(svgSource, size) {
+  var data = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgSource)));
+  return loadImage(data).then(function (img) {
+    var c = document.createElement("canvas");
+    c.width = size; c.height = size;
+    var ctx = c.getContext("2d");
+    ctx.drawImage(img, 0, 0, size, size);
+    return ctx.getImageData(0, 0, size, size);
+  });
+}
+function classify(a, r, g, b) {
+  if (a < 128) return ".";
+  if (r < 90 && g < 85 && b < 80) return "s";
+  if (r > 180 && g > 55 && g < 165 && b < 95) return "N";
+  if (r > 215 && g > 200 && b > 185) return "F";
+  return "?";
+}
+function rasterStats(data, size, grid) {
+  var px = data.data;
+  var counts = { N: 0, F: 0, s: 0, "?": 0, ".": 0 };
+  var total = size * size;
+  for (var y = 0; y < size; y++) {
+    for (var x = 0; x < size; x++) {
+      var i = (y * size + x) * 4;
+      counts[classify(px[i + 3], px[i], px[i + 1], px[i + 2])]++;
+    }
+  }
+  var rows = [];
+  var bands = {};
+  var cell = size / grid;
+  for (var gy = 0; gy < grid; gy++) {
+    var line = "";
+    for (var gx = 0; gx < grid; gx++) {
+      var sx = Math.min(size - 1, Math.floor(gx * cell + cell / 2));
+      var sy = Math.min(size - 1, Math.floor(gy * cell + cell / 2));
+      var j = (sy * size + sx) * 4;
+      var ch = classify(px[j + 3], px[j], px[j + 1], px[j + 2]);
+      line += ch;
+      if (ch !== "." && ch !== "?") bands[ch] = true;
+    }
+    rows.push(line);
+  }
+  return {
+    coveragePct: Math.round(100 * (total - counts["."]) / total),
+    bandCount: Object.keys(bands).length,
+    bands: Object.keys(bands).join(","),
+    map: rows.join(" / ")
+  };
+}
+function luminance(hex) {
+  var v = [1, 3, 5].map(function (k) {
+    var c = parseInt(hex.slice(k, k + 2), 16) / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+}
+function contrast(a, b) {
+  var l1 = luminance(a), l2 = luminance(b);
+  var hi = Math.max(l1, l2), lo = Math.min(l1, l2);
+  return Math.round(100 * (hi + 0.05) / (lo + 0.05)) / 100;
+}
+function runAll() {
+  var out = {};
+  var jobs = Object.keys(MARKS).map(function (key) {
+    var m = MARKS[key];
+    return rasterize(svgAt(m, 96), 96).then(function (d96) {
+      var s96 = rasterStats(d96, 96, 12);
+      return rasterize(svgAt(m, 16), 16).then(function (d16) {
+        var s16 = rasterStats(d16, 16, 8);
+        var tile = faviconTile(m, 64);
+        return rasterize(tile, 64).then(function (dT) {
+          var sT = rasterStats(dT, 64, 8);
+          out[key] = {
+            cov96: s96.coveragePct, bands96: s96.bands,
+            map12: s96.map.split(" / "),
+            cov16: s16.coveragePct, bands16: s16.bands,
+            map8: s16.map.split(" / "),
+            tile: { cov: sT.coveragePct, bands: sT.bands, map8: sT.map.split(" / ") }
+          };
+        });
+      });
+    });
+  });
+  return Promise.all(jobs).then(function () {
+    out.kontraszt = {
+      "narancs_soteten": contrast(ORANGE, DARK),
+      "narancs_papiron": contrast(ORANGE, "#faf6ef"),
+      "feher_soteten": contrast(CREAM, DARK),
+      "sotet_papiron": contrast(DARK, CREAM)
+    };
+    return out;
+  });
+}
+window.RUN = runAll;
+runAll().then(function (r) {
+  document.getElementById("report").textContent =
+    "cov96 / sávok / 12×12 térkép | 16px: cov / sávok / 8×8 | tile\n\n" +
+    Object.keys(r).filter(function (k) { return k !== "kontraszt"; }).map(function (k) {
+      var v = r[k];
+      return k + ": 96px cov=" + v.cov96 + "% sávok=" + v.bands96 +
+        "\n" + v.map12.join("\n") +
+        "\n  16px cov=" + v.cov16 + "% sávok=" + v.bands16 + " | " + v.map8.join(" ") +
+        "\n  tile cov=" + v.tile.cov + "% sávok=" + v.tile.bands + " | " + v.tile.map8.join(" ");
+    }).join("\n\n") + "\n\nKONTRASZT (WCAG): " + JSON.stringify(r.kontraszt);
+}).catch(function (e) {
+  document.getElementById("report").textContent = "HIBA: " + (e && e.message);
+});
+</script>
+</body>
+</html>

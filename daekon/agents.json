@@ -1,0 +1,56 @@
+{
+  "version": "12.8.0",
+  "policy": {
+    "root": "daekon-visual-master",
+    "stability": "Root orchestration és release-certification magas következetességgel; specialista lépések csak policy-kompatibilisen.",
+    "gateConcurrency": 3,
+    "forbidden": [
+      "GLM MAX",
+      "azonos sikertelen provider-hívás ismételt futtatása (1 retry max, csak tranziens hibára)"
+    ],
+    "safety": "Produkciós környezet elleni teszt csak explicit engedéllyel."
+  },
+  "environment": {
+    "note": "A szerepek helyi skill-fájlok és executor-szkriptek; a kapuk valódi futtatható ellenőrzések.",
+    "fallback": "Ha egy kapu eszköze nem elérhető, a kapu eredménye NOT_VERIFIED — sosem PASS.",
+    "unavailableIsNotVerified": true
+  },
+  "agents": [
+    { "id": "visual-master", "role": "Root: vizuális irány, orchestráció, a többi szerep felügyelete.", "skill": "skills/visual-direction.md", "memory": "memory/visual-master.md" },
+    { "id": "designer", "role": "Art-directed UI-kompozíció, tipográfia, ritmus, mobil art direction.", "skill": "skills/designer.md", "memory": "memory/designer.md" },
+    { "id": "content-writer", "role": "Magyar, emberi hangvételű tartalom; cikkek, FAQ, CTA-szövegek.", "skill": "skills/content-writer.md", "memory": "memory/content-writer.md" },
+    { "id": "seo-specialist", "role": "Meta, sitemap, indexelhetőség, belső linkgráf, kulcsszó-lefedettség.", "skill": "skills/seo-specialist.md", "memory": "memory/seo-specialist.md" },
+    { "id": "aeo-specialist", "role": "Kérdés-válasz struktúrák, JSON-LD (FAQPage, BreadcrumbList), AI-kereső-barát válaszok.", "skill": "skills/aeo-specialist.md", "memory": "memory/aeo-specialist.md" },
+    { "id": "og-artwork", "role": "OG-kártya-grafikák tervezése og.tsx variánsokban; pixel-QA.", "skill": "skills/og-artwork.md", "memory": "memory/og-artwork.md" },
+    { "id": "perf-engineer", "role": "Lighthouse-mérés, LCP/TBT-gátlók, font- és asset-stratégia.", "skill": "skills/perf-engineer.md", "memory": "memory/perf-engineer.md" },
+    { "id": "a11y-auditor", "role": "WCAG A/AA: szemantika, kontraszt, fókusz, hit-targetek.", "skill": "skills/a11y-auditor.md", "memory": "memory/a11y-auditor.md" },
+    { "id": "mobile-auditor", "role": "360px elrendezés, touch-célok, mobilmenü-élmény.", "skill": "skills/mobile-auditor.md", "memory": "memory/mobile-auditor.md" },
+    { "id": "data-guardian", "role": "Üzleti adatok site.ts-ből való kiszolgálásának őrzése; kitalált adat kizárása.", "skill": "skills/data-guardian.md", "memory": "memory/data-guardian.md" },
+    { "id": "humanizer", "role": "AI-es/zsargon szövegek felmérése és cseréje emberi, SEO-barát megfogalmazásra (szegmens).", "skill": "skills/humanizer.md", "memory": "memory/humanizer.md" },
+    { "id": "tech-scout", "role": "Technológia-, elem- és eszköz-kutatás (MCP-k, web-API-k, dizájn-minták); mért beépítés.", "skill": "skills/tech-scout.md", "memory": "memory/tech-scout.md" },
+    { "id": "error-analyst", "role": "Kapu-kimenetek mintázatelemzése, ismétlődő hibák → szabály-jelöltek.", "skill": "skills/error-analyst.md", "memory": "memory/error-analyst.md" },
+    { "id": "competitor-analyst", "role": "Kompetitor-oldalak figyelése, szerkezeti és tartalmi elemzés.", "skill": "skills/competitor-analyst.md", "memory": "memory/competitor-analyst.md" },
+    { "id": "qa-regression", "role": "Független regressziós QA (daekon-quality-master): az exportból önállóan újraellenőrzi az invariánsokat; a saját implementáció nem hagyhatja jóvá önmagát.", "skill": "skills/qa-regression.md", "memory": "memory/qa-regression.md" },
+    { "id": "release-certifier", "role": "Végső, független döntés a kapu-eredményekből: PASS / FAIL / NOT_VERIFIED.", "skill": "skills/release-certification.md", "memory": "memory/release-certifier.md" }
+  ],
+  "gates": [
+    { "id": "gate-static", "title": "Statikus build és export-invariánsok", "type": "command", "command": "npm run build", "risk": "blocker", "fast": true },
+    { "id": "gate-og", "title": "OG-kártya regressziós kapu", "type": "command", "command": "npm run og:hash", "risk": "blocker", "fast": true },
+    { "id": "gate-a11y", "title": "axe WCAG A/AA minden exportált route-on", "type": "command", "command": "npm run test:a11y", "risk": "blocker" },
+    { "id": "gate-mobile", "title": "360px elrendezési és hit-target audit", "type": "command", "command": "npm run test:mobile", "risk": "blocker" },
+    { "id": "gate-perf", "title": "Lighthouse performance a kulcsroute-okon", "type": "command", "command": "npm run perf:lighthouse", "risk": "advisory" },
+    { "id": "gate-qa-regression", "title": "Független QA: export- és regressziós invariánsok (daekon-quality-master)", "type": "command", "command": "npm run qa:regression", "risk": "blocker", "fast": true }
+  ],
+  "teamExecutors": [
+    { "id": "seo-audit", "command": "node daekon/agents/seo-audit.mjs", "memory": "memory/seo-specialist.md" },
+    { "id": "humanize-scan", "command": "node daekon/agents/humanizer.mjs", "memory": "memory/humanizer.md" },
+    { "id": "tech-radar", "command": "node daekon/agents/tech-scout.mjs", "memory": "memory/tech-scout.md" },
+    { "id": "error-patterns", "command": "node daekon/agents/error-analyst.mjs", "memory": "memory/error-analyst.md" },
+    { "id": "competitor-watch", "command": "node daekon/agents/competitor-watch.mjs", "memory": "memory/competitor-analyst.md" }
+  ],
+  "quality": {
+    "minLighthouse": 90,
+    "keyRoutes": ["/", "/utmutatok/", "/anyagok/soder/", "/teruletek/erd/"]
+  },
+  "report": { "target": "daekon/daekon-report.md", "log": "daekon/LOG.md" }
+}

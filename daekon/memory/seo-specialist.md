@@ -1,0 +1,81 @@
+# Memória: seo-specialist
+
+## Megtanult szabályok
+- meta.tsx clamp: title 57 (a „ | Sóderárak" template-utótag miatt), description 165 — og:title a clamp-elt title-ből épül, hogy tükrözze.
+- noindex oldalak (404, impresszum, adatvedelem) az SEO-auditból kizárva — a szabály a kanonikus indexelhető oldalakra szól.
+- 2026-10-02: audit 100/100, 0 találat (excerpt-bővítés után).
+- Sitemap lastmod: site.ts `updated` konstans eteti — tartalom-változásnál egy helyen frissítendő.
+- Nav: 8 elem fér ki 1024px-en (a desktop-nav 1024–1280 között szűk sávjaiban ellenőrizni), az Útmutatók felvétele overflow nélkül.
+
+## Állapot
+- 41 kanonikus indexelhető oldal = 41 sitemap URL (a build QA-e az egyezés).
+- /utmutatok hub 0.5 prioritással a sitemapban; guide-ok 0.3.
+
+## Megtanult szabályok
+- Minden indexelhető oldal: pageMeta (canonical/OG/twitter) + 1 BreadcrumbList + LocalBusiness (layout).
+- A 404.html OG-retargetet a prepare-static-export végzi (Next nem köti be) — ne bántsd.
+- 2026-10-02 16:50 SEO-audit: átlag 94/100, 26 találat (pl. /404/: title hossz 84)
+- 2026-10-02 16:51 SEO-audit: átlag 94/100, 26 találat (pl. /404/: title hossz 84)
+- 2026-10-02 16:58 SEO-audit: átlag 99/100, 5 találat (pl. /: description hossz 168)
+- 2026-10-02 17:00 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 17:04 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 17:10 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 17:25 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 17:37 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 17:46 SEO-audit: átlag 100/100, 0 találat
+- 2026-10-02 18:06 SEO-audit: átlag 100/100, 1 találat (pl. /: description hossz 168)
+- 2026-10-02 18:53 SEO-audit: átlag 100/100, 1 találat (pl. /: description hossz 168)
+- 2026-10-02 19:11 SEO-audit: átlag 100/100, 1 találat (pl. /: description hossz 168)
+- 2026-10-02 20:31 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 20:40 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 21:14 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 21:24 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 21:29 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 21:35 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 22:42 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 22:57 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-02 23:06 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 06:14 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 06:27 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 06:58 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 07:22 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 07:38 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 08:20 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 08:39 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 09:22 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 09:36 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 09:51 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 10:16 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 11:22 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 11:33 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 11:42 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 11:48 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 11:56 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:10 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:22 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:30 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:46 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:50 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:54 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 12:57 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:00 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:03 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:04 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:09 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:12 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:36 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:58 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 13:59 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 14:05 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 14:53 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 15:31 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 16:00 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 16:10 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 16:47 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 16:52 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 17:00 SEO-audit: átlag 100/100, 2 találat (pl. /: description hossz 168)
+- 2026-10-03 18:37 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
+- 2026-10-03 19:02 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
+- 2026-10-03 19:08 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
+- 2026-10-03 19:59 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
+- 2026-10-03 22:06 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)

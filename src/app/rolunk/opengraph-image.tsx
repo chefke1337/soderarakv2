@@ -1,0 +1,21 @@
+import { company, materialGroups } from "@/content/site";
+import { ogCard } from "@/lib/og";
+
+export const dynamic = "force-static";
+export const alt = "Bau-Kont Logisztik Kft. — Sóderárak üzletág";
+export const size = { width: 1200, height: 630 };
+export const contentType = "image/png";
+
+export default function OgImage() {
+  return ogCard({
+    variant: "company",
+    title: `${company.name} — Sóderárak üzletág`,
+    subtitle: "Ömlesztett építőanyag értékesítése és szállítása Budafokról, saját telephellyel és saját flottával.",
+    companyFacts: [
+      { value: "Saját", label: "flotta Budafokról" },
+      { value: "Depó", label: "telephelyi átvétel" },
+      { value: company.hours.short, label: "ügyfélfogadás" },
+      { value: String(materialGroups.length), label: "anyagcsoport" },
+    ],
+  });
+}

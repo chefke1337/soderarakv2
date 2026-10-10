@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <radialGradient id="bg" cx="35%" cy="25%">
+      <stop offset="0%" stop-color="#e0c184"/>
+      <stop offset="100%" stop-color="#c9a55c"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <g filter="url(#soft)" opacity="0.85">
+    <path d="M0 240 Q100 210 200 235 T400 225 V300 H0 Z" fill="#d9b96f"/>
+    <path d="M0 262 Q120 240 240 258 T400 252 V300 H0 Z" fill="#cfae63"/>
+  </g>
+  <g opacity="0.55">
+    <circle cx="60" cy="60" r="2.5" fill="#f0dca8"/><circle cx="150" cy="40" r="2" fill="#f0dca8"/><circle cx="260" cy="70" r="2.5" fill="#f4e2b4"/><circle cx="340" cy="50" r="2" fill="#f0dca8"/><circle cx="100" cy="120" r="2" fill="#f4e2b4"/><circle cx="210" cy="140" r="2.5" fill="#f0dca8"/><circle cx="310" cy="130" r="2" fill="#f4e2b4"/><circle cx="40" cy="180" r="2" fill="#f0dca8"/><circle cx="180" cy="190" r="2.5" fill="#f4e2b4"/><circle cx="290" cy="185" r="2" fill="#f0dca8"/>
+  </g>
+</svg>

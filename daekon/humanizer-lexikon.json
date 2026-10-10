@@ -1,0 +1,31 @@
+{
+  "_megjegyzes": "Humanizer-lexikon: AI-es/zsargon frázisok → emberi, SEO-barát megfelelőik. Az apply a leghosszabb frázist cseréli először. Új bejegyzésekkel fejlődik; a tik-lista csak jelez, nem cserél.",
+  "replacements": [
+    { "from": "magövezet, közeli és távolabbi agglomeráció", "to": "Budafok és környéke, közeli és távolabbi települések" },
+    { "from": "Magövezeti fuvarral", "to": "Budafok környéki fuvarral" },
+    { "from": "magövezeti fuvar", "to": "budafoki fuvarsáv" },
+    { "from": "a közeli agglomerációban", "to": "a közeli településeken" },
+    { "from": "a távolabbi agglomerációban", "to": "a távolabbi településeken" },
+    { "from": "Az agglomerációban", "to": "A távolabbi településeken" },
+    { "from": "az agglomerációban", "to": "a távolabbi településeken" },
+    { "from": "és agglomerációba", "to": "és a környező településekre" },
+    { "from": "Közeli agglomeráció", "to": "Közeli települések" },
+    { "from": "Távolabbi agglomeráció", "to": "Távolabbi települések" },
+    { "from": "A magövezetben", "to": "Budafok környékén" },
+    { "from": "a magövezetben", "to": "Budafok környékén" },
+    { "from": "Magövezetben", "to": "Budafok környékén" },
+    { "from": "MAGÖVEZET", "to": "BUDAFOK ÉS KÖRNYÉKE" },
+    { "from": "Magövezet", "to": "Budafok és környéke" },
+    { "from": "magövezet", "to": "Budafok környéke" }
+  ],
+  "aiTics": [
+    "zökkenőmentes",
+    "fedezze fel",
+    "merüljön el",
+    "a mai rohanó világban",
+    "kiemelkedő minőség",
+    "tökéletes választás",
+    "ne habozzon",
+    "kimagasló"
+  ]
+}

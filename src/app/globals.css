@@ -1,0 +1,285 @@
+@import "tailwindcss";
+/* Globálisan importálva (nem a ZonaTerkep komponensből), hogy a Leaflet CSS
+   a fő, minden oldalon hivatkozott stíluslapba kerüljön — lásd
+   scripts/prepare-static-export.mjs (korábbi CSS_CHUNK_LOAD_FAILED hiba). */
+@import "leaflet/dist/leaflet.css";
+
+/* ─────────────────────────────────────────────────────────────────────────
+   V2 „Mérlegjegy" design rendszer — docs/v2-design-direction.md
+   Világos homok / törtfehér alap, grafit szöveg, égett narancs CSAK
+   cselekvésre és árra. Nincs nagy felületű zöld, nincs glow/blob.
+   ───────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Felületek */
+  --color-paper: #fbf8f2;      /* törtfehér */
+  --color-sand: #f3ebdc;       /* világos bézs */
+  --color-sand-deep: #e6d8bd;  /* meleg homok */
+  --color-line: #ddcfb4;       /* hajszálvonal */
+  --color-line-strong: #c9b896;
+
+  /* Szöveg — grafit */
+  --color-ink: #24211d;
+  --color-ink-soft: #5b544a;
+  --color-ink-faint: #776e62;
+
+  /* Égett narancs — a logó „ÁRAK" színe (brand-dark) VÁLTOZATLAN */
+  --color-brand: #f97316;
+  --color-brand-dark: #c2410c;
+  --color-brand-deep: #9a3412;
+  --color-brand-soft: #fbe3cf;
+
+  /* Földszínek a részletekhez */
+  --color-clay: #b4532f;       /* frakció-sáv */
+  --color-dust: #d9b77a;       /* amber por */
+  --color-basalt: #211d19;     /* footer */
+  --color-basalt-soft: #2e2924;
+
+  /* Funkcionális zöld — kizárólag kis felületen (Buda Konténer link, pipa) */
+  --color-moss: #3f6212;
+  --color-petrol: #0f766e;
+  --color-petrol-deep: #134e4a;
+  --color-petrol-soft: #99f6e4;
+
+  /* Az eredeti projekt meleg glow tokenjei — kompatibilitás miatt megtartva */
+  --color-terracotta: #b1543a;
+  --color-amber-glow: #d6a24a;
+
+  --font-display: var(--font-grotesk), "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+
+  /* Típusskála (13 · 15 · 17 · 20 · 26 · 34 · 46 · 60) */
+  --text-heading-xs: 1.0625rem;
+  --text-heading-xs--line-height: 1.4;
+  --text-heading-sm: 1.25rem;
+  --text-heading-sm--line-height: 1.3;
+  --text-heading-md: 1.625rem;
+  --text-heading-md--line-height: 1.2;
+  --text-heading-lg: 2.125rem;
+  --text-heading-lg--line-height: 1.12;
+  --text-display: 2.875rem;
+  --text-display--line-height: 1.04;
+  --text-display-xl: 3.75rem;
+  --text-display-xl--line-height: 1;
+
+  /* Árnyék helyett hajszálvonal + egy nagyon lapos emelés */
+  --shadow-card: 0 1px 0 rgb(36 33 29 / 0.05);
+  --shadow-pop: 0 1px 0 rgb(36 33 29 / 0.06), 0 18px 40px -24px rgb(36 33 29 / 0.35);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11", "ss01";
+}
+
+::selection {
+  background: var(--color-brand-dark);
+  color: var(--color-paper);
+}
+
+@layer components {
+/* Display-tipográfia: szoros követés nagy méretben */
+.font-display {
+  letter-spacing: -0.015em;
+}
+.tracking-display {
+  letter-spacing: -0.03em;
+}
+
+/* Számok: minden ár és mennyiség táblázatos számjegyekkel */
+.num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum", "lnum";
+}
+
+/* Homokszemcse: két rétegű, ritka pöttyözés amber porral — a hero és a
+   záró panel anyagszerű felülete. Statikus, nem animál. */
+.grain {
+  background-image:
+    radial-gradient(rgb(180 140 80 / 0.22) 0.8px, transparent 1.2px),
+    radial-gradient(rgb(120 90 50 / 0.14) 0.7px, transparent 1.1px);
+  background-size: 11px 13px, 17px 19px;
+  background-position: 0 0, 5px 7px;
+}
+
+/* Mérőléc: mm-osztás a frakció-skála mögött (5 mm-enként erősebb) */
+.ruler-ticks {
+  background-image:
+    linear-gradient(to right, var(--color-line-strong) 1px, transparent 1px),
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px);
+  background-size: 20% 100%, 4% 55%;
+  background-repeat: repeat-x;
+  background-position: 0 0, 0 100%;
+}
+
+/* Perforált szelvényél — a hero árjegyzék alsó/felső széle */
+.perforated {
+  --hole: 6px;
+  -webkit-mask:
+    radial-gradient(circle at 50% 0, transparent calc(var(--hole) / 2), #000 calc(var(--hole) / 2 + 0.5px)) 0 0 / 14px 51% repeat-x,
+    radial-gradient(circle at 50% 100%, transparent calc(var(--hole) / 2), #000 calc(var(--hole) / 2 + 0.5px)) 0 100% / 14px 51% repeat-x;
+  mask:
+    radial-gradient(circle at 50% 0, transparent calc(var(--hole) / 2), #000 calc(var(--hole) / 2 + 0.5px)) 0 0 / 14px 51% repeat-x,
+    radial-gradient(circle at 50% 100%, transparent calc(var(--hole) / 2), #000 calc(var(--hole) / 2 + 0.5px)) 0 100% / 14px 51% repeat-x;
+}
+}
+
+/* ── Mozgás: egyetlen szervezett pillanat ──
+   A hero betöltésekor a szöveg felemelkedik, az árjegyzék sorai sorban
+   „kinyomtatódnak". Minden más mozgás felhasználói válasz. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+  .rise-2 { animation-delay: 0.08s; }
+  .rise-3 { animation-delay: 0.16s; }
+  .rise-4 { animation-delay: 0.24s; }
+
+  .print-row {
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(0.35s + var(--i, 0) * 70ms);
+  }
+}
+@keyframes rise-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* <details> lenyitás: a tartalom finoman beúszik (válasz a felhasználóra) */
+@media (prefers-reduced-motion: no-preference) {
+  details[open] > .details-body {
+    animation: rise-in 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .details-body {
+    transform: translateY(-4px);
+  }
+}
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Header-árnyék görgetésre — JS nélkül */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .header-bar {
+      animation: header-shadow 0.3s linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 80px;
+    }
+  }
+}
+@keyframes header-shadow {
+  to { box-shadow: 0 12px 28px -20px rgb(36 33 29 / 0.45); }
+}
+
+/* Stacked SÓDER/ÁRAK lockup — mobil-kompakt állapotban kisebb, a két sor
+   továbbra is szoros egységet alkot. */
+.header-lockup {
+  transition: font-size 0.3s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .header-lockup { transition: none; }
+}
+@media (max-width: 639.98px) {
+  html[data-scrolled="true"] .header-lockup {
+    font-size: 1.3333rem;
+    max-height: 2.05em;
+    line-height: 0.95;
+  }
+}
+
+/* Görgetés alatti, nehéz szekciók kímélése (explicit méretbecsléssel) */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1100px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-dark);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Okos mobilsáv + fejléc (ScrollSensor data-attribútumai alapján) ── */
+@media (max-width: 639.98px) {
+  html[data-scrolled="true"] [data-call-region="mobile_call_bar"] {
+    padding-top: 0.375rem;
+    padding-right: 0.375rem;
+    padding-bottom: max(0.375rem, env(safe-area-inset-bottom));
+    padding-left: 0.375rem;
+  }
+  html[data-scrolled="true"] [data-call-region="mobile_call_bar"] a {
+    font-size: 0.9375rem;
+  }
+
+  .header-bar {
+    transition:
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s;
+  }
+  html[data-header-hidden="true"] .header-bar {
+    transform: translateY(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      visibility 0s linear 0.32s;
+  }
+}
+
+@media (max-width: 639.98px) and (prefers-reduced-motion: no-preference) {
+  [data-call-region="mobile_call_bar"] {
+    transition: padding 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  [data-call-region="mobile_call_bar"] a {
+    transition:
+      font-size 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.15s,
+      color 0.15s;
+  }
+}
+
+/* Leaflet vezérlők a V2 palettához */
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: var(--color-sand);
+}
+.leaflet-bar a {
+  color: var(--color-ink);
+}

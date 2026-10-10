@@ -1,0 +1,74 @@
+# Memória: humanizer
+
+## Első nagy feladat (2026-10-02)
+- „Magövezet" → **„Budafok és környéke"** (főnév-alakokban: „Budafok környékén"); „agglomeráció" → „közeli/távolabbi települések".
+- Indoklás: a „magövezet" belső cégzsargon (a fuvarozó saját szava), a látogató és a kereső is a településeket keresi („sóder szállítás Érd").
+- SEO-megőrzés: a zóna-árak (12–22e / 18–32e / 25–45e) és a településnevek minden mondatban maradnak.
+
+## Második futás (2026-10-02, apply)
+- 56 automatikus csere + 9 kézi mondatszintű átírás → 0 maradék, scan tiszta.
+- Tanulság: a site.ts (adatfájl) is scan-ható forrás — a zóna-nevek ott cserélődtek, és MINDEN megjelenítés (kártyák, térkép-legenda, FAQ, lépcsőfeltételek) konzisztensen követte, mert mindenhol ebből renderel. A data-driven architektúra a humanizer legjobb barátja.
+- Az /arak OG-kártya zones[0].name-et ír ki — adat-változásnál a kártyák automatikusan követik (kapu jelzi, átvizetés kell).
+
+## Megtanult szabályok
+- A lexikon-csere után mindig van maradék, ami kézi (mondatszintű AI-fordulat) — a scan csak kiindulópont.
+- A zónanév a ZonaTerkep legendájában és az OG-kártyákon is él — a csere ott is kötelező, különben inkonzisztens a UI.
+- 2026-10-02 17:58 SCAN: 56 találat, 0 AI-tik
+- 2026-10-02 17:58 CSERE: 39 találat lecserélve, 0 AI-tik
+- 2026-10-02 17:59 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 18:06 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 18:53 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 19:11 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 20:31 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 20:40 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 21:14 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 21:24 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 21:29 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 21:35 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 22:42 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 22:57 SCAN: 0 találat, 0 AI-tik
+- 2026-10-02 23:06 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 06:14 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 06:27 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 06:58 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 07:22 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 07:38 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 08:20 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 08:39 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 09:22 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 09:36 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 09:51 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 10:16 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 11:22 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 11:33 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 11:42 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 11:48 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 11:56 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:10 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:22 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:30 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:46 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:50 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:54 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 12:57 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:00 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:03 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:04 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:09 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:12 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:36 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:58 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 13:59 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 14:05 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 14:53 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 15:31 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 16:00 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 16:10 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 16:47 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 16:52 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 17:00 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 18:37 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 19:02 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 19:08 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 19:59 SCAN: 0 találat, 0 AI-tik
+- 2026-10-03 22:06 SCAN: 0 találat, 0 AI-tik

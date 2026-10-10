@@ -1,0 +1,28 @@
+{
+  "_megjegyzes": "Tech-scout nyilvántartás. status: live | candidate | rejected. A beépítés mindig mért hatással, kapulánc után.",
+  "live": [
+    { "id": "next-static-export", "what": "Next.js 15 statikus export", "why": "sebesség, egyszerű hosztolás", "since": "projekt-alap" },
+    { "id": "tailwind4", "what": "Tailwind CSS 4", "why": "design-token rendszer (@theme)", "since": "projekt-alap" },
+    { "id": "space-grotesk", "what": "Space Grotesk display + Inter", "why": "tiszta tipó, latin-ext", "since": "2026-10-02" },
+    { "id": "css-scroll-driven-motion", "what": "scroll-driven animációk (view()/scroll())", "why": "zero-JS motion", "since": "2026-10-02" },
+    { "id": "gzip-harness", "what": ".gz ikertestvérek + gzip_static-szimulált QA", "why": "hiteles perf-mérés", "since": "2026-10-02" },
+    { "id": "pwa-lite", "what": "manifest + theme-color + apple-icon", "why": "telepíthetőség, mobil-szín", "since": "2026-10-02" },
+    { "id": "og-pipeline", "what": "12 variánsos OG-gyár + hash-kapu + galéria", "why": "megosztási minőség", "since": "2026-10-02" },
+    { "id": "llms-txt", "what": "llms.txt AI-keresőknek", "why": "AEO", "since": "előd" },
+    { "id": "qa-regression-skill", "what": "qa-regression skill (daekon-quality-master): független regressziós QA, kockázatbesorolás, kapuk döntenek — bekötve: roster-tag + 6. kapu (gate-qa-regression, blocker, npm run qa:regression)", "why": "a saját implementáció nem hagyhatja jóvá önmagát", "since": "2026-10-02 (user hozzáadta); orchestrátor-integráció: 2026-10-03" }
+  ],
+  "candidates": [
+    { "id": "mcp-recraft", "what": "Recraft MCP-konnektor: képgenerálás valódi VEKTOR-kimenettel (szerkeszthető path-ok, Figma/Illustrator-kompatibilis) — kutatás: 2026-10-03, recraft.ai/blog/recraft-mcp", "why": "logó/ikon-munka segítése: nyers koncept-generálás vektorban, amit a designer skill szerint kézzel csiszolunk; nem a végső logó forrása", "effort": "S", "risk": "user-engedéllyel telepíthető (MCP-konnektor + API-kulcs); a generált mark jogszerűsége/eredetisége a vevő felelőssége — emberszerzett szerkesztés kell" },
+    { "id": "mcp-figma-devmode", "what": "Figma Dev Mode MCP-konnektor: design-fájl kontextus (komponensek, tokenek) beolvasása kód-generáláshoz — kutatás: 2026-10-03, figma.com/blog/introducing-figma-mcp-server", "why": "ha a user Figma-ban dolgozik, a design→kód átadás pontos lesz", "effort": "M", "risk": "Figma Dev Mode előfizetés + user-engedéllyel telepítés; csak olvasó módban indítanám" },
+    { "id": "mcp-supabase", "what": "Supabase MCP-konnektor: 'soderarak' projekt (eu-central-1, PG17) — jelenleg INACTIVE/paused, séma nem olvasható", "why": "jövőbeli backend: ajánlatkérés/megrendelés űrlap, árkalkulátor-lead mentés — statikus export mellé client-side SDK-val", "effort": "M", "risk": "projekt aktiválást engedélyeztetni kell; SDK-bundle vs. perf-kapu" },
+    { "id": "mcp-sentry", "what": "Sentry MCP-konnektor: 'soderarak-kj' szervezet (DE régió) — 0 projekt, nincs bekötve", "why": "éles hibakezelés a kliens-oldalon; csak deferred/dynamic-load mintával, hogy a 103 kB JS és a minLighthouse 90 megmaradjon", "effort": "M", "risk": "SDK méret vs. perf-kapu; projektkreálás + DSN kell" },
+    { "id": "view-transitions", "what": "View Transitions API oldalon belüli átmenetekhez", "why": "profi page-feel zero-JS-szel", "effort": "S", "risk": "Safari-ötöttesség — @supports guard" },
+    { "id": "css-popover", "what": "Popover API menükhöz/dialogokhoz", "why": "top-layer a11y JS nélkül", "effort": "S", "risk": "alacsony" },
+    { "id": "text-wrap-balance-everywhere", "what": "text-wrap: balance kibővítve minden címre", "why": "ritmus", "effort": "S", "risk": "nincs" },
+    { "id": "details-anim", "what": "details/summary tartalom-animáció (::details-content)", "why": "accordion-átmenet", "effort": "M", "risk": "csak Chromium — progresszív" },
+    { "id": "speculation-rules", "what": "Speculation Rules (prerender) a kalkulátor linkre", "why": "azonnali kalkulátor-nyitás", "effort": "S", "risk": "statikus hoszt-kompatibilis" }
+  ],
+  "rejected": [
+    { "id": "threejs-hero", "what": "WebGL hero", "why": "LCP-gátló, nem szolgálja a látogató döntését" }
+  ]
+}

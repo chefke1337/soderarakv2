@@ -1,0 +1,34 @@
+# Build-termékek és futásállapotok — a Tailwind source-szken SOHA ne lássa ezeket
+# (ellenkező esetben a CSS a generált HTML-ből "tanul" class-okat és buildről
+# buildre oszcillál — rendszer-audit 2026-10-03)
+out/
+dist/
+node_modules/
+.next/
+.daekon-a11y-state.json
+.daekon-mobile-state.json
+.daekon-perf-state.json
+daekon/runs/
+daekon/LOG.md
+daekon/daekon-report.md
+daekon/daekon-report-fast.md
+daekon/watch.log
+daekon/watch-stdout.log
+probe-*.html
+css-a.txt
+*.zip
+tsconfig.tsbuildinfo
+
+# Egyszer-használatos diagnosztikai/összehasonlító kimenetek — generált
+# riportok, nem forrás (2026-10-04 audit: korábban tévedésből commitolva,
+# lásd docs/cleanup-log.md)
+og-gallery.html
+.logo-compare.html
+.lh-*.json
+.lh-inter.css
+.server.log
+
+# Mérési azonosítók — SOHA nem kerülnek backupba/zipbe (env-alapú GA4, metrics-plan §2)
+.env
+.env.local
+.env*.local

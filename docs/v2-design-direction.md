@@ -1,0 +1,89 @@
+# V2 design direction
+
+## A két irány
+
+### A) „Mérlegjegy” — pontos, árközpontú, világos  ✅ választott
+A Sóder Árak vásárlója egy kérdéssel érkezik: *mennyibe kerül, és mikor hozzák?*
+Az oldal úgy viselkedik, mint egy jól megírt telepi árjegyzék vagy mérlegjegy:
+világos homok/törtfehér felületek, grafit szöveg, táblázatos számok, a frakciók
+(0/4, 0/8, 16/32 mm…) **mm-skálán** ábrázolva. Az égett narancs kizárólag cselekvést
+(hívás, kalkulátor) és árat jelöl. A „wow” egyetlen helyen van: a hero jobb
+oldalán álló **árjegyzék-szelvény**, amely az első képernyőn mutatja meg mind
+a hat anyagcsoport induló nettó árát és a fuvarsávot.
+
+### B) „Depó” — sötét, anyagfotós, hangulati
+Mély földszínű/bazalt felületek, nagy anyag-közeli fotók, rakás-sziluettek.
+**Elvetve**, mert: (1) nincs valódi fotóanyag, kitalálni/stockolni pedig nem
+akarunk; (2) a brief kifejezetten világos bézs/törtfehér alapot és visszafogott
+akcentust kér; (3) a sötét, nagy felületek pont a korábban kifogásolt „domináns
+háttér” problémát ismételnék meg.
+
+## Miért az A
+- A márkanév ígérete (árak) az első képernyőn teljesül.
+- Valós adatból épül (site.ts árak, frakciók, zónák) — nincs dekoráció tartalom helyett.
+- Telefon-első marad: egy elsődleges CTA (hívás), egy másodlagos (kalkulátor).
+
+## Tokenek (`src/app/globals.css` `@theme`)
+
+| token | hex | szerep |
+|---|---|---|
+| `paper` | `#fbf8f2` | törtfehér alap |
+| `sand` | `#f3ebdc` | világos bézs szekció |
+| `sand-deep` | `#e6d8bd` | meleg homok: skála-sáv, kiemelt mező |
+| `line` | `#ddcfb4` | hajszálvonalak |
+| `ink` | `#24211d` | grafit szöveg |
+| `ink-soft` | `#5b544a` | másodlagos szöveg (AA papíron és homokon) |
+| `brand-dark` | `#c2410c` | égett narancs — CTA, ár, logó „ÁRAK” (változatlan) |
+| `brand-deep` | `#9a3412` | hover / link |
+| `brand` | `#f97316` | csak apró jelölők (pötty, fókusz-sáv) — soha nagy felület |
+| `clay` | `#b4532f` | frakció-sáv kitöltése |
+| `dust` | `#d9b77a` | amber por — szemcse-textúra pöttyei |
+| `basalt` | `#211d19` | footer |
+| `petrol` | `#0f766e` | csak a Buda Konténer testvér-hivatkozás (funkcionális) |
+
+Zöld nagy felületen nincs. A korábbi aurora/glow, a forgó szegély, a
+futószalag és a csillanás megszűnik.
+
+## Tipográfia
+- **Space Grotesk** (display, 500/700) — megtartva: a szerif display-t a
+  megrendelő korábban elutasította. Szoros (-0.02em) követés nagy méretben.
+- **Inter** (szöveg, 400–600), `tabular-nums` minden árnál és mennyiségnél.
+- Skála: 13 · 15 · 17 · 20 · 26 · 34 · 46 · 60 px (desktop H1 = 60, mobil 38).
+- Szekciócímkék mondatkezdő kisbetűvel, nem csupa nagybetűvel.
+
+## Elrendezés
+12 hasábos rács, max. 1200 px, balra zárt. A szekciók nem egy sablonból jönnek:
+```
+HERO (paper + finom szemcse)
+┌──────────────────────────────┬─────────────────────┐
+│ Budafok, XXII. ker. · H–P 7–17│  ÁRJEGYZÉK-SZELVÉNY │
+│ H1 Sóder, homok, kavics…      │  Sóder    13 000 Ft │
+│ lead                          │  Homok    13 300 Ft │
+│ [ Hívás ]  [ Árkalkulátor ]   │  …                  │
+│ disclosure                    │  Fuvar 12–45 e Ft   │
+└──────────────────────────────┴─────────────────────┘
+TÉNYSOR  4–23 m³ │ gyakran aznap │ 15 település │ saját depó
+ANYAGOK + ÁRLISTA (egy blokk, nem három)
+  sor: [textúra] Név · rövid leírás · frakció-skála ▬▬▬ · már X Ft  [+]
+       └ lenyitva: tételtábla, mm-skálával, „Kalkulátorban” link
+MIRE KELL?  (feladat → anyag választó, a meglévő GYIK-tartalomból)
+RENDELÉS 1–4 (valódi sorrend → számozás indokolt)
+HOL SZÁLLÍTUNK  sematikus zóna-gyűrűk SVG + 3 zóna táblázatsor
+BUDA KONTÉNER sáv (keskeny) · ÚTMUTATÓK · GYIK
+ZÁRÓ HÍVÁS (homok panel, nem sötét)
+FOOTER (basalt)
+```
+Mobil: hero → CTA-k → szelvény; a szelvény teljes szélességű, a frakció-skála a
+sor alá törik.
+
+## Mozgás
+Egyetlen szervezett pillanat: a hero betöltésekor a szelvény sorai sorban
+„nyomtatódnak” (opacity + 6 px). Minden más mozgás válasz a felhasználóra
+(lenyitás, hover, fókusz). `prefers-reduced-motion` alatt nincs animáció.
+
+## Állapotok
+- Hover: hajszálvonal → `ink` szín, háttér `sand`.
+- Fókusz: 2 px `brand-dark` outline + 2 px offset, mindenhol.
+- Térkép betöltés: homok helyfoglaló a végleges magassággal; hiba: üzenet + a zónák listája.
+- Kalkulátor: validációs hibák mezőnként + összesítő, siker/hiba blokk megmarad.
+- „Egyeztetés után” ár (bazalt): üres skála-sáv helyett szöveges jelölés.
