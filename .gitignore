@@ -32,3 +32,4 @@ og-gallery.html
 .env
 .env.local
 .env*.local
+build.log

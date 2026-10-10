@@ -55,7 +55,18 @@ jobs:
         with:
           timeout_minutes: 10
           max_attempts: 3
-          command: npm run build
+          shell: bash
+          command: set -o pipefail; npm run build 2>&1 | tee build.log
+
+      # Hibakereséshez: a build-kimenet vége annotációként is olvasható
+      # (a nyers logok nem minden környezetből tölthetők le).
+      - name: Report build failure
+        if: failure()
+        shell: bash
+        run: |
+          tail -n 60 build.log | grep -v '^\s*$' > tail.log || true
+          msg=$(sed -e 's/%/%25/g' tail.log | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::error title=Build output (tail)::${msg}"
 
       - name: Publish to gh-pages branch (same repository only)
         uses: peaceiris/actions-gh-pages@v4
