@@ -373,7 +373,7 @@ export default function ArkalkulatorForm() {
                 </div>
                 <div className="border-t-2 border-on-dark/60 pt-3">
                   <dt className="font-semibold">Összesen (nettó)</dt>
-                  <dd key={`${estimate.totalMin}-${estimate.totalMax}-${m3}`} className="mt-1 swap-in font-display text-[1.875rem] leading-tight font-bold tracking-tight text-amber md:text-[2.125rem]">
+                  <dd key={`${estimate.totalMin}-${estimate.totalMax}-${m3}`} className="mt-1 swap-in font-display text-[1.375rem] leading-tight font-bold tracking-tight whitespace-nowrap text-amber min-[400px]:text-[1.625rem] md:text-[2.125rem]">
                     {estimate.totalMin !== null && estimate.totalMax !== null ? (
                       `${formatFt(estimate.totalMin)} – ${formatFt(estimate.totalMax)}`
                     ) : (

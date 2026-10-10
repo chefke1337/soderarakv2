@@ -87,3 +87,10 @@ Egyetlen szervezett pillanat: a hero betöltésekor a szelvény sorai sorban
 - Térkép betöltés: homok helyfoglaló a végleges magassággal; hiba: üzenet + a zónák listája.
 - Kalkulátor: validációs hibák mezőnként + összesítő, siker/hiba blokk megmarad.
 - „Egyeztetés után” ár (bazalt): üres skála-sáv helyett szöveges jelölés.
+
+## V2.1 „Rétegrend" (2026-10-10, ügyfél-visszajelzés: „túl sok a fehér")
+- **Felületritmus, szemantikus tokenekkel** (`globals.css`): page (meleg homok) · surface (törtfehér, csak űrlap/sűrű info) · surface-muted (mély homok) · surface-accent (égett terrakotta) · surface-dark (meleg sötétbarna) · text / text-muted · border · accent · focus, valamint hat anyagszín.
+- **Főoldal sorrendje:** sötét hero + homok ténysor → anyaglista (homok, törtfehér anyag-kártyák) → terrakotta kalkulátor-belépő → sötét anyagválasztó → rendelési útvonal → mély homok zónák → miért mi → Buda Konténer (törtfehér) → GYIK (mély homok) → sötét záró hívás + footer rétegcsíkkal.
+- **Egyedi komponensek:** `MaterialStrata` (hero anyag-rétegrend, SVG szemcsetextúra, árak a site.ts-ből), `MaterialGrain`, `CalculatorEntry` (a GYIK meglévő példáját ugyanazzal a képlettel számolja), `OrderRoute` (görgetésre haladó teherautó), `MobileMenu` (animált nyitás/zárás, Esc, kattintás kívül).
+- **Motion:** hero egyszeri belépője + rétegek beúszása; gombok hover/pressed; anyagminta-nagyítás; menüátmenet; anyagválasztó- és összegváltás. Mind CSS, `prefers-reduced-motion` alatt kikapcsol; nincs folyamatos animáció.
+- **Assetigény:** valódi anyagfotók (depó, rakások, közeli szemcse) — amíg nincsenek, a textúra SVG-ből generált, és nem ad ki magát fotónak.
