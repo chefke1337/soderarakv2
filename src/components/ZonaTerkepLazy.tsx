@@ -44,8 +44,8 @@ class MapErrorBoundary extends Component<
       return (
         <div
           role="status"
-          style={{ height: this.props.height }}
-          className="flex w-full items-center justify-center rounded-sm border border-line-strong bg-sand p-6 text-center text-sm text-ink-soft"
+          style={{ "--map-h": `${this.props.height}px` } as React.CSSProperties}
+          className="h-[min(var(--map-h),72vw)] flex w-full items-center justify-center rounded-sm border border-line-strong bg-sand p-6 text-center text-sm text-ink-soft"
         >
           A térkép most nem tölthető be. A szállítási zónák és a fuvarárak alább olvashatók.
         </div>
@@ -82,7 +82,7 @@ export default function ZonaTerkepLazy({ height = 420 }: { height?: number }) {
 
   return (
     <div>
-      <div ref={hostRef} style={{ minHeight: height }}>
+      <div ref={hostRef} style={{ "--map-h": `${height}px` } as React.CSSProperties} className="min-h-[min(var(--map-h),72vw)]">
         {shouldLoad ? (
           <MapErrorBoundary height={height}>
             <ZonaTerkepMap height={height} />
@@ -90,8 +90,8 @@ export default function ZonaTerkepLazy({ height = 420 }: { height?: number }) {
         ) : (
           <div
             role="status"
-            style={{ height }}
-            className="flex w-full items-center justify-center rounded-sm border border-line-strong bg-sand text-sm text-ink-soft"
+            style={{ "--map-h": `${height}px` } as React.CSSProperties}
+            className="h-[min(var(--map-h),72vw)] flex w-full items-center justify-center rounded-sm border border-line-strong bg-sand text-sm text-ink-soft"
           >
             Térkép betöltése…
           </div>

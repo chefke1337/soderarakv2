@@ -13,6 +13,18 @@ export const zoneColors: Record<string, { stroke: string; fill: string }> = {
   tavolabbi: { stroke: "#9a8a6c", fill: "rgba(201, 184, 150, 0.32)" },
 };
 
+/** Feliratirány a sűrű pontoknál, hogy a címkék ne fedjék egymást. */
+const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
+  budafok: "left",
+  torokbalint: "left",
+  erd: "left",
+  pusztazamor: "left",
+  soskut: "top",
+  diosd: "bottom",
+  szigetszentmiklos: "left",
+  ujbuda: "left",
+};
+
 export const fmtEzer = (min: number, max: number) =>
   `${(min / 1000).toLocaleString("hu-HU")}–${(max / 1000).toLocaleString("hu-HU")}`;
 
@@ -38,6 +50,8 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
           // Érintőképernyőn az egyujjas húzás az oldalt görgesse, ne a térképet
           // (a +/− gombokkal ott is nagyítható).
           dragging: !L.Browser.mobile,
+          // Finomabb illesztés: keskeny kijelzőn se maradjon üres sáv a zónák körül
+          zoomSnap: 0.25,
         });
 
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -89,7 +103,7 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
             .addTo(group)
             .bindTooltip(name, {
               permanent: true,
-              direction: ["budafok", "diosd", "erd", "torokbalint"].includes(s.slug) ? "left" : "right",
+              direction: LABEL_DIR[s.slug] ?? "right",
               offset: [0, 0],
               className: "city-label",
             });
@@ -115,7 +129,7 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
         // A keretezés a tényleges zónákra illeszkedik, nem beégetett nézetre.
         const points = zones.flatMap((z) => z.polygon.flat());
         if (points.length > 0) {
-          map.fitBounds(L.latLngBounds(points), { padding: [28, 28], maxZoom: 12 });
+          map.fitBounds(L.latLngBounds(points), { padding: [18, 18], maxZoom: 12 });
         }
 
         mapRef.current = map;
@@ -149,8 +163,8 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
       <link rel="preconnect" href="https://tile.openstreetmap.org" crossOrigin="anonymous" />
       <div
         ref={containerRef}
-        style={{ height }}
-        className="w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
+        style={{ "--map-h": `${height}px` } as React.CSSProperties}
+        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
         role="region"
         aria-label="Interaktív szállítási zónatérkép. A zónák és a hozzájuk tartozó tájékoztató fuvarárak az alábbi listában is olvashatók."
       />
