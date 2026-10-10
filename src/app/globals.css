@@ -556,3 +556,12 @@ summary::-webkit-details-marker {
 .leaflet-tooltip.city-label::before {
   display: none;
 }
+
+/* Hero: kiszolgálási terület kiemelése (V1 .em-accent-sm mintájára, sötét alapon) */
+.hero-area {
+  text-decoration: underline;
+  text-decoration-color: var(--color-brand);
+  text-decoration-thickness: 0.12em;
+  text-underline-offset: 0.22em;
+  text-decoration-skip-ink: auto;
+}

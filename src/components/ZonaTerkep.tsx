@@ -6,7 +6,7 @@ import { company, depot, settlements, zones } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // komment az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
-/** Zónaszínek — V2 földszín-rámpa (agyag → homok → por), egyezik a ZoneSketch-csel. */
+/** Zónaszínek — V2 földszín-rámpa (agyag → homok → por). */
 export const zoneColors: Record<string, { stroke: string; fill: string }> = {
   mag: { stroke: "#b4532f", fill: "rgba(180, 83, 47, 0.30)" },
   kozel: { stroke: "#b08a4c", fill: "rgba(217, 183, 122, 0.34)" },
@@ -35,6 +35,9 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
         const map = L.map(containerRef.current, {
           scrollWheelZoom: false,
           zoomControl: true,
+          // Érintőképernyőn az egyujjas húzás az oldalt görgesse, ne a térképet
+          // (a +/− gombokkal ott is nagyítható).
+          dragging: !L.Browser.mobile,
         });
 
         L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {

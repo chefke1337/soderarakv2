@@ -16,7 +16,7 @@ import MaterialStrata from "@/components/MaterialStrata";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { LedgerHeader } from "@/components/MaterialLedger";
-import ZoneSketch from "@/components/ZoneSketch";
+import ZonaTerkepLazy from "@/components/ZonaTerkepLazy";
 
 export default function HomePage() {
   // Ténysor — minden érték a site.ts-ből / a V1 ténysávjából (nincs új állítás)
@@ -54,8 +54,12 @@ export default function HomePage() {
                 Sóder, homok, kavics, murva, bazalt, föld szállítása
               </h1>
               <p className="rise rise-3 mt-6 max-w-[52ch] text-lg leading-relaxed text-on-dark-muted">
-                Ömlesztett építőanyag Budapest XXII. és XI. kerületébe, Érdre,
-                Diósdra, Törökbálintra és környékére. Mondja el telefonon, mire
+                Ömlesztett építőanyag{" "}
+                <strong className="hero-area font-semibold text-on-dark">
+                  Budapest XXII. és XI. kerületébe, Érdre, Diósdra, Törökbálintra
+                  és környékére
+                </strong>
+                . Mondja el telefonon, mire
                 van szüksége — Budafok környékén gyakran még aznap szállítunk.
               </p>
               <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row">
@@ -142,18 +146,20 @@ export default function HomePage() {
         lead="Három zóna, egyeztetett fuvardíjjal. Nem található a listában? Kérdezzen rá telefonon."
       >
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
-          <figure className="lg:col-span-6">
+          <div className="lg:col-span-6">
+            {/* Valódi, interaktív térkép (nagyítás, mozgatás, településcímkék) a
+                korábbi statikus vázlat helyett — lustán töltődik, nem lassít. */}
             <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
-              <ZoneSketch />
+              <ZonaTerkepLazy height={420} />
             </div>
-            <figcaption className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
-              <span aria-hidden="true" className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-[2px] bg-brand-dark" />
+            <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
+              <span aria-hidden="true" className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-brand-dark" />
               <span>
                 Telephely: {company.address.full} A XXII. kerületet Budafok,
-                Budatétény és Nagytétény jelöli. Tájékoztató zónák, nem jogi határok.
+                Budatétény és Nagytétény jelöli.
               </span>
-            </figcaption>
-          </figure>
+            </p>
+          </div>
 
           <div className="lg:col-span-6">
             <ol className="border-t-2 border-text">

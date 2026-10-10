@@ -114,6 +114,15 @@ if (existsSync(cssDir)) {
 // A JS chunkokban lévő literál CSS-fájlnév-hivatkozásokat is átírjuk, különben
 // a webpack runtime a régi (át nem nevezett) fájlt keresné futásidőben.
 if (cssRenameMap.size > 0) {
+  // V2 fix: a kliensoldali navigáció RSC-payloadjai (*.txt) is hivatkoznak a
+  // stíluslapra — ezeket korábban nem írtuk át, így oldalváltáskor a böngésző a
+  // régi, már nem létező CSS-t kérte (404). Ugyanaz a csere, mint a JS-ben.
+  for (const file of walk(OUT, [], ".txt")) {
+    const original = readFileSync(file, "utf8");
+    let patched = original;
+    for (const [from, to] of cssRenameMap) patched = patched.split(from).join(to);
+    if (patched !== original) writeFileSync(file, patched);
+  }
   for (const file of jsChunkFiles) {
     const original = readFileSync(file, "utf8");
     let patched = original;

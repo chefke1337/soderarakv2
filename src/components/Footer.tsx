@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { company, guides, nav } from "@/content/site";
 import { MailLink, PhoneLink } from "@/lib/ui";
-import { withBasePath } from "@/lib/basepath";
 
 const FOOTER_GUIDES = 6;
 
@@ -21,13 +20,7 @@ export default function Footer() {
       <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-14 pb-10 sm:grid-cols-2 md:px-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Link href="/" aria-label="Sóderárak — főoldal" className="inline-block rounded-sm">
-            {/* Logóikon + szöveges márkajelzés; a logó színe nem módosul */}
-            <span className="flex items-center gap-3">
-              <span className="flex h-12 w-14 items-center justify-center rounded-[var(--radius-md)] bg-on-dark p-1.5">
-                <img src={withBasePath("/buda-kontener-logo-sotet-3-crop.png")} alt="" width={177} height={157} className="h-full w-auto" />
-              </span>
-              <span className="font-display text-2xl font-bold">Sóderárak</span>
-            </span>
+            <span className="font-display text-2xl font-bold">Sóder árak</span>
           </Link>
           <p className="mt-4 text-sm text-on-dark-muted">{company.businessUnit}</p>
           <address className="mt-4 text-sm leading-relaxed text-on-dark-muted not-italic">
