@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, LayerGroup } from "leaflet";
-import { company, depot, zones } from "@/content/site";
+import { company, depot, settlements, zones } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // komment az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
@@ -67,6 +67,29 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
             poly.on("mouseover", () => poly.setStyle({ weight: 3.5 }));
             poly.on("mouseout", () => poly.setStyle({ weight: 2 }));
           }
+        }
+
+        // Kiszolgált települések saját jelölése (site.ts) — az OSM-alap feliratai
+        // zoomfüggők, ezért a szolgáltatási terület nevei külön, mindig látható
+        // (nem csak hoverre megjelenő) címkét kapnak. A XXII. kerület nem pont:
+        // Budafok, Budatétény és Nagytétény jelöli.
+        for (const s of settlements) {
+          if (s.slug === "budapest-22-kerulet") continue;
+          const name = s.name.replace(/\s*\(.*\)$/, "");
+          L.circleMarker(s.latlng, {
+            radius: 4,
+            color: "#fffaf1",
+            weight: 1.5,
+            fillColor: "#24211d",
+            fillOpacity: 1,
+          })
+            .addTo(group)
+            .bindTooltip(name, {
+              permanent: true,
+              direction: ["budafok", "diosd", "erd", "torokbalint"].includes(s.slug) ? "left" : "right",
+              offset: [0, 0],
+              className: "city-label",
+            });
         }
 
         // Telephely-jelölő

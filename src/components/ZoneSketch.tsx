@@ -6,7 +6,9 @@ import { depot, settlements, zones, type Zone } from "@/content/site";
  * vetít — ugyanaz az adat, mint az interaktív Leaflet-térképen.
  */
 const W = 640;
-const PAD = 18;
+/** Ütközés elkerülése: ezek a feliratok a pont bal oldalára kerülnek. */
+const LEFT_LABEL = new Set(["budafok", "diosd", "erd", "torokbalint"]);
+const PAD = 22;
 
 const ZONE_STYLE: Record<Zone["id"], { fill: string; stroke: string; label: string }> = {
   mag: { fill: "rgb(180 83 47 / 0.30)", stroke: "#b4532f", label: "1" },
@@ -15,7 +17,8 @@ const ZONE_STYLE: Record<Zone["id"], { fill: string; stroke: string; label: stri
 };
 
 export default function ZoneSketch({ className = "" }: { className?: string }) {
-  const pts = zones.flatMap((z) => z.polygon.flat());
+  // A keret a zónákra ÉS a településekre is illeszkedik (Újbuda ne essen a szélre)
+  const pts: [number, number][] = [...zones.flatMap((z) => z.polygon.flat()), ...settlements.map((s) => s.latlng)];
   const lats = pts.map((p) => p[0]);
   const lons = pts.map((p) => p[1]);
   const lat0 = (Math.min(...lats) + Math.max(...lats)) / 2;
@@ -24,7 +27,8 @@ export default function ZoneSketch({ className = "" }: { className?: string }) {
   const maxX = Math.max(...lons) * k;
   const minY = -Math.max(...lats);
   const maxY = -Math.min(...lats);
-  const scale = (W - PAD * 2) / (maxX - minX);
+  const LABEL_ROOM = 130; // jobb oldali hely a szélső (Újbuda, Csepel, Szigetszentmiklós) feliratoknak
+  const scale = (W - PAD * 2 - LABEL_ROOM) / (maxX - minX);
   const H = Math.round((maxY - minY) * scale + PAD * 2);
 
   const proj = ([lat, lon]: [number, number]) =>
@@ -52,29 +56,31 @@ export default function ZoneSketch({ className = "" }: { className?: string }) {
         ));
       })}
 
-      {settlements.map((s) => {
-        const [x, y] = proj(s.latlng);
-        const short = s.name.replace(/\s*\(.*\)$/, "").replace("Budapest XXII. kerület", "XXII. ker.");
-        return (
-          <g key={s.slug}>
-            <circle cx={x} cy={y} r={3.2} fill="#24211d" />
-            {s.priority < 3 && s.slug !== "budapest-22-kerulet" && (
+      {settlements
+        .filter((s) => s.slug !== "budapest-22-kerulet") /* kerület, nem pont: Budafok, Budatétény, Nagytétény jelöli */
+        .map((s) => {
+          const [x, y] = proj(s.latlng);
+          const short = s.name.replace(/\s*\(.*\)$/, "");
+          const left = LEFT_LABEL.has(s.slug);
+          return (
+            <g key={s.slug}>
+              <circle cx={x} cy={y} r={3.6} fill="#24211d" stroke="#fffaf1" strokeWidth={1.2} />
               <text
-                x={x + 6}
-                y={y + 4}
-                className="hidden fill-ink sm:block"
-                style={{ fontSize: 12.5, fontWeight: 500 }}
+                x={left ? x - 7 : x + 7}
+                y={y + 4.5}
+                textAnchor={left ? "end" : "start"}
+                className="fill-ink"
+                style={{ fontSize: 14, fontWeight: 600 }}
                 paintOrder="stroke"
-                stroke="#fbf8f2"
-                strokeWidth={3}
+                stroke="#fffaf1"
+                strokeWidth={3.5}
                 strokeLinejoin="round"
               >
                 {short}
               </text>
-            )}
-          </g>
-        );
-      })}
+            </g>
+          );
+        })}
 
       {zones.map((z) => {
         const [x, y] = proj(z.center);

@@ -541,3 +541,18 @@ summary::-webkit-details-marker {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
+
+/* Leaflet: kiszolgált települések állandó címkéje */
+.leaflet-tooltip.city-label {
+  padding: 1px 5px;
+  border: 0;
+  border-radius: 3px;
+  background: rgb(255 250 241 / 0.92);
+  box-shadow: 0 1px 2px rgb(43 32 25 / 0.25);
+  color: var(--color-text);
+  font: 600 11.5px/1.3 var(--font-sans);
+  white-space: nowrap;
+}
+.leaflet-tooltip.city-label::before {
+  display: none;
+}

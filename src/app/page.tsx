@@ -16,7 +16,6 @@ import MaterialStrata from "@/components/MaterialStrata";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { LedgerHeader } from "@/components/MaterialLedger";
-import UseCasePicker from "@/components/UseCasePicker";
 import ZoneSketch from "@/components/ZoneSketch";
 
 export default function HomePage() {
@@ -37,9 +36,14 @@ export default function HomePage() {
       {/* ─── Hero: üzenet + anyag-rétegrend ─── */}
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section data-call-region="hero" className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark">
-        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-25" />
-        {/* meleg színmező a rétegrend mögött — statikus, nem blur */}
-        <div aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 hidden w-[44%] bg-[linear-gradient(160deg,#3a2c22_0%,#4a2f1f_55%,#7a3416_100%)] lg:block" />
+        {/* Háttér a V1 hero alapján: egységes sötét alap + szemcse + két lágy,
+            teljes szélességű meleg radiális derítés. Nincs külön színmező (az
+            V2.1-ben jobb oldalon „elcsúszott" sávnak hatott), nincs animált folt. */}
+        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-40" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
+        />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-14 lg:pt-20">
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="lg:col-span-7">
@@ -116,18 +120,6 @@ export default function HomePage() {
       {/* ─── Kalkulátor-belépő (terrakotta) ─── */}
       <CalculatorEntry />
 
-      {/* ─── Mire kell? ─── */}
-      <Section
-        headingLevel={2}
-        id="mire-kell"
-        tone="dark"
-        kicker="Anyagválasztó"
-        title="Mire kell az anyag?"
-        lead="Válassza ki a munkát, és megmutatjuk, mit szoktunk hozzá ajánlani — árral, szemcsemérettel."
-      >
-        <UseCasePicker />
-      </Section>
-
       {/* ─── Rendelés menete — valódi sorrend, ezért számozott ─── */}
       <Section
         headingLevel={2}
@@ -154,9 +146,12 @@ export default function HomePage() {
             <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
               <ZoneSketch />
             </div>
-            <figcaption className="mt-2 flex items-center gap-2 text-xs text-ink-soft">
-              <span aria-hidden="true" className="inline-block h-2.5 w-2.5 rounded-[2px] bg-brand-dark" />
-              Telephely: {company.address.full} Tájékoztató zónák, nem jogi határok.
+            <figcaption className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
+              <span aria-hidden="true" className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-[2px] bg-brand-dark" />
+              <span>
+                Telephely: {company.address.full} A XXII. kerületet Budafok,
+                Budatétény és Nagytétény jelöli. Tájékoztató zónák, nem jogi határok.
+              </span>
             </figcaption>
           </figure>
 
