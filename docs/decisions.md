@@ -272,3 +272,9 @@ before the footer on `/`, the gap is preserved on `/arak/` and
 `/kapcsolat/` (pages ending in light content), and the closing CTA's new
 copy displays correctly. Repo-wide grep confirmed no other source, test,
 or snapshot file referenced the old CTA strings.
+
+## 2026-10-10 — V2: mag-zóna körvonal bővítése (Újbuda, Nagytétény)
+A térképi körvonal a zónabesorolást (site.ts `settlement.zone`) követi, nem
+fordítva. Újbuda és Nagytétény `mag` tagok voltak, de kívül estek a körvonalon;
+a tájékoztató sávot bővítettük, nem a markert mozgattuk. Halásztelek
+(`tavolabbi` besorolás, `kozel` területen) ügyféldöntésre vár.

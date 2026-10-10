@@ -29,3 +29,31 @@ Ez a fájl csak a ténylegesen lefuttatott ellenőrzéseket rögzíti.
 ## Nem futott
 - axe / Lighthouse: az npm-regiszter ebből a környezetből tiltott, a helyi axe-core nem telepíthető. Pontszámokról nincs állítás.
 - A publikus `https://chefke1337.github.io/soderarakv2/` URL ebből a környezetből nem érhető el (proxy). A Pages bekapcsolását a repó tulajdonosának kell elvégeznie (Settings → Pages → Branch: `gh-pages` / root).
+
+## 2026-10-10 — Térkép (Újbuda) és mobil/tablet kör
+
+**Újbuda hiba oka.** A `site.ts` szerint Újbuda (XI.) a `mag` zóna tagja (a zóna
+leírása: „Budapest XXII. és XI. kerület vonala”), a kalkulátor is így számol. A
+`mag` körvonala viszont északon 47,455°-nál véget ért, ezért a XI. kerület és
+Újbuda markerpontja (47,470°, 19,048°) kívül esett. Az új teszt szerint ugyanez
+történt **Nagytétény** (XXII., 47,3975°) déli pontjával is.
+
+**Javítás.** A `mag` tájékoztató sáv északra a Duna budai partja mentén (XI.
+kerület), délen Nagytétényig bővült (`src/content/site.ts`). Ez nem
+közigazgatási határ: ellenőrizhető határadat ebből a környezetből nem volt
+elérhető, ezért kerülethatárt nem rajzoltunk. A sáv a Dunán nem nyúlik át, és
+más zóna egyetlen települése sem került bele. Markert és díjat nem módosítottunk.
+
+**Teszt.** `npm run test:zones` (Node ≥ 22.6): minden település a saját zónáján
+belül van, nincs önmetszés. Egy ismert eltérés maradt, **Halásztelek**:
+`tavolabbi` besorolás, de a pontja a `kozel` körvonalán belül van. Ügyféldöntésre vár.
+
+**Reszponzív audit** (a gh-pages build Playwright Chromiumon; ≤1100 px érintéses
+kontextus, reduced-motion). Viewportok: 360×780, 390×844, 430×932, 768×1024,
+1024×768, 1440×900, 844×390 (fekvő). Route-ok: `/`, `/arkalkulator/`, `/arak/`,
+`/anyagok/`, `/anyagok/soder/`, `/kapcsolat/`, `/szallitas/`, `/teruletek/`,
+`/teruletek/erd/`, `/utmutatok/`, `/utmutatok/mennyi-soder-kell/`, `/rolunk/`.
+- Oldalszintű vízszintes túlcsordulás: nincs, egyik méreten sem.
+- Javítva: a zónatáblázatok (`/arak`, `/szallitas`) mobilon görgetés helyett
+  egymás alá rendezett sorok; a település- és útmutató-aloldalak 17–20 px magas
+  linkjei most 44 px-es érintési célok.

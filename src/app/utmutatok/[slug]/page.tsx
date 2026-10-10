@@ -397,12 +397,12 @@ export default async function GuidePage({
               </p>
             ))}
             {block.links && block.links.length > 0 && (
-              <ul className="mt-3 space-y-1 text-sm">
+              <ul className="mt-2 text-sm">
                 {block.links.map((l) => (
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="font-semibold text-brand-deep underline underline-offset-2"
+                      className="inline-flex min-h-11 items-center font-semibold text-brand-deep underline underline-offset-2"
                     >
                       {l.label}
                     </Link>

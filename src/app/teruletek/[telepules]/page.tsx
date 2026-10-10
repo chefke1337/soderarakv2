@@ -120,31 +120,31 @@ export default async function SettlementPage({
                 </li>
               ))}
             </ul>
-            <Link href="/teruletek" className="mt-4 inline-block text-sm font-semibold text-brand-deep underline underline-offset-2">
+            <Link href="/teruletek" className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2">
               Minden zóna és település →
             </Link>
           </div>
 
           <div className="rounded-md border border-line bg-paper p-6 shadow-card">
             <h2 className="font-display text-xl font-bold">Hasznos útmutatók</h2>
-            <ul className="mt-3 space-y-2 text-sm">
+            <ul className="mt-2 text-sm">
               <li>
-                <Link href="/utmutatok/mennyi-soder-kell" className="font-medium hover:text-brand-dark">
+                <Link href="/utmutatok/mennyi-soder-kell" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
                   Mennyi sóder kell? →
                 </Link>
               </li>
               <li>
-                <Link href="/utmutatok/milyen-soder-kell-a-terko-ala" className="font-medium hover:text-brand-dark">
+                <Link href="/utmutatok/milyen-soder-kell-a-terko-ala" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
                   Milyen sóder kell a térkő alá? →
                 </Link>
               </li>
               <li>
-                <Link href="/utmutatok/mennyi-ido-a-soder-szallitas" className="font-medium hover:text-brand-dark">
+                <Link href="/utmutatok/mennyi-ido-a-soder-szallitas" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
                   Mennyi idő a sóder szállítás? →
                 </Link>
               </li>
               <li>
-                <Link href="/utmutatok/mennyibe-kerul-a-soder" className="font-medium hover:text-brand-dark">
+                <Link href="/utmutatok/mennyibe-kerul-a-soder" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
                   Mennyibe kerül a sóder? →
                 </Link>
               </li>

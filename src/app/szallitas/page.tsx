@@ -29,8 +29,8 @@ export default function SzallitasPage() {
           <div>
             <h2 className="font-display text-heading-md font-bold">Zónák és fuvarárak</h2>
             <div className="mt-4 overflow-x-auto border-t border-ink/80" role="region" aria-label="Szállítási zónák és fuvarárak táblázata" tabIndex={0}>
-              <table className="w-full min-w-[560px] text-sm">
-                <thead>
+              <table className="w-full md:min-w-[560px] block md:table text-sm">
+                <thead className="sr-only md:not-sr-only md:table-header-group">
                   <tr className="border-b border-line text-left text-sm text-ink-soft">
                     <th scope="col" className="pr-4 py-3.5 font-semibold">Zóna</th>
                     <th scope="col" className="pr-4 py-3.5 font-semibold">Terület</th>
@@ -38,16 +38,16 @@ export default function SzallitasPage() {
                     <th scope="col" className="pr-4 py-3.5 font-semibold">Kiszállás</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="block md:table-row-group">
                   {zones.map((z) => (
-                    <tr key={z.id} className="border-b border-line align-top">
-                      <td className="pr-4 py-3.5 font-medium">{z.name}</td>
-                      <td className="pr-4 py-3.5 text-ink-soft">{z.area}</td>
-                      <td className="num font-semibold whitespace-nowrap pr-4 py-3.5">
+                    <tr key={z.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line py-3.5 align-top md:table-row md:py-0">
+                      <td className="pr-4 font-semibold md:table-cell md:py-3.5 md:font-medium">{z.name}</td>
+                      <td className="order-3 w-full pr-4 text-ink-soft md:order-none md:table-cell md:w-auto md:py-3.5">{z.area}</td>
+                      <td className="num order-2 font-semibold whitespace-nowrap md:order-none md:table-cell md:py-3.5 md:pr-4">
                         {(z.fuelMin / 1000).toLocaleString("hu-HU")}–
                         {(z.fuelMax / 1000).toLocaleString("hu-HU")} ezer Ft
                       </td>
-                      <td className="pr-4 py-3.5 text-ink-soft">{z.leadTime}</td>
+                      <td className="order-4 w-full pr-4 text-ink-soft md:order-none md:table-cell md:w-auto md:py-3.5"><span className="md:hidden">Kiszállás: </span>{z.leadTime}</td>
                     </tr>
                   ))}
                 </tbody>

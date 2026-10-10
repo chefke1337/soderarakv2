@@ -65,8 +65,8 @@ export default function ArakPage() {
         nettó értékek egy fuvarra.
       </p>
       <div className="mt-6 overflow-x-auto" role="region" aria-label="Fuvarárak zónánként" tabIndex={0}>
-        <table className="num w-full min-w-[560px] border-t border-ink/80 text-left">
-          <thead>
+        <table className="num w-full md:min-w-[560px] block md:table border-t border-ink/80 text-left">
+          <thead className="sr-only md:not-sr-only md:table-header-group">
             <tr className="border-b border-line text-sm text-ink-soft">
               <th scope="col" className="py-3 pr-4 font-medium">Zóna</th>
               <th scope="col" className="py-3 pr-4 font-medium">Települések</th>
@@ -74,13 +74,13 @@ export default function ArakPage() {
               <th scope="col" className="py-3 text-right font-medium">Fuvar, nettó</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="block md:table-row-group">
             {zones.map((z) => (
-              <tr key={z.id} className="border-b border-line align-top">
-                <th scope="row" className="py-4 pr-4 font-display text-heading-xs font-bold">{z.name}</th>
-                <td className="py-4 pr-4 text-sm leading-relaxed text-ink-soft">{z.area}</td>
-                <td className="py-4 pr-4 text-sm">{z.leadTime}</td>
-                <td className="py-4 text-right font-display text-heading-sm font-bold whitespace-nowrap">
+              <tr key={z.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line py-4 align-top md:table-row md:py-0">
+                <th scope="row" className="pr-4 md:table-cell md:py-4 font-display text-heading-xs font-bold">{z.name}</th>
+                <td className="order-3 w-full pr-4 text-sm leading-relaxed text-ink-soft md:order-none md:table-cell md:w-auto md:py-4">{z.area}</td>
+                <td className="order-4 w-full pr-4 text-sm md:order-none md:table-cell md:w-auto md:py-4"><span className="text-ink-soft md:hidden">Kiszállás: </span>{z.leadTime}</td>
+                <td className="order-2 md:order-none md:table-cell md:py-4 text-right font-display text-heading-sm font-bold whitespace-nowrap">
                   {z.fuelMin.toLocaleString("hu-HU")}–{z.fuelMax.toLocaleString("hu-HU")} Ft
                 </td>
               </tr>
