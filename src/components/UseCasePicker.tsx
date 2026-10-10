@@ -89,13 +89,13 @@ export default function UseCasePicker() {
   return (
     <div className="grid gap-6 lg:grid-cols-12 lg:gap-10">
       <fieldset className="lg:col-span-5">
-        <legend className="mb-3 text-sm font-medium text-ink-soft">Mit épít vagy javít?</legend>
-        <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-0 lg:border-t lg:border-line">
+        <legend className="mb-3 text-sm font-medium text-on-dark-muted">Mit épít vagy javít?</legend>
+        <div className="flex flex-wrap gap-2 lg:flex-col lg:gap-0 lg:border-t lg:border-on-dark/20">
           {USE_CASES.map((u) => {
             const id = `${base}-${u.id}`;
             const checked = u.id === active;
             return (
-              <div key={u.id} className="lg:border-b lg:border-line">
+              <div key={u.id} className="lg:border-b lg:border-on-dark/20">
                 <input
                   type="radio"
                   id={id}
@@ -107,12 +107,12 @@ export default function UseCasePicker() {
                 />
                 <label
                   htmlFor={id}
-                  className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-full border border-line-strong bg-paper px-4 text-[0.9375rem] font-medium transition-colors hover:border-ink peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-dark lg:rounded-none lg:border-0 lg:bg-transparent lg:px-2 lg:py-3 lg:text-heading-xs lg:hover:bg-sand lg:peer-checked:bg-transparent lg:peer-checked:text-ink"
+                  className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-full border border-on-dark/35 px-4 text-[0.9375rem] font-medium text-on-dark transition-[background-color,color,border-color,padding] duration-200 hover:border-on-dark peer-checked:border-amber peer-checked:bg-amber peer-checked:text-text peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-amber lg:rounded-none lg:border-0 lg:px-2 lg:py-3.5 lg:text-heading-sm lg:hover:bg-white/5 lg:peer-checked:bg-transparent lg:peer-checked:pl-4 lg:peer-checked:text-amber"
                 >
                   <span className="lg:font-display lg:font-bold">{u.label}</span>
                   <span
                     aria-hidden="true"
-                    className={`hidden lg:block ${checked ? "text-brand-dark" : "text-transparent"}`}
+                    className={`hidden transition-transform duration-300 lg:block ${checked ? "translate-x-0 text-amber" : "-translate-x-2 text-transparent"}`}
                   >
                     <IconArrowRight size={18} />
                   </span>
@@ -124,11 +124,11 @@ export default function UseCasePicker() {
       </fieldset>
 
       <div className="lg:col-span-7" aria-live="polite">
-        <div className="rounded-sm border border-line-strong bg-paper">
-          <p className="border-b border-dashed border-line-strong px-5 py-4 text-[0.9375rem] leading-relaxed">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] bg-surface text-text shadow-[0_30px_60px_-34px_rgb(0_0_0_/_0.7)]">
+          <p key={`n-${active}`} className="swap-in border-b border-dashed border-line-strong bg-surface-muted/60 px-5 py-4 text-[0.9375rem] leading-relaxed">
             <span className="font-semibold">{current.label}:</span> {current.note}
           </p>
-          <ul className="divide-y divide-line">
+          <ul key={`l-${active}`} className="swap-in divide-y divide-line">
             {rows.map((r) => (
               <li key={r.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 px-5 py-3.5 sm:grid-cols-[minmax(0,1fr)_8rem_auto_auto]">
                 <span className="font-semibold">{r.name}</span>

@@ -47,7 +47,7 @@ export default function ScrollSensor() {
         const guarded =
           !!bar &&
           (bar.contains(document.activeElement) ||
-            bar.querySelector("details[open]") !== null);
+            bar.querySelector("[aria-expanded=\"true\"]") !== null);
         if (guarded) {
           anchorY = y; // guard alatt nincs mozgás-adósság
         } else {

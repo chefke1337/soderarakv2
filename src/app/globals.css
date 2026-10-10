@@ -5,68 +5,94 @@
 @import "leaflet/dist/leaflet.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
-   V2 „Mérlegjegy" design rendszer — docs/v2-design-direction.md
-   Világos homok / törtfehér alap, grafit szöveg, égett narancs CSAK
-   cselekvésre és árra. Nincs nagy felületű zöld, nincs glow/blob.
+   V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)
+   Meleg homok oldalháttér, törtfehér CSAK funkcionális felületeken
+   (űrlap, kalkulátor, sűrű információ), terrakotta kiemelőpanel, meleg
+   sötétbarna kontrasztszekció, amber részletek. Zöld csak másodlagos szerepben.
+   Szemantikus tokenek: page · surface · surface-muted · surface-accent ·
+   surface-dark · text · text-muted · border · accent · focus.
    ───────────────────────────────────────────────────────────────────────── */
 @theme {
-  /* Felületek */
-  --color-paper: #fbf8f2;      /* törtfehér */
-  --color-sand: #f3ebdc;       /* világos bézs */
-  --color-sand-deep: #e6d8bd;  /* meleg homok */
-  --color-line: #ddcfb4;       /* hajszálvonal */
-  --color-line-strong: #c9b896;
+  /* ── Szemantikus felületek ── */
+  --color-page: #f4ead8;            /* oldalháttér: meleg homok */
+  --color-surface: #fffaf1;         /* olvasható, funkcionális felület */
+  --color-surface-muted: #ead9bb;   /* mélyebb homok sáv */
+  --color-surface-accent: #a8401a;  /* égett terrakotta panel (krém szöveg 5,6:1) */
+  --color-surface-dark: #2b2019;    /* meleg sötétbarna kontrasztszekció */
+  --color-surface-dark-2: #3a2c22;  /* sötét felületen belüli emelt mező */
 
-  /* Szöveg — grafit */
-  --color-ink: #24211d;
-  --color-ink-soft: #5b544a;
-  --color-ink-faint: #776e62;
+  --color-text: #24211d;
+  --color-text-muted: #5a5145;      /* 6,5:1 page / 5,6:1 surface-muted */
+  --color-on-dark: #fbf3e4;         /* krém szöveg sötét/terrakotta felületen */
+  --color-on-dark-muted: #cfc2ad;   /* csak sötétbarnán (9:1) — terrakottán NEM */
+  --color-on-accent-muted: #f6e3c8;
+  --color-border: #d8c4a0;
+  --color-border-strong: #b9a27a;
+  --color-accent: #c2410c;          /* gomb, ár — a logó „ÁRAK" színe */
+  --color-accent-deep: #9a3412;     /* link világos felületen (6,1:1) */
+  --color-amber: #e3a640;           /* részlet sötét felületen (7,4:1) */
+  --color-focus: #c2410c;
 
-  /* Égett narancs — a logó „ÁRAK" színe (brand-dark) VÁLTOZATLAN */
+  /* ── Anyagszínek (rétegrend, csíkok, minták) ── */
+  --color-mat-soder: #b89a6e;
+  --color-mat-homok: #dcb767;
+  --color-mat-kavics: #9c968c;
+  --color-mat-murva: #cbbfa9;
+  --color-mat-bazalt: #45403b;
+  --color-mat-fold: #6e4b31;
+
+  /* ── Kompatibilitási aliasok (a meglévő aloldalak osztályaihoz) ── */
+  --color-paper: var(--color-surface);
+  --color-sand: var(--color-page);
+  --color-sand-deep: var(--color-surface-muted);
+  --color-line: var(--color-border);
+  --color-line-strong: var(--color-border-strong);
+  --color-ink: var(--color-text);
+  --color-ink-soft: var(--color-text-muted);
+  --color-ink-faint: #6e6457;
   --color-brand: #f97316;
-  --color-brand-dark: #c2410c;
-  --color-brand-deep: #9a3412;
+  --color-brand-dark: var(--color-accent);
+  --color-brand-deep: var(--color-accent-deep);
   --color-brand-soft: #fbe3cf;
+  --color-clay: #b4532f;
+  --color-dust: #d9b77a;
+  --color-basalt: var(--color-surface-dark);
+  --color-basalt-soft: var(--color-surface-dark-2);
 
-  /* Földszínek a részletekhez */
-  --color-clay: #b4532f;       /* frakció-sáv */
-  --color-dust: #d9b77a;       /* amber por */
-  --color-basalt: #211d19;     /* footer */
-  --color-basalt-soft: #2e2924;
-
-  /* Funkcionális zöld — kizárólag kis felületen (Buda Konténer link, pipa) */
+  /* Funkcionális zöld — kizárólag kis felületen (Buda Konténer, pipa) */
   --color-moss: #3f6212;
   --color-petrol: #0f766e;
   --color-petrol-deep: #134e4a;
   --color-petrol-soft: #99f6e4;
-
-  /* Az eredeti projekt meleg glow tokenjei — kompatibilitás miatt megtartva */
   --color-terracotta: #b1543a;
   --color-amber-glow: #d6a24a;
 
   --font-display: var(--font-grotesk), "Avenir Next", "Segoe UI", sans-serif;
   --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 
-  /* Típusskála (13 · 15 · 17 · 20 · 26 · 34 · 46 · 60) */
+  /* Típusskála */
   --text-heading-xs: 1.0625rem;
   --text-heading-xs--line-height: 1.4;
   --text-heading-sm: 1.25rem;
   --text-heading-sm--line-height: 1.3;
   --text-heading-md: 1.625rem;
   --text-heading-md--line-height: 1.2;
-  --text-heading-lg: 2.125rem;
-  --text-heading-lg--line-height: 1.12;
-  --text-display: 2.875rem;
-  --text-display--line-height: 1.04;
-  --text-display-xl: 3.75rem;
-  --text-display-xl--line-height: 1;
+  --text-heading-lg: 2.25rem;
+  --text-heading-lg--line-height: 1.08;
+  --text-display: 3rem;
+  --text-display--line-height: 1.02;
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 0.96;
 
-  /* Árnyék helyett hajszálvonal + egy nagyon lapos emelés */
-  --shadow-card: 0 1px 0 rgb(36 33 29 / 0.05);
-  --shadow-pop: 0 1px 0 rgb(36 33 29 / 0.06), 0 18px 40px -24px rgb(36 33 29 / 0.35);
+  /* Árnyék: szándékosan kevés, kétféle — lapos sor és emelt panel */
+  --shadow-card: 0 1px 0 rgb(43 32 25 / 0.06);
+  --shadow-pop: 0 1px 0 rgb(43 32 25 / 0.08), 0 22px 44px -26px rgb(43 32 25 / 0.45);
 
   --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.875rem;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
@@ -86,7 +112,7 @@ html {
 }
 
 body {
-  background-color: var(--color-paper);
+  background-color: var(--color-page);
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -282,4 +308,236 @@ summary::-webkit-details-marker {
 }
 .leaflet-bar a {
   color: var(--color-ink);
+}
+
+/* ═════════════════════════ V2.1 komponens-réteg ═════════════════════════ */
+@layer components {
+  /* ── Gombrendszer: egyértelmű hover / focus / pressed ── */
+  .btn {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    border-radius: var(--radius-md);
+    padding-inline: 1.375rem;
+    font-weight: 600;
+    line-height: 1.1;
+    transition:
+      background-color 0.18s var(--ease-out-soft),
+      color 0.18s var(--ease-out-soft),
+      border-color 0.18s var(--ease-out-soft),
+      transform 0.18s var(--ease-out-soft),
+      box-shadow 0.18s var(--ease-out-soft);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn:active {
+    transform: translateY(1px) scale(0.985);
+  }
+  .btn-lg {
+    min-height: 3.5rem;
+    padding-inline: 1.625rem;
+    font-size: 1.0625rem;
+  }
+  .btn-primary {
+    background: var(--color-accent);
+    color: var(--color-on-dark);
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.18);
+  }
+  .btn-primary:hover {
+    background: var(--color-accent-deep);
+  }
+  .btn-outline {
+    border: 1.5px solid var(--color-text);
+    color: var(--color-text);
+    background: transparent;
+  }
+  .btn-outline:hover {
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+  /* sötét / terrakotta felületen */
+  .btn-cream {
+    background: var(--color-on-dark);
+    color: var(--color-text);
+    box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.12);
+  }
+  .btn-cream:hover {
+    background: #ffffff;
+  }
+  .btn-outline-cream {
+    border: 1.5px solid rgb(251 243 228 / 0.7);
+    color: var(--color-on-dark);
+  }
+  .btn-outline-cream:hover {
+    background: var(--color-on-dark);
+    color: var(--color-text);
+  }
+  .btn .btn-icon {
+    transition: transform 0.2s var(--ease-out-soft);
+  }
+  .btn:hover .btn-icon-move {
+    transform: translateX(3px);
+  }
+
+  /* Sötét felületen a fókuszkeret amber */
+  .on-dark :focus-visible,
+  .on-accent :focus-visible {
+    outline-color: var(--color-amber);
+  }
+  .on-accent :focus-visible {
+    outline-color: var(--color-on-dark);
+  }
+
+  /* Link világos felületen */
+  .link {
+    color: var(--color-accent-deep);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: rgb(154 52 18 / 0.35);
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.15s;
+  }
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Szekció-címke: rövid anyagcsík + mondatkezdő felirat */
+  .label-strata {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .label-strata::before {
+    content: "";
+    width: 1.75rem;
+    height: 0.375rem;
+    border-radius: 2px;
+    background: linear-gradient(
+      to right,
+      var(--color-mat-homok) 0 25%,
+      var(--color-mat-soder) 25% 50%,
+      var(--color-accent) 50% 75%,
+      var(--color-mat-fold) 75% 100%
+    );
+  }
+}
+
+/* ── Rétegrend (hero) ── */
+.strata-band {
+  transition:
+    transform 0.35s var(--ease-out-soft),
+    filter 0.35s var(--ease-out-soft);
+}
+.strata-band:hover,
+.strata-band:focus-visible {
+  transform: translateX(-10px);
+  filter: brightness(1.06) saturate(1.05);
+}
+.strata-band .strata-tag {
+  transition: transform 0.35s var(--ease-out-soft), background-color 0.2s;
+}
+.strata-band:hover .strata-tag,
+.strata-band:focus-visible .strata-tag {
+  transform: translateX(-4px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .strata-in {
+    opacity: 0;
+    transform: translateX(28px);
+    animation: strata-in 0.7s var(--ease-out-soft) forwards;
+    animation-delay: calc(0.25s + var(--i, 0) * 75ms);
+  }
+}
+@keyframes strata-in {
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Visszafogott szekció-megjelenés (csak támogatott motoron; nélküle látható) ── */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal-up {
+      animation: rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 22%;
+      opacity: 0;
+      transform: translateY(22px);
+    }
+    /* Rendelés-útvonal: a teherautó a szekció görgetésével halad végig */
+    .route-truck {
+      animation: route-drive linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 60%;
+    }
+    .route-fill {
+      transform-origin: left center;
+      animation: route-fill linear both;
+      animation-timeline: view();
+      animation-range: entry 30% cover 60%;
+    }
+  }
+}
+@keyframes route-drive {
+  from { left: 0%; }
+  to { left: 100%; }
+}
+@keyframes route-fill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* ── Anyag-minta nagyítás hoverre (kártya-reakció) ── */
+.swatch {
+  overflow: hidden;
+}
+.swatch > * {
+  transition: transform 0.5s var(--ease-out-soft);
+}
+.group:hover .swatch > *,
+.group:focus-visible .swatch > * {
+  transform: scale(1.12) rotate(-1.5deg);
+}
+
+/* ── Mobil menü: nyitás/zárás átmenettel ── */
+.menu-panel {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  transition:
+    opacity 0.2s var(--ease-out-soft),
+    transform 0.25s var(--ease-out-soft),
+    visibility 0s linear 0.25s;
+}
+.menu-panel[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.2s var(--ease-out-soft),
+    transform 0.25s var(--ease-out-soft),
+    visibility 0s;
+}
+.menu-panel[data-open="true"] li {
+  animation: rise-in 0.3s var(--ease-out-soft) both;
+  animation-delay: calc(var(--i, 0) * 25ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-panel,
+  .menu-panel[data-open="true"] {
+    transition: none;
+  }
+}
+
+/* Komponensváltás (anyagválasztó): rövid, a változást jelző beúszás */
+@media (prefers-reduced-motion: no-preference) {
+  .swap-in {
+    animation: swap-in 0.32s var(--ease-out-soft) both;
+  }
+}
+@keyframes swap-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
 }

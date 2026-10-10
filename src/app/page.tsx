@@ -5,15 +5,16 @@ import {
   DISCLOSURE_PRICE,
   FAQ,
   guides,
-  RENDELES_LEPESEK,
   settlements,
   zones,
 } from "@/content/site";
-import { CalculatorCta, formatFt, IconCheck, IconPhone, PhoneLink } from "@/lib/ui";
+import { CalculatorCta, formatFt, IconArrowRight, IconCheck, IconPhone, PhoneLink } from "@/lib/ui";
 import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
-import PriceSlip from "@/components/PriceSlip";
+import MaterialStrata from "@/components/MaterialStrata";
+import CalculatorEntry from "@/components/CalculatorEntry";
+import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { LedgerHeader } from "@/components/MaterialLedger";
 import UseCasePicker from "@/components/UseCasePicker";
 import ZoneSketch from "@/components/ZoneSketch";
@@ -33,62 +34,64 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ─── Hero: üzenet + árjegyzék-szelvény ─── */}
+      {/* ─── Hero: üzenet + anyag-rétegrend ─── */}
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
-      <section data-call-region="hero" className="relative isolate overflow-hidden border-b border-line bg-paper">
-        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-70" />
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-0 right-0 -z-10 hidden w-[38%] bg-sand lg:block"
-        />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-12 md:px-6 md:pt-16 md:pb-16 lg:pt-20">
-          <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
-            <div className="lg:col-span-7 lg:pt-4">
-              <p className="rise text-sm font-medium text-ink-soft">
+      <section data-call-region="hero" className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark">
+        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-25" />
+        {/* meleg színmező a rétegrend mögött — statikus, nem blur */}
+        <div aria-hidden="true" className="absolute inset-y-0 right-0 -z-10 hidden w-[44%] bg-[linear-gradient(160deg,#3a2c22_0%,#4a2f1f_55%,#7a3416_100%)] lg:block" />
+        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-14 lg:pt-20">
+          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="lg:col-span-7">
+              <p className="rise label-strata text-amber">
                 Telephely és depó Budafokon · {company.hours.short}
               </p>
-              <h1 className="rise rise-2 mt-4 font-display text-[2.375rem] leading-[1.03] font-bold tracking-display text-balance sm:text-display md:text-display-xl">
+              <h1 className="rise rise-2 mt-5 font-display text-[2.625rem] leading-[0.98] font-bold tracking-display text-balance sm:text-display md:text-display-xl">
                 Sóder, homok, kavics, murva, bazalt, föld szállítása
               </h1>
-              <p className="rise rise-3 mt-6 max-w-[54ch] text-lg leading-relaxed text-ink-soft">
+              <p className="rise rise-3 mt-6 max-w-[52ch] text-lg leading-relaxed text-on-dark-muted">
                 Ömlesztett építőanyag Budapest XXII. és XI. kerületébe, Érdre,
                 Diósdra, Törökbálintra és környékére. Mondja el telefonon, mire
                 van szüksége — Budafok környékén gyakran még aznap szállítunk.
               </p>
-              <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row sm:items-stretch">
-                <PhoneLink className="num group inline-flex min-h-14 items-center justify-center gap-3 rounded-sm bg-brand-dark px-6 text-lg font-semibold text-paper transition-colors hover:bg-brand-deep">
-                  <IconPhone size={21} />
+              <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row">
+                <PhoneLink className="num btn btn-lg btn-primary">
+                  <IconPhone size={21} className="btn-icon" />
                   {company.phone.display}
                 </PhoneLink>
-                <CalculatorCta className="inline-flex min-h-14 items-center justify-center gap-2 rounded-sm border border-ink/70 bg-paper/60 px-6 text-lg font-semibold text-ink transition-colors hover:bg-ink hover:text-paper">
+                <CalculatorCta className="btn btn-lg btn-outline-cream">
                   Árkalkulátor indítása
+                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
                 </CalculatorCta>
               </div>
-              <p className="rise rise-4 mt-4 max-w-[60ch] text-[0.8125rem] leading-relaxed text-ink-soft">
+              <p className="rise rise-4 mt-5 max-w-[60ch] text-[0.8125rem] leading-relaxed text-on-dark-muted">
                 {DISCLOSURE_PRICE} {DISCLOSURE_NET}
               </p>
             </div>
 
             <div className="lg:col-span-5">
-              <PriceSlip />
+              <MaterialStrata />
             </div>
           </div>
+        </div>
 
-          <dl className="mt-12 grid grid-cols-2 border-t border-ink/80 md:mt-16 md:grid-cols-4">
+        {/* Ténysor — homok sáv a hero alján */}
+        <dl className="bg-surface-muted text-text">
+          <div className="mx-auto grid max-w-6xl grid-cols-2 px-4 md:grid-cols-4 md:px-6">
             {facts.map((f, i) => (
               <div
                 key={f.value}
-                className={`py-4 pr-4 md:py-5 ${i % 2 === 1 ? "pl-4 border-l border-line md:pl-5" : ""} ${i >= 2 ? "border-t border-line md:border-t-0" : ""} ${i === 2 ? "md:border-l md:pl-5" : ""}`}
+                className={`py-5 pr-4 md:py-6 ${i % 2 === 1 ? "border-l border-border-strong/60 pl-4" : ""} ${i >= 2 ? "border-t border-border-strong/60 md:border-t-0" : ""} ${i === 2 ? "md:border-l md:pl-5" : ""} ${i % 2 === 1 ? "md:pl-5" : ""}`}
               >
                 <dt className="sr-only">{f.label}</dt>
                 <dd>
                   <span className="num block font-display text-heading-sm font-bold md:text-heading-md">{f.value}</span>
-                  <span className="mt-1 block text-sm leading-snug text-ink-soft">{f.label}</span>
+                  <span className="mt-1 block text-sm leading-snug text-text-muted">{f.label}</span>
                 </dd>
               </div>
             ))}
-          </dl>
-        </div>
+          </div>
+        </dl>
       </section>
 
       {/* ─── Anyagok + árlista — egy blokk ─── */}
@@ -110,11 +113,14 @@ export default function HomePage() {
         <p className="mt-4 text-sm text-ink-soft">{DISCLOSURE_NET}</p>
       </Section>
 
+      {/* ─── Kalkulátor-belépő (terrakotta) ─── */}
+      <CalculatorEntry />
+
       {/* ─── Mire kell? ─── */}
       <Section
         headingLevel={2}
         id="mire-kell"
-        tone="sand"
+        tone="dark"
         kicker="Anyagválasztó"
         title="Mire kell az anyag?"
         lead="Válassza ki a munkát, és megmutatjuk, mit szoktunk hozzá ajánlani — árral, szemcsemérettel."
@@ -126,41 +132,26 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="rendeles"
+        reveal
         kicker="Így működik"
         title="Négy lépés a sódertől a kiszállításig"
         lead="Nincs kosár, nincs bonyolultság: hívás, egyeztetés, szállítás, átvétel."
       >
-        <ol className="relative grid gap-8 md:grid-cols-4 md:gap-6">
-          <span aria-hidden="true" className="absolute top-[1.125rem] right-0 left-0 hidden h-px bg-line-strong md:block" />
-          {RENDELES_LEPESEK.map((step, i) => (
-            <li key={step.title} className="relative grid grid-cols-[2.25rem_1fr] gap-x-4 md:block">
-              <span
-                aria-hidden="true"
-                className="num relative flex h-9 w-9 items-center justify-center rounded-full border border-ink bg-paper font-display text-sm font-bold"
-              >
-                {i + 1}
-              </span>
-              <div className="md:mt-5">
-                <h3 className="font-display text-heading-xs font-bold">{step.title}</h3>
-                <p className="mt-1.5 text-[0.9375rem] leading-relaxed text-ink-soft">{step.text}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <OrderRoute />
       </Section>
 
       {/* ─── Hol szállítunk ─── */}
       <Section
         headingLevel={2}
         id="terulet"
-        tone="sand"
+        tone="muted"
         kicker="Hol szállítunk"
         title="Budapest délnyugati kapujától a környező településekig"
         lead="Három zóna, egyeztetett fuvardíjjal. Nem található a listában? Kérdezzen rá telefonon."
       >
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <figure className="lg:col-span-6">
-            <div className="rounded-sm border border-line-strong bg-paper p-3">
+            <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
               <ZoneSketch />
             </div>
             <figcaption className="mt-2 flex items-center gap-2 text-xs text-ink-soft">
@@ -170,12 +161,12 @@ export default function HomePage() {
           </figure>
 
           <div className="lg:col-span-6">
-            <ol className="border-t border-ink/80">
+            <ol className="border-t-2 border-text">
               {zones.map((z, i) => {
                 const list = settlements.filter((s) => s.zone === z.id);
                 return (
                   <li key={z.id} className="grid grid-cols-[2rem_1fr] gap-x-4 border-b border-line py-5">
-                    <span aria-hidden="true" className="num flex h-8 w-8 items-center justify-center rounded-full border border-ink font-display text-sm font-bold">
+                    <span aria-hidden="true" className={`num flex h-8 w-8 items-center justify-center rounded-full font-display text-sm font-bold ${["bg-[#b4532f] text-on-dark", "bg-[#d9b77a] text-text", "bg-[#cbbfa9] text-text"][i]}`}>
                       {i + 1}
                     </span>
                     <div>
@@ -221,6 +212,7 @@ export default function HomePage() {
         headingLevel={2}
         id="miert-mi"
         layout="split"
+        reveal
         kicker="Miért mi"
         title="15+ év tapasztalat, saját flotta, depó Budafokon"
         lead="Ön elmondja, mire van szüksége, mi pedig segítünk a megoldásban."
@@ -242,7 +234,7 @@ export default function HomePage() {
       </Section>
 
       {/* ─── Buda Konténer — testvér üzletág (zöld: funkcionális megkülönböztetés) ─── */}
-      <section aria-labelledby="hulladek-cim" className="border-b border-line bg-paper">
+      <section aria-labelledby="hulladek-cim" className="border-y border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 md:flex-row md:items-center md:justify-between md:gap-10 md:px-6">
           <div className="flex gap-4">
             <span aria-hidden="true" className="mt-1.5 hidden h-10 w-1 shrink-0 rounded-full bg-petrol sm:block" />
@@ -259,7 +251,7 @@ export default function HomePage() {
           </div>
           <a
             href={company.waste.url}
-            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-sm border border-petrol px-5 font-semibold text-petrol-deep transition-colors hover:bg-petrol hover:text-paper"
+            className="btn shrink-0 border-[1.5px] border-petrol text-petrol-deep hover:bg-petrol hover:text-surface"
           >
             {company.waste.domain}
           </a>
@@ -270,6 +262,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="gyik"
+        tone="muted"
         layout="split"
         kicker="Gyakori kérdések"
         title="Mennyiség, fuvar, időpont"
@@ -297,33 +290,35 @@ export default function HomePage() {
         </nav>
       </Section>
 
-      {/* ─── Záró hívás ─── */}
+      {/* ─── Záró hívás: sötét lezárás, a footerrel egy tömbben ─── */}
       {/* data-call-region="zaro_cta": külön régió a hero-tól (metrics-plan §5). */}
-      <section data-call-region="zaro_cta" aria-labelledby="zaro-cim" className="cta-end relative isolate overflow-hidden bg-sand">
-        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-80" />
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-14 md:grid-cols-12 md:px-6 md:py-20">
-          <div className="md:col-span-7">
-            <h2 id="zaro-cim" className="font-display text-[1.875rem] leading-[1.08] font-bold tracking-display text-balance md:text-heading-lg">
+      <section data-call-region="zaro_cta" aria-labelledby="zaro-cim" className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark">
+        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-12 md:px-6 md:py-24">
+          <div className="md:col-span-6">
+            <p className="label-strata text-amber">Rendelés</p>
+            <h2 id="zaro-cim" className="mt-3 font-display text-[2.25rem] leading-[1.02] font-bold tracking-display text-balance md:text-display">
               Rendelne? Hívjon, és egyeztetjük a részleteket.
             </h2>
-            <p className="mt-4 max-w-[56ch] text-[1.0625rem] leading-relaxed text-ink-soft">
+            <p className="mt-5 max-w-[52ch] text-[1.0625rem] leading-relaxed text-on-dark-muted">
               Mondja el, milyen anyagra, mennyire és hová van szüksége. Az árat és
               a szállítás időpontját telefonon pontosítjuk, előre tájékozódni
               pedig az árkalkulátorral tud.
             </p>
           </div>
-          <div className="md:col-span-5 md:self-end">
-            <PhoneLink className="num group flex items-center justify-between gap-4 border-y border-ink py-4 font-display text-[1.75rem] font-bold tracking-tight transition-colors hover:text-brand-deep md:text-[2.125rem]">
+          <div className="md:col-span-6 md:self-end">
+            <PhoneLink className="num group flex items-center justify-between gap-4 border-y border-on-dark/25 py-5 font-display text-[2rem] font-bold tracking-tight transition-colors hover:text-amber sm:text-[2.5rem] lg:text-[3.25rem]">
               {company.phone.display}
-              <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-dark text-paper transition-colors group-hover:bg-brand-deep">
-                <IconPhone size={20} />
+              <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-on-dark transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-105">
+                <IconPhone size={24} />
               </span>
             </PhoneLink>
-            <p className="mt-3 text-sm text-ink-soft">
+            <p className="mt-4 text-sm text-on-dark-muted">
               {company.hours.days}, {company.hours.time} · {company.address.full}
             </p>
-            <CalculatorCta className="mt-4 inline-flex min-h-11 items-center font-semibold text-brand-deep underline decoration-brand-dark/40 underline-offset-4 hover:decoration-brand-dark">
+            <CalculatorCta className="btn btn-outline-cream mt-6">
               Inkább előbb kiszámolom: árkalkulátor
+              <IconArrowRight size={18} className="btn-icon btn-icon-move" />
             </CalculatorCta>
           </div>
         </div>

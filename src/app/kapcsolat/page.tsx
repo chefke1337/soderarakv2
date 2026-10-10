@@ -29,15 +29,16 @@ export default function KapcsolatPage() {
       />
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
         <div className="min-w-0 space-y-8 lg:col-span-5">
-          <div data-call-region="contact_page" className="border-t border-ink/80 pt-5">
-            <h2 className="text-sm font-medium text-ink-soft">Telefonos rendelés — a leggyorsabb</h2>
-            <PhoneLink className="num group mt-2 flex items-center justify-between gap-4 font-display text-[2rem] leading-tight font-bold tracking-tight hover:text-brand-deep md:text-[2.375rem]">
+          <div data-call-region="contact_page" className="on-accent relative overflow-hidden rounded-[var(--radius-lg)] bg-surface-accent p-6 text-on-dark shadow-pop md:p-7">
+            <div aria-hidden="true" className="grain absolute inset-0 opacity-30 mix-blend-multiply" />
+            <h2 className="relative text-sm font-semibold text-on-accent-muted">Telefonos rendelés — a leggyorsabb</h2>
+            <PhoneLink className="num group relative mt-2 flex items-center justify-between gap-4 font-display text-[2rem] leading-tight font-bold tracking-tight md:text-[2.375rem]">
               {company.phone.display}
-              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-dark text-paper transition-colors group-hover:bg-brand-deep">
+              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-on-dark text-accent-deep transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-105">
                 <IconPhone size={22} />
               </span>
             </PhoneLink>
-            <p className="mt-1 text-ink-soft">{company.hours.days}, {company.hours.time}</p>
+            <p className="relative mt-1 text-on-accent-muted">{company.hours.days}, {company.hours.time}</p>
           </div>
 
           <dl className="divide-y divide-line border-y border-line">
@@ -58,6 +59,15 @@ export default function KapcsolatPage() {
                 <p className="mt-1 text-sm text-ink-soft">
                   {company.address.district} — depó: itt is átveheti az anyagot.
                 </p>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(company.address.full)}`}
+                  className="link mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm"
+                  rel="noopener"
+                  target="_blank"
+                >
+                  Útvonaltervezés a telephelyhez
+                  <span className="sr-only">(új lapon, Google Térkép)</span>
+                </a>
               </dd>
             </div>
             <div className="grid grid-cols-[7rem_1fr] gap-4 py-4">
@@ -68,7 +78,7 @@ export default function KapcsolatPage() {
 
           <Link
             href="/arkalkulator"
-            className="inline-flex min-h-12 w-full items-center justify-center rounded-sm border border-ink/70 px-5 font-semibold transition-colors hover:bg-ink hover:text-paper"
+            className="btn btn-outline w-full"
           >
             Ajánlatkérés az árkalkulátorban
           </Link>
@@ -87,7 +97,7 @@ export default function KapcsolatPage() {
 
         <div className="min-w-0 lg:col-span-7">
           <h2 className="font-display text-heading-md font-bold">Telephely és szállítási zónák</h2>
-          <div className="mt-4">
+          <div className="mt-4 rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
             <ZonaTerkepLazy height={420} />
           </div>
 

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { company, nav } from "@/content/site";
+import { company } from "@/content/site";
 import { IconPhone } from "@/lib/ui";
 import NavLinks from "@/components/NavLinks";
 import { withBasePath } from "@/lib/basepath";
+import MobileMenu from "@/components/MobileMenu";
 
 /**
  * V2 fejléc — egyetlen sáv (a korábbi fekete topbar + fejléc + gradiens vonal
@@ -17,13 +18,21 @@ export default function Header() {
       >
         Ugrás a tartalomra
       </a>
-      <header className="header-bar sticky top-0 z-50 border-b border-line bg-paper/95 backdrop-blur-sm">
+      <header className="header-bar sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
         <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6">
           <Link
             href="/"
-            className="-m-1 flex shrink-0 items-center rounded-sm p-1"
+            className="group -m-1 flex shrink-0 items-center gap-2 rounded-sm p-1"
             aria-label="Sóderárak — főoldal"
           >
+            {/* A logóikon és a felirat egy szoros egység (ügyfélkérés) */}
+            <img
+              src={withBasePath("/buda-kontener-logo-sotet-3-crop.png")}
+              alt=""
+              width={177}
+              height={157}
+              className="h-10 w-auto transition-transform duration-300 group-hover:-translate-x-0.5 md:h-12"
+            />
             <span className="header-lockup font-display text-2xl leading-[0.92] font-bold tracking-tight uppercase sm:text-[1.75rem]">
               <span className="block text-basalt">Sóder</span>
               <span className="block text-brand-dark">Árak</span>
@@ -41,11 +50,11 @@ export default function Header() {
             <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft 2xl:block">
               Hívható
               <br />
-              <span className="num font-medium text-ink">{company.hours.short.replace("H–P ", "H–P ")}</span>
+              <span className="num font-medium text-ink">{company.hours.short}</span>
             </p>
             <a
               href={`tel:${company.phone.raw}`}
-              className="num inline-flex min-h-11 items-center gap-2 rounded-sm bg-brand-dark px-4 font-semibold whitespace-nowrap text-paper transition-colors hover:bg-brand-deep"
+              className="num btn btn-primary min-h-11 whitespace-nowrap"
             >
               <IconPhone size={17} />
               {company.phone.display}
@@ -61,46 +70,7 @@ export default function Header() {
               <IconPhone size={16} />
               {company.phone.display}
             </a>
-            <details className="group relative">
-              <summary
-                aria-controls="mobil-menu"
-                className="flex min-h-11 cursor-pointer list-none items-center gap-2 rounded-sm border border-line-strong bg-paper px-3.5 text-sm font-semibold transition-colors hover:bg-sand group-open:bg-sand"
-              >
-                Menü
-                <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" className="transition-transform group-open:rotate-180">
-                  <path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </summary>
-              <nav
-                id="mobil-menu"
-                data-call-region="header_mobile_menu"
-                aria-label="Mobil navigáció"
-                className="details-body absolute right-0 top-full z-50 mt-2 w-[min(20rem,calc(100vw-2rem))] rounded-md border border-line bg-paper shadow-pop"
-              >
-                <ul className="px-4 py-1">
-                  {nav.map((item) => (
-                    <li key={item.href}>
-                      <a
-                        href={withBasePath(`${item.href}/`)}
-                        className="flex min-h-12 items-center justify-between border-b border-line/70 py-3 text-base font-medium"
-                      >
-                        {item.label}
-                        <span aria-hidden="true" className="text-ink-faint">›</span>
-                      </a>
-                    </li>
-                  ))}
-                  <li className="py-3">
-                    <a
-                      href={`tel:${company.phone.raw}`}
-                      className="num flex min-h-12 items-center justify-center gap-2 rounded-sm bg-brand-dark px-4 py-3 text-center font-semibold text-paper"
-                    >
-                      <IconPhone size={18} /> {company.phone.display}
-                    </a>
-                    <p className="mt-2 text-center text-xs text-ink-soft">{company.hours.days}, {company.hours.time}</p>
-                  </li>
-                </ul>
-              </nav>
-            </details>
+            <MobileMenu />
           </div>
         </div>
       </header>

@@ -343,8 +343,9 @@ export default function ArkalkulatorForm() {
         aria-labelledby="eredmeny-cim"
         className="h-fit lg:sticky lg:top-28 lg:col-span-5"
       >
-        <div className="rounded-sm border border-line-strong bg-paper">
-          <div className="border-b border-dashed border-line-strong px-5 pt-5 pb-4 md:px-6">
+        <div className="overflow-hidden rounded-[var(--radius-lg)] bg-surface shadow-pop">
+          <div className="on-dark relative bg-surface-dark px-5 pt-6 pb-5 text-on-dark md:px-7">
+            <div aria-hidden="true" className="absolute inset-x-0 top-0 flex h-1.5"><span className="flex-1 bg-mat-homok" /><span className="flex-1 bg-mat-soder" /><span className="flex-1 bg-accent" /><span className="flex-1 bg-mat-fold" /></div>
             <h2 id="eredmeny-cim" className="font-display text-heading-sm font-bold">
               Tájékoztató összegzés
             </h2>
@@ -352,7 +353,7 @@ export default function ArkalkulatorForm() {
             {material && zone && estimate ? (
               <dl aria-live="polite" aria-atomic="true" className="num mt-4 space-y-3 text-[0.9375rem]">
                 <div className="flex justify-between gap-4">
-                  <dt className="text-ink-soft">
+                  <dt className="text-on-dark-muted">
                     {material.name}
                     {material.fraction ? ` (${material.fraction})` : ""} × {m3} m³
                   </dt>
@@ -360,19 +361,19 @@ export default function ArkalkulatorForm() {
                     {estimate.materialTotal !== null ? (
                       formatFt(estimate.materialTotal)
                     ) : (
-                      <span className="text-ink-soft">egyeztetés után</span>
+                      <span className="text-on-dark-muted">egyeztetés után</span>
                     )}
                   </dd>
                 </div>
-                <div className="flex justify-between gap-4 border-t border-line pt-3">
-                  <dt className="text-ink-soft">Fuvar — {zone.name}</dt>
+                <div className="flex justify-between gap-4 border-t border-on-dark/20 pt-3">
+                  <dt className="text-on-dark-muted">Fuvar — {zone.name}</dt>
                   <dd className="text-right font-semibold whitespace-nowrap">
                     {formatFt(estimate.fuelMin)} – {formatFt(estimate.fuelMax)}
                   </dd>
                 </div>
-                <div className="border-t-2 border-ink pt-3">
+                <div className="border-t-2 border-on-dark/60 pt-3">
                   <dt className="font-semibold">Összesen (nettó)</dt>
-                  <dd className="mt-1 font-display text-[1.75rem] leading-tight font-bold tracking-tight text-brand-deep">
+                  <dd key={`${estimate.totalMin}-${estimate.totalMax}-${m3}`} className="mt-1 swap-in font-display text-[1.875rem] leading-tight font-bold tracking-tight text-amber md:text-[2.125rem]">
                     {estimate.totalMin !== null && estimate.totalMax !== null ? (
                       `${formatFt(estimate.totalMin)} – ${formatFt(estimate.totalMax)}`
                     ) : (
@@ -382,23 +383,23 @@ export default function ArkalkulatorForm() {
                 </div>
               </dl>
             ) : (
-              <p role="status" className="mt-4 text-sm text-ink-soft">
+              <p role="status" className="mt-4 text-sm text-on-dark-muted">
                 Válasszon anyagot és települést az összegzéshez.
               </p>
             )}
 
-            <p className="mt-4 rounded-sm bg-sand px-3 py-2 text-xs leading-relaxed font-medium">
+            <p className="mt-4 rounded-sm bg-surface-dark-2 px-3 py-2 text-xs leading-relaxed font-medium text-on-dark-muted">
               {DISCLOSURE_PRICE} Az árak nettó értékek, ÁFA nélkül.
             </p>
             {restored && (
-              <p className="mt-3 text-xs text-ink-soft">
+              <p className="mt-3 text-xs text-on-dark-muted">
                 Korábban megkezdett számítás visszaállítva.
               </p>
             )}
           </div>
 
           {/* ─── Lead űrlap ─── */}
-          <form onSubmit={handleSubmit} noValidate className="px-5 pt-5 pb-6 md:px-6">
+          <form onSubmit={handleSubmit} noValidate className="px-5 pt-6 pb-6 md:px-7">
             <p className="font-semibold">Kérjen ajánlatot — hívunk vagy válaszolunk</p>
 
             {submitCount > 0 && !formValid && (
@@ -471,7 +472,7 @@ export default function ArkalkulatorForm() {
 
             <button
               type="submit"
-              className="mt-5 min-h-12 w-full rounded-sm bg-brand-dark px-5 py-3.5 font-semibold text-paper transition-colors hover:bg-brand-deep"
+              className="btn btn-lg btn-primary mt-5 w-full"
             >
               Ajánlatkérés elküldése
             </button>
