@@ -359,10 +359,16 @@ export const zones: Zone[] = [
     fuelMax: 22000,
     leadTime: "gyakran aznap",
     polygon: [
+      // V2: a sáv északra, a Duna budai partja mentén a XI. kerület felé is
+      // kiterjed (a zóna saját definíciója: „XXII. és XI. kerület vonala"),
+      // így Újbuda (XI.) is a körvonalon belül van. Tájékoztató sáv, nem
+      // közigazgatási határ; a Dunán nem nyúlik át (Csepel a közeli zóna).
+      // Délen Nagytétény (XXII.) pontja is a sávba került.
       [
-        [47.455, 18.995], [47.452, 19.018], [47.44, 19.03], [47.425, 19.026],
-        [47.408, 19.012], [47.402, 18.99], [47.406, 18.97], [47.42, 18.962],
-        [47.44, 18.968], [47.452, 18.98],
+        [47.44, 19.03], [47.425, 19.026], [47.408, 19.012], [47.393, 19.002],
+        [47.39, 18.983], [47.406, 18.97], [47.42, 18.962], [47.44, 18.968], [47.458, 18.966],
+        [47.476, 18.984], [47.49, 19.018], [47.489, 19.05], [47.476, 19.058],
+        [47.46, 19.046],
       ],
     ],
     center: [47.428, 18.995],

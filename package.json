@@ -24,7 +24,8 @@
     "og:hash:update": "node scripts/og-hash.mjs --update",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:zones": "node --experimental-strip-types tests/zones.test.mjs halasztelek"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",
