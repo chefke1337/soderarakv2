@@ -48,7 +48,7 @@ export default function HomePage() {
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="lg:col-span-7">
               <p className="rise label-strata text-amber">
-                Telephely és depó Budafokon · <span className="whitespace-nowrap">{company.hours.short}</span>
+                <span>Telephely és depó Budafokon · <span className="whitespace-nowrap">{company.hours.short}</span></span>
               </p>
               <h1 className="rise rise-2 mt-5 font-display text-[2.625rem] leading-[0.98] font-bold tracking-display text-balance sm:text-display md:text-display-xl">
                 Sóder, homok, kavics, murva, bazalt, föld szállítása

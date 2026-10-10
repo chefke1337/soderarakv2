@@ -85,8 +85,8 @@ export default function ZoneSketch({ className = "" }: { className?: string }) {
       {zones.map((z) => {
         const [x, y] = proj(z.center);
         const st = ZONE_STYLE[z.id];
-        const ox = z.id === "mag" ? 26 : z.id === "kozel" ? -56 : -10;
-        const oy = z.id === "mag" ? 30 : z.id === "kozel" ? 52 : -6;
+        const ox = z.id === "mag" ? -30 : z.id === "kozel" ? -56 : -10;
+        const oy = z.id === "mag" ? 34 : z.id === "kozel" ? 52 : -6;
         return (
           <g key={`lbl-${z.id}`} aria-hidden="true">
             <circle cx={x + ox} cy={y + oy} r={11} fill="#fbf8f2" stroke={st.stroke} strokeWidth={1.5} />
