@@ -10,5 +10,11 @@ with sync_playwright() as p:
         for name,op,h in res:
             if float(op)<0.99 or h==0: bad.append((w,name,op,h))
         print(w,"checked",len(res))
+        # görgetés közben: minden szekció tartalma látható-e, amikor a nézetbe ér
+        for sel in ["#anyagok-arak","#rendeles ol > li","#terulet","#miert-hivjon","#gyik","[data-call-region=zaro_cta]","footer"]:
+            for el in pg.locator(sel).all():
+                el.evaluate("e=>e.scrollIntoView({block:'center'})"); pg.wait_for_timeout(200)
+                op=el.evaluate("e=>{let o=1,n=e;while(n&&n!==document.body){o*=+getComputedStyle(n).opacity;n=n.parentElement}return o}")
+                if op<0.99: bad.append((w,sel,op,0))
     print("INVISIBLE:",bad if bad else "none"); b.close()
     sys.exit(1 if bad else 0)

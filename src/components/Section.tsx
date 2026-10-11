@@ -45,7 +45,7 @@ export default function Section({
   /** Landing page blocks use h2; standalone pages start with h1. */
   headingLevel?: 1 | 2;
   layout?: "stack" | "split";
-  /** Visszafogott megjelenés görgetéskor (csak támogatott motoron, reduced-motion nélkül) */
+  /** @deprecated görgetéshez kötött megjelenés eltávolítva (megbízhatatlan) */
   reveal?: boolean;
   className?: string;
 }) {
@@ -89,7 +89,7 @@ export default function Section({
       aria-labelledby={headingId}
       className={`relative ${TONE[tone]}${cv ? " cv-auto" : ""} ${className}`}
     >
-      <div className={`mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-24 ${reveal ? "reveal-up" : ""}`}>
+      <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-24">
         {layout === "split" ? (
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-4">{heading}</div>

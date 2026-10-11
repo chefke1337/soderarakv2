@@ -4,8 +4,8 @@ import { IconTruck } from "@/lib/ui";
 /**
  * Rendelés menete — függőleges idővonal (öt hosszabb lépés olvasható,
  * tágas elrendezésben; nem öt keskeny oszlop). Mobilon ugyanez egy
- * oszlopban. Az összekötő vonal görgetésre „telik" (CSS scroll-timeline;
- * támogatás vagy mozgásengedély nélkül teljes, a tartalom mindig látható).
+ * oszlopban. Statikus összekötő vonal: a lépések mindig, animáció nélkül
+ * is láthatók (a görgetéshez kötött megjelenést megbízhatatlansága miatt elhagytuk).
  */
 export default function OrderRoute() {
   const last = RENDELES_LEPESEK.length - 1;
@@ -14,14 +14,10 @@ export default function OrderRoute() {
       {/* összekötő vonal: szaggatott alap + kitöltés */}
       <span
         aria-hidden="true"
-        className="absolute top-8 bottom-8 left-[1.6875rem] w-[3px] rounded-full bg-[repeating-linear-gradient(180deg,var(--color-border-strong)_0_10px,transparent_10px_18px)] md:left-[2.1875rem]"
-      />
-      <span
-        aria-hidden="true"
-        className="route-fill-y absolute top-8 bottom-8 left-[1.6875rem] w-[3px] rounded-full bg-accent md:left-[2.1875rem]"
+        className="absolute top-8 bottom-8 left-[1.6875rem] w-[3px] rounded-full bg-accent/45 md:left-[2.1875rem]"
       />
       {RENDELES_LEPESEK.map((step, i) => (
-        <li key={step.title} className="reveal-step relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 pb-9 last:pb-0 md:grid-cols-[4.5rem_minmax(0,1fr)] md:gap-x-7 md:pb-11">
+        <li key={step.title} className="relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 pb-9 last:pb-0 md:grid-cols-[4.5rem_minmax(0,1fr)] md:gap-x-7 md:pb-11">
           <span
             aria-hidden="true"
             className={`num relative z-10 flex h-14 w-14 items-center justify-center rounded-full font-display text-lg font-bold md:h-[4.5rem] md:w-[4.5rem] md:text-2xl ${

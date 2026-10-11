@@ -484,17 +484,6 @@ summary::-webkit-details-marker {
   to { opacity: 1; transform: none; }
 }
 
-/* ── Visszafogott szekció-megjelenés (csak támogatott motoron; nélküle látható) ── */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal-up {
-      animation: enter-up linear both;
-      animation-timeline: view();
-      animation-range: entry 5% cover 22%;
-    }
-  }
-}
-
 /* ── Anyag-minta nagyítás hoverre (kártya-reakció) ── */
 .swatch {
   overflow: hidden;
@@ -571,36 +560,4 @@ summary::-webkit-details-marker {
   text-decoration-thickness: 0.12em;
   text-underline-offset: 0.22em;
   text-decoration-skip-ink: auto;
-}
-
-/* Rendelés menete: függőleges összekötő vonal kitöltése görgetésre */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .route-fill-y {
-      transform-origin: top center;
-      animation: route-fill-y linear both;
-      animation-timeline: view();
-      animation-range: entry 20% cover 70%;
-    }
-  }
-}
-@keyframes route-fill-y {
-  from { transform: scaleY(0); }
-  to { transform: scaleY(1); }
-}
-
-/* Rendelés-lépések: egyszeri, diszkrét megjelenés görgetéskor (kis elmozdulás,
-   rövid tartomány). Támogatás / mozgásengedély nélkül azonnal látható. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .reveal-step {
-      animation: step-in linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 60%;
-    }
-  }
-}
-@keyframes step-in {
-  from { opacity: 0; transform: translateY(var(--move-sm)); }
-  to { opacity: 1; transform: none; }
 }
