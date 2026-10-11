@@ -1,0 +1,68 @@
+name: V2 preview build (no deploy)
+
+# Ellenőrző build a `preview/**` ágakra: ugyanaz a typecheck + lint +
+# statikus export, mint az éles workflowban, de NEM publikál semmit.
+# A kész `out/` mappa Actions-artifactként tölthető le, és helyben
+# kiszolgálva ellenőrizhető (vizuális QA jóváhagyás előtt).
+# Az éles oldal (gh-pages) csak a main ágról frissül.
+
+on:
+  push:
+    branches:
+      - "preview/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: soderarakv2-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      GH_PAGES_BASE_PATH: /soderarakv2
+      NEXT_PUBLIC_SITE_URL: https://chefke1337.github.io/soderarakv2
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build static export (basePath=/soderarakv2)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          shell: bash
+          command: set -o pipefail; (npx next build && node scripts/prepare-static-export.mjs) 2>&1 | tee build.log
+
+      - name: Report build failure
+        if: failure()
+        shell: bash
+        run: |
+          tail -n 60 build.log | grep -v '^\s*$' > tail.log || true
+          msg=$(sed -e 's/%/%25/g' tail.log | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::error title=Build output (tail)::${msg}"
+
+      - name: Upload static export (no deploy)
+        uses: actions/upload-artifact@v4
+        with:
+          name: soderarakv2-preview
+          path: out
+          retention-days: 7
