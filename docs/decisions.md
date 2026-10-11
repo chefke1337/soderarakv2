@@ -291,3 +291,17 @@ cím–tartalom 32→28 px; anyagkártyán a külön „Tételek" sor az ár al�
 (`md:contents`, desktop változatlan); idővonalon keskenyebb számoszlop →
 szélesebb szöveghasáb; lábléc „Oldalak" két hasábban, 44 px érintési
 célokkal (eddig 32 px volt). Szövegek, árak, lépések változatlanok.
+
+## 2026-10-11 — V2.6: természetes anyagkupacok a hero anyagsorában
+Ügyfél: a boltíves, egyenes oldalú kártyák „kapunak/sírkőnek" hatottak.
+Két irányt mértünk össze: (A) az egész kártya alacsony kupac, rajta a
+szöveg; (B) a kupac önálló sziluett, alatta név/ár/nyíl. **B** lett: a
+szöveg kontrasztja anyagtól független (a homok/murva világos textúráján A
+nem olvasható biztonsággal), és a sziluett valóban szabad formájú lehet.
+Geometria: `src/lib/pile.ts` (tiszta TS) — h(t)=H·(1−|t|^a)^b profil,
+aszimmetrikus csúcs, magassággal arányos anyagonkénti kontúr-egyenetlenség;
+lágy anyag Catmull–Rom görbe, murva/bazalt egyenes élek. Egységes fény
+balról-felülről, perem-fény, kontaktárnyék. A szemcsecsempe közös modulba
+került (`src/lib/grain.ts`); a MaterialLedger mintái bájtpontosan azonosak
+(ellenőrizve). Az SVG `dangerouslySetInnerHTML`-lel kerül be, de kizárólag
+saját, determinisztikus adatból — nincs felhasználói bemenet.

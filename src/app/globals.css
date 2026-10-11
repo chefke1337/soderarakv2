@@ -549,36 +549,46 @@ summary::-webkit-details-marker {
     scroll-behavior: smooth;
   }
 }
-.heap-body {
-  /* kupac-ív tető: alacsony ellipszis a felső élen */
-  clip-path: ellipse(78% 100% at 50% 100%);
-  transition: transform var(--dur-ui) var(--ease-out-soft), filter var(--dur-ui) var(--ease-out-soft);
-}
+/* Kupackártya: a kupac önálló SVG-sziluett, alatta név/ár/nyíl.
+   Visszajelzés felület- és keretváltással, a kupac nem mozdul
+   (nem ugrik, nem hullámzik) — csak a fény erősödik rajta kicsit. */
 .heap {
-  transition: transform var(--dur-ui) var(--ease-out-soft);
+  background-color: color-mix(in srgb, var(--color-on-dark) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-on-dark) 11%, transparent);
+  transition:
+    background-color var(--dur-ui) var(--ease-out-soft),
+    border-color var(--dur-ui) var(--ease-out-soft),
+    transform var(--dur-fast) var(--ease-out-soft);
+}
+.heap .pile-shade {
+  transition: opacity var(--dur-ui) var(--ease-out-soft);
 }
 .heap:active {
-  transform: translateY(1px) scale(0.99);
+  transform: scale(0.985);
   transition-duration: 60ms;
 }
 .heap-arrow {
   transition: transform var(--dur-fast) var(--ease-out-soft);
 }
-.heap:focus-visible .heap-arrow,
-.heap:hover .heap-arrow {
-  transform: translateX(2px);
-}
 .heap:focus-visible {
   outline: 2px solid var(--color-amber);
 }
-/* finom képreagálás csak valódi hover-eszközön (érintőképernyőn nincs „ragadó" állapot) */
+.heap:focus-visible,
+.heap:hover {
+  border-color: color-mix(in srgb, var(--color-on-dark) 24%, transparent);
+}
 @media (hover: hover) and (pointer: fine) {
   .heap:hover {
-    transform: translateY(-4px);
+    background-color: color-mix(in srgb, var(--color-on-dark) 8%, transparent);
   }
-  .heap:hover .heap-body {
-    transform: scale(1.04);
-    filter: brightness(1.06) saturate(1.05);
+  .heap:hover .pile-shade {
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heap:focus-visible .heap-arrow,
+  .heap:hover .heap-arrow {
+    transform: translateX(2px);
   }
 }
 @media (prefers-reduced-motion: no-preference) {

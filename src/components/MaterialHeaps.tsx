@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { materialGroups, zones } from "@/content/site";
 import { formatFt, IconArrowRight, minPrice } from "@/lib/ui";
-import MaterialGrain from "@/components/MaterialGrain";
+import MaterialPile from "@/components/MaterialPile";
 import HeapRail from "@/components/HeapRail";
 
 /**
- * Hero „mintasor": a hat anyagcsoport egymás melletti halomként, valódi
- * induló nettó árral (site.ts). A halom teteje kupac-ív (clip-path), a
- * felület SVG-szemcse. Minden halom az anyag aloldalára visz.
+ * Hero „mintasor": a hat anyagcsoport egymás mellett, valódi induló nettó
+ * árral (site.ts). Minden kártya: alacsony, széles, anyagonként eltérő
+ * kupac-sziluett (MaterialPile), alatta név, ár és nyíl. A teljes kártya
+ * egy link az anyag aloldalára.
  * lg alatt egyetlen, oldalirányban lapozható sor (HeapRail), lg-től 6 hasáb.
  */
 export default function MaterialHeaps() {
@@ -30,26 +31,22 @@ export default function MaterialHeaps() {
             <li key={g.slug} className="heap-in w-[clamp(7.75rem,40vw,10rem)] shrink-0 snap-start lg:w-auto" style={{ "--i": i } as React.CSSProperties}>
               <Link
                 href={`/anyagok/${g.slug}`}
-                className="heap group relative flex h-[7.75rem] flex-col justify-end overflow-hidden rounded-b-[var(--radius-md)] outline-offset-[-3px] sm:h-36 lg:h-52 lg:outline-offset-4"
+                className="heap group flex h-full flex-col rounded-[var(--radius-md)] p-2 outline-offset-2 lg:p-3"
               >
-                {/* halom: kupac-ív tetejű szemcsés felület */}
-                <span aria-hidden="true" className="heap-body absolute inset-0">
-                  <MaterialGrain tone={g.tone} id={`heap-${g.slug}`} />
-                </span>
-                <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 to-transparent" />
-                <span className="relative z-10 block p-2.5 lg:p-3 lg:pr-12">
-                  <span className="block font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">{g.name}</span>
-                  <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
-                    {min !== null ? formatFt(min) : "egyeztetés után"}
+                {/* a kupac: önálló sziluett a „talajon", kontaktárnyékkal */}
+                <MaterialPile tone={g.tone} id={`heap-${g.slug}`} />
+                {/* név + nyíl egy sorban, alatta az ár teljes szélességben */}
+                <span className="mt-1 flex items-center justify-between gap-2">
+                  <span className="min-w-0 font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">{g.name}</span>
+                  <span
+                    aria-hidden="true"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:h-8 lg:w-8"
+                  >
+                    <IconArrowRight size={15} className="heap-arrow" />
                   </span>
                 </span>
-                {/* nyíl: keskeny kártyán a kupac melletti szabad felső sarokban
-                    (a szöveg kapja a teljes szélességet), lg-től jobb alul */}
-                <span
-                  aria-hidden="true"
-                  className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-surface-dark/75 text-on-dark lg:bg-on-dark/15 transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:top-auto lg:right-3 lg:bottom-3 lg:h-8 lg:w-8"
-                >
-                  <IconArrowRight size={15} className="heap-arrow" />
+                <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
+                  {min !== null ? formatFt(min) : "egyeztetés után"}
                 </span>
               </Link>
             </li>
