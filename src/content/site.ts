@@ -44,12 +44,19 @@ export const company = {
     display: "+36 30 954 6156",
   },
   email: "info@soderarak.hu",
+  /** Céges cím (2026-10-11-i ügyféladat) — kizárólag cégadatként (pl. impresszum,
+   * strukturált adat), nem telephelyként vagy depóként megjelenítve. */
   address: {
-    street: "Arany János út 152.",
-    postalCode: "1221",
-    city: "Budapest",
-    district: "Budafok, Budapest XXII. kerület",
-    full: "1221 Budapest, Arany János út 152.",
+    street: "hrsz. 152/12.",
+    postalCode: "2045",
+    city: "Törökbálint",
+    full: "2045 Törökbálint, hrsz. 152/12., Magyarország",
+  },
+  /** Cégjegyzék-adatok (2026-10-11-i ügyféladat) — csak impresszumhoz. */
+  legal: {
+    status: "Aktív",
+    taxNumber: "27333138-2-13",
+    registrationNumber: "13-09-239483",
   },
   hours: {
     days: "Hétfő – péntek",
@@ -123,13 +130,13 @@ export const materialGroups: MaterialGroup[] = [
       {
         slug: "tolto-soder",
         name: "Töltősóder",
-        priceNet: 13000,
+        priceNet: 7500,
         use: "Utak, parkok feltöltésére és beton alatti alapozáshoz. Jól összetömörödik, stabil alapot ad nagy terhelésnél.",
       },
       {
         slug: "soder-0-4",
         name: "Sóder 0/4",
-        priceNet: 16800,
+        priceNet: 9000,
         fraction: "0–4 mm",
         note: "Kétszer rostált",
         use: "Finom betonokhoz és falazáshoz. Sima felületet ad, precíz betonozáshoz ajánlott.",
@@ -137,21 +144,21 @@ export const materialGroups: MaterialGroup[] = [
       {
         slug: "soder-0-8",
         name: "Sóder 0/8",
-        priceNet: 17000,
+        priceNet: 10000,
         fraction: "0–8 mm",
         use: "Vékony betonfelületekhez: lépcsők, aljzatok. Könnyen keveredik cementtel, jól folyik.",
       },
       {
         slug: "soder-0-16",
         name: "Sóder 0/16",
-        priceNet: 17000,
+        priceNet: 10000,
         fraction: "0–16 mm",
         use: "3 cm-nél vastagabb betonokhoz. Kiegyensúlyozott keverék, gyakori garázsoknál, házalapoknál.",
       },
       {
         slug: "soder-0-24",
         name: "Sóder 0/24",
-        priceNet: 16500,
+        priceNet: 9000,
         fraction: "0–24 mm",
         use: "4 cm-nél vastagabb betonokhoz: födémek, alapok, járdák. A leggyakrabban alkalmazott sóderfajta.",
       },
@@ -168,15 +175,18 @@ export const materialGroups: MaterialGroup[] = [
     textureAlt: "Homok textúra — finom szemcsés dűnék (stilizált illusztráció)",
     items: [
       {
+        // FLAGGED (lásd a végső riportot): az ügyfél új árlistájában "Bányahomok"
+        // szerepel a korábbi "Homok (natúr)" helyén, azonos darabszámmal —
+        // átnevezésként kezelve, nem külön termékként. Megerősítésre vár.
         slug: "homok-natur",
-        name: "Homok (natúr)",
-        priceNet: 13300,
+        name: "Bányahomok",
+        priceNet: 7500,
         use: "Általános építőipari és kerti felhasználás: alaposításhoz, keveréshez, feltöltéshez.",
       },
       {
         slug: "homok-0-1",
         name: "0–1 Homok",
-        priceNet: 16200,
+        priceNet: 8500,
         fraction: "0–1 mm",
         use: "Finom szemcséjű osztályozott homok vakoláshoz, fugázáshoz és homokozóhoz.",
       },
@@ -193,37 +203,42 @@ export const materialGroups: MaterialGroup[] = [
     textureAlt: "Kavics textúra — kerek folyami kövek (stilizált illusztráció)",
     items: [
       {
+        // FLAGGED: az ügyfél új árlistájában "4–8 gyöngykavics" szerepel a
+        // korábbi "Kavics 4/8" helyén — átnevezésként kezelve. Megerősítésre vár.
         slug: "kavics-4-8",
-        name: "Kavics 4/8",
-        priceNet: 17500,
+        name: "Gyöngykavics 4/8",
+        priceNet: 11000,
         fraction: "4–8 mm",
         use: "Kertekbe, dísznövények, bokrok, fák alá; segít a nedvesség megtartásában.",
       },
       {
         slug: "kavics-8-16",
         name: "Kavics 8/16",
-        priceNet: 17500,
+        priceNet: 11000,
         fraction: "8–16 mm",
         use: "Kertekbe, dísznövények alá; jobb vízelvezetést biztosít, esztétikus fedés.",
       },
       {
         slug: "kulekavics-16-32",
         name: "Kulékavics 16–32",
-        priceNet: 17000,
+        priceNet: 10000,
         fraction: "16–32 mm",
         use: "Utak, kocsibeállók, kertek burkolásához; jól bírja a járműforgalmat.",
       },
       {
+        // FLAGGED: az ügyfél új árlistája "20–40 kulé"-t ír, a meglévő termék
+        // viszont 24–40 mm frakciójú — a frakció NEM módosult, csak az ár;
+        // a fraction-eltérés megerősítésre vár.
         slug: "kulekavics-24-40",
         name: "Kulékavics 24–40",
-        priceNet: 17700,
+        priceNet: 9000,
         fraction: "24–40 mm",
         use: "Utak, kocsibeállók burkolásához és vízelvezetéshez; hatékonyan vezeti el a vizet.",
       },
       {
         slug: "kulekavics-30-65",
         name: "Kulékavics 30–65",
-        priceNet: 15000,
+        priceNet: 8000,
         fraction: "30–65 mm",
         use: "Kocsibeállók, parkolók burkolásához és vízelvezetéshez; a legnagyobb szemcséjű frakció.",
       },
@@ -242,35 +257,35 @@ export const materialGroups: MaterialGroup[] = [
       {
         slug: "murva-2-5",
         name: "Murva 2–5",
-        priceNet: 21000,
+        priceNet: 16000,
         fraction: "2–5 mm",
         use: "Kis szemcseméretű, fehér színű murva kertek, temetők díszítéséhez. Könnyen elteríthető.",
       },
       {
         slug: "kerti-murva-5-12",
         name: "Kerti murva 5–12",
-        priceNet: 19500,
+        priceNet: 16000,
         fraction: "5–12 mm",
         use: "Fehér színű murva kertek, temetők díszítéséhez; stabil fedést ad, időjárásálló.",
       },
       {
         slug: "kerti-murva-12-20",
         name: "Kerti murva 12–20",
-        priceNet: 19500,
+        priceNet: 16000,
         fraction: "12–20 mm",
         use: "Nagyobb szemcsés fehér murva sétányokhoz, virágágyások szegélyezéséhez; visszafogja a gyomot.",
       },
       {
         slug: "murva-0-20",
         name: "Murva 0–20",
-        priceNet: 17000,
+        priceNet: 12500,
         fraction: "0–20 mm",
         use: "Enyhén sárgás színű, jól tömörödő murva feltöltésekhez, kocsibeállókhoz, utakhoz.",
       },
       {
         slug: "murva-20-55",
         name: "Murva 20–55",
-        priceNet: 18000,
+        priceNet: 14000,
         fraction: "20–55 mm",
         use: "Kocsibeállók, parkolók burkolásához és díszítéshez; vízelvezető, megakadályozza a tócsákat.",
       },
@@ -280,18 +295,31 @@ export const materialGroups: MaterialGroup[] = [
     slug: "bazalt",
     name: "Bazalt",
     short: "Zúzottkő frakciók nagy terheléshez",
-    description:
-      "Kemény zúzottkő anyag nagy terhelésű felületekhez. Frakciók és aktuális ár a rendelkezésre álló árlistában nem szerepel — kérjen ajánlatot.",
+    description: "Kemény zúzottkő anyag nagy terhelésű felületekhez.",
     tone: "bazalt",
     texture: "/anyagok/bazalt.svg",
     textureAlt: "Bazalt textúra — sötét zúzottkő élek (stilizált illusztráció)",
     items: [
       {
-        slug: "bazalt",
-        name: "Bazalt (zúzottkő frakciók)",
-        priceNet: null,
-        needsQuote: true,
-        use: "Nagy terhelésű felületek, útalapok. Elérhető frakciókról és aktuális árról telefonon vagy ajánlatkérés útján adunk tájékoztatást.",
+        slug: "bazalt-0-4",
+        name: "Bazalt 0/4",
+        priceNet: 24000,
+        fraction: "0–4 mm",
+        use: "Nagy terhelésű felületek, útalapok.",
+      },
+      {
+        slug: "bazalt-2-4",
+        name: "Bazalt 2/4",
+        priceNet: 25000,
+        fraction: "2–4 mm",
+        use: "Nagy terhelésű felületek, útalapok.",
+      },
+      {
+        slug: "bazalt-11-22",
+        name: "Bazalt 11/22",
+        priceNet: 20000,
+        fraction: "11–22 mm",
+        use: "Nagy terhelésű felületek, útalapok.",
       },
     ],
   },
@@ -308,14 +336,20 @@ export const materialGroups: MaterialGroup[] = [
       {
         slug: "naturfold",
         name: "Natúrföld",
-        priceNet: 14000,
+        priceNet: 9000,
         use: "Kerti feltöltésekhez, tereprendezéshez. Natúr, rostálatlan föld.",
       },
       {
         slug: "daraltfold",
-        name: "Daráltföld",
-        priceNet: 15000,
+        name: "Rostált/darált termőföld",
+        priceNet: 11000,
         use: "Pázsitlefektetéshez, ágyásokhoz. Darált, egyenletes szerkezetű föld.",
+      },
+      {
+        slug: "tragyas-komposztos-fold",
+        name: "Trágyás, komposztos föld (marhatrágyás)",
+        priceNet: 16000,
+        use: "Termőföld feltöltésekhez, kertrendezéshez.",
       },
     ],
   },
@@ -339,19 +373,40 @@ export function findMaterial(slug: string): MaterialItem | undefined {
 }
 
 /** Szállítási zónák — fuvarárak egyeztetéstől függő sávban, nettó. */
+/** Mennyiségi fuvardíj-sáv — egy zónán belül a szállított m³ határozza meg a díjat. */
+export type FreightTier = {
+  minQty: number;
+  maxQty: number;
+  /** Nettó fuvardíj Ft, egy fuvarra. */
+  fee: number;
+  /** true: ez a sáv nem fix ár, külön egyeztetést igényel (a fee csak tájékoztató). */
+  needsNegotiation?: boolean;
+};
+
 export type Zone = {
   id: "mag" | "kozel" | "tavolabbi";
   name: string;
   area: string;
-  /** Nettó fuvarár-sáv Ft, egy fuvarra. */
+  /**
+   * Nettó fuvarár-sáv Ft, egy fuvarra — ÖSSZESÍTETT tájékoztató tartomány
+   * (a legolcsóbb és a legdrágább FIX, azaz nem-egyeztetéses sáv díja),
+   * a `freightTiers`-ből származtatva. A külön egyeztetéses nagy mennyiségi
+   * sávot NEM tartalmazza — azt a kalkulátor és az árlista külön jelzi.
+   */
   fuelMin: number;
   fuelMax: number;
+  /** Mennyiség szerinti fuvardíj-sávok — egyetlen forrás a kalkulátorhoz és az árlistákhoz. */
+  freightTiers: FreightTier[];
   leadTime: string;
   /** Tájékoztató zónakörvonalak a térképhez (nem jogi határ!) — egy zóna több összefüggő részből állhat. */
   polygon: [number, number][][];
   /** Térképinfó középpont. */
   center: [number, number];
 };
+
+export function findFreightTier(zoneId: Zone["id"], qty: number): FreightTier | undefined {
+  return findZone(zoneId).freightTiers.find((t) => qty >= t.minQty && qty <= t.maxQty);
+}
 
 /**
  * Zónakörvonalak: ÖSSZEFÜGGŐ, egymáshoz simuló sávok a telephely körül
@@ -361,15 +416,22 @@ export const zones: Zone[] = [
   {
     id: "mag",
     name: "Budafok és környéke",
-    area: "Budapest XXII. és XI. kerület vonala",
-    fuelMin: 12000,
-    fuelMax: 22000,
+    area: "Budapest XXII. és XI. kerület (Újbuda)",
+    fuelMin: 18000,
+    fuelMax: 35000,
+    freightTiers: [
+      { minQty: 1, maxQty: 2, fee: 18000 },
+      { minQty: 3, maxQty: 5, fee: 25000 },
+      { minQty: 6, maxQty: 8, fee: 30000 },
+      { minQty: 9, maxQty: 12, fee: 35000 },
+      { minQty: 13, maxQty: 20, fee: 60000, needsNegotiation: true },
+    ],
     leadTime: "gyakran aznap",
     polygon: [
       // V2: a sáv északra, a Duna budai partja mentén a XI. kerület felé is
       // kiterjed (a zóna saját definíciója: „XXII. és XI. kerület vonala"),
       // így Újbuda (XI.) is a körvonalon belül van. Tájékoztató sáv, nem
-      // közigazgatási határ; a Dunán nem nyúlik át (Csepel a közeli zóna).
+      // közigazgatási határ; a Dunán nem nyúlik át.
       // Délen Nagytétény (XXII.) pontja is a sávba került.
       [
         [47.44, 19.03], [47.425, 19.026], [47.408, 19.012], [47.393, 19.002],
@@ -383,27 +445,43 @@ export const zones: Zone[] = [
   {
     id: "kozel",
     name: "Közeli települések",
-    area: "Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós",
-    fuelMin: 18000,
-    fuelMax: 32000,
+    area: "Érd, Diósd, Törökbálint",
+    fuelMin: 20000,
+    fuelMax: 37000,
+    freightTiers: [
+      { minQty: 1, maxQty: 2, fee: 20000 },
+      { minQty: 3, maxQty: 5, fee: 27000 },
+      { minQty: 6, maxQty: 8, fee: 32000 },
+      { minQty: 9, maxQty: 12, fee: 37000 },
+      { minQty: 13, maxQty: 20, fee: 65000, needsNegotiation: true },
+    ],
     leadTime: "egyeztetett időpontban",
     polygon: [
+      // V2 (2026-10-11): a sáv a korábbi Csepel/Szigetszentmiklós felé nyúló
+      // keleti részét elhagyva, kizárólag Érd, Diósd és Törökbálint köré
+      // igazítva — e két település a jóváhagyott 2. zónából kikerült.
       [
-        [47.462, 18.955], [47.465, 18.985], [47.462, 19.02], [47.45, 19.04],
-        [47.44, 19.06], [47.42, 19.065], [47.4, 19.05], [47.385, 19.06],
-        [47.365, 19.09], [47.345, 19.08], [47.325, 19.05], [47.335, 19.02],
-        [47.35, 18.99], [47.345, 18.955], [47.355, 18.92], [47.345, 18.895],
-        [47.36, 18.875], [47.39, 18.87], [47.415, 18.875], [47.435, 18.89], [47.452, 18.92],
+        [47.462, 18.955], [47.465, 18.985], [47.45, 18.995], [47.42, 18.99],
+        [47.395, 18.985], [47.365, 18.975], [47.35, 18.955], [47.345, 18.92],
+        [47.355, 18.895], [47.36, 18.875], [47.39, 18.87], [47.415, 18.875],
+        [47.435, 18.89], [47.452, 18.92],
       ],
     ],
-    center: [47.402, 18.975],
+    center: [47.408, 18.927],
   },
   {
     id: "tavolabbi",
     name: "Távolabbi települések",
-    area: "Tárnok, Sóskút, Pusztazámor, Halásztelek",
-    fuelMin: 25000,
-    fuelMax: 45000,
+    area: "Tárnok, Sóskút, Pusztazámor",
+    fuelMin: 22000,
+    fuelMax: 39000,
+    freightTiers: [
+      { minQty: 1, maxQty: 2, fee: 22000 },
+      { minQty: 3, maxQty: 5, fee: 29000 },
+      { minQty: 6, maxQty: 8, fee: 34000 },
+      { minQty: 9, maxQty: 12, fee: 39000 },
+      { minQty: 13, maxQty: 20, fee: 70000, needsNegotiation: true },
+    ],
     leadTime: "egyeztetett időpontban",
     polygon: [
       [
@@ -440,12 +518,9 @@ export const settlements: Settlement[] = [
   { slug: "erd", name: "Érd", zone: "kozel", priority: 1, latlng: [47.3833, 18.9167] },
   { slug: "diosd", name: "Diósd", zone: "kozel", priority: 1, latlng: [47.4042, 18.9458] },
   { slug: "torokbalint", name: "Törökbálint", zone: "kozel", priority: 1, latlng: [47.4356, 18.9156] },
-  { slug: "csepel", name: "Csepel (Budapest XXI. kerület)", zone: "kozel", priority: 2, latlng: [47.428, 19.045] },
   { slug: "tarnok", name: "Tárnok", zone: "tavolabbi", priority: 2, latlng: [47.3597, 18.8586] },
-  { slug: "szigetszentmiklos", name: "Szigetszentmiklós", zone: "kozel", priority: 2, latlng: [47.3453, 19.0483] },
   { slug: "soskut", name: "Sóskút", zone: "tavolabbi", priority: 3, latlng: [47.4063, 18.8285] },
   { slug: "pusztazamor", name: "Pusztazámor", zone: "tavolabbi", priority: 3, latlng: [47.4, 18.7833] },
-  { slug: "halasztelek", name: "Halásztelek", zone: "tavolabbi", priority: 3, latlng: [47.3608, 18.9878] },
 ];
 
 export function findSettlement(slug: string): Settlement | undefined {
@@ -501,6 +576,20 @@ export const MIERT_HIVJON = {
   closing: "Ön elmondja, mire van szüksége, mi pedig segítünk a megoldásban. Hívjon minket bizalommal, és egyeztessük a részleteket!",
 } as const;
 
+/**
+ * Egyetlen közös példaszámítás (8 m³ Sóder 0/24, mag zóna) — a GYIK és a
+ * kalkulátor-belépő panel (CalculatorEntry.tsx) ugyanebből dolgozik, hogy a
+ * két megjelenés sosem térhessen el egymástól.
+ */
+export const EXAMPLE_CALC = (() => {
+  const material = findMaterial("soder-0-24")!;
+  const qty = 8;
+  const zone = findZone("mag");
+  const tier = findFreightTier("mag", qty)!;
+  const materialTotal = material.priceNet! * qty;
+  return { material, qty, zone, tier, materialTotal, total: materialTotal + tier.fee };
+})();
+
 export const FAQ = [
   {
     q: "Mekkora mennyiséget rendelhetek?",
@@ -508,7 +597,12 @@ export const FAQ = [
   },
   {
     q: "Mennyi a fuvar ára?",
-    a: "A fuvar a szállítási zónától függ: Budafok környékén (Budapest XXII. és XI. kerület vonala) 12–22 ezer forint, a közeli településeken (Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós) 18–32 ezer forint, a távolabbi településeken (Tárnok, Sóskút, Pusztazámor, Halásztelek) 25–45 ezer forint. A végleges fuvardíjat egyeztetés után adjuk.",
+    a: `A fuvar a szállítási zónától és a szállított mennyiségtől is függ. ${zones
+      .map(
+        (z) =>
+          `${z.area}: ${(z.fuelMin / 1000).toLocaleString("hu-HU")}–${(z.fuelMax / 1000).toLocaleString("hu-HU")} ezer forint`,
+      )
+      .join("; ")}. 12 m³ felett egyedi egyeztetés szükséges. A végleges fuvardíjat egyeztetés után adjuk.`,
   },
   {
     q: "Mennyire gyors a kiszállítás?",
@@ -528,7 +622,7 @@ export const FAQ = [
   },
   {
     q: "Mennyibe kerül 8 m³ sóder kiszállítással?",
-    a: "Például 8 m³ Sóder 0/24 Budafokra: az anyag nettó 8 × 16 500 = 132 000 forint, a budafoki fuvarsáv 12–22 ezer forint — tehát 144–154 ezer forint nettó összkép, a végleges fuvardíjtól függően. Minden ár tájékoztató jellegű, ÁFA nélkül; a pontos összeg az egyeztetésnél véglegesedik.",
+    a: `Például ${EXAMPLE_CALC.qty} m³ ${EXAMPLE_CALC.material.name} a(z) ${EXAMPLE_CALC.zone.name} zónában (${EXAMPLE_CALC.zone.area}): az anyag nettó ${EXAMPLE_CALC.qty} × ${EXAMPLE_CALC.material.priceNet!.toLocaleString("hu-HU")} = ${EXAMPLE_CALC.materialTotal.toLocaleString("hu-HU")} forint, a fuvar (${EXAMPLE_CALC.tier.minQty}–${EXAMPLE_CALC.tier.maxQty} m³ sáv) ${EXAMPLE_CALC.tier.fee.toLocaleString("hu-HU")} forint — tehát ${EXAMPLE_CALC.total.toLocaleString("hu-HU")} forint nettó összesen. Minden ár tájékoztató jellegű, ÁFA nélkül; a pontos összeg az egyeztetésnél véglegesedik.`,
   },
   {
     q: "Milyen sóder kell térkő alá?",

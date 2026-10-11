@@ -1,19 +1,15 @@
 import Link from "next/link";
-import { findMaterial, findZone } from "@/content/site";
+import { EXAMPLE_CALC } from "@/content/site";
 import { formatFt, IconArrowRight, IconCalculator } from "@/lib/ui";
 
 /**
  * Kalkulátor-belépő terrakotta panel. A „számla" a GYIK meglévő
- * példáját (8 m³ Sóder 0/24 Budafokra) számolja ki ugyanazzal a
- * képlettel, mint az ArkalkulatorForm — site.ts adatokból, így a két
- * megjelenés soha nem tér el. Nincs külön, működésképtelen demo-input.
+ * példáját (8 m³ Sóder 0/24, mag zóna) számolja ki ugyanabból a közös
+ * EXAMPLE_CALC-ból (site.ts), mint a GYIK — a két megjelenés soha nem
+ * térhet el. Nincs külön, működésképtelen demo-input.
  */
 export default function CalculatorEntry() {
-  const m = findMaterial("soder-0-24");
-  const z = findZone("mag");
-  const qty = 8;
-  if (!m || m.priceNet === null) return null;
-  const material = m.priceNet * qty;
+  const { material: m, qty, zone: z, tier, materialTotal, total } = EXAMPLE_CALC;
 
   return (
     <section aria-labelledby="kalk-belepo-cim" className="on-accent relative isolate overflow-hidden bg-surface-accent text-on-dark">
@@ -46,25 +42,28 @@ export default function CalculatorEntry() {
           <div className="relative rotate-[-1.2deg] rounded-[var(--radius-md)] bg-surface p-5 text-text shadow-[0_30px_60px_-30px_rgb(0_0_0_/_0.55)] transition-transform duration-[var(--dur-enter)] ease-[var(--ease-out-soft)] hover:rotate-0 md:p-8">
             <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-border-strong pb-4">
               <p className="font-display text-heading-sm font-bold">Példa: {qty} m³ {m.name}</p>
-              <p className="text-sm text-text-muted">Budafokra</p>
+              <p className="text-sm text-text-muted">{z.name}</p>
             </div>
             <dl className="num mt-4 space-y-3 text-[0.9375rem]">
               <div className="flex justify-between gap-4">
                 <dt className="text-text-muted">
-                  {qty} × {formatFt(m.priceNet)}
+                  {qty} × {formatFt(m.priceNet!)}
                 </dt>
-                <dd className="font-semibold">{formatFt(material)}</dd>
+                <dd className="font-semibold">{formatFt(materialTotal)}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-text-muted">Fuvar — {z.name}</dt>
+                <dt className="text-text-muted">
+                  Fuvar — {z.name}
+                  <span className="block text-xs">{tier.minQty}–{tier.maxQty} m³ sáv</span>
+                </dt>
                 <dd className="text-right font-semibold whitespace-nowrap">
-                  {formatFt(z.fuelMin)} – {formatFt(z.fuelMax)}
+                  {formatFt(tier.fee)}
                 </dd>
               </div>
               <div className="border-t-2 border-text pt-3">
                 <dt className="text-sm font-semibold">Összesen, nettó</dt>
                 <dd className="mt-1 num font-display text-[1.5rem] leading-tight font-bold tracking-tight whitespace-nowrap text-accent-deep sm:text-[1.875rem] md:text-[2.25rem]">
-                  {formatFt(material + z.fuelMin)} – {formatFt(material + z.fuelMax)}
+                  {formatFt(total)}
                 </dd>
               </div>
             </dl>

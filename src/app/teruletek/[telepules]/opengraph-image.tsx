@@ -19,13 +19,14 @@ export default async function OgImage({
   const settlement = findSettlement(telepules);
 
   if (!settlement) {
+    const fallbackZone = findZone("mag");
     return ogCard({
       title: "Kiszállítási területek",
       kicker: "Terület",
       variant: "settlement",
       zoneId: "mag",
-      zoneName: "Budafok és környéke",
-      highlight: "12–22 ezer Ft",
+      zoneName: fallbackZone.name,
+      highlight: `${fallbackZone.fuelMin / 1000}–${fallbackZone.fuelMax / 1000} ezer Ft`,
     });
   }
 

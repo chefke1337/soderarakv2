@@ -207,7 +207,9 @@ export default function HomePage() {
               })}
             </ol>
             <p className="mt-4 text-sm text-ink-soft">
-              Fuvarárak tájékoztató jellegűek, nettó értékek. {DISCLOSURE_PRICE}
+              Fuvarárak tájékoztató jellegűek, nettó értékek, a szállított
+              mennyiségtől is függnek; 12 m³ felett külön egyeztetés
+              szükséges. {DISCLOSURE_PRICE}
             </p>
             <Link
               href="/teruletek"

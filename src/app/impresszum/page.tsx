@@ -23,7 +23,10 @@ export default function ImpresszumPage() {
         {[
           ["Üzemeltető", company.name],
           ["Üzletág", company.businessUnit],
-          ["Telephely", company.address.full],
+          ["Cégjegyzékszám", company.legal.registrationNumber],
+          ["Adószám", company.legal.taxNumber],
+          ["Cégállapot", company.legal.status],
+          ["Cím", company.address.full],
           ["Telefon", company.phone.display],
           ["E-mail", company.email],
           ["Ügyfélfogadás", `${company.hours.days}, ${company.hours.time}`],

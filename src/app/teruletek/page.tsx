@@ -7,8 +7,7 @@ import ZonaTerkepLazy from "@/components/ZonaTerkepLazy";
 
 export const metadata: Metadata = pageMeta({
   title: "Területek — hol szállítunk sódert és ömlesztett anyagot",
-  description:
-    "Szolgáltatási terület: Budafok, Budatétény, Nagytétény, Budapest XXII., Érd, Diósd, Törökbálint, Csepel, Tárnok, Szigetszentmiklós, Sóskút, Pusztazámor, Halásztelek.",
+  description: `Szolgáltatási terület: ${settlements.map((s) => s.name).join(", ")}.`,
   path: "/teruletek",
 });
 

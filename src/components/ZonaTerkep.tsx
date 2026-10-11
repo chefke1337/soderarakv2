@@ -21,7 +21,6 @@ const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
   pusztazamor: "bottom",
   soskut: "top",
   diosd: "bottom",
-  szigetszentmiklos: "left",
   ujbuda: "left",
 };
 

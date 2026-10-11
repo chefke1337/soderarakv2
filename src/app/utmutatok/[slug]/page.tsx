@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findGuide, guides, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
+import { EXAMPLE_CALC, findGuide, findZone, guides, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
+
+const ZONE_MAG = findZone("mag");
+const ZONE_KOZEL = findZone("kozel");
+const ZONE_TAVOLABBI = findZone("tavolabbi");
 
 export function generateStaticParams() {
   return guides.map((g) => ({ slug: g.slug }));
@@ -107,7 +111,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mitől függ az ár?",
       p: [
-        "Két tételből áll a végösszeg: az anyag ára köbméterenként, és a fuvar díja, amely a szállítási zónától függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, nettó 13 000 Ft/m³, míg a rostált sóderok (0/4, 0/8, 0/16, 0/24) 16 500 és 17 000 forint között mozognak köbméterenként.",
+        "Két tételből áll a végösszeg: az anyag ára köbméterenként, és a fuvar díja, amely a szállítási zónától és a szállított mennyiségtől is függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, nettó 7 500 Ft/m³, míg a rostált sóderok (0/4, 0/8, 0/16, 0/24) 9 000 és 10 000 forint között mozognak köbméterenként.",
         "Minden ár tájékoztató jellegű, nettó, ÁFA nélkül — a végleges ajánlatot egyeztetés után adjuk.",
       ],
       links: [
@@ -119,7 +123,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "A fuvar díja külön számolandó",
       p: [
-        "Az anyagár mellé a fuvar külön elem. Budafok környékén — Budapest XXII. és XI. kerület vonala — egy fuvar nettó 12–22 ezer forint, a közeli településeken (Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós) 18–32 ezer forint, a távolabbi településeken (Tárnok, Sóskút, Pusztazámor, Halásztelek) 25–45 ezer forint.",
+        `Az anyagár mellé a fuvar külön elem, és a szállított mennyiségtől is függ. A ${ZONE_MAG.name} zónában (${ZONE_MAG.area}) ${(ZONE_MAG.fuelMin / 1000).toLocaleString("hu-HU")}–${(ZONE_MAG.fuelMax / 1000).toLocaleString("hu-HU")} ezer forint, a(z) ${ZONE_KOZEL.name} zónában (${ZONE_KOZEL.area}) ${(ZONE_KOZEL.fuelMin / 1000).toLocaleString("hu-HU")}–${(ZONE_KOZEL.fuelMax / 1000).toLocaleString("hu-HU")} ezer forint, a(z) ${ZONE_TAVOLABBI.name} zónában (${ZONE_TAVOLABBI.area}) ${(ZONE_TAVOLABBI.fuelMin / 1000).toLocaleString("hu-HU")}–${(ZONE_TAVOLABBI.fuelMax / 1000).toLocaleString("hu-HU")} ezer forint.`,
         "A fuvar egy fuvarra vonatkozik: ha több mint 20 köbméter kell, több autót állítunk be, és ennek megfelelően több fuvart számolunk fel.",
       ],
       links: [
@@ -130,7 +134,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Példaszámítás: 8 m³ Sóder 0/24",
       p: [
-        "Tegyük fel, hogy 8 köbméter 0/24-es sódert kér Budafokra. Az anyag nettó 16 500 Ft/m³, tehát 8 × 16 500 = 132 000 forint. Budafok környéki fuvarral ez 144 000–154 000 forint nettó összképet ad, a végleges fuvar árától függően.",
+        `Tegyük fel, hogy ${EXAMPLE_CALC.qty} köbméter 0/24-es sódert kér a(z) ${EXAMPLE_CALC.zone.name} zónába. Az anyag nettó ${EXAMPLE_CALC.material.priceNet!.toLocaleString("hu-HU")} Ft/m³, tehát ${EXAMPLE_CALC.qty} × ${EXAMPLE_CALC.material.priceNet!.toLocaleString("hu-HU")} = ${EXAMPLE_CALC.materialTotal.toLocaleString("hu-HU")} forint. A fuvar ebben a mennyiségi sávban (${EXAMPLE_CALC.tier.minQty}–${EXAMPLE_CALC.tier.maxQty} m³) ${EXAMPLE_CALC.tier.fee.toLocaleString("hu-HU")} forint, tehát ${EXAMPLE_CALC.total.toLocaleString("hu-HU")} forint nettó összesen.`,
         "Hasonló számítást bármelyik anyagra és településre elvégezhet az árkalkulátorunkkal — tíz másodpercnél nem tart tovább.",
       ],
       links: [{ href: "/arkalkulator", label: "Próbálja ki a kalkulátort" }],
@@ -159,13 +163,13 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mit számol ki pontosan?",
       p: [
-        "Az anyag nettó árát megszorozza a köbméterekkel, majd hozzáadja a szállítási zóna fuvarsávját. Az eredmény egy sáv: a legalacsonyabb és a legmagasabb tájékoztató összeg nettóban. 8 köbméter 0/24-es sóder Budafokra például 132 000 forint anyagot és 12–22 ezer forint fuvart ad — 144–154 ezer forintos nettó sávot.",
-        "Bazalt esetében, amelynek ára egyeztetés után adható, a kalkulátor csak a fuvart mutatja, és az anyagár helyett erre figyelmeztet.",
+        `Az anyag nettó árát megszorozza a köbméterekkel, majd hozzáadja a kiválasztott zóna és mennyiség szerinti fuvardíjat. ${EXAMPLE_CALC.qty} köbméter 0/24-es sóder a(z) ${EXAMPLE_CALC.zone.name} zónába például ${EXAMPLE_CALC.materialTotal.toLocaleString("hu-HU")} forint anyagot és ${EXAMPLE_CALC.tier.fee.toLocaleString("hu-HU")} forint fuvart ad — ${EXAMPLE_CALC.total.toLocaleString("hu-HU")} forintos nettó összeget.`,
+        "12 m³ felett a fuvar díja külön egyeztetés tárgya — ilyenkor a kalkulátor jelzi, hogy a megjelenített összeg csak tájékoztató.",
       ],
       links: [{ href: "/arkalkulator", label: "Árkalkulátor indítása" }],
     },
     {
-      h: "Tájékoztató ár — miért sávot lát?",
+      h: "Miért csak tájékoztató az összeg?",
       p: [
         "Mert a végleges fuvardíj az egyeztetésnél pontosul: az útvonal, az időpont és az adott nap kapacitása is közrejátszik. Ezért minden kalkulált összeg tájékoztató, nettó, ÁFA nélkül — a kötelezettségmentes ajánlatot telefonon vagy e-mailben adjuk, konkrétan az Ön helyszínére.",
       ],
@@ -249,7 +253,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Ár szempontból",
       p: [
-        "Az alapárak egymás mellett állnak: a töltősóder nettó 13 000 forint köbméterenként, a 0/24-es rostált sóder 16 500, a 0–20-as murva 17 000 forint. A döntés tehát inkább felhasználás, mint ár kérdése — a fuvar díja mindegyiknél ugyanúgy a szállítási zónától függ.",
+        "Az alapárak egymás mellett állnak: a töltősóder nettó 7 500 forint köbméterenként, a 0/24-es rostált sóder 9 000, a 0–20-as murva 12 500 forint. A döntés tehát inkább felhasználás, mint ár kérdése — a fuvar díja mindegyiknél ugyanúgy a szállítási zónától és a mennyiségtől függ.",
       ],
       links: [{ href: "/arak", label: "Teljes árlista" }],
     },
@@ -281,7 +285,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Példa: 20 m²-es kocsibeálló",
       p: [
-        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni. 0–20-as murvával az anyag nettó 4 × 17 000 = 68 000 forint, a budafoki fuvarsáv 12–22 ezer forinttal jön rá.",
+        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni. 0–20-as murvával az anyag nettó 4 × 12 500 = 50 000 forint, a budafoki fuvar (3–5 m³ sáv) 25 000 forinttal jön rá — összesen 75 000 forint nettó.",
         "A pontos összeget az árkalkulátor adja meg bármelyik településre — tíz másodpercnél nem tart tovább.",
       ],
       links: [
@@ -300,14 +304,14 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Töltősóder: feltöltésre",
       p: [
-        "A töltősóder erőssége a tömörség és az ár: nettó 13 000 forint köbméterenként, és a feltöltéseknél pont erre van szükség. Ahogy a neve is jelzi, töltésre való — utak, parkok feltöltésére és beton alatti alapozáshoz —, nem pedig beton készítésére.",
+        "A töltősóder erőssége a tömörség és az ár: nettó 7 500 forint köbméterenként, és a feltöltéseknél pont erre van szükség. Ahogy a neve is jelzi, töltésre való — utak, parkok feltöltésére és beton alatti alapozáshoz —, nem pedig beton készítésére.",
       ],
       links: [{ href: "/anyagok/soder", label: "Sóder anyagoldal" }],
     },
     {
       h: "Rostált frakciók: ahol beton is lesz",
       p: [
-        "Falazáshoz, simításhoz a 0/4-es, kétszer rostált sóder (nettó 16 800 Ft/m³) a megfelelő. Vékony betonfelületekhez — lépcső, aljzat — a 0/8 (17 000), a 3 centiméternél vastagabb betonokhoz a 0/16 (17 000), a leggyakoribb munkákhoz — födém, alap, járda — pedig a 0/24 (nettó 16 500 Ft/m³) való.",
+        "Falazáshoz, simításhoz a 0/4-es, kétszer rostált sóder (nettó 9 000 Ft/m³) a megfelelő. Vékony betonfelületekhez — lépcső, aljzat — a 0/8 (10 000), a 3 centiméternél vastagabb betonokhoz a 0/16 (10 000), a leggyakoribb munkákhoz — födém, alap, járda — pedig a 0/24 (nettó 9 000 Ft/m³) való.",
       ],
     },
     {
@@ -336,7 +340,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "A távolabbi településekre: egyeztetett időpontban",
       p: [
-        "A közeli zónában (Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós) és a távolabbi településeken (Tárnok, Sóskút, Pusztazámor, Halásztelek) egyeztetett időpontban szállítunk. Sürgős kérés esetén hívjon telefonon: megnézzük, be tudjuk-e illeszteni a kérést a napi útvonalakba.",
+        `A(z) ${ZONE_KOZEL.area} településeken és a(z) ${ZONE_TAVOLABBI.area} településeken egyeztetett időpontban szállítunk. Sürgős kérés esetén hívjon telefonon: megnézzük, be tudjuk-e illeszteni a kérést a napi útvonalakba.`,
       ],
       links: [
         { href: "/teruletek/erd", label: "Kiszállítás Érdre" },

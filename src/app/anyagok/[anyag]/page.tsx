@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { company, findMaterialGroup, MAX_ORDER_VOLUME, materialGroups, MIN_ORDER_VOLUME } from "@/content/site";
+import { company, findMaterialGroup, findZone, MAX_ORDER_VOLUME, materialGroups, MIN_ORDER_VOLUME } from "@/content/site";
 import { formatFt, IconPlus, PhoneLink } from "@/lib/ui";
 import { withBasePath } from "@/lib/basepath";
 import { MaterialItemRows } from "@/components/MaterialLedger";
@@ -69,7 +69,7 @@ export default async function MaterialPage({
     },
     {
       q: `Szállítanak ${acc} Érdre, Diósdra, Törökbálintra?`,
-      a: `Igen. ${group.name} kiszállítása a teljes szolgáltatási területre megoldható: Budapest XXII. és XI. kerülete, Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós és a távolabbi települések. A fuvar díja zónánként eltér.`,
+      a: `Igen. ${group.name} kiszállítása a teljes szolgáltatási területre megoldható: ${findZone("mag").area}, ${findZone("kozel").area} és ${findZone("tavolabbi").area}. A fuvar díja zónánként és mennyiségenként eltér.`,
     },
     {
       q: `Mekkora mennyiségben lehet ${acc} rendelni?`,

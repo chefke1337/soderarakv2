@@ -2,8 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  allMaterials,
   company,
   DISCLOSURE_PRICE,
+  findFreightTier,
   findZone,
   MAX_ORDER_VOLUME,
   materialGroups,
@@ -74,7 +76,11 @@ export default function ArkalkulatorForm() {
   useEffect(() => {
     const d = loadDraft();
     if (!d) return;
-    if (d.materialSlug) setMaterialSlug(d.materialSlug);
+    // Régi, azóta megszűnt anyag-/településazonosító a piszkozatból: csendesen
+    // eldobjuk, marad az alapérték (nem jelenik meg "üres" vagy hibás állapot).
+    if (d.materialSlug && allMaterials.some((i) => i.slug === d.materialSlug)) {
+      setMaterialSlug(d.materialSlug);
+    }
     if (
       typeof d.m3 === "number" &&
       Number.isInteger(d.m3) &&
@@ -83,7 +89,9 @@ export default function ArkalkulatorForm() {
     ) {
       setM3(d.m3);
     }
-    if (d.settlementSlug) setSettlementSlug(d.settlementSlug);
+    if (d.settlementSlug && settlements.some((s) => s.slug === d.settlementSlug)) {
+      setSettlementSlug(d.settlementSlug);
+    }
     if (d.name) setName(d.name);
     if (d.phone) setPhone(d.phone);
     setRestored(true);
@@ -121,18 +129,23 @@ export default function ArkalkulatorForm() {
   const phoneValid = isValidPhone(phone);
   const formValid = nameValid && phoneValid;
 
+  // Mennyiségi fuvardíj-sáv a kiválasztott zónában — a slider 1–20 közötti
+  // egész értékeken mindig talál sávot (a site.ts tiers 1–20-at lefedi),
+  // de a lookup típusa szerint elvben hiányozhat, ezért védetten kezeljük.
+  const tier = useMemo(() => (zone ? findFreightTier(zone.id, m3) : undefined), [zone, m3]);
+
   const estimate = useMemo(() => {
-    if (!material || !zone) return null;
+    if (!material || !zone || !tier) return null;
     const materialTotal =
       material.priceNet !== null ? material.priceNet * m3 : null;
     return {
       materialTotal,
-      fuelMin: zone.fuelMin,
-      fuelMax: zone.fuelMax,
-      totalMin: materialTotal !== null ? materialTotal + zone.fuelMin : null,
-      totalMax: materialTotal !== null ? materialTotal + zone.fuelMax : null,
+      freightFee: tier.fee,
+      needsNegotiation: tier.needsNegotiation ?? false,
+      tierLabel: `${tier.minQty}–${tier.maxQty} m³`,
+      total: materialTotal !== null ? materialTotal + tier.fee : null,
     };
-  }, [material, zone, m3]);
+  }, [material, zone, tier, m3]);
 
   // Mikro-konverzió: az első SAJÁT módosítás után először teljes az összegzés
   // (material + zone) → arkalkulator_submit, oldalletöltésenként egyszer.
@@ -163,11 +176,14 @@ export default function ArkalkulatorForm() {
     if (estimate) {
       if (estimate.materialTotal !== null) {
         rows.push(`Tájékoztató anyagár: ${formatFt(estimate.materialTotal)} nettó`);
-        rows.push(`Tájékoztató fuvar: ${formatFt(estimate.fuelMin)} – ${formatFt(estimate.fuelMax)} nettó`);
-        rows.push(`Tájékoztató összesen: ${formatFt(estimate.totalMin ?? 0)} – ${formatFt(estimate.totalMax ?? 0)} nettó (ÁFA nélkül)`);
+        rows.push(`Tájékoztató fuvar (${estimate.tierLabel} sáv): ${formatFt(estimate.freightFee)} nettó`);
+        rows.push(`Tájékoztató összesen: ${formatFt(estimate.total ?? 0)} nettó (ÁFA nélkül)`);
       } else {
         rows.push("Anyagár: egyeztetés után (az árlista nem tartalmaz árat)");
-        rows.push(`Tájékoztató fuvar: ${formatFt(estimate.fuelMin)} – ${formatFt(estimate.fuelMax)} nettó`);
+        rows.push(`Tájékoztató fuvar (${estimate.tierLabel} sáv): ${formatFt(estimate.freightFee)} nettó`);
+      }
+      if (estimate.needsNegotiation) {
+        rows.push("Ez a mennyiség külön egyeztetést igényel. A fenti összeg tájékoztató jellegű.");
       }
     }
     rows.push("");
@@ -337,12 +353,12 @@ export default function ArkalkulatorForm() {
                 </optgroup>
               ))}
             </select>
-            {zone && (
+            {zone && tier && (
               <p id="zona-info" className="mt-2 text-sm text-ink-soft">
                 Zóna: <span className="font-medium text-ink">{zone.name}</span>, fuvar{" "}
-                <span className="num font-medium text-ink">
-                  {formatFt(zone.fuelMin)} – {formatFt(zone.fuelMax)}
-                </span>
+                {m3} m³-re{" "}
+                <span className="num font-medium text-ink">{formatFt(tier.fee)}</span>
+                {tier.needsNegotiation ? " (külön egyeztetés szükséges)" : ""}
                 , kiszállás {zone.leadTime}.
               </p>
             )}
@@ -364,37 +380,50 @@ export default function ArkalkulatorForm() {
             </h2>
 
             {material && zone && estimate ? (
-              <dl aria-live="polite" aria-atomic="true" className="num mt-4 space-y-3 text-[0.9375rem]">
-                <div className="flex justify-between gap-4">
-                  <dt className="text-on-dark-muted">
-                    {material.name}
-                    {material.fraction ? ` (${material.fraction})` : ""} × {m3} m³
-                  </dt>
-                  <dd className="text-right font-semibold whitespace-nowrap">
-                    {estimate.materialTotal !== null ? (
-                      formatFt(estimate.materialTotal)
-                    ) : (
-                      <span className="text-on-dark-muted">egyeztetés után</span>
-                    )}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-4 border-t border-on-dark/20 pt-3">
-                  <dt className="text-on-dark-muted">Fuvar — {zone.name}</dt>
-                  <dd className="text-right font-semibold whitespace-nowrap">
-                    {formatFt(estimate.fuelMin)} – {formatFt(estimate.fuelMax)}
-                  </dd>
-                </div>
-                <div className="border-t-2 border-on-dark/60 pt-3">
-                  <dt className="font-semibold">Összesen (nettó)</dt>
-                  <dd key={`${estimate.totalMin}-${estimate.totalMax}-${m3}`} className="mt-1 swap-in font-display text-[1.375rem] leading-tight font-bold tracking-tight whitespace-nowrap text-amber min-[400px]:text-[1.625rem] md:text-[2.125rem]">
-                    {estimate.totalMin !== null && estimate.totalMax !== null ? (
-                      `${formatFt(estimate.totalMin)} – ${formatFt(estimate.totalMax)}`
-                    ) : (
-                      <span className="text-lg">egyeztetés után</span>
-                    )}
-                  </dd>
-                </div>
-              </dl>
+              <>
+                <dl aria-live="polite" aria-atomic="true" className="num mt-4 space-y-3 text-[0.9375rem]">
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-on-dark-muted">
+                      {material.name}
+                      {material.fraction ? ` (${material.fraction})` : ""} × {m3} m³
+                    </dt>
+                    <dd className="text-right font-semibold whitespace-nowrap">
+                      {estimate.materialTotal !== null ? (
+                        formatFt(estimate.materialTotal)
+                      ) : (
+                        <span className="text-on-dark-muted">egyeztetés után</span>
+                      )}
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4 border-t border-on-dark/20 pt-3">
+                    <dt className="text-on-dark-muted">
+                      Fuvar — {zone.name}
+                      <span className="block text-xs">{estimate.tierLabel} sáv</span>
+                    </dt>
+                    <dd className="text-right font-semibold whitespace-nowrap">
+                      {formatFt(estimate.freightFee)}
+                    </dd>
+                  </div>
+                  <div className="border-t-2 border-on-dark/60 pt-3">
+                    <dt className="font-semibold">Összesen (nettó)</dt>
+                    <dd key={`${estimate.total}-${m3}`} className="mt-1 swap-in font-display text-[1.375rem] leading-tight font-bold tracking-tight whitespace-nowrap text-amber min-[400px]:text-[1.625rem] md:text-[2.125rem]">
+                      {estimate.total !== null ? (
+                        formatFt(estimate.total)
+                      ) : (
+                        <span className="text-lg">egyeztetés után</span>
+                      )}
+                    </dd>
+                  </div>
+                </dl>
+                {estimate.needsNegotiation && (
+                  <p
+                    role="status"
+                    className="mt-3 rounded-sm border border-amber/50 bg-amber/10 px-3 py-2 text-xs leading-relaxed font-medium text-amber"
+                  >
+                    Ez a mennyiség külön egyeztetést igényel. A megjelenített összeg tájékoztató jellegű.
+                  </p>
+                )}
+              </>
             ) : (
               <p role="status" className="mt-4 text-sm text-on-dark-muted">
                 Válasszon anyagot és települést az összegzéshez.

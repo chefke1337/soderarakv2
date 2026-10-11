@@ -61,8 +61,14 @@ export default function ArakPage() {
 
       <h2 className="mt-16 font-display text-heading-md font-bold">Fuvarárak zónánként</h2>
       <p className="mt-2 max-w-[60ch] text-ink-soft">
-        A fuvar díja a szállítási zónától függ. A sávok tájékoztató jellegűek,
-        nettó értékek egy fuvarra.
+        A fuvar díja a szállítási zónától és a szállított mennyiségtől is
+        függ — az alábbi oszlop az 1–12 m³ közötti sávok tartományát mutatja.
+        12 m³ felett a fuvar külön egyeztetés tárgya. A teljes,
+        mennyiségenkénti bontást a{" "}
+        <Link href="/szallitas" className="underline decoration-line-strong underline-offset-4 hover:decoration-ink">
+          Szállítás oldalon
+        </Link>{" "}
+        találja.
       </p>
       <div className="mt-6 overflow-x-auto" role="region" aria-label="Fuvarárak zónánként" tabIndex={0}>
         <table className="num w-full md:min-w-[560px] block md:table border-t border-ink/80 text-left">
@@ -71,7 +77,7 @@ export default function ArakPage() {
               <th scope="col" className="py-3 pr-4 font-medium">Zóna</th>
               <th scope="col" className="py-3 pr-4 font-medium">Települések</th>
               <th scope="col" className="py-3 pr-4 font-medium">Kiszállás</th>
-              <th scope="col" className="py-3 text-right font-medium">Fuvar, nettó</th>
+              <th scope="col" className="py-3 text-right font-medium">Fuvar, 1–12 m³ (nettó)</th>
             </tr>
           </thead>
           <tbody className="block md:table-row-group">

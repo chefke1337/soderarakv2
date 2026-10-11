@@ -25,7 +25,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test:zones": "node --experimental-strip-types tests/zones.test.mjs halasztelek"
+    "test:zones": "node --experimental-strip-types tests/zones.test.mjs",
+    "test:pricing": "node --experimental-strip-types tests/pricing.test.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

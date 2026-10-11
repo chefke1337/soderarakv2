@@ -46,7 +46,7 @@ export default function MaterialHeaps() {
                   </span>
                 </span>
                 <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
-                  {min !== null ? formatFt(min) : "egyeztetés után"}
+                  {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                 </span>
               </Link>
             </li>

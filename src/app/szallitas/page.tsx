@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import { zones, RENDELES_LEPESEK, DISCLOSURE_PRICE, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
-import { PhoneLink } from "@/lib/ui";
+import { formatFt, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 
+const zoneRangeEzer = (z: (typeof zones)[number]) =>
+  `${(z.fuelMin / 1000).toLocaleString("hu-HU")}–${(z.fuelMax / 1000).toLocaleString("hu-HU")} e Ft`;
+
 export const metadata: Metadata = pageMeta({
   title: "Szállítás — sóder és ömlesztett anyag fuvarozás Budafokról",
-  description:
-    "Platós, billencs és konténeres szállítás Budafokról. Fuvar: Budafok környékén 12–22 e Ft, a közeli településeken 18–32 e Ft, a távolabb 25–45 e Ft.",
+  description: `Billencs és konténeres szállítás Budafokról. Fuvar: ${zones[0].name} ${zoneRangeEzer(zones[0])}, a közeli településeken ${zoneRangeEzer(zones[1])}, a távolabb ${zoneRangeEzer(zones[2])}.`,
   path: "/szallitas",
 });
 
@@ -28,32 +30,47 @@ export default function SzallitasPage() {
         <div className="min-w-0 space-y-10">
           <div>
             <h2 className="font-display text-heading-md font-bold">Zónák és fuvarárak</h2>
-            <div className="mt-4 overflow-x-auto border-t border-ink/80" role="region" aria-label="Szállítási zónák és fuvarárak táblázata" tabIndex={0}>
-              <table className="w-full md:min-w-[560px] block md:table text-sm">
-                <thead className="sr-only md:not-sr-only md:table-header-group">
-                  <tr className="border-b border-line text-left text-sm text-ink-soft">
-                    <th scope="col" className="pr-4 py-3.5 font-semibold">Zóna</th>
-                    <th scope="col" className="pr-4 py-3.5 font-semibold">Terület</th>
-                    <th scope="col" className="pr-4 py-3.5 font-semibold">Fuvar (nettó)</th>
-                    <th scope="col" className="pr-4 py-3.5 font-semibold">Kiszállás</th>
-                  </tr>
-                </thead>
-                <tbody className="block md:table-row-group">
-                  {zones.map((z) => (
-                    <tr key={z.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-line py-3.5 align-top md:table-row md:py-0">
-                      <td className="pr-4 font-semibold md:table-cell md:py-3.5 md:font-medium">{z.name}</td>
-                      <td className="order-3 w-full pr-4 text-ink-soft md:order-none md:table-cell md:w-auto md:py-3.5">{z.area}</td>
-                      <td className="num order-2 font-semibold whitespace-nowrap md:order-none md:table-cell md:py-3.5 md:pr-4">
-                        {(z.fuelMin / 1000).toLocaleString("hu-HU")}–
-                        {(z.fuelMax / 1000).toLocaleString("hu-HU")} ezer Ft
-                      </td>
-                      <td className="order-4 w-full pr-4 text-ink-soft md:order-none md:table-cell md:w-auto md:py-3.5"><span className="md:hidden">Kiszállás: </span>{z.leadTime}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <p className="mt-2 max-w-[60ch] text-sm text-ink-soft">
+              A fuvar díja a zónától és a szállított mennyiségtől függ. 12 m³
+              felett a fuvar díja külön egyeztetés tárgya — az alábbi összeg
+              ott csak tájékoztató.
+            </p>
+            <div className="mt-6 space-y-8">
+              {zones.map((z) => (
+                <div key={z.id}>
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-ink/80 pb-2">
+                    <h3 className="font-display text-heading-xs font-bold">{z.name}</h3>
+                    <p className="text-sm text-ink-soft">{z.area} · kiszállás {z.leadTime}</p>
+                  </div>
+                  <div className="mt-3 overflow-x-auto" role="region" aria-label={`${z.name} fuvarárai mennyiség szerint`} tabIndex={0}>
+                    <table className="num w-full min-w-[360px] text-sm">
+                      <thead>
+                        <tr className="border-b border-line text-left text-ink-soft">
+                          <th scope="col" className="py-2 pr-4 font-medium">Mennyiség</th>
+                          <th scope="col" className="py-2 text-right font-medium">Fuvar (nettó)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {z.freightTiers.map((t) => (
+                          <tr key={`${t.minQty}-${t.maxQty}`} className="border-b border-line/70">
+                            <td className="py-2 pr-4">
+                              {t.minQty}–{t.maxQty} m³
+                              {t.needsNegotiation && (
+                                <span className="ml-2 inline-flex rounded-full bg-brand-soft px-2 py-0.5 text-xs font-semibold text-brand-deep">
+                                  Egyeztetés
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-2 text-right font-semibold">{formatFt(t.fee)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ))}
             </div>
-            <p className="mt-3 text-xs text-ink-soft">{DISCLOSURE_PRICE}</p>
+            <p className="mt-6 text-xs text-ink-soft">{DISCLOSURE_PRICE}</p>
           </div>
 
           <div>
@@ -82,8 +99,8 @@ export default function SzallitasPage() {
                 érdemes telefonon egyeztetni.
               </li>
               <li className="border-b border-line py-3.5">
-                <strong>Egy fuvarban legfeljebb {MAX_ORDER_VOLUME} m³.</strong> Nagyobb mennyiséget
-                több fuvarban szállítunk — erre külön egyeztetés szükséges.
+                <strong>Egy fuvarban legfeljebb {MAX_ORDER_VOLUME} m³.</strong> 12 m³ felett a
+                fuvar díja külön egyeztetés tárgya.
               </li>
               <li className="border-b border-line py-3.5">
                 <strong>A fuvar ára függ</strong> az egyszerre szállított mennyiségtől,
