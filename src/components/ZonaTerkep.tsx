@@ -32,6 +32,7 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const layersRef = useRef<LayerGroup | null>(null);
+  const roRef = useRef<ResizeObserver | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -128,9 +129,31 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
 
         // A keretezés a tényleges zónákra illeszkedik, nem beégetett nézetre.
         const points = zones.flatMap((z) => z.polygon.flat());
-        if (points.length > 0) {
-          map.fitBounds(L.latLngBounds(points), { padding: [18, 18], maxZoom: 12 });
-        }
+        const bounds = L.latLngBounds(points);
+        // A saját illesztés közben indult mozgás nem felhasználói
+        let fitting = false;
+        let userMoved = false;
+        const fit = () => {
+          fitting = true;
+          map.fitBounds(bounds, { padding: [18, 18], maxZoom: 12, animate: false });
+          fitting = false;
+        };
+        if (points.length > 0) fit();
+
+        // A doboz méretváltozásakor (ablak, elforgatás, lusta betöltés) a Leaflet
+        // alapból a bal felső sarkot tartja meg — ezért csúszott el a zóna.
+        // Újraillesztünk, amíg a felhasználó nem nagyított/mozgatott maga.
+        map.on("movestart zoomstart", () => {
+          if (!fitting) userMoved = true;
+        });
+        const ro = new ResizeObserver(() => {
+          fitting = true;
+          map.invalidateSize({ pan: false });
+          fitting = false;
+          if (!userMoved && points.length > 0) fit();
+        });
+        ro.observe(containerRef.current);
+        roRef.current = ro;
 
         mapRef.current = map;
         layersRef.current = group;
@@ -149,6 +172,7 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
         if (typeof window.cancelIdleCallback === "function") window.cancelIdleCallback(idleId);
         else window.clearTimeout(idleId);
       }
+      roRef.current?.disconnect();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;

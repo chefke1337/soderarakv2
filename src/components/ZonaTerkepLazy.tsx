@@ -55,7 +55,7 @@ class MapErrorBoundary extends Component<
   }
 }
 
-export default function ZonaTerkepLazy({ height = 420 }: { height?: number }) {
+export default function ZonaTerkepLazy({ height = 420, legend = true }: { height?: number; legend?: boolean }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
 
@@ -97,6 +97,8 @@ export default function ZonaTerkepLazy({ height = 420 }: { height?: number }) {
           </div>
         )}
       </div>
+      {legend && (
+        <>
       {/* Jelmagyarázat + zónalista: a térképtől függetlenül mindig látszik
           (V1-ben a hibaüzenet erre hivatkozott, de a lista a térképpel együtt tűnt el). */}
       <ul className="num mt-3 grid gap-2 text-sm sm:grid-cols-3">
@@ -120,6 +122,8 @@ export default function ZonaTerkepLazy({ height = 420 }: { height?: number }) {
         A zónák összefüggő, tájékoztató jellegű sávok a telephely körül — nem jogi
         határok. Fuvarár: nettó, egy fuvarra; a végleges díjat egyeztetés után adjuk.
       </p>
+        </>
+      )}
     </div>
   );
 }

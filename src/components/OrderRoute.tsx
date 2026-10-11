@@ -21,18 +21,18 @@ export default function OrderRoute() {
         className="route-fill-y absolute top-8 bottom-8 left-[1.6875rem] w-[3px] rounded-full bg-accent md:left-[2.1875rem]"
       />
       {RENDELES_LEPESEK.map((step, i) => (
-        <li key={step.title} className="relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 pb-10 last:pb-0 md:grid-cols-[4.5rem_minmax(0,1fr)] md:gap-x-7 md:pb-12">
+        <li key={step.title} className="reveal-step relative grid grid-cols-[3.5rem_minmax(0,1fr)] gap-x-4 pb-9 last:pb-0 md:grid-cols-[4.5rem_minmax(0,1fr)] md:gap-x-7 md:pb-11">
           <span
             aria-hidden="true"
             className={`num relative z-10 flex h-14 w-14 items-center justify-center rounded-full font-display text-lg font-bold md:h-[4.5rem] md:w-[4.5rem] md:text-2xl ${
               i === last
                 ? "bg-accent text-on-dark shadow-pop"
-                : "border-2 border-text bg-surface text-text"
+                : "border-2 border-accent/70 bg-surface text-accent-deep"
             }`}
           >
             {String(i + 1).padStart(2, "0")}
           </span>
-          <div className="pt-2.5 md:pt-4">
+          <div className="pt-3 md:pt-[1.15rem]">
             <h3 className="font-display text-heading-sm font-bold text-balance md:text-heading-md">
               <span className="sr-only">{i + 1}. lépés: </span>
               {step.title}

@@ -43,7 +43,7 @@ export default function UtmutatokPage() {
           <li key={g.slug}>
             <Link
               href={`/utmutatok/${g.slug}`}
-              className="group flex h-full flex-col rounded-md border border-line bg-paper p-5 shadow-card transition-all duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-pop"
+              className="group flex h-full flex-col rounded-md border border-line bg-paper p-5 shadow-card transition-all duration-[var(--dur-ui)] hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-pop"
             >
               <span
                 aria-hidden="true"

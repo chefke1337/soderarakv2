@@ -17,7 +17,16 @@ export default function MobileMenu() {
   const btnRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
+  const panelRef = useRef<HTMLElement>(null);
+
   useEffect(() => setOpen(false), [pathname]);
+
+  // Nyitáskor a fókusz az első menüpontra kerül (billentyűzet, képernyőolvasó)
+  useEffect(() => {
+    if (!open) return;
+    const id = requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("a")?.focus());
+    return () => cancelAnimationFrame(id);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -50,13 +59,14 @@ export default function MobileMenu() {
       >
         Menü
         <span aria-hidden="true" className="relative block h-3 w-4">
-          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-300 ${open ? "top-[5px] rotate-45" : "top-0"}`} />
-          <span className={`absolute top-[5px] left-0 h-[2px] w-4 rounded bg-current transition-opacity duration-200 ${open ? "opacity-0" : ""}`} />
-          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-300 ${open ? "top-[5px] -rotate-45" : "top-[10px]"}`} />
+          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-[var(--dur-ui)] top-0 ${open ? "translate-y-[5px] rotate-45" : ""}`} />
+          <span className={`absolute top-[5px] left-0 h-[2px] w-4 rounded bg-current transition-opacity duration-[var(--dur-ui)] ${open ? "opacity-0" : ""}`} />
+          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-[var(--dur-ui)] top-[10px] ${open ? "-translate-y-[5px] -rotate-45" : ""}`} />
         </span>
       </button>
 
       <nav
+        ref={panelRef}
         id={panelId}
         aria-label="Mobil navigáció"
         data-call-region="header_mobile_menu"

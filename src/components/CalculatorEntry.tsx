@@ -29,7 +29,7 @@ export default function CalculatorEntry() {
             tájékoztató nettó összeget fuvarral együtt. Utána egy névvel és
             telefonszámmal ajánlatot kérhet.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap [&>a]:whitespace-nowrap">
+          <div className="mt-8 grid max-w-[34rem] gap-3 sm:grid-cols-2 [&>a]:w-full [&>a]:whitespace-nowrap">
             <Link href="/arkalkulator" className="btn btn-lg btn-cream">
               <IconCalculator size={20} className="btn-icon" />
               Árkalkulátor indítása
@@ -43,7 +43,7 @@ export default function CalculatorEntry() {
 
         {/* Példa-szelvény */}
         <figure className="lg:col-span-6">
-          <div className="relative rotate-[-1.2deg] rounded-[var(--radius-md)] bg-surface p-6 text-text shadow-[0_30px_60px_-30px_rgb(0_0_0_/_0.55)] transition-transform duration-500 ease-out hover:rotate-0 md:p-8">
+          <div className="relative rotate-[-1.2deg] rounded-[var(--radius-md)] bg-surface p-6 text-text shadow-[0_30px_60px_-30px_rgb(0_0_0_/_0.55)] transition-transform duration-[var(--dur-enter)] ease-[var(--ease-out-soft)] hover:rotate-0 md:p-8">
             <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-border-strong pb-4">
               <p className="font-display text-heading-sm font-bold">Példa: {qty} m³ {m.name}</p>
               <p className="text-sm text-text-muted">Budafokra</p>

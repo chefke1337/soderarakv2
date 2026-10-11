@@ -39,10 +39,10 @@ export default function MaterialLedger({
             key={g.slug}
             id={`anyag-${g.slug}`}
             open={openAll}
-            className="group relative overflow-hidden rounded-[var(--radius-md)] bg-surface shadow-card transition-shadow duration-300 hover:shadow-pop open:shadow-pop"
+            className="group relative overflow-hidden rounded-[var(--radius-md)] bg-surface shadow-card transition-shadow duration-[var(--dur-ui)] hover:shadow-pop open:shadow-pop"
             style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
           >
-            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--mat)] transition-[width] duration-300 group-hover:w-2.5 group-open:w-2.5" />
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--mat)] transition-[width] duration-[var(--dur-ui)] group-hover:w-2.5 group-open:w-2.5" />
             <summary className="grid cursor-pointer list-none grid-cols-[3rem_minmax(0,1fr)_auto_1.75rem] items-center gap-x-3 gap-y-2 py-4 pr-3 pl-5 md:grid-cols-[4rem_minmax(0,1.25fr)_minmax(0,1fr)_9.5rem_2rem] md:gap-x-5 md:py-5 md:pr-5 md:pl-6">
               <span className="swatch block h-12 w-12 rounded-[var(--radius-sm)] ring-1 ring-black/10 md:h-16 md:w-16">
                 <span className="block h-full w-full">
@@ -80,7 +80,7 @@ export default function MaterialLedger({
 
               <span
                 aria-hidden="true"
-                className="flex h-8 w-8 items-center justify-center justify-self-end rounded-full bg-page text-ink transition-[transform,background-color,color] duration-300 group-hover:bg-text group-hover:text-surface group-open:rotate-45 group-open:bg-accent group-open:text-on-dark md:h-9 md:w-9"
+                className="flex h-8 w-8 items-center justify-center justify-self-end rounded-full bg-page text-ink transition-[transform,background-color,color] duration-[var(--dur-ui)] group-hover:bg-text group-hover:text-surface group-open:rotate-45 group-open:bg-accent group-open:text-on-dark md:h-9 md:w-9"
               >
                 <IconPlus size={16} />
               </span>

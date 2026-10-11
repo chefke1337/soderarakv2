@@ -34,7 +34,7 @@ export default function KapcsolatPage() {
             <h2 className="relative text-sm font-semibold text-on-accent-muted">Telefonos rendelés — a leggyorsabb</h2>
             <PhoneLink className="num group relative mt-2 flex items-center justify-between gap-4 font-display text-[2rem] leading-tight font-bold tracking-tight md:text-[2.375rem]">
               {company.phone.display}
-              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-on-dark text-accent-deep transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-105">
+              <span aria-hidden="true" className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-on-dark text-accent-deep transition-transform duration-[var(--dur-ui)] group-hover:-rotate-12 group-hover:scale-105">
                 <IconPhone size={22} />
               </span>
             </PhoneLink>

@@ -150,7 +150,7 @@ export default function HomePage() {
             {/* Valódi, interaktív térkép (nagyítás, mozgatás, településcímkék) a
                 korábbi statikus vázlat helyett — lustán töltődik, nem lassít. */}
             <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
-              <ZonaTerkepLazy height={420} />
+              <ZonaTerkepLazy height={420} legend={false} />
             </div>
             <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
               <span aria-hidden="true" className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-brand-dark" />
@@ -216,7 +216,7 @@ export default function HomePage() {
             <h2 id="miert-hivjon-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
               {MIERT_HIVJON.title}
             </h2>
-            <p className="mt-5 max-w-[52ch] font-display text-heading-sm leading-snug font-medium text-text">
+            <p className="mt-5 max-w-[52ch] border-l-4 border-accent pl-4 font-display text-heading-sm leading-snug font-medium text-text">
               {MIERT_HIVJON.lead}
             </p>
             <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-relaxed text-text-muted">
@@ -328,7 +328,7 @@ export default function HomePage() {
           <div className="md:col-span-6 md:self-end">
             <PhoneLink className="num group flex items-center justify-between gap-4 border-y border-on-dark/25 py-5 font-display text-[2rem] font-bold tracking-tight transition-colors hover:text-amber sm:text-[2.5rem] lg:text-[3.25rem]">
               {company.phone.display}
-              <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-on-dark transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-105">
+              <span aria-hidden="true" className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent text-on-dark transition-transform duration-[var(--dur-ui)] group-hover:-rotate-12 group-hover:scale-105">
                 <IconPhone size={24} />
               </span>
             </PhoneLink>

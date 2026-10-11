@@ -94,3 +94,10 @@ Egyetlen szervezett pillanat: a hero betöltésekor a szelvény sorai sorban
 - **Egyedi komponensek:** `MaterialStrata` (hero anyag-rétegrend, SVG szemcsetextúra, árak a site.ts-ből), `MaterialGrain`, `CalculatorEntry` (a GYIK meglévő példáját ugyanazzal a képlettel számolja), `OrderRoute` (görgetésre haladó teherautó), `MobileMenu` (animált nyitás/zárás, Esc, kattintás kívül).
 - **Motion:** hero egyszeri belépője + rétegek beúszása; gombok hover/pressed; anyagminta-nagyítás; menüátmenet; anyagválasztó- és összegváltás. Mind CSS, `prefers-reduced-motion` alatt kikapcsol; nincs folyamatos animáció.
 - **Assetigény:** valódi anyagfotók (depó, rakások, közeli szemcse) — amíg nincsenek, a textúra SVG-ből generált, és nem ad ki magát fotónak.
+
+## V2.3 design polish (2026-10-11)
+- **Motion tokenek** (`globals.css @theme`): `--dur-fast` 140 ms (hover/lenyomás), `--dur-ui` 240 ms (menü, ikon, tartalomcsere), `--dur-enter` 560 ms (egyszeri belépők), `--stagger` 55 ms, `--move-sm/md` 8/14 px, közös `--ease-out-soft`. Minden meglévő animáció és Tailwind `duration-*` erre hivatkozik.
+- **Gombok:** kettős fókuszgyűrű (világos és sötét felületen is látszik), gyors lenyomás-visszajelzés, a nyíl fókuszra is elmozdul.
+- **Térkép:** méretváltozáskor újraillesztés (ResizeObserver), amíg a felhasználó maga nem mozgatta; a főoldalon nincs duplikált jelmagyarázat (a zónalista mellette van).
+- **Rendelés menete:** egységes terrakotta számjelek, szorosabb ritmus, lépésenként diszkrét belépés.
+- **Mobilmenü:** az X-ikon transformmal animál; nyitáskor a fókusz az első menüpontra kerül.
