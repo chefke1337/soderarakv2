@@ -66,12 +66,12 @@ export default function HomePage() {
                 . Mondja el telefonon, mire van szüksége — Budafok környékén
                 gyakran még aznap szállítunk.
               </p>
-              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-                <PhoneLink className="num btn btn-lg btn-primary">
+              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:max-w-[24rem] lg:flex-col">
+                <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
                   <IconPhone size={21} className="btn-icon btn-icon-ring" />
                   {company.phone.display}
                 </PhoneLink>
-                <CalculatorCta className="btn btn-lg btn-outline-cream">
+                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
                   Árkalkulátor indítása
                   <IconArrowRight size={18} className="btn-icon btn-icon-move" />
                 </CalculatorCta>
