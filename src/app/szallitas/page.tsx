@@ -111,11 +111,12 @@ export default function SzallitasPage() {
               {RENDELES_LEPESEK.map((s, i) => (
                 <li key={s.title} className="flex gap-4 border-b border-line py-4">
                   <span aria-hidden="true" className="num flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink font-display text-sm font-bold">
-                    {i + 1}
+                    {String(i + 1).padStart(2, "0")}
                   </span>
                   <div>
                     <p className="font-semibold">{s.title}</p>
                     <p className="mt-1 text-sm text-ink-soft">{s.text}</p>
+                    {s.note && <p className="mt-2 border-l-4 border-accent pl-3 text-sm">{s.note}</p>}
                   </div>
                 </li>
               ))}

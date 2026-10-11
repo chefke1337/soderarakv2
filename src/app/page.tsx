@@ -5,6 +5,7 @@ import {
   DISCLOSURE_PRICE,
   FAQ,
   guides,
+  MIERT_HIVJON,
   settlements,
   zones,
 } from "@/content/site";
@@ -48,7 +49,7 @@ export default function HomePage() {
           <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
             <div className="lg:col-span-7">
               <p className="rise label-strata text-amber">
-                <span>Telephely és depó Budafokon · <span className="whitespace-nowrap">{company.hours.short}</span></span>
+                <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
               <h1 className="rise rise-2 mt-5 font-display text-[2.625rem] leading-[0.98] font-bold tracking-display text-balance sm:text-display md:text-display-xl">
                 Sóder, homok, kavics, murva, bazalt, föld szállítása
@@ -128,10 +129,9 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="rendeles"
-        reveal
+        layout="split"
         kicker="Így működik"
-        title="Négy lépés a sódertől a kiszállításig"
-        lead="Nincs kosár, nincs bonyolultság: hívás, egyeztetés, szállítás, átvétel."
+        title="Rendelés menete"
       >
         <OrderRoute />
       </Section>
@@ -208,31 +208,46 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* ─── Miért mi ─── */}
-      <Section
-        headingLevel={2}
-        id="miert-mi"
-        layout="split"
-        reveal
-        kicker="Miért mi"
-        title="15+ év tapasztalat, saját flotta, depó Budafokon"
-        lead="Ön elmondja, mire van szüksége, mi pedig segítünk a megoldásban."
-      >
-        <ul className="grid gap-x-8 sm:grid-cols-2">
-          {company.capabilities.map((cap) => (
-            <li key={cap} className="flex gap-3 border-b border-line py-3.5">
-              <IconCheck size={18} className="mt-0.5 shrink-0 text-moss" />
-              <span className="text-[0.9375rem] leading-relaxed">{cap}</span>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-6 max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">
-          A megrendelések teljesítéséhez platós, billencs és konténeres
-          teherautók állnak rendelkezésre; saját autóval vagy utánfutóval a
-          telephelyi depóból is elviheti az anyagot. Hívjon minket bizalommal,
-          és egyeztessük a részleteket!
-        </p>
-      </Section>
+      {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg (site.ts MIERT_HIVJON) ─── */}
+      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:px-6 md:py-24 lg:grid-cols-12 lg:gap-14">
+          <div className="lg:col-span-6">
+            <p className="label-strata text-brand-deep">Miért mi</p>
+            <h2 id="miert-hivjon-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
+              {MIERT_HIVJON.title}
+            </h2>
+            <p className="mt-5 max-w-[52ch] font-display text-heading-sm leading-snug font-medium text-text">
+              {MIERT_HIVJON.lead}
+            </p>
+            <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-relaxed text-text-muted">
+              {MIERT_HIVJON.body}
+            </p>
+            <div className="mt-8 border-t border-border-strong pt-6" data-call-region="miert_hivjon">
+              <p className="max-w-[56ch] text-[1.0625rem] leading-relaxed">{MIERT_HIVJON.closing}</p>
+              <PhoneLink className="num btn btn-lg btn-primary mt-5">
+                <IconPhone size={20} className="btn-icon" />
+                Hívjon minket: {company.phone.display}
+              </PhoneLink>
+            </div>
+          </div>
+
+          <div className="lg:col-span-6 lg:pt-14">
+            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-6 text-on-dark shadow-pop md:p-8">
+              <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
+              <ul className="mt-4">
+                {MIERT_HIVJON.list.map((item) => (
+                  <li key={item} className="flex gap-3.5 border-b border-on-dark/15 py-3.5 last:border-0 last:pb-0">
+                    <span aria-hidden="true" className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
+                      <IconCheck size={15} />
+                    </span>
+                    <span className="text-[1.0625rem] leading-snug">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ─── Buda Konténer — testvér üzletág (zöld: funkcionális megkülönböztetés) ─── */}
       <section aria-labelledby="hulladek-cim" className="border-y border-border bg-surface">

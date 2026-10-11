@@ -465,27 +465,7 @@ summary::-webkit-details-marker {
       opacity: 0;
       transform: translateY(22px);
     }
-    /* Rendelés-útvonal: a teherautó a szekció görgetésével halad végig */
-    .route-truck {
-      animation: route-drive linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 60%;
-    }
-    .route-fill {
-      transform-origin: left center;
-      animation: route-fill linear both;
-      animation-timeline: view();
-      animation-range: entry 30% cover 60%;
-    }
   }
-}
-@keyframes route-drive {
-  from { left: 0%; }
-  to { left: 100%; }
-}
-@keyframes route-fill {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
 }
 
 /* ── Anyag-minta nagyítás hoverre (kártya-reakció) ── */
@@ -564,4 +544,20 @@ summary::-webkit-details-marker {
   text-decoration-thickness: 0.12em;
   text-underline-offset: 0.22em;
   text-decoration-skip-ink: auto;
+}
+
+/* Rendelés menete: függőleges összekötő vonal kitöltése görgetésre */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .route-fill-y {
+      transform-origin: top center;
+      animation: route-fill-y linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 70%;
+    }
+  }
+}
+@keyframes route-fill-y {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }

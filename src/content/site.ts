@@ -451,24 +451,48 @@ export const depot: { latlng: [number, number]; label: string } = {
   label: "Telephely — 1221 Budapest, Arany János út 152.",
 };
 
+/** Rendelés menete — jóváhagyott ügyfélszöveg (2026-10-11), öt lépés. */
 export const RENDELES_LEPESEK = [
   {
-    title: "Hívás vagy ajánlatkérés",
-    text: "Hívja a +36 30 954 6156-os számot, vagy küldje el, mire van szüksége: anyag, mennyiség, helyszín.",
+    title: "Válassza ki a szükséges anyagot és mennyiséget",
+    text: "Első lépésként válassza ki, hogy milyen anyagra és mekkora mennyiségre van szüksége. A mennyiséget kérjük, m³-ben adja meg. Ha nem biztos benne, hogy pontosan mennyi anyagra van szüksége, kérje kollégáink segítségét!",
   },
   {
-    title: "Egyeztetés",
-    text: "Visszaigazoljuk az anyagot és a mennyiséget, a fuvar árát a szállítási zóna szerint, valamint az időpontot.",
+    title: "Adja meg a szállítási címet",
+    text: "A pontos árajánlat elkészítéséhez kérjük, adja meg a szállítási címet, ahová az anyagot kéri. A szállítási cím alapján tudjuk meghatározni a kiszállítás költségét és a fuvarozás részleteit.",
   },
   {
-    title: "Szállítás",
-    text: "Platós, billencs vagy konténeres autónk a megbeszélt időpontban kiszállít. Budafok környékén a kiszállás gyakran aznap történik.",
+    title: "Egyeztessük a szállítás időpontját",
+    text: "A rendelés leadásakor kérjük, adja meg, mikor szeretné a kiszállítást. A kívánt időpontot egyeztetjük Önnel, és igyekszünk az Ön számára legmegfelelőbb időpontban teljesíteni a szállítást.",
   },
   {
-    title: "Átvétel vagy lerakás",
-    text: "Személyesen is átveheti a telephelyen (depó), vagy lerakjuk a helyszínen a megbeszéltek szerint.",
+    title: "Megrendelés véglegesítése",
+    text: "Miután minden részletet egyeztettünk – a kiválasztott anyagot, a mennyiséget, a szállítási címet és az időpontot –, a megrendelést véglegesítjük. Ezzel a megrendelés rögzítésre kerül, és megkezdjük a kiszállítás előkészítését.",
   },
-];
+  {
+    title: "Kiszállítás és lerakodás",
+    text: "A megbeszélt időpontban a szállítójármű megérkezik a megadott címre, és a megrendelt anyagot a helyszínen, az előre egyeztetett helyre lerakodjuk.",
+    /** Külön, kiemelt megjegyzésként jelenik meg (szó szerint a jóváhagyott szövegből). */
+    note: "Kérjük, hogy a kiszállítás időpontjára a lerakodási terület legyen szabadon és biztonságosan megközelíthető.",
+  },
+] as { title: string; text: string; note?: string }[];
+
+/** „Miért hívjon minket?" — jóváhagyott ügyfélszöveg (2026-10-11). */
+export const MIERT_HIVJON = {
+  title: "Miért hívjon minket?",
+  lead: "Mert számunkra fontos, hogy a rendelés egyszerűen, gyorsan és gördülékenyen menjen – a megrendeléstől egészen a kiszállításig.",
+  body: "Legyen szó kisebb vagy nagyobb mennyiségről, igyekszünk minden esetben az Ön igényeihez igazodni. Segítünk a megfelelő anyag és mennyiség kiválasztásában, egyeztetjük a szállítás részleteit, majd a megbeszélt időpontban gondoskodunk a kiszállításról.",
+  listTitle: "Amit Önnek nyújtunk:",
+  list: [
+    "Gyors és egyszerű rendelés",
+    "Rugalmas időpont-egyeztetés",
+    "Megbízható kiszállítás",
+    "Pontos, előre egyeztetett feltételek",
+    "Segítség az anyag és a szükséges mennyiség kiválasztásában",
+    "Lakossági és építőipari megrendelések",
+  ],
+  closing: "Ön elmondja, mire van szüksége, mi pedig segítünk a megoldásban. Hívjon minket bizalommal, és egyeztessük a részleteket!",
+} as const;
 
 export const FAQ = [
   {
