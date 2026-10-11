@@ -39,22 +39,22 @@ export default function MaterialLedger({
             key={g.slug}
             id={`anyag-${g.slug}`}
             open={openAll}
-            className="group relative overflow-hidden rounded-[var(--radius-md)] bg-surface shadow-card transition-shadow duration-[var(--dur-ui)] hover:shadow-pop open:shadow-pop"
+            className="mat-card group relative overflow-hidden rounded-[var(--radius-md)] border border-border/70 bg-surface shadow-card"
             style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
           >
-            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-[var(--mat)] transition-[width] duration-[var(--dur-ui)] group-hover:w-2.5 group-open:w-2.5" />
-            <summary className="grid cursor-pointer list-none grid-cols-[3rem_minmax(0,1fr)_auto_1.75rem] items-center gap-x-3 gap-y-2 py-4 pr-3 pl-5 md:grid-cols-[4rem_minmax(0,1.25fr)_minmax(0,1fr)_9.5rem_2rem] md:gap-x-5 md:py-5 md:pr-5 md:pl-6">
-              <span className="swatch block h-12 w-12 rounded-[var(--radius-sm)] ring-1 ring-black/10 md:h-16 md:w-16">
-                <span className="block h-full w-full">
+            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[4.5rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem]">
+              {/* teljes magasságú anyagpanel: a kártya „képe" */}
+              <span aria-hidden="true" className="mat-panel relative row-span-2 block overflow-hidden md:row-span-1">
+                <span className="mat-grain absolute inset-0">
                   <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} />
                 </span>
               </span>
-              <span className="min-w-0">
+              <span className="min-w-0 self-center py-4 pr-2 pl-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
               </span>
 
-              <span className="hidden md:block">
+              <span className="hidden self-center pr-4 md:block">
                 {range ? (
                   <>
                     <FractionScale fraction={range} />
@@ -67,7 +67,7 @@ export default function MaterialLedger({
                 )}
               </span>
 
-              <span className="num text-right">
+              <span className="num self-center py-4 pr-4 text-right md:pr-5">
                 {min !== null ? (
                   <>
                     <span className="block font-display text-heading-sm font-bold">{formatFt(min)}</span>
@@ -78,15 +78,22 @@ export default function MaterialLedger({
                 )}
               </span>
 
-              <span
-                aria-hidden="true"
-                className="flex h-8 w-8 items-center justify-center justify-self-end rounded-full bg-page text-ink transition-[transform,background-color,color] duration-[var(--dur-ui)] group-hover:bg-text group-hover:text-surface group-open:rotate-45 group-open:bg-accent group-open:text-on-dark md:h-9 md:w-9"
-              >
-                <IconPlus size={16} />
+              {/* egyértelmű nyitás-jelző: felirat + ikon (mobilon a második sorban) */}
+              <span className="col-span-2 col-start-2 flex items-center justify-between gap-2 border-t border-border/60 py-2.5 pr-4 pl-4 text-sm font-semibold text-accent-deep md:col-span-1 md:col-start-auto md:justify-end md:border-t-0 md:border-l md:py-0 md:pr-5 md:pl-4">
+                <span className="mat-toggle-label">
+                  <span className="group-open:hidden">Tételek</span>
+                  <span className="hidden group-open:inline">Bezárás</span>
+                </span>
+                <span
+                  aria-hidden="true"
+                  className="mat-toggle flex h-8 w-8 items-center justify-center rounded-full bg-page text-ink group-open:rotate-45 group-open:bg-accent group-open:text-on-dark"
+                >
+                  <IconPlus size={16} />
+                </span>
               </span>
             </summary>
 
-            <div className="details-body px-5 pb-6 md:pr-14 md:pl-[6.75rem]">
+            <div className="details-body border-t border-border/60 px-4 pt-5 pb-6 md:pr-8 md:pl-[9rem]">
               <p className="max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">{g.description}</p>
 
               <MaterialItemRows items={g.items} className="mt-4" />
@@ -166,7 +173,7 @@ export function LedgerHeader() {
   return (
     <div
       aria-hidden="true"
-      className="mb-3 hidden items-end gap-x-5 pr-5 pl-6 text-xs font-medium text-ink-soft md:grid md:grid-cols-[4rem_minmax(0,1.25fr)_minmax(0,1fr)_9.5rem_2rem]"
+      className="mb-3 hidden items-end text-xs font-medium text-ink-soft md:grid md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem] [&>span:nth-child(2)]:pl-6 [&>span:nth-child(4)]:pr-5"
     >
       <span />
       <span>Anyag</span>

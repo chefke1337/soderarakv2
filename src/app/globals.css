@@ -98,10 +98,10 @@
      enter = egyszeri belépő (hero, rétegek, lépések)
      stagger = lépcsőzés két elem között — rövid, hogy a tartalom ne várakoztasson */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 140ms;
-  --dur-ui: 240ms;
-  --dur-enter: 560ms;
-  --stagger: 55ms;
+  --dur-fast: 170ms;
+  --dur-ui: 260ms;
+  --dur-enter: 460ms;
+  --stagger: 50ms;
   --move-sm: 8px;
   --move-md: 14px;
 }
@@ -455,34 +455,6 @@ summary::-webkit-details-marker {
   }
 }
 
-/* ── Rétegrend (hero) ── */
-.strata-band {
-  transition:
-    transform var(--dur-ui) var(--ease-out-soft),
-    filter var(--dur-ui) var(--ease-out-soft);
-}
-.strata-band:hover,
-.strata-band:focus-visible {
-  transform: translateX(-10px);
-  filter: brightness(1.06) saturate(1.05);
-}
-.strata-band .strata-tag {
-  transition: transform var(--dur-ui) var(--ease-out-soft), background-color var(--dur-ui);
-}
-.strata-band:hover .strata-tag,
-.strata-band:focus-visible .strata-tag {
-  transform: translateX(-4px);
-}
-@media (prefers-reduced-motion: no-preference) {
-  .strata-in {
-    animation: strata-in var(--dur-enter) var(--ease-out-soft) both;
-    animation-delay: calc(var(--dur-ui) + var(--i, 0) * var(--stagger));
-  }
-}
-@keyframes strata-in {
-  from { opacity: 0; transform: translateX(var(--move-md)); }
-  to { opacity: 1; transform: none; }
-}
 
 /* ── Anyag-minta nagyítás hoverre (kártya-reakció) ── */
 .swatch {
@@ -560,4 +532,132 @@ summary::-webkit-details-marker {
   text-decoration-thickness: 0.12em;
   text-underline-offset: 0.22em;
   text-decoration-skip-ink: auto;
+}
+
+/* ── Hero mintasor: anyaghalmok ── */
+.heap-body {
+  /* kupac-ív tető: alacsony ellipszis a felső élen */
+  clip-path: ellipse(78% 100% at 50% 100%);
+  transition: transform var(--dur-ui) var(--ease-out-soft), filter var(--dur-ui) var(--ease-out-soft);
+}
+.heap {
+  transition: transform var(--dur-ui) var(--ease-out-soft);
+}
+.heap:active {
+  transform: translateY(1px) scale(0.99);
+  transition-duration: 60ms;
+}
+.heap-arrow {
+  transition: transform var(--dur-fast) var(--ease-out-soft);
+}
+.heap:focus-visible .heap-arrow,
+.heap:hover .heap-arrow {
+  transform: translateX(2px);
+}
+.heap:focus-visible {
+  outline: 2px solid var(--color-amber);
+}
+/* finom képreagálás csak valódi hover-eszközön (érintőképernyőn nincs „ragadó" állapot) */
+@media (hover: hover) and (pointer: fine) {
+  .heap:hover {
+    transform: translateY(-4px);
+  }
+  .heap:hover .heap-body {
+    transform: scale(1.04);
+    filter: brightness(1.06) saturate(1.05);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heap-in {
+    animation: enter-up var(--dur-enter) var(--ease-out-soft) both;
+    animation-delay: calc(var(--stagger) * 4 + var(--i, 0) * var(--stagger));
+  }
+}
+
+/* ── Anyagkártya (MaterialLedger): saját keret- és felületkezelés ── */
+.mat-card {
+  transition:
+    border-color var(--dur-ui) var(--ease-out-soft),
+    box-shadow var(--dur-ui) var(--ease-out-soft);
+}
+.mat-card[open] {
+  border-color: rgb(194 65 12 / 0.45);
+  box-shadow: var(--shadow-pop);
+}
+.mat-summary {
+  border-radius: inherit;
+}
+.mat-summary:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+.mat-summary:active .mat-toggle {
+  transform: scale(0.92);
+}
+.mat-grain {
+  transition: transform var(--dur-enter) var(--ease-out-soft);
+}
+.mat-toggle {
+  transition:
+    transform var(--dur-ui) var(--ease-out-soft),
+    background-color var(--dur-fast) var(--ease-out-soft),
+    color var(--dur-fast) var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .mat-card:hover {
+    border-color: var(--color-border-strong);
+    box-shadow: var(--shadow-pop);
+  }
+  .mat-card:hover .mat-grain {
+    transform: scale(1.1);
+  }
+  .mat-card:not([open]):hover .mat-toggle {
+    background: var(--color-text);
+    color: var(--color-surface);
+  }
+}
+
+/* Telefon-ikon apró „csörgés" hoverre / fókuszra (egyszeri, nem ismétlődő) */
+.btn:hover .btn-icon-ring,
+.btn:focus-visible .btn-icon-ring {
+  transform: rotate(-12deg);
+}
+
+/* Letiltott gomb állapot (pl. jövőbeli űrlapok) */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ── Rendelés idővonal: egyszeri megjelenés (OrderRoute data-phase) ──
+   static = szerveroldali, látható alapállapot; pending csak JS + mozgás mellett. */
+.order-route[data-phase="pending"] .route-step {
+  opacity: 0;
+  transform: translateY(var(--move-md));
+}
+.order-route[data-phase="pending"] .route-seg {
+  transform: scaleY(0);
+}
+.order-route .route-seg {
+  transform-origin: top center;
+}
+.order-route[data-phase="in"] .route-step {
+  transition:
+    opacity var(--dur-enter) var(--ease-out-soft),
+    transform var(--dur-enter) var(--ease-out-soft);
+  transition-delay: calc(var(--i, 0) * var(--stagger) * 1.6);
+}
+.order-route[data-phase="in"] .route-seg {
+  transition: transform 520ms var(--ease-out-soft);
+  transition-delay: calc(120ms + var(--i, 0) * var(--stagger) * 1.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .order-route .route-step,
+  .order-route .route-seg {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

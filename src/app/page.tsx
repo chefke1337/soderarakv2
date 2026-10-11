@@ -9,11 +9,11 @@ import {
   settlements,
   zones,
 } from "@/content/site";
-import { CalculatorCta, formatFt, IconArrowRight, IconCheck, IconPhone, PhoneLink } from "@/lib/ui";
+import { CalculatorCta, formatFt, IconArrowRight, IconCheck, IconPhone, MailLink, PhoneLink } from "@/lib/ui";
 import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
-import MaterialStrata from "@/components/MaterialStrata";
+import MaterialHeaps from "@/components/MaterialHeaps";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { LedgerHeader } from "@/components/MaterialLedger";
@@ -45,27 +45,30 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
         />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-14 lg:pt-20">
-          <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-14">
+        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
+          {/* Felső sor: markáns cím balra, leírás + CTA-k jobbra, alsó élre igazítva */}
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
-              <h1 className="rise rise-2 mt-5 font-display text-[2.625rem] leading-[0.98] font-bold tracking-display text-balance sm:text-display md:text-display-xl">
+              <h1 className="rise rise-2 mt-5 font-display text-[2.75rem] leading-[0.95] font-bold tracking-display sm:text-[3.75rem] lg:text-[5rem] xl:text-[5.5rem]">
                 Sóder, homok, kavics, murva, bazalt, föld szállítása
               </h1>
-              <p className="rise rise-3 mt-6 max-w-[52ch] text-lg leading-relaxed text-on-dark-muted">
+            </div>
+            <div className="lg:col-span-5 lg:pb-2">
+              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
                 Ömlesztett építőanyag{" "}
                 <strong className="hero-area font-semibold text-on-dark">
                   Budapest XXII. és XI. kerületébe, Érdre, Diósdra, Törökbálintra
                   és környékére
                 </strong>
-                . Mondja el telefonon, mire
-                van szüksége — Budafok környékén gyakran még aznap szállítunk.
+                . Mondja el telefonon, mire van szüksége — Budafok környékén
+                gyakran még aznap szállítunk.
               </p>
-              <div className="rise rise-4 mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
                 <PhoneLink className="num btn btn-lg btn-primary">
-                  <IconPhone size={21} className="btn-icon" />
+                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
                   {company.phone.display}
                 </PhoneLink>
                 <CalculatorCta className="btn btn-lg btn-outline-cream">
@@ -73,15 +76,16 @@ export default function HomePage() {
                   <IconArrowRight size={18} className="btn-icon btn-icon-move" />
                 </CalculatorCta>
               </div>
-              <p className="rise rise-4 mt-5 max-w-[60ch] text-[0.8125rem] leading-relaxed text-on-dark-muted">
-                {DISCLOSURE_PRICE} {DISCLOSURE_NET}
-              </p>
-            </div>
-
-            <div className="lg:col-span-5">
-              <MaterialStrata />
             </div>
           </div>
+
+          {/* Mintasor: hat anyaghalom teljes szélességben */}
+          <div className="mt-12 md:mt-14">
+            <MaterialHeaps />
+          </div>
+          <p className="mt-6 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted">
+            {DISCLOSURE_PRICE} {DISCLOSURE_NET}
+          </p>
         </div>
 
         {/* Ténysor — homok sáv a hero alján */}
@@ -338,10 +342,33 @@ export default function HomePage() {
                 <IconPhone size={24} />
               </span>
             </PhoneLink>
-            <p className="mt-4 text-sm text-on-dark-muted">
-              {company.hours.days}, {company.hours.time} · {company.address.full}
-            </p>
-            <CalculatorCta className="btn btn-outline-cream mt-6">
+            <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
+              <div>
+                <dt className="text-on-dark-muted">Nyitvatartás</dt>
+                <dd className="mt-1 font-semibold">{company.hours.days}<br />{company.hours.time}</dd>
+              </div>
+              <div>
+                <dt className="text-on-dark-muted">Telephely, depó</dt>
+                <dd className="mt-1 font-semibold">
+                  {company.address.full}
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(company.address.full)}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="mt-1 block font-medium text-amber underline decoration-amber/40 underline-offset-4 hover:decoration-amber"
+                  >
+                    Útvonaltervezés<span className="sr-only"> (új lapon, Google Térkép)</span>
+                  </a>
+                </dd>
+              </div>
+              <div>
+                <dt className="text-on-dark-muted">E-mail</dt>
+                <dd className="mt-1 font-semibold break-all">
+                  <MailLink className="underline decoration-on-dark/30 underline-offset-4 hover:decoration-on-dark" />
+                </dd>
+              </div>
+            </dl>
+            <CalculatorCta className="btn btn-outline-cream mt-7">
               Inkább előbb kiszámolom: árkalkulátor
               <IconArrowRight size={18} className="btn-icon btn-icon-move" />
             </CalculatorCta>

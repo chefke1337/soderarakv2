@@ -80,6 +80,7 @@ export default function MobileMenu() {
               <a
                 href={withBasePath(`${item.href}/`)}
                 tabIndex={open ? 0 : -1}
+                onClick={() => setOpen(false)}
                 className="flex min-h-12 items-center justify-between border-b border-line/70 py-3 text-base font-medium hover:text-brand-deep"
               >
                 {item.label}
