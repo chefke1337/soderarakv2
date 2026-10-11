@@ -9,6 +9,7 @@ import { AnalyticsBanner } from "@/components/Analytics";
 import { absoluteUrl, company, DISCLOSURE_NET, DISCLOSURE_PRICE, settlements } from "@/content/site";
 import { GSC_VERIFICATION } from "@/lib/analytics";
 import { JsonLd } from "@/lib/meta";
+import { SHARE } from "@/lib/share";
 
 export const viewport: Viewport = {
   themeColor: "#fbf8f2",
@@ -42,12 +43,14 @@ export const metadata: Metadata = {
   // Csak az origin: a Next a fájl-konvenciós metaadat-útvonalakhoz (opengraph-image)
   // maga teszi hozzá a basePath-ot — különben /soderarakv2/soderarakv2/… lenne.
   metadataBase: new URL(new URL(company.site.url).origin),
+  // A default a főoldalé (a page.tsx nem ad saját metaadatot): a megosztási
+  // előnézettel azonos szöveg, mert az export-QA og:title = title és
+  // twitter:description = description egyezést követel.
   title: {
-    default: "Sóderárak — sóder, homok, kavics, murva szállítás Budafokról",
+    default: SHARE.title,
     template: "%s | Sóderárak",
   },
-  description:
-    "Sóder, homok, kavics, murva és föld szállítás Budafokról Budapest XXII. és XI. kerületébe, Érdre és a környező településekre. Tájékoztató árak, gyakran aznap kiszállás.",
+  description: SHARE.description,
   alternates: { canonical: absoluteUrl("/") },
   // V2 = alternatív preview: ne versenyezzen az eredeti oldallal a keresőben.
   // (A noindex nem hozzáférés-védelem; a robots.txt szándékosan NEM tilt,
@@ -59,8 +62,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "hu_HU",
-    siteName: "Sóderárak",
+    siteName: SHARE.siteName,
     url: `${company.site.url}/`,
+    title: SHARE.title,
+    description: SHARE.description,
+    images: [SHARE.image],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SHARE.title,
+    description: SHARE.description,
+    images: [{ url: SHARE.image.url, width: SHARE.image.width, height: SHARE.image.height, alt: SHARE.image.alt }],
   },
 };
 

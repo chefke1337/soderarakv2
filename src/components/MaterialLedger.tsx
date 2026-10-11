@@ -2,7 +2,22 @@ import Link from "next/link";
 import { materialGroups, type MaterialGroup, type MaterialItem } from "@/content/site";
 import { formatFt, IconCalculator, IconPlus, minPrice } from "@/lib/ui";
 import FractionScale, { parseFraction } from "@/components/FractionScale";
-import MaterialGrain, { MATERIAL_COLOR } from "@/components/MaterialGrain";
+import { MATERIAL_COLOR } from "@/components/MaterialGrain";
+import { withBasePath } from "@/lib/basepath";
+
+/**
+ * Árlista-sorok valódi anyagfotói — csak ebben a listában (a főoldali
+ * kupac-grafikák és az anyagoldalak textúrái külön forrásból jönnek).
+ * A kivágás anyagonként hangolt: a panel desktopon széles, mobilon keskeny-magas.
+ */
+const LEDGER_PHOTO: Record<MaterialGroup["tone"], { src: string; position: string }> = {
+  soder: { src: "/anyagok/arlista/soder-foto.webp", position: "40% 55%" },
+  homok: { src: "/anyagok/arlista/homok-foto.webp", position: "50% 50%" },
+  kavics: { src: "/anyagok/arlista/kavics-foto.webp", position: "50% 45%" },
+  murva: { src: "/anyagok/arlista/murva-foto.webp", position: "50% 50%" },
+  bazalt: { src: "/anyagok/arlista/bazalt-foto.webp", position: "45% 40%" },
+  fold: { src: "/anyagok/arlista/fold-foto.webp", position: "50% 60%" },
+};
 
 /** Egy anyagcsoport teljes szemcse-tartománya a tételek frakcióiból (pl. „0–24 mm"). */
 function groupRange(g: MaterialGroup): string | undefined {
@@ -43,10 +58,21 @@ export default function MaterialLedger({
             style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
           >
             <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem]">
-              {/* teljes magasságú anyagpanel: a kártya „képe" */}
-              <span aria-hidden="true" className="mat-panel relative block overflow-hidden">
+              {/* teljes magasságú anyagpanel: a kártya „képe" (dekoratív — a név mellette áll) */}
+              <span aria-hidden="true" className="mat-panel relative block overflow-hidden bg-[var(--mat)]">
                 <span className="mat-grain absolute inset-0">
-                  <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} />
+                  {/* statikus export, unoptimized képek: a next/image itt nem ad hozzá semmit */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={withBasePath(LEDGER_PHOTO[g.tone].src)}
+                    alt=""
+                    width={360}
+                    height={360}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: LEDGER_PHOTO[g.tone].position }}
+                  />
                 </span>
               </span>
               <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">

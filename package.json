@@ -22,6 +22,7 @@
     "og:gallery": "node scripts/og-gallery.mjs",
     "og:hash": "node scripts/og-hash.mjs",
     "og:hash:update": "node scripts/og-hash.mjs --update",
+    "share:image": "node scripts/share-image.mjs",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
