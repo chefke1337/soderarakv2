@@ -27,7 +27,7 @@ export default function MaterialHeaps() {
         {materialGroups.map((g, i) => {
           const min = minPrice(g.items);
           return (
-            <li key={g.slug} className="heap-in w-[8.75rem] shrink-0 snap-start sm:w-[10rem] lg:w-auto" style={{ "--i": i } as React.CSSProperties}>
+            <li key={g.slug} className="heap-in w-[clamp(7.75rem,40vw,10rem)] shrink-0 snap-start lg:w-auto" style={{ "--i": i } as React.CSSProperties}>
               <Link
                 href={`/anyagok/${g.slug}`}
                 className="heap group relative flex h-[7.75rem] flex-col justify-end overflow-hidden rounded-b-[var(--radius-md)] outline-offset-[-3px] sm:h-36 lg:h-52 lg:outline-offset-4"
