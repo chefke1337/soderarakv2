@@ -85,7 +85,7 @@ export default function OrderRoute() {
               <span className="sr-only">{i + 1}. lépés: </span>
               {step.title}
             </h3>
-            <p className="mt-2 max-w-[60ch] text-[1rem] leading-relaxed text-text-muted md:text-[1.0625rem]">
+            <p className="mt-2 max-w-[60ch] text-[1rem] md:mt-2.5 leading-relaxed text-text-muted md:text-[1.0625rem]">
               {step.text}
             </p>
             {step.note && (

@@ -34,10 +34,10 @@ export default function Footer() {
 
         <nav aria-label="Lábléc navigáció" className="lg:col-span-2">
           <h2 className="text-sm font-medium text-on-dark-muted">Oldalak</h2>
-          <ul className="mt-2 grid grid-cols-2 gap-x-6 text-sm sm:grid-cols-1 lg:mt-3">
+          <ul className="mt-2 grid grid-cols-2 gap-x-6 text-sm sm:grid-cols-1 sm:gap-y-1 lg:mt-3">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="inline-flex min-h-11 items-center hover:text-amber sm:min-h-9">
+                <Link href={item.href} className="inline-flex min-h-11 items-center hover:text-amber sm:min-h-8">
                   {item.label}
                 </Link>
               </li>

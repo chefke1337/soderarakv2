@@ -220,7 +220,7 @@ export default function HomePage() {
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg (site.ts MIERT_HIVJON) ─── */}
       <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
-        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:px-6 md:py-24 lg:grid-cols-12">
+        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 md:gap-y-8 px-4 py-12 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
             <h2 id="miert-hivjon-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
