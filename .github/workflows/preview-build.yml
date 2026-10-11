@@ -2,9 +2,9 @@ name: V2 preview build (no deploy)
 
 # Ellenőrző build a `preview/**` ágakra: ugyanaz a typecheck + lint +
 # statikus export, mint az éles workflowban, de NEM publikál semmit.
-# A kész `out/` mappa Actions-artifactként tölthető le, és helyben
-# kiszolgálva ellenőrizhető (vizuális QA jóváhagyás előtt).
-# Az éles oldal (gh-pages) csak a main ágról frissül.
+# A kész `out/` mappa a `preview-out` ágra kerül (NEM a Pages-forrás
+# gh-pages ág), onnan letöltve helyben kiszolgálható és ellenőrizhető
+# jóváhagyás előtt. Az éles oldal (gh-pages) csak a main ágról frissül.
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
       - "preview/**"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: soderarakv2-preview-${{ github.ref }}
@@ -60,9 +60,14 @@ jobs:
           msg=$(sed -e 's/%/%25/g' tail.log | awk 'BEGIN{ORS="%0A"}{print}')
           echo "::error title=Build output (tail)::${msg}"
 
-      - name: Upload static export (no deploy)
-        uses: actions/upload-artifact@v4
+      - name: Store static export on preview-out branch (not published)
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          name: soderarakv2-preview
-          path: out
-          retention-days: 7
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: preview-out
+          publish_dir: ./out
+          force_orphan: true
+          enable_jekyll: true
+          user_name: "github-actions[bot]"
+          user_email: "github-actions[bot]@users.noreply.github.com"
+          commit_message: "Preview build ${{ github.sha }} (${{ github.ref_name }})"
