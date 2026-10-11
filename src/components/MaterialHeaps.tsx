@@ -37,19 +37,19 @@ export default function MaterialHeaps() {
                   <MaterialGrain tone={g.tone} id={`heap-${g.slug}`} />
                 </span>
                 <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 to-transparent" />
-                <span className="relative z-10 flex items-end justify-between gap-2 p-2.5 lg:p-3">
-                  <span className="min-w-0">
-                    <span className="block font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">{g.name}</span>
-                    <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
-                      {min !== null ? formatFt(min) : "egyeztetés után"}
-                    </span>
+                <span className="relative z-10 block p-2.5 lg:p-3 lg:pr-12">
+                  <span className="block font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">{g.name}</span>
+                  <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
+                    {min !== null ? formatFt(min) : "egyeztetés után"}
                   </span>
-                  <span
-                    aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/15 text-on-dark transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:h-8 lg:w-8"
-                  >
-                    <IconArrowRight size={15} className="heap-arrow" />
-                  </span>
+                </span>
+                {/* nyíl: keskeny kártyán a kupac melletti szabad felső sarokban
+                    (a szöveg kapja a teljes szélességet), lg-től jobb alul */}
+                <span
+                  aria-hidden="true"
+                  className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-on-dark/15 text-on-dark transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:top-auto lg:right-3 lg:bottom-3 lg:h-8 lg:w-8"
+                >
+                  <IconArrowRight size={15} className="heap-arrow" />
                 </span>
               </Link>
             </li>
