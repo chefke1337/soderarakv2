@@ -19,30 +19,33 @@ export default function MaterialHeaps() {
         <h2 className="font-display text-base font-bold text-on-dark">Anyagok és induló árak</h2>
         <span>nettó Ft/m³-től</span>
       </div>
-      <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-6 lg:gap-3">
+      {/* < lg: egyetlen, natívan lapozható sor (a következő kártya belóg, ezért
+          egyértelmű, hogy van még); csak ez a sáv görget oldalra, az oldal nem.
+          lg+: a változatlan hathasábos rács. */}
+      <ul className="heap-rail -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 pt-2 pb-3 md:-mx-6 md:scroll-px-6 md:px-6 lg:mx-0 lg:grid lg:snap-none lg:grid-cols-6 lg:gap-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0">
         {materialGroups.map((g, i) => {
           const min = minPrice(g.items);
           return (
-            <li key={g.slug} className="heap-in" style={{ "--i": i } as React.CSSProperties}>
+            <li key={g.slug} className="heap-in w-[8.75rem] shrink-0 snap-start sm:w-[10rem] lg:w-auto" style={{ "--i": i } as React.CSSProperties}>
               <Link
                 href={`/anyagok/${g.slug}`}
-                className="heap group relative flex h-36 flex-col justify-end overflow-hidden rounded-b-[var(--radius-md)] outline-offset-4 sm:h-40 lg:h-52"
+                className="heap group relative flex h-[7.75rem] flex-col justify-end overflow-hidden rounded-b-[var(--radius-md)] outline-offset-[-3px] sm:h-36 lg:h-52 lg:outline-offset-4"
               >
                 {/* halom: kupac-ív tetejű szemcsés felület */}
                 <span aria-hidden="true" className="heap-body absolute inset-0">
                   <MaterialGrain tone={g.tone} id={`heap-${g.slug}`} />
                 </span>
                 <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/55 to-transparent" />
-                <span className="relative z-10 flex items-end justify-between gap-2 p-3">
+                <span className="relative z-10 flex items-end justify-between gap-2 p-2.5 lg:p-3">
                   <span className="min-w-0">
-                    <span className="block font-display text-lg leading-tight font-bold text-on-dark">{g.name}</span>
-                    <span className="num mt-0.5 block text-sm font-semibold text-on-dark">
+                    <span className="block font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">{g.name}</span>
+                    <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
                       {min !== null ? formatFt(min) : "egyeztetés után"}
                     </span>
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-on-dark/15 text-on-dark transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/15 text-on-dark transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:h-8 lg:w-8"
                   >
                     <IconArrowRight size={15} className="heap-arrow" />
                   </span>
@@ -52,7 +55,7 @@ export default function MaterialHeaps() {
           );
         })}
       </ul>
-      <p className="num mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-on-dark-muted">
+      <p className="num mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-on-dark-muted lg:mt-4 lg:gap-x-6">
         <span>
           Fuvar, zóna szerint: <strong className="font-semibold text-on-dark">{formatFt(fuelMin).replace(" Ft", "")}–{formatFt(fuelMax)}</strong>
         </span>

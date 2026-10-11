@@ -17,7 +17,7 @@ export default function Footer() {
         <span className="flex-[1] bg-mat-bazalt" />
         <span className="flex-[3] bg-mat-fold" />
       </div>
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 pt-14 pb-10 sm:grid-cols-2 md:px-6 lg:grid-cols-12">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-8 sm:grid-cols-2 md:gap-10 md:pt-14 md:pb-10 md:px-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Link href="/" aria-label="Sóderárak — főoldal" className="inline-block rounded-sm">
             <span className="font-display text-2xl font-bold">Sóder árak</span>
@@ -34,10 +34,10 @@ export default function Footer() {
 
         <nav aria-label="Lábléc navigáció" className="lg:col-span-2">
           <h2 className="text-sm font-medium text-on-dark-muted">Oldalak</h2>
-          <ul className="mt-3 space-y-1 text-sm">
+          <ul className="mt-2 grid grid-cols-2 gap-x-6 text-sm sm:grid-cols-1 lg:mt-3">
             {nav.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} className="inline-flex min-h-8 items-center hover:text-amber">
+                <Link href={item.href} className="inline-flex min-h-11 items-center hover:text-amber sm:min-h-9">
                   {item.label}
                 </Link>
               </li>
@@ -82,7 +82,7 @@ export default function Footer() {
       <div className="border-t border-paper/15 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-0">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 text-xs leading-relaxed text-on-dark-muted md:flex-row md:items-center md:justify-between md:px-6">
           <p>
-            © {new Date().getFullYear()} {company.name}. Minden jog fenntartva.
+            © {new Date().getFullYear()} {company.name.replace(/\.$/, "")}. Minden jog fenntartva.
           </p>
           <p className="md:max-w-[60ch] md:text-right">
             Az árak tájékoztató jellegűek, nettó árak (ÁFA nélkül); a fuvar díja

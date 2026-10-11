@@ -535,6 +535,20 @@ summary::-webkit-details-marker {
 }
 
 /* ── Hero mintasor: anyaghalmok ── */
+/* < lg: natív vízszintes sáv. Csak oldalirányban görget (függőleges
+   gesztus az oldalé marad), a vékony görgetősáv egérrel is kezelhető,
+   az oldalirányú „túlgörgetés" nem lapoz vissza a böngészőben. */
+.heap-rail {
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 250 241 / 0.35) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heap-rail {
+    scroll-behavior: smooth;
+  }
+}
 .heap-body {
   /* kupac-ív tető: alacsony ellipszis a felső élen */
   clip-path: ellipse(78% 100% at 50% 100%);

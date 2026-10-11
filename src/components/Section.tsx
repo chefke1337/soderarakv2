@@ -89,16 +89,16 @@ export default function Section({
       aria-labelledby={headingId}
       className={`relative ${TONE[tone]}${cv ? " cv-auto" : ""} ${className}`}
     >
-      <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-24">
+      <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-24">
         {layout === "split" ? (
-          <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div className="grid gap-7 md:gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-4">{heading}</div>
             <div className="min-w-0 lg:col-span-8">{children}</div>
           </div>
         ) : (
           <>
             {heading}
-            <div className="mt-8 md:mt-12">{children}</div>
+            <div className="mt-7 md:mt-12">{children}</div>
           </>
         )}
       </div>

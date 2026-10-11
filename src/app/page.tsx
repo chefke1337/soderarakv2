@@ -47,7 +47,7 @@ export default function HomePage() {
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           {/* Felső sor: markáns cím balra, leírás + CTA-k jobbra, alsó élre igazítva */}
-          <div className="grid gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="lg:col-span-7">
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
@@ -80,10 +80,10 @@ export default function HomePage() {
           </div>
 
           {/* Mintasor: hat anyaghalom teljes szélességben */}
-          <div className="mt-12 md:mt-14">
+          <div className="mt-9 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
-          <p className="mt-6 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted">
+          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
             {DISCLOSURE_PRICE} {DISCLOSURE_NET}
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function HomePage() {
             {facts.map((f, i) => (
               <div
                 key={f.value}
-                className={`py-5 pr-4 md:py-6 ${i % 2 === 1 ? "border-l border-border-strong/60 pl-4" : ""} ${i >= 2 ? "border-t border-border-strong/60 md:border-t-0" : ""} ${i === 2 ? "md:border-l md:pl-5" : ""} ${i % 2 === 1 ? "md:pl-5" : ""}`}
+                className={`py-4 pr-4 md:py-6 ${i % 2 === 1 ? "border-l border-border-strong/60 pl-4" : ""} ${i >= 2 ? "border-t border-border-strong/60 md:border-t-0" : ""} ${i === 2 ? "md:border-l md:pl-5" : ""} ${i % 2 === 1 ? "md:pl-5" : ""}`}
               >
                 <dt className="sr-only">{f.label}</dt>
                 <dd>
@@ -176,7 +176,7 @@ export default function HomePage() {
               {zones.map((z, i) => {
                 const list = settlements.filter((s) => s.zone === z.id);
                 return (
-                  <li key={z.id} className="grid grid-cols-[2rem_1fr] gap-x-4 border-b border-line py-5">
+                  <li key={z.id} className="grid grid-cols-[2rem_1fr] gap-x-4 border-b border-line py-4 md:py-5">
                     <span aria-hidden="true" className={`num flex h-8 w-8 items-center justify-center rounded-full font-display text-sm font-bold ${["bg-[#b4532f] text-on-dark", "bg-[#d9b77a] text-text", "bg-[#cbbfa9] text-text"][i]}`}>
                       {i + 1}
                     </span>
@@ -220,7 +220,7 @@ export default function HomePage() {
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg (site.ts MIERT_HIVJON) ─── */}
       <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
-        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-8 px-4 py-14 md:px-6 md:py-24 lg:grid-cols-12">
+        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
             <h2 id="miert-hivjon-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
@@ -245,11 +245,11 @@ export default function HomePage() {
           </div>
 
           <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pt-14">
-            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-6 text-on-dark shadow-pop md:p-8">
+            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
               <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
               <ul className="mt-4">
                 {MIERT_HIVJON.list.map((item) => (
-                  <li key={item} className="flex gap-3.5 border-b border-on-dark/15 py-3.5 last:border-0 last:pb-0">
+                  <li key={item} className="flex gap-3.5 border-b border-on-dark/15 py-3 last:border-0 md:py-3.5 last:pb-0">
                     <span aria-hidden="true" className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber">
                       <IconCheck size={15} />
                     </span>
@@ -299,7 +299,7 @@ export default function HomePage() {
       >
         <JsonLd data={faqJsonLd([...FAQ])} />
         <FaqAccordion />
-        <nav aria-label="Útmutatók" className="mt-10">
+        <nav aria-label="Útmutatók" className="mt-8 md:mt-10">
           <h3 className="text-sm font-medium text-ink-soft">Részletesebben az útmutatókban</h3>
           <ul className="mt-3 border-t border-line">
             {featuredGuides.map((g) => (
@@ -323,7 +323,7 @@ export default function HomePage() {
       {/* data-call-region="zaro_cta": külön régió a hero-tól (metrics-plan §5). */}
       <section data-call-region="zaro_cta" aria-labelledby="zaro-cim" className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark">
         <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 md:grid-cols-12 md:px-6 md:py-24">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-12 md:gap-10 md:px-6 md:py-24">
           <div className="md:col-span-6">
             <p className="label-strata text-amber">Rendelés</p>
             <h2 id="zaro-cim" className="mt-3 font-display text-[2.25rem] leading-[1.02] font-bold tracking-display text-balance md:text-display">
@@ -368,7 +368,7 @@ export default function HomePage() {
                 </dd>
               </div>
             </dl>
-            <CalculatorCta className="btn btn-outline-cream mt-7">
+            <CalculatorCta className="btn btn-outline-cream mt-6 md:mt-7">
               Inkább előbb kiszámolom: árkalkulátor
               <IconArrowRight size={18} className="btn-icon btn-icon-move" />
             </CalculatorCta>

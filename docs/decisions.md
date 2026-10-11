@@ -278,3 +278,16 @@ A térképi körvonal a zónabesorolást (site.ts `settlement.zone`) követi, ne
 fordítva. Újbuda és Nagytétény `mag` tagok voltak, de kívül estek a körvonalon;
 a tájékoztató sávot bővítettük, nem a markert mozgattuk. Halásztelek
 (`tavolabbi` besorolás, `kozel` területen) ügyféldöntésre vár.
+
+## 2026-10-11 — V2.5: egysoros anyagsáv mobilon, kompaktabb mobiloldal
+Ügyféligény: a hero „Anyagok és induló árak" hat kártyája mobilon/tableten se
+törjön több sorba. Megoldás: `lg` alatt natív vízszintes görgetősáv
+(`overflow-x: auto` csak a listán, scroll-snap, belógó következő kártya,
+vékony görgetősáv, `overscroll-behavior-x: contain`), új függőség nélkül;
+`lg`-től a változatlan hathasábos rács. Kártyák mobilon 140×124 px, a teljes
+név és ár/„egyeztetés után" látható, nincs csonkolás.
+Mobil helyigény szekciónként (nem egységes zsugorítás): Section py 56→48 px,
+cím–tartalom 32→28 px; anyagkártyán a külön „Tételek" sor az ár alá került
+(`md:contents`, desktop változatlan); idővonalon keskenyebb számoszlop →
+szélesebb szöveghasáb; lábléc „Oldalak" két hasábban, 44 px érintési
+célokkal (eddig 32 px volt). Szövegek, árak, lépések változatlanok.

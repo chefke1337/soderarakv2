@@ -18,7 +18,7 @@ export default function CalculatorEntry() {
   return (
     <section aria-labelledby="kalk-belepo-cim" className="on-accent relative isolate overflow-hidden bg-surface-accent text-on-dark">
       <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-40 mix-blend-multiply" />
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-12 lg:gap-14">
+      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:gap-10 md:px-6 md:py-20 lg:grid-cols-12 lg:gap-14">
         <div className="lg:col-span-6">
           <p className="label-strata text-on-dark">Árkalkulátor</p>
           <h2 id="kalk-belepo-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
@@ -29,7 +29,7 @@ export default function CalculatorEntry() {
             tájékoztató nettó összeget fuvarral együtt. Utána egy névvel és
             telefonszámmal ajánlatot kérhet.
           </p>
-          <div className="mt-8 grid max-w-[34rem] gap-3 sm:grid-cols-2 [&>a]:w-full [&>a]:whitespace-nowrap">
+          <div className="mt-6 grid max-w-[34rem] md:mt-8 gap-3 sm:grid-cols-2 [&>a]:w-full [&>a]:whitespace-nowrap">
             <Link href="/arkalkulator" className="btn btn-lg btn-cream">
               <IconCalculator size={20} className="btn-icon" />
               Árkalkulátor indítása
@@ -43,7 +43,7 @@ export default function CalculatorEntry() {
 
         {/* Példa-szelvény */}
         <figure className="lg:col-span-6">
-          <div className="relative rotate-[-1.2deg] rounded-[var(--radius-md)] bg-surface p-6 text-text shadow-[0_30px_60px_-30px_rgb(0_0_0_/_0.55)] transition-transform duration-[var(--dur-enter)] ease-[var(--ease-out-soft)] hover:rotate-0 md:p-8">
+          <div className="relative rotate-[-1.2deg] rounded-[var(--radius-md)] bg-surface p-5 text-text shadow-[0_30px_60px_-30px_rgb(0_0_0_/_0.55)] transition-transform duration-[var(--dur-enter)] ease-[var(--ease-out-soft)] hover:rotate-0 md:p-8">
             <div className="flex items-baseline justify-between gap-4 border-b border-dashed border-border-strong pb-4">
               <p className="font-display text-heading-sm font-bold">Példa: {qty} m³ {m.name}</p>
               <p className="text-sm text-text-muted">Budafokra</p>

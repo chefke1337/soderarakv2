@@ -52,19 +52,19 @@ export default function OrderRoute() {
         <li
           key={step.title}
           style={{ "--i": i } as React.CSSProperties}
-          className="route-step relative grid grid-cols-[3.75rem_1.25rem_minmax(0,1fr)] gap-x-3 pb-10 last:pb-0 md:grid-cols-[6rem_1.75rem_minmax(0,1fr)] md:gap-x-5 md:pb-12"
+          className="route-step relative grid grid-cols-[2.75rem_1rem_minmax(0,1fr)] gap-x-2.5 pb-8 last:pb-0 md:grid-cols-[6rem_1.75rem_minmax(0,1fr)] md:gap-x-5 md:pb-12"
         >
           {/* vonalszakasz ehhez a csomóponttól a következőig (a sín közepén) */}
           {i < last && (
             <span
               aria-hidden="true"
-              className="route-seg absolute top-[1.625rem] -bottom-3 left-[calc(3.75rem+0.75rem+0.625rem-1.5px)] w-[3px] rounded-full bg-accent/55 md:top-[2.25rem] md:-bottom-5 md:left-[calc(6rem+1.25rem+0.875rem-1.5px)]"
+              className="route-seg absolute top-[1.5rem] -bottom-2.5 left-[calc(2.75rem+0.625rem+0.5rem-1.5px)] w-[3px] rounded-full bg-accent/55 md:top-[2.25rem] md:-bottom-5 md:left-[calc(6rem+1.25rem+0.875rem-1.5px)]"
             />
           )}
           {/* nagy numerál */}
           <span
             aria-hidden="true"
-            className={`num font-display text-[2.75rem] leading-none font-bold tracking-tight md:text-[4.25rem] ${
+            className={`num font-display text-[2.125rem] leading-none font-bold tracking-tight md:text-[4.25rem] ${
               i === last ? "text-accent" : "text-accent-deep/85"
             }`}
           >
@@ -74,18 +74,18 @@ export default function OrderRoute() {
           {/* sín: csomópont + a következő lépésig tartó vonalszakasz */}
           <span aria-hidden="true" className="relative flex justify-center">
             <span
-              className={`relative z-10 mt-3 block h-3.5 w-3.5 rounded-full ring-4 ring-page md:mt-5 md:h-4 md:w-4 ${
+              className={`relative z-10 mt-2.5 block h-3.5 w-3.5 rounded-full ring-4 ring-page md:mt-5 md:h-4 md:w-4 ${
                 i === last ? "bg-accent" : "border-[3px] border-accent bg-page"
               }`}
             />
           </span>
 
-          <div className="pt-1 md:pt-2.5">
+          <div className="pt-0.5 md:pt-2.5">
             <h3 className="font-display text-heading-sm font-bold text-balance md:text-heading-md">
               <span className="sr-only">{i + 1}. lépés: </span>
               {step.title}
             </h3>
-            <p className="mt-2.5 max-w-[60ch] text-[1rem] leading-relaxed text-text-muted md:text-[1.0625rem]">
+            <p className="mt-2 max-w-[60ch] text-[1rem] leading-relaxed text-text-muted md:text-[1.0625rem]">
               {step.text}
             </p>
             {step.note && (

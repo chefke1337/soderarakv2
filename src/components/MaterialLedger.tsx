@@ -42,14 +42,14 @@ export default function MaterialLedger({
             className="mat-card group relative overflow-hidden rounded-[var(--radius-md)] border border-border/70 bg-surface shadow-card"
             style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
           >
-            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[4.5rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem]">
+            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem]">
               {/* teljes magasságú anyagpanel: a kártya „képe" */}
-              <span aria-hidden="true" className="mat-panel relative row-span-2 block overflow-hidden md:row-span-1">
+              <span aria-hidden="true" className="mat-panel relative block overflow-hidden">
                 <span className="mat-grain absolute inset-0">
                   <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} />
                 </span>
               </span>
-              <span className="min-w-0 self-center py-4 pr-2 pl-4 md:pl-6">
+              <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
               </span>
@@ -67,28 +67,32 @@ export default function MaterialLedger({
                 )}
               </span>
 
-              <span className="num self-center py-4 pr-4 text-right md:pr-5">
-                {min !== null ? (
-                  <>
-                    <span className="block font-display text-heading-sm font-bold">{formatFt(min)}</span>
-                    <span className="block text-xs text-ink-soft">-tól / m³ nettó</span>
-                  </>
-                ) : (
-                  <span className="block text-sm font-medium text-ink-soft">egyeztetés után</span>
-                )}
-              </span>
-
-              {/* egyértelmű nyitás-jelző: felirat + ikon (mobilon a második sorban) */}
-              <span className="col-span-2 col-start-2 flex items-center justify-between gap-2 border-t border-border/60 py-2.5 pr-4 pl-4 text-sm font-semibold text-accent-deep md:col-span-1 md:col-start-auto md:justify-end md:border-t-0 md:border-l md:py-0 md:pr-5 md:pl-4">
-                <span className="mat-toggle-label">
-                  <span className="group-open:hidden">Tételek</span>
-                  <span className="hidden group-open:inline">Bezárás</span>
+              {/* Mobilon ár + nyitásjelző egy oszlopban (nincs külön sor);
+                  md+-on a wrapper „eltűnik" (contents), a két cella saját hasáb. */}
+              <span className="flex flex-col items-end justify-between gap-2 py-3.5 pr-3.5 md:contents">
+                <span className="num text-right md:self-center md:py-4 md:pr-5">
+                  {min !== null ? (
+                    <>
+                      <span className="block font-display text-heading-sm font-bold">{formatFt(min)}</span>
+                      <span className="block text-xs text-ink-soft">-tól / m³ nettó</span>
+                    </>
+                  ) : (
+                    <span className="block text-sm font-medium text-ink-soft">egyeztetés után</span>
+                  )}
                 </span>
-                <span
-                  aria-hidden="true"
-                  className="mat-toggle flex h-8 w-8 items-center justify-center rounded-full bg-page text-ink group-open:rotate-45 group-open:bg-accent group-open:text-on-dark"
-                >
-                  <IconPlus size={16} />
+
+                {/* egyértelmű nyitás-jelző: felirat + ikon */}
+                <span className="flex items-center gap-2 text-sm font-semibold text-accent-deep md:justify-end md:border-l md:border-border/60 md:pr-5 md:pl-4">
+                  <span className="mat-toggle-label">
+                    <span className="group-open:hidden">Tételek</span>
+                    <span className="hidden group-open:inline">Bezárás</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="mat-toggle flex h-8 w-8 items-center justify-center rounded-full bg-page text-ink group-open:rotate-45 group-open:bg-accent group-open:text-on-dark"
+                  >
+                    <IconPlus size={16} />
+                  </span>
                 </span>
               </span>
             </summary>
