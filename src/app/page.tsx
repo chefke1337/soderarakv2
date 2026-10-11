@@ -210,7 +210,7 @@ export default function HomePage() {
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg (site.ts MIERT_HIVJON) ─── */}
       <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:px-6 md:py-24 lg:grid-cols-12 lg:gap-14">
+        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-8 px-4 py-14 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
             <h2 id="miert-hivjon-cim" className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg">
@@ -222,7 +222,10 @@ export default function HomePage() {
             <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-relaxed text-text-muted">
               {MIERT_HIVJON.body}
             </p>
-            <div className="mt-8 border-t border-border-strong pt-6" data-call-region="miert_hivjon">
+          </div>
+
+          <div className="order-last lg:order-none lg:col-span-6 lg:col-start-1 lg:row-start-2">
+            <div className="border-t border-border-strong pt-6" data-call-region="miert_hivjon">
               <p className="max-w-[56ch] text-[1.0625rem] leading-relaxed">{MIERT_HIVJON.closing}</p>
               <PhoneLink className="num btn btn-lg btn-primary mt-5">
                 <IconPhone size={20} className="btn-icon" />
@@ -231,7 +234,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="lg:col-span-6 lg:pt-14">
+          <div className="lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pt-14">
             <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-6 text-on-dark shadow-pop md:p-8">
               <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
               <ul className="mt-4">
