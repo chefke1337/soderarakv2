@@ -2,12 +2,13 @@ import Link from "next/link";
 import { materialGroups, zones } from "@/content/site";
 import { formatFt, IconArrowRight, minPrice } from "@/lib/ui";
 import MaterialGrain from "@/components/MaterialGrain";
+import HeapRail from "@/components/HeapRail";
 
 /**
  * Hero „mintasor": a hat anyagcsoport egymás melletti halomként, valódi
  * induló nettó árral (site.ts). A halom teteje kupac-ív (clip-path), a
  * felület SVG-szemcse. Minden halom az anyag aloldalára visz.
- * Mobilon 2×3 rács, alacsonyabb halmokkal.
+ * lg alatt egyetlen, oldalirányban lapozható sor (HeapRail), lg-től 6 hasáb.
  */
 export default function MaterialHeaps() {
   const fuelMin = Math.min(...zones.map((z) => z.fuelMin));
@@ -22,7 +23,7 @@ export default function MaterialHeaps() {
       {/* < lg: egyetlen, natívan lapozható sor (a következő kártya belóg, ezért
           egyértelmű, hogy van még); csak ez a sáv görget oldalra, az oldal nem.
           lg+: a változatlan hathasábos rács. */}
-      <ul className="heap-rail -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 pt-2 pb-3 md:-mx-6 md:scroll-px-6 md:px-6 lg:mx-0 lg:grid lg:snap-none lg:grid-cols-6 lg:gap-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0">
+      <HeapRail className="heap-rail -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 pt-2 pb-3 md:-mx-6 md:scroll-px-6 md:px-6 lg:mx-0 lg:grid lg:snap-none lg:grid-cols-6 lg:gap-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0">
         {materialGroups.map((g, i) => {
           const min = minPrice(g.items);
           return (
@@ -54,7 +55,7 @@ export default function MaterialHeaps() {
             </li>
           );
         })}
-      </ul>
+      </HeapRail>
       <p className="num mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-on-dark-muted lg:mt-4 lg:gap-x-6">
         <span>
           Fuvar, zóna szerint: <strong className="font-semibold text-on-dark">{formatFt(fuelMin).replace(" Ft", "")}–{formatFt(fuelMax)}</strong>
