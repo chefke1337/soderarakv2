@@ -1,0 +1,63 @@
+# Sóderárak — Bau-Kont Logisztik Kft.
+
+> Ömlesztett építőanyagok (sóder, homok, kavics, murva, bazalt, föld) értékesítése és szállítása Budafokról, Budapest XXII. kerületéből a délnyugati környék településeire. Nem webshop: rendelés telefonon vagy ajánlatkéréssel.
+
+## Alapadatok
+
+- Cég: Bau-Kont Logisztik Kft. — Sóderárak üzletág
+- Web: https://soderarak.hu
+- Telefon: +36 30 954 6156 (H–P 07:00–17:00)
+- E-mail: info@soderarak.hu
+- Telephely / depó: 1221 Budapest, Arany János út 152. (Budafok, XXII. kerület)
+- Hulladék/konténer (külön üzletág): https://budakontener.hu
+
+## Szolgáltatás
+
+- Anyagok: sóder (0/4, 0/8, 0/16, 0/24, töltősóder), homok (natúr, 0–1), kavics (4/8, 8/16), kulékavics (16–32, 24–40, 30–65), murva (2–5, 0–20, 20–55), kerti murva (5–12, 12–20), bazalt (frakciók egyeztetés után), föld (natúr, darált).
+- Minimum rendelés: 4 m³; egy fuvarban legfeljebb 23 m³.
+- Saját flotta: platós, billencs és konténeres teherautók; telephelyi átvétel (depó) is.
+- Fizetés és árazás: az anyagárak nettó árak (ÁFA nélkül), a fuvar díja külön, zónánként; minden ár tájékoztató, a végleges ajánlat egyeztetés után készül.
+
+## Szállítási zónák és tájékoztató fuvarárak (nettó)
+
+- Budafok és környéke — Budapest XXII. és XI. kerület vonala: 12 000–22 000 Ft/fuvar, kiszállás gyakran aznap.
+- Közeli települések — Érd, Diósd, Törökbálint, Csepel (XXI.), Szigetszentmiklós: 18 000–32 000 Ft/fuvar.
+- Távolabbi települések — Tárnok, Sóskút, Pusztazámor, Halásztelek: 25 000–45 000 Ft/fuvar.
+
+## Tájékoztató anyagárak (nettó Ft/m³, fuvar nélkül)
+
+- Töltősóder 13 000; Sóder 0/24 16 500; Sóder 0/4 16 800; Sóder 0/8 17 000; Sóder 0/16 17 000
+- Homok (natúr) 13 300; 0–1 Homok 16 200
+- Kavics 4/8 17 500; Kavics 8/16 17 500; Kulékavics 16–32 17 000; Kulékavics 24–40 17 700; Kulékavics 30–65 15 000
+- Murva 0–20 17 000; Murva 20–55 18 000; Murva 2–5 21 000; Kerti murva 5–12 19 500; Kerti murva 12–20 19 500
+- Natúrföld 14 000; Daráltföld 15 000
+- Bazalt: ár egyeztetés után
+
+## Oldalak
+
+- Főoldal: https://soderarak.hu/
+- Árak: https://soderarak.hu/arak
+- Árkalkulátor (anyag + mennyiség + település): https://soderarak.hu/arkalkulator
+- Anyagok: https://soderarak.hu/anyagok
+- Szállítás: https://soderarak.hu/szallitas
+- Területek: https://soderarak.hu/teruletek
+- Kapcsolat: https://soderarak.hu/kapcsolat
+
+## Idézési szabály
+
+Árak és fuvardíjak idézésekor mindig jelezd: „Tájékoztató ár. A végleges ajánlatot egyeztetés után adjuk." Az árak nettó, ÁFA nélkül; a fuvar külön.
+
+## Útmutatók (építőanyag-kisokos)
+
+- https://soderarak.hu/utmutatok/
+- https://soderarak.hu/utmutatok/mennyi-soder-kell/
+- https://soderarak.hu/utmutatok/mennyibe-kerul-a-soder/
+- https://soderarak.hu/utmutatok/soder-vagy-murva/
+- https://soderarak.hu/utmutatok/milyen-soder-kell-a-betonhoz/
+- https://soderarak.hu/utmutatok/milyen-soder-kell-a-terko-ala/
+- https://soderarak.hu/utmutatok/kocsibeallo-alapja/
+- https://soderarak.hu/utmutatok/toltosoder-es-rostalt-soder/
+- https://soderarak.hu/utmutatok/soder-cement-aranys/
+- https://soderarak.hu/utmutatok/aljzatbetonhoz-milyen-soder-kell/
+- https://soderarak.hu/utmutatok/arkalkulator-hasznalata/
+- https://soderarak.hu/utmutatok/mennyi-ido-a-soder-szallitas/

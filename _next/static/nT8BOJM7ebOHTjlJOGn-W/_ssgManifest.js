@@ -1,0 +1,1 @@
+self.__SSG_MANIFEST=new Set(["\u002Fanyagok\u002F[anyag]","\u002Fanyagok\u002F[anyag]\u002Fopengraph-image","\u002Fteruletek\u002F[telepules]","\u002Fteruletek\u002F[telepules]\u002Fopengraph-image","\u002Futmutatok\u002F[slug]","\u002Futmutatok\u002F[slug]\u002Fopengraph-image"]);self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()
