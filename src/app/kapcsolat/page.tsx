@@ -57,17 +57,8 @@ export default function KapcsolatPage() {
               <dd>
                 <address className="not-italic font-semibold">{company.address.full}</address>
                 <p className="mt-1 text-sm text-ink-soft">
-                  {company.address.district} — depó: itt is átveheti az anyagot.
+                  {company.address.district}
                 </p>
-                <a
-                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(company.address.full)}`}
-                  className="link mt-2 inline-flex min-h-11 items-center gap-1.5 text-sm"
-                  rel="noopener"
-                  target="_blank"
-                >
-                  Útvonaltervezés a telephelyhez
-                  <span className="sr-only">(új lapon, Google Térkép)</span>
-                </a>
               </dd>
             </div>
             <div className="grid grid-cols-[7rem_1fr] gap-4 py-4">
@@ -96,7 +87,7 @@ export default function KapcsolatPage() {
         </div>
 
         <div className="min-w-0 lg:col-span-7">
-          <h2 className="font-display text-heading-md font-bold">Telephely és szállítási zónák</h2>
+          <h2 className="font-display text-heading-md font-bold">Szállítási zónák</h2>
           <div className="mt-4 rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
             <ZonaTerkepLazy height={420} />
           </div>

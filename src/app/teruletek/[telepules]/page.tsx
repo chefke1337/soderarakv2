@@ -53,7 +53,7 @@ export default async function SettlementPage({
     },
     {
       q: `Milyen anyagokat szállítanak ${s.name} területére?`,
-      a: "Sódert (0/4–0/24 és töltősóder), homokot, kavicsot, kulékavicsot, murvát, bazaltot és földet. Minimum rendelés 4 m³, egy fuvarban legfeljebb 23 m³.",
+      a: "Sódert (0/4–0/24 és töltősóder), homokot, kavicsot, kulékavicsot, murvát, bazaltot és földet. Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³.",
     },
   ];
 
@@ -99,7 +99,7 @@ export default async function SettlementPage({
               ))}
             </ul>
             <p className="mt-4 text-xs text-ink-soft">
-              Minimum rendelés 4 m³, egy fuvarban legfeljebb 23 m³. Tájékoztató
+              Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³. Tájékoztató
               ár — a végleges ajánlatot egyeztetés után adjuk.
             </p>
           </div>

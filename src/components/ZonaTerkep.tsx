@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, LayerGroup } from "leaflet";
-import { company, depot, settlements, zones } from "@/content/site";
+import { settlements, zones } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // komment az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
@@ -109,23 +109,6 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
               className: "city-label",
             });
         }
-
-        // Telephely-jelölő
-        L.marker(depot.latlng, {
-          title: depot.label,
-          alt: depot.label,
-          icon: L.divIcon({
-            className: "",
-            html: `<div style="width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#c2410c;border:3px solid #fbf8f2;box-shadow:0 4px 12px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><div style="transform:rotate(45deg);color:#fbf8f2;font:700 13px/1 system-ui">★</div></div>`,
-            iconSize: [34, 34],
-            iconAnchor: [17, 34],
-            popupAnchor: [0, -30],
-          }),
-        })
-          .addTo(group)
-          .bindPopup(
-            `<strong>Telephely — Sóderárak</strong><br/>${company.address.full}<br/>${company.hours.short} · <a href="tel:${company.phone.raw}">${company.phone.display}</a>`,
-          );
 
         // A keretezés a tényleges zónákra illeszkedik, nem beégetett nézetre.
         const points = zones.flatMap((z) => z.polygon.flat());

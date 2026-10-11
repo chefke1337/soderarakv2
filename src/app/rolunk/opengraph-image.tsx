@@ -1,4 +1,4 @@
-import { company, materialGroups } from "@/content/site";
+import { company, materialGroups, settlements } from "@/content/site";
 import { ogCard } from "@/lib/og";
 
 export const dynamic = "force-static";
@@ -13,7 +13,7 @@ export default function OgImage() {
     subtitle: "Ömlesztett építőanyag értékesítése és szállítása Budafokról, saját telephellyel és saját flottával.",
     companyFacts: [
       { value: "Saját", label: "flotta Budafokról" },
-      { value: "Depó", label: "telephelyi átvétel" },
+      { value: String(settlements.length), label: "kiszolgált település" },
       { value: company.hours.short, label: "ügyfélfogadás" },
       { value: String(materialGroups.length), label: "anyagcsoport" },
     ],

@@ -58,7 +58,7 @@ export default function MaterialHeaps() {
           Fuvar, zóna szerint: <strong className="font-semibold text-on-dark">{formatFt(fuelMin).replace(" Ft", "")}–{formatFt(fuelMax)}</strong>
         </span>
         <span>
-          Egy fuvarban: <strong className="font-semibold text-on-dark">4–23 m³</strong>
+          Egy fuvarban: <strong className="font-semibold text-on-dark">1–20 m³</strong>
         </span>
       </p>
     </div>

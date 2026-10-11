@@ -47,7 +47,7 @@ export default function ArakPage() {
     <Section
       kicker="Árlista"
       title="Árak anyagonként és zónánként"
-      lead="Az anyagárak nettó árak, ÁFA nélkül, és nem tartalmazzák a fuvar díját. Minimum rendelés 4 m³; egy fuvarban akár 23 m³."
+      lead="Az anyagárak nettó árak, ÁFA nélkül, és nem tartalmazzák a fuvar díját. Minimum rendelés 1 m³; egy fuvarban akár 20 m³."
     >
       <JsonLd data={offerCatalog} />
       <JsonLd

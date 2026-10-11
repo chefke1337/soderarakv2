@@ -120,7 +120,7 @@ const BODY: Record<string, GuideSection[]> = {
       h: "A fuvar díja külön számolandó",
       p: [
         "Az anyagár mellé a fuvar külön elem. Budafok környékén — Budapest XXII. és XI. kerület vonala — egy fuvar nettó 12–22 ezer forint, a közeli településeken (Érd, Diósd, Törökbálint, Csepel, Szigetszentmiklós) 18–32 ezer forint, a távolabbi településeken (Tárnok, Sóskút, Pusztazámor, Halásztelek) 25–45 ezer forint.",
-        "A fuvar egy fuvarra vonatkozik: ha több mint 23 köbméter kell, több autót állítunk be, és ennek megfelelően több fuvart számolunk fel.",
+        "A fuvar egy fuvarra vonatkozik: ha több mint 20 köbméter kell, több autót állítunk be, és ennek megfelelően több fuvart számolunk fel.",
       ],
       links: [
         { href: "/szallitas", label: "Szállítás és fuvarárak" },
@@ -147,7 +147,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Három bemenet, két perc",
       p: [
-        "A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a helyszínt. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a nettó köbméterár. A mennyiség 4 és 23 köbméter között választható, hiszen a minimum rendelés 4 m³, egy fuvarban pedig legfeljebb 23 m³ fér.",
+        "A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a helyszínt. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a nettó köbméterár. A mennyiség 1 és 20 köbméter között választható, hiszen a minimum rendelés 1 m³, egy fuvarban pedig legfeljebb 20 m³ fér.",
         "A településnél csoportosítva látja a zónákat: Budafok és környéke, közeli és távolabbi települések.",
       ],
       links: [
@@ -207,7 +207,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Minimum és maximum: mennyit rendelhet?",
       p: [
-        "Minimum rendelés 4 köbméter, egy fuvarban legfeljebb 23 m³ fér egy autóra. Ha a számítás 4 köbméter alatt jön ki, érdemes mégis 4-re tervezni, vagy az anyagot a telephelyen átvenni. A nagyobb mennyiség több fuvarban érkezik — erről az egyeztetésnél állapodunk meg.",
+        "Minimum rendelés 1 köbméter, egy fuvarban legfeljebb 20 m³ fér egy autóra. A nagyobb mennyiség több fuvarban érkezik — erről az egyeztetésnél állapodunk meg.",
       ],
       links: [
         { href: "/arkalkulator", label: "Számolja ki pontosan a kalkulátorral" },
@@ -281,7 +281,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Példa: 20 m²-es kocsibeálló",
       p: [
-        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni — a minimum rendelés is 4 m³. 0–20-as murvával az anyag nettó 4 × 17 000 = 68 000 forint, a budafoki fuvarsáv 12–22 ezer forinttal jön rá.",
+        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni. 0–20-as murvával az anyag nettó 4 × 17 000 = 68 000 forint, a budafoki fuvarsáv 12–22 ezer forinttal jön rá.",
         "A pontos összeget az árkalkulátor adja meg bármelyik településre — tíz másodpercnél nem tart tovább.",
       ],
       links: [
@@ -344,16 +344,9 @@ const BODY: Record<string, GuideSection[]> = {
       ],
     },
     {
-      h: "Depó átvétel hétköznap 07:00-tól 17:00-ig",
-      p: [
-        "Ha nem vár a fuvar, anyagunkat személyesen is átveheti a budafoki telephelyen — saját autóval vagy utánfutóval, hétfőtől péntekig 07:00 és 17:00 között. Ilyenkor nincs fuvardíj, csak az anyag ára.",
-      ],
-      links: [{ href: "/kapcsolat", label: "Kapcsolat és nyitvatartás" }],
-    },
-    {
       h: "Mennyiség és gépválasztás",
       p: [
-        "A minimum rendelés 4 m³, egy fuvarban legfeljebb 23 m³ anyagot szállítunk — platós, billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.",
+        "A minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³ anyagot szállítunk — platós, billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.",
       ],
       links: [
         { href: "/anyagok/soder", label: "Sóder anyagoldal" },

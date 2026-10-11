@@ -33,9 +33,7 @@ export default function RolunkPage() {
               kavicsot, murvát, bazaltot és földet értékesít és szállít
               lakossági és céges megrendelőknek. Megrendeléseinek teljesítéséhez
               több méretű és felépítményű teherautó áll rendelkezésre: platós,
-              billencs és konténeres kivitelben. A budafoki telephely depóként is
-              működik, ahonnan saját autóval vagy utánfutóval is elviheti az
-              anyagot.
+              billencs és konténeres kivitelben.
             </p>
           </div>
 

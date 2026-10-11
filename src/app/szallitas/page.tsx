@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { company, zones, RENDELES_LEPESEK, DISCLOSURE_PRICE } from "@/content/site";
+import { zones, RENDELES_LEPESEK, DISCLOSURE_PRICE } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
@@ -60,12 +60,6 @@ export default function SzallitasPage() {
             <h2 className="font-display text-heading-md font-bold">Mivel szállítunk?</h2>
             <ul className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-2">
               <li className="border-t-2 border-ink pt-4">
-                <p className="font-semibold">Platós autó</p>
-                <p className="mt-1 text-sm text-ink-soft">
-                  Nagyobb tétel kiszállításához szabadon lerakható anyagnál.
-                </p>
-              </li>
-              <li className="border-t-2 border-ink pt-4">
                 <p className="font-semibold">Billencs (billenő plató)</p>
                 <p className="mt-1 text-sm text-ink-soft">
                   Gyors lerakás pontos helyre — sóderhez, murvához, földhöz.
@@ -77,13 +71,6 @@ export default function SzallitasPage() {
                   Keskenyebb helyekre, szigorúbb lerakási igény esetén.
                 </p>
               </li>
-              <li className="border-t-2 border-ink pt-4">
-                <p className="font-semibold">Depó — telephelyi átvétel</p>
-                <p className="mt-1 text-sm text-ink-soft">
-                  Saját autóval vagy utánfutóval is átvehető az anyag a
-                  budafoki telephelyen ({company.hours.short}).
-                </p>
-              </li>
             </ul>
           </div>
 
@@ -91,11 +78,11 @@ export default function SzallitasPage() {
             <h2 className="font-display text-heading-md font-bold">Mennyiségi keretek</h2>
             <ul className="mt-4 border-t border-line text-[0.9375rem] leading-relaxed">
               <li className="border-b border-line py-3.5">
-                <strong>Minimum rendelés 4 m³.</strong> Ennél kisebb mennyiségről
+                <strong>Minimum rendelés 1 m³.</strong> Ennél kisebb mennyiségről
                 érdemes telefonon egyeztetni.
               </li>
               <li className="border-b border-line py-3.5">
-                <strong>Egy fuvarban legfeljebb 23 m³.</strong> Nagyobb mennyiséget
+                <strong>Egy fuvarban legfeljebb 20 m³.</strong> Nagyobb mennyiséget
                 több fuvarban szállítunk — erre külön egyeztetés szükséges.
               </li>
               <li className="border-b border-line py-3.5">
@@ -134,16 +121,6 @@ export default function SzallitasPage() {
               gyakran aznap megtörténik.
             </p>
             <PhoneLink className="num mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-sm bg-brand-dark px-5 font-semibold text-paper transition-colors hover:bg-brand-deep" />
-          </div>
-          <div className="border-t border-ink/80 pt-4">
-            <p className="text-sm font-medium text-ink-soft">
-              Telephely
-            </p>
-            <p className="mt-2 text-sm leading-relaxed">
-              {company.address.full}
-              <br />
-              {company.hours.short}
-            </p>
           </div>
         </aside>
       </div>

@@ -63,9 +63,8 @@ export const company = {
   },
   capabilities: [
     "Saját flotta: platós, billencs és konténeres teherautók",
-    "Minimum rendelés 4 m³, egy fuvarban akár 23 m³",
+    "Minimum rendelés 1 m³, egy fuvarban akár 20 m³",
     "Budafok környékén a kiszállás gyakran aznap történik",
-    "Telephelyi átvétel: a depó személyes kiszolgálása",
     "Több mint 15 év tapasztalat az ömlesztett szállításban",
     "Gyors és egyszerű rendelés",
     "Rugalmas időpont-egyeztetés",
@@ -497,7 +496,7 @@ export const MIERT_HIVJON = {
 export const FAQ = [
   {
     q: "Mekkora mennyiséget rendelhetek?",
-    a: "Minimum rendelés 4 m³, egy fuvarban legfeljebb 23 m³ anyagot tudunk kiszállítani. Kisebb mennyiséghez érdemes telefonon egyeztetni.",
+    a: "Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³ anyagot tudunk kiszállítani. Kisebb mennyiséghez érdemes telefonon egyeztetni.",
   },
   {
     q: "Mennyi a fuvar ára?",
@@ -514,10 +513,6 @@ export const FAQ = [
   {
     q: "Melyik anyagot válasszam?",
     a: "Alapozáshoz és betonhoz sódert (0/8, 0/16, 0/24), falazáshoz finomabb 0/4-et vagy homokot, kocsibeállóhoz murvát vagy kulékavicsot, kertdekorációhoz kavicsot és kerti murvát, feltöltéshez natúr- vagy daráltföldet szoktunk ajánlani. Ha bizonytalan, hívjon minket — segítünk kiválasztani.",
-  },
-  {
-    q: "Átvehetem személyesen az anyagot?",
-    a: "Igen. Telephelyünk Budafokon (1221 Budapest, Arany János út 152.) depóként is működik: saját autóval vagy utánfutóval is átvehető az anyag hétköznap 07:00–17:00 között.",
   },
   {
     q: "Hol kérhetek hulladékkonténert?",
@@ -613,7 +608,7 @@ export const guides = [
     slug: "mennyi-ido-a-soder-szallitas",
     title: "Mennyi idő a sóder szállítás? Kiszállási idők",
     excerpt:
-      "Mikor érkezik a sóder? Aznapos kiszállás Budafok környékén, egyeztetett időpont a távolabbi településeken, depó átvétel.",
+      "Mikor érkezik a sóder? Aznapos kiszállás Budafok környékén, egyeztetett időpont a távolabbi településeken.",
   },
 ] as const;
 

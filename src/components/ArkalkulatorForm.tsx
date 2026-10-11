@@ -13,7 +13,8 @@ import { formatFt } from "@/lib/ui";
 import FractionScale from "@/components/FractionScale";
 import { sendArkalkulatorSubmit, trackQuoteRequest } from "@/lib/analytics";
 
-const Mennyisegek = [4, 6, 8, 10, 12, 16, 20, 23] as const;
+const MENNYISEG_MIN = 1;
+const MENNYISEG_MAX = 20;
 
 type Draft = {
   materialSlug: string;
@@ -75,7 +76,14 @@ export default function ArkalkulatorForm() {
     const d = loadDraft();
     if (!d) return;
     if (d.materialSlug) setMaterialSlug(d.materialSlug);
-    if (d.m3 && Mennyisegek.includes(d.m3 as (typeof Mennyisegek)[number])) setM3(d.m3);
+    if (
+      typeof d.m3 === "number" &&
+      Number.isInteger(d.m3) &&
+      d.m3 >= MENNYISEG_MIN &&
+      d.m3 <= MENNYISEG_MAX
+    ) {
+      setM3(d.m3);
+    }
     if (d.settlementSlug) setSettlementSlug(d.settlementSlug);
     if (d.name) setName(d.name);
     if (d.phone) setPhone(d.phone);
@@ -261,40 +269,46 @@ export default function ArkalkulatorForm() {
           </li>
 
           <li className="border-b border-line py-6">
-            <fieldset>
-              <legend className="flex items-baseline gap-3 font-semibold">
+            <div className="flex items-baseline justify-between gap-3">
+              <label htmlFor="m3-slider" className="flex items-baseline gap-3 font-semibold">
                 <span aria-hidden="true" className="num text-sm text-ink-faint">2</span>
                 Mennyiség (m³)
-              </legend>
-              <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
-                {Mennyisegek.map((v) => (
-                  <div key={v}>
-                    <input
-                      type="radio"
-                      id={`m3-${v}`}
-                      name="mennyiseg"
-                      value={v}
-                      checked={m3 === v}
-                      onChange={() => {
-                        setCalcTouched(true);
-                        setM3(v);
-                      }}
-                      className="peer sr-only"
-                    />
-                    <label
-                      htmlFor={`m3-${v}`}
-                      className="num flex min-h-12 cursor-pointer items-center justify-center rounded-sm border border-line-strong bg-paper text-base font-semibold transition-colors hover:border-ink peer-checked:border-ink peer-checked:bg-ink peer-checked:text-paper peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-brand-dark"
-                    >
-                      {v}
-                      <span className="sr-only"> m³</span>
-                    </label>
-                  </div>
-                ))}
-              </div>
-              <p className="mt-2 text-sm text-ink-soft">
-                Minimum rendelés 4 m³; egy fuvarban legfeljebb 23 m³ szállítható.
-              </p>
-            </fieldset>
+              </label>
+              <output
+                htmlFor="m3-slider"
+                aria-hidden="true"
+                className="num font-display text-[1.375rem] leading-none font-bold text-ink"
+              >
+                {m3}
+              </output>
+            </div>
+            <input
+              id="m3-slider"
+              type="range"
+              name="mennyiseg"
+              min={MENNYISEG_MIN}
+              max={MENNYISEG_MAX}
+              step={1}
+              value={m3}
+              onChange={(e) => {
+                setCalcTouched(true);
+                setM3(Number(e.target.value));
+              }}
+              aria-valuetext={`${m3} köbméter`}
+              aria-describedby="mennyiseg-info"
+              className="qty-slider mt-3"
+            />
+            <div
+              aria-hidden="true"
+              className="num mt-1 flex justify-between text-xs text-ink-faint"
+            >
+              <span>{MENNYISEG_MIN} m³</span>
+              <span>{MENNYISEG_MAX} m³</span>
+            </div>
+            <p id="mennyiseg-info" className="mt-2 text-sm text-ink-soft">
+              Minimum rendelés {MENNYISEG_MIN} m³; egy fuvarban legfeljebb{" "}
+              {MENNYISEG_MAX} m³ szállítható.
+            </p>
           </li>
 
           <li className="py-6">

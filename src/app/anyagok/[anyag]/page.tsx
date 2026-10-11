@@ -73,7 +73,7 @@ export default async function MaterialPage({
     },
     {
       q: `Mekkora mennyiségben lehet ${acc} rendelni?`,
-      a: "Minimum rendelés 4 m³, egy fuvarban legfeljebb 23 m³. Nagyobb mennyiség több fuvarban szállítható — erről egyeztetés után állapodunk meg.",
+      a: "Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³. Nagyobb mennyiség több fuvarban szállítható — erről egyeztetés után állapodunk meg.",
     },
   ];
 

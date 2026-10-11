@@ -22,7 +22,7 @@ import ZonaTerkepLazy from "@/components/ZonaTerkepLazy";
 export default function HomePage() {
   // Ténysor — minden érték a site.ts-ből / a V1 ténysávjából (nincs új állítás)
   const facts = [
-    { value: "4–23 m³", label: "egy fuvarban, saját teherautóval" },
+    { value: "1–20 m³", label: "egy fuvarban, saját teherautóval" },
     { value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
     { value: `${settlements.length} település`, label: "három szállítási zónában" },
     { value: "15+ év", label: "tapasztalat az ömlesztett anyag szállításában" },
@@ -165,8 +165,7 @@ export default function HomePage() {
             <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
               <span aria-hidden="true" className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-brand-dark" />
               <span>
-                Telephely: {company.address.full} A XXII. kerületet Budafok,
-                Budatétény és Nagytétény jelöli.
+                A XXII. kerületet Budafok, Budatétény és Nagytétény jelöli.
               </span>
             </p>
           </div>
@@ -348,17 +347,14 @@ export default function HomePage() {
                 <dd className="mt-1 font-semibold">{company.hours.days}<br />{company.hours.time}</dd>
               </div>
               <div>
-                <dt className="text-on-dark-muted">Telephely, depó</dt>
+                <dt className="text-on-dark-muted">Szállítási terület</dt>
                 <dd className="mt-1 font-semibold">
-                  {company.address.full}
-                  <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(company.address.full)}`}
-                    target="_blank"
-                    rel="noopener"
-                    className="mt-1 block font-medium text-amber underline decoration-amber/40 underline-offset-4 hover:decoration-amber"
+                  <Link
+                    href="/teruletek"
+                    className="inline-flex items-center gap-1 font-medium text-amber underline decoration-amber/40 underline-offset-4 hover:decoration-amber"
                   >
-                    Útvonaltervezés<span className="sr-only"> (új lapon, Google Térkép)</span>
-                  </a>
+                    Zónák és települések
+                  </Link>
                 </dd>
               </div>
               <div>

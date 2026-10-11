@@ -119,8 +119,9 @@ export default function ZonaTerkepLazy({ height = 420, legend = true }: { height
         ))}
       </ul>
       <p className="mt-2 text-xs leading-relaxed text-ink-soft">
-        A zónák összefüggő, tájékoztató jellegű sávok a telephely körül — nem jogi
-        határok. Fuvarár: nettó, egy fuvarra; a végleges díjat egyeztetés után adjuk.
+        A zónák összefüggő, tájékoztató jellegű sávok a kiszolgálási terület
+        körül — nem jogi határok. Fuvarár: nettó, egy fuvarra; a végleges
+        díjat egyeztetés után adjuk.
       </p>
         </>
       )}
