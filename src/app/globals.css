@@ -97,7 +97,7 @@
      ui    = komponensváltás (menü, ikonmozgás, tartalomcsere)
      enter = egyszeri belépő (hero, rétegek, lépések)
      stagger = lépcsőzés két elem között — rövid, hogy a tartalom ne várakoztasson */
-  --ease-out-soft: var(--ease-out-soft);
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --dur-fast: 140ms;
   --dur-ui: 240ms;
   --dur-enter: 560ms;
@@ -188,32 +188,35 @@ body {
    „kinyomtatódnak". Minden más mozgás felhasználói válasz. */
 @media (prefers-reduced-motion: no-preference) {
   .rise {
-    opacity: 0;
-    transform: translateY(var(--move-md));
-    animation: rise-in var(--dur-enter) var(--ease-out-soft) forwards;
+    animation: enter-up var(--dur-enter) var(--ease-out-soft) both;
   }
   .rise-2 { animation-delay: var(--stagger); }
   .rise-3 { animation-delay: calc(var(--stagger) * 2); }
   .rise-4 { animation-delay: calc(var(--stagger) * 3); }
 
   .print-row {
-    opacity: 0;
-    transform: translateY(6px);
-    animation: rise-in var(--dur-enter) var(--ease-out-soft) forwards;
+    animation: enter-up var(--dur-enter) var(--ease-out-soft) both;
     animation-delay: calc(var(--dur-ui) + var(--i, 0) * var(--stagger));
   }
 }
 @keyframes rise-in {
   to { opacity: 1; transform: none; }
 }
+/* Biztonságos belépő: a rejtett állapot CSAK a kulcskockában él — ha az
+   animáció bármiért nem fut (hibás érték, régi motor), az elem látható marad. */
+@keyframes enter-down {
+  from { opacity: 0; transform: translateY(calc(var(--move-sm) * -1)); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes enter-up {
+  from { opacity: 0; transform: translateY(var(--move-md)); }
+  to { opacity: 1; transform: none; }
+}
 
 /* <details> lenyitás: a tartalom finoman beúszik (válasz a felhasználóra) */
 @media (prefers-reduced-motion: no-preference) {
   details[open] > .details-body {
-    animation: rise-in var(--dur-ui) var(--ease-out-soft) both;
-  }
-  .details-body {
-    transform: translateY(-4px);
+    animation: enter-down var(--dur-ui) var(--ease-out-soft) both;
   }
 }
 summary::-webkit-details-marker {
@@ -472,13 +475,12 @@ summary::-webkit-details-marker {
 }
 @media (prefers-reduced-motion: no-preference) {
   .strata-in {
-    opacity: 0;
-    transform: translateX(28px);
-    animation: strata-in var(--dur-enter) var(--ease-out-soft) forwards;
+    animation: strata-in var(--dur-enter) var(--ease-out-soft) both;
     animation-delay: calc(var(--dur-ui) + var(--i, 0) * var(--stagger));
   }
 }
 @keyframes strata-in {
+  from { opacity: 0; transform: translateX(var(--move-md)); }
   to { opacity: 1; transform: none; }
 }
 
@@ -486,11 +488,9 @@ summary::-webkit-details-marker {
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     .reveal-up {
-      animation: rise-in linear both;
+      animation: enter-up linear both;
       animation-timeline: view();
       animation-range: entry 5% cover 22%;
-      opacity: 0;
-      transform: translateY(22px);
     }
   }
 }
@@ -528,7 +528,7 @@ summary::-webkit-details-marker {
     visibility 0s;
 }
 .menu-panel[data-open="true"] li {
-  animation: rise-in var(--dur-ui) var(--ease-out-soft) both;
+  animation: enter-up var(--dur-ui) var(--ease-out-soft) both;
   animation-delay: calc(var(--i, 0) * 20ms);
 }
 @media (prefers-reduced-motion: reduce) {
