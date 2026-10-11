@@ -21,6 +21,9 @@ import { join } from "node:path";
 
 const OUT = "out";
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+// A főoldal megosztási borítója statikus public/-fájl (src/lib/share.ts), nem
+// fájl-konvenciós opengraph-image útvonal — a többi oldalé változatlan.
+const HOME_SHARE_IMAGE = "/soderarak-share-v3.png";
 // Must mirror next.config.ts's basePath: same-origin asset links in the
 // exported HTML (e.g. the stylesheet <link>) carry this prefix, but the
 // files on disk under OUT/ never do (GitHub Pages applies the "/repo-name"
@@ -223,7 +226,8 @@ for (const file of htmlFiles) {
       /(<meta\b[^>]*(?:property="og:image"|name="twitter:image")[^>]*content=")([^"]*)(")/g,
       (tag, pre, url, post) => {
         const parsed = new URL(url, baseUrl);
-        return /^\/opengraph-image(\.png)?$/.test(stripBasePath(parsed.pathname))
+        const imagePath = stripBasePath(parsed.pathname);
+        return /^\/opengraph-image(\.png)?$/.test(imagePath) || imagePath === HOME_SHARE_IMAGE
           ? `${pre}${canonicalUrl.href.replace(/\/$/, "")}/404/opengraph-image.png${post}`
           : tag;
       },
@@ -246,7 +250,9 @@ for (const file of htmlFiles) {
   // lévő kártya-útvonal anélkül értendő.
   const canonicalPathOnDisk = stripBasePath(canonicalUrl.pathname.replace(/\/$/, "")) || "/";
   const ogImagePath = canonicalPathOnDisk === "/" ? "/opengraph-image.png" : `${canonicalPathOnDisk}/opengraph-image.png`;
-  const ownCardPath = isNotFoundPage ? "/404/opengraph-image.png" : ogImagePath;
+  const ownCardPath = isNotFoundPage
+    ? "/404/opengraph-image.png"
+    : canonicalPathOnDisk === "/" ? HOME_SHARE_IMAGE : ogImagePath;
   let socialTags = 0;
 
   // Next emits metadata-route files without extensions; create a public .png
@@ -258,6 +264,10 @@ for (const file of htmlFiles) {
 
     const imageUrl = new URL(contentMatch[1], baseUrl);
     const rawPath = imageUrl.pathname;
+    if (ownCardPath === HOME_SHARE_IMAGE && stripBasePath(rawPath) === HOME_SHARE_IMAGE) {
+      socialTags++;
+      return tag;
+    }
     const extensionlessPath = rawPath.endsWith("/opengraph-image.png")
       ? rawPath.slice(0, -4)
       : rawPath.endsWith("/opengraph-image")
