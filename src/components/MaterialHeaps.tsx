@@ -47,7 +47,7 @@ export default function MaterialHeaps() {
                     (a szöveg kapja a teljes szélességet), lg-től jobb alul */}
                 <span
                   aria-hidden="true"
-                  className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-on-dark/15 text-on-dark transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:top-auto lg:right-3 lg:bottom-3 lg:h-8 lg:w-8"
+                  className="absolute top-2 right-2 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-surface-dark/75 text-on-dark lg:bg-on-dark/15 transition-[background-color,transform] duration-[var(--dur-fast)] group-hover:bg-accent group-focus-visible:bg-accent lg:top-auto lg:right-3 lg:bottom-3 lg:h-8 lg:w-8"
                 >
                   <IconArrowRight size={15} className="heap-arrow" />
                 </span>
