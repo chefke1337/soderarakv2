@@ -11,11 +11,18 @@ export default function HeapRail({ className, children }: { className: string; c
     <ul
       className={className}
       onFocus={(e) => {
+        const ul = e.currentTarget;
         const li = (e.target as HTMLElement).closest("li");
-        if (!li || !e.currentTarget.contains(li)) return;
-        if (e.currentTarget.scrollWidth <= e.currentTarget.clientWidth) return;
+        if (!li || !ul.contains(li)) return;
+        if (ul.scrollWidth <= ul.clientWidth) return;
+        const r = ul.getBoundingClientRect();
+        const q = li.getBoundingClientRect();
+        const pad = parseFloat(getComputedStyle(ul).scrollPaddingLeft) || 0;
+        if (q.left >= r.left + pad - 1 && q.right <= r.right + 1) return;
+        // A kártya saját snap-pozíciójára (bal él + scroll-padding) görgetünk:
+        // ez mindig érvényes snap-pont, így a kötelező snap nem rántja vissza.
         const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        li.scrollIntoView({ block: "nearest", inline: "nearest", behavior: reduce ? "auto" : "smooth" });
+        ul.scrollTo({ left: ul.scrollLeft + q.left - r.left - pad, behavior: reduce ? "auto" : "smooth" });
       }}
     >
       {children}
