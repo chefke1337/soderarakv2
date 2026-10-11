@@ -77,7 +77,7 @@ export const company = {
       "Építési törmelék, sitt, vegyes és zöldhulladék konténer — 4, 5, 7 és 10 m³-es méretekben, gyakran órákon belüli kiszállással.",
   },
   capabilities: [
-    "Saját flotta: platós, billencs és konténeres teherautók",
+    "Saját flotta: billencs és konténeres teherautók",
     `Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban akár ${MAX_ORDER_VOLUME} m³`,
     "Budafok környékén a kiszállás gyakran aznap történik",
     "Több mint 15 év tapasztalat az ömlesztett szállításban",
@@ -409,7 +409,7 @@ export function findFreightTier(zoneId: Zone["id"], qty: number): FreightTier | 
 }
 
 /**
- * Zónakörvonalak: ÖSSZEFÜGGŐ, egymáshoz simuló sávok a telephely körül
+ * Zónakörvonalak: ÖSSZEFÜGGŐ, egymáshoz simuló sávok a kiszolgálási terület körül
  * (mag → közeli → távolabbi), tájékoztató jelleggel, nem jogi határ.
  */
 export const zones: Zone[] = [
@@ -527,7 +527,8 @@ export function findSettlement(slug: string): Settlement | undefined {
   return settlements.find((s) => s.slug === slug);
 }
 
-/** Telephely koordinátája a térképhez. */
+/** Belső referencia-koordináta (nem publikus): sehol nem jelenik meg az oldalon,
+ * a térkép sem jelöli. A telephely/depó nyilvánosan nem szerepelhet (2026-10-11). */
 export const depot: { latlng: [number, number]; label: string } = {
   latlng: [47.4294, 18.9937],
   label: "Telephely — 1221 Budapest, Arany János út 152.",

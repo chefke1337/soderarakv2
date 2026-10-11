@@ -373,7 +373,11 @@ summary::-webkit-details-marker {
     background: var(--color-ink);
     box-shadow: var(--shadow-card);
   }
-  .qty-slider:hover::-webkit-slider-thumb,
+  /* Külön szabályok: egy vesszős listában az ismeretlen ::-moz-* szelektor
+     a Chromiumban az egész szabályt érvényteleníti. */
+  .qty-slider:hover::-webkit-slider-thumb {
+    background: var(--color-brand-dark);
+  }
   .qty-slider:hover::-moz-range-thumb {
     background: var(--color-brand-dark);
   }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { EXAMPLE_CALC, findGuide, findZone, guides, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
+import { company, EXAMPLE_CALC, findGuide, findZone, guides, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
@@ -350,7 +350,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mennyiség és gépválasztás",
       p: [
-        `A minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³ anyagot szállítunk — platós, billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.`,
+        `A minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³ anyagot szállítunk — billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.`,
       ],
       links: [
         { href: "/anyagok/soder", label: "Sóder anyagoldal" },
@@ -360,7 +360,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Így zajlik a rendelés",
       p: [
-        "Először hívja a +36 30 954 6156-os számot, vagy küldje el, mire van szüksége: anyag, mennyiség, helyszín. Visszaigazoljuk az anyagot és a mennyiséget, a fuvar árát a zóna szerint, és rögzítjük az időpontot. Ezután kiszállítunk, majd az anyagot átvételre vagy lerakásra adjuk — ahogyan megbeszéltük.",
+        `Először hívja a ${company.phone.display} számot, vagy küldje el, mire van szüksége: anyag, mennyiség, helyszín. Visszaigazoljuk az anyagot és a mennyiséget, a fuvar árát a zóna szerint, és rögzítjük az időpontot. Ezután a megbeszélt időpontban kiszállítjuk, és a helyszínen az előre egyeztetett helyre lerakodjuk.`,
       ],
     },
   ],
