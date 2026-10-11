@@ -12,25 +12,26 @@
 
 ## Szolgáltatás
 
-- Anyagok: sóder (0/4, 0/8, 0/16, 0/24, töltősóder), homok (natúr, 0–1), kavics (4/8, 8/16), kulékavics (16–32, 24–40, 30–65), murva (2–5, 0–20, 20–55), kerti murva (5–12, 12–20), bazalt (frakciók egyeztetés után), föld (natúr, darált).
+- Anyagok: sóder (0/4, 0/8, 0/16, 0/24, töltősóder), homok (bányahomok, 0–1), kavics (gyöngykavics 4/8, 8/16), kulékavics (16–32, 24–40, 30–65), murva (2–5, 0–20, 20–55), kerti murva (5–12, 12–20), bazalt (0/4, 2/4, 11/22), föld (natúr, rostált/darált termőföld, trágyás/komposztos).
 - Minimum rendelés: 1 m³; egy fuvarban legfeljebb 20 m³.
 - Saját flotta: billencs és konténeres teherautók; az anyagot a helyszínre szállítjuk és lerakodjuk.
 - Fizetés és árazás: az anyagárak nettó árak (ÁFA nélkül), a fuvar díja külön, zónánként; minden ár tájékoztató, a végleges ajánlat egyeztetés után készül.
 
 ## Szállítási zónák és tájékoztató fuvarárak (nettó)
 
-- Budafok és környéke — Budapest XXII. és XI. kerület vonala: 12 000–22 000 Ft/fuvar, kiszállás gyakran aznap.
-- Közeli települések — Érd, Diósd, Törökbálint, Csepel (XXI.), Szigetszentmiklós: 18 000–32 000 Ft/fuvar.
-- Távolabbi települések — Tárnok, Sóskút, Pusztazámor, Halásztelek: 25 000–45 000 Ft/fuvar.
+- Budafok és környéke — Budapest XXII. és XI. kerület (Újbuda): 18 000–35 000 Ft/fuvar a mennyiségtől függően, kiszállás gyakran aznap.
+- Közeli települések — Érd, Diósd, Törökbálint: 20 000–37 000 Ft/fuvar, egyeztetett időpontban.
+- Távolabbi települések — Tárnok, Sóskút, Pusztazámor: 22 000–39 000 Ft/fuvar, egyeztetett időpontban.
+- A fuvardíj mennyiségsávonként (1–2, 3–5, 6–8, 9–12, 13–20 m³) változik; 12 m³ felett egyeztetés tárgya.
 
 ## Tájékoztató anyagárak (nettó Ft/m³, fuvar nélkül)
 
-- Töltősóder 13 000; Sóder 0/24 16 500; Sóder 0/4 16 800; Sóder 0/8 17 000; Sóder 0/16 17 000
-- Homok (natúr) 13 300; 0–1 Homok 16 200
-- Kavics 4/8 17 500; Kavics 8/16 17 500; Kulékavics 16–32 17 000; Kulékavics 24–40 17 700; Kulékavics 30–65 15 000
-- Murva 0–20 17 000; Murva 20–55 18 000; Murva 2–5 21 000; Kerti murva 5–12 19 500; Kerti murva 12–20 19 500
-- Natúrföld 14 000; Daráltföld 15 000
-- Bazalt: ár egyeztetés után
+- Töltősóder 7 500; Sóder 0/4 9 000; Sóder 0/8 10 000; Sóder 0/16 10 000; Sóder 0/24 9 000
+- Bányahomok 7 500; 0–1 Homok 8 500
+- Gyöngykavics 4/8 11 000; Kavics 8/16 11 000; Kulékavics 16–32 10 000; Kulékavics 24–40 9 000; Kulékavics 30–65 8 000
+- Murva 2–5 16 000; Kerti murva 5–12 16 000; Kerti murva 12–20 16 000; Murva 0–20 12 500; Murva 20–55 14 000
+- Bazalt 0/4 24 000; Bazalt 2/4 25 000; Bazalt 11/22 20 000
+- Natúrföld 9 000; Rostált/darált termőföld 11 000; Trágyás, komposztos föld 16 000
 
 ## Oldalak
 

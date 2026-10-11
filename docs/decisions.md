@@ -316,6 +316,5 @@ flottafelsorolásokból (site.ts képességek, /rolunk, útmutató) is kivettük
 hogy a két megjelenítés ne mondjon ellent egymásnak. A `depot` export belső
 referencia marad (sehol nem importált, nem kerül a bundle-be). Nyitott: a
 layout LocalBusiness JSON-LD `PostalAddress`-e a céges (impresszum) címet
-közli — jogi/üzleti megerősítés kell, hogy maradjon-e. Nyitott: az
-`llms.txt` zóna- és árlistája a 2026-10-11-i ár/zóna-frissítés előtti
-állapotot mutatja.
+közli — jogi/üzleti megerősítés kell, hogy maradjon-e. Az `llms.txt`
+zóna-, anyag- és árlistája a site.ts 2026-10-11-i állapotához igazítva.
