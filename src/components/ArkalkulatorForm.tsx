@@ -294,7 +294,7 @@ export default function ArkalkulatorForm() {
                 aria-hidden="true"
                 className="num font-display text-[1.375rem] leading-none font-bold text-ink"
               >
-                {m3}
+                {m3} m³
               </output>
             </div>
             <input

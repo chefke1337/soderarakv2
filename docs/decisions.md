@@ -305,3 +305,16 @@ balról-felülről, perem-fény, kontaktárnyék. A szemcsecsempe közös modulb
 került (`src/lib/grain.ts`); a MaterialLedger mintái bájtpontosan azonosak
 (ellenőrizve). Az SVG `dangerouslySetInnerHTML`-lel kerül be, de kizárólag
 saját, determinisztikus adatból — nincs felhasználói bemenet.
+
+## 2026-10-11 — Telephely/depó: maradék nyilvános hivatkozások, platós autó
+A main-en lévő telephely/depó-eltávolítás után még nyilvános maradt: a
+`public/llms.txt` depócíme, „telephelyi átvétel (depó)" sora és régi 4–23 m³
+tartománya, valamint egy útmutató-válasz „átvételre vagy lerakásra" fordulata.
+Mindhárom a hiteles kiszállítás/lerakodás szövegre igazítva. A „Platós autó"
+a /szallitas „Mivel szállítunk?" listájából már kikerült; következetesen a
+flottafelsorolásokból (site.ts képességek, /rolunk, útmutató) is kivettük,
+hogy a két megjelenítés ne mondjon ellent egymásnak. A `depot` export belső
+referencia marad (sehol nem importált, nem kerül a bundle-be). Nyitott: a
+layout LocalBusiness JSON-LD `PostalAddress`-e a céges (impresszum) címet
+közli — jogi/üzleti megerősítés kell, hogy maradjon-e. Az `llms.txt`
+zóna-, anyag- és árlistája a site.ts 2026-10-11-i állapotához igazítva.

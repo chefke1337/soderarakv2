@@ -32,8 +32,8 @@ export default function RolunkPage() {
               A {company.name} ömlesztett anyag üzletága sódert, homokot,
               kavicsot, murvát, bazaltot és földet értékesít és szállít
               lakossági és céges megrendelőknek. Megrendeléseinek teljesítéséhez
-              több méretű és felépítményű teherautó áll rendelkezésre: platós,
-              billencs és konténeres kivitelben.
+              több méretű és felépítményű teherautó áll rendelkezésre: billencs
+              és konténeres kivitelben.
             </p>
           </div>
 
