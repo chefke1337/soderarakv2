@@ -6,9 +6,9 @@ import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 
 export const metadata: Metadata = pageMeta({
-  title: "Kapcsolat — hívás, ajánlatkérés, telephely Budafokon",
+  title: "Kapcsolat — hívás, ajánlatkérés",
   description:
-    "Hívja a +36 30 954 6156-os számot hétköznap 07:00–17:00 között, vagy írjon az info@soderarak.hu címre. Telephely: 1221 Budapest, Arany János út 152. (Budafok).",
+    "Hívja a +36 30 954 6156-os számot hétköznap 07:00–17:00 között, vagy írjon az info@soderarak.hu címre. Sóder és ömlesztett anyag kiszállítás Budafokról.",
   path: "/kapcsolat",
 });
 
@@ -49,15 +49,6 @@ export default function KapcsolatPage() {
                 <p className="mt-1 text-sm leading-relaxed text-ink-soft">
                   Kérjük, írja meg: milyen anyag, hány m³, melyik település —
                   válaszunkban egyeztetünk.
-                </p>
-              </dd>
-            </div>
-            <div className="grid grid-cols-[7rem_1fr] gap-4 py-4">
-              <dt className="text-sm text-ink-soft">Telephely</dt>
-              <dd>
-                <address className="not-italic font-semibold">{company.address.full}</address>
-                <p className="mt-1 text-sm text-ink-soft">
-                  {company.address.district}
                 </p>
               </dd>
             </div>

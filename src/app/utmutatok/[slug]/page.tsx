@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { findGuide, guides } from "@/content/site";
+import { findGuide, guides, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
@@ -147,7 +147,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Három bemenet, két perc",
       p: [
-        "A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a helyszínt. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a nettó köbméterár. A mennyiség 1 és 20 köbméter között választható, hiszen a minimum rendelés 1 m³, egy fuvarban pedig legfeljebb 20 m³ fér.",
+        `A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a helyszínt. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a nettó köbméterár. A mennyiség ${MIN_ORDER_VOLUME} és ${MAX_ORDER_VOLUME} köbméter között választható, hiszen a minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban pedig legfeljebb ${MAX_ORDER_VOLUME} m³ fér.`,
         "A településnél csoportosítva látja a zónákat: Budafok és környéke, közeli és távolabbi települések.",
       ],
       links: [
@@ -207,7 +207,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Minimum és maximum: mennyit rendelhet?",
       p: [
-        "Minimum rendelés 1 köbméter, egy fuvarban legfeljebb 20 m³ fér egy autóra. A nagyobb mennyiség több fuvarban érkezik — erről az egyeztetésnél állapodunk meg.",
+        `Minimum rendelés ${MIN_ORDER_VOLUME} köbméter, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³ fér egy autóra. A nagyobb mennyiség több fuvarban érkezik — erről az egyeztetésnél állapodunk meg.`,
       ],
       links: [
         { href: "/arkalkulator", label: "Számolja ki pontosan a kalkulátorral" },
@@ -326,7 +326,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Budafok környékén gyakran aznap",
       p: [
-        "A telephelyünk Budafokon van, ezért Budafok környékén — Budapest XXII. és XI. kerület, valamint vonzáskörzetük vonala — a kiszállás gyakran még aznap megtörténik. Ez kapacitásfüggő: a végleges időpont mindig az egyeztetésnél pontosul.",
+        "Budafokról és környékéről indulunk, ezért Budafok környékén — Budapest XXII. és XI. kerület, valamint vonzáskörzetük vonala — a kiszállás gyakran még aznap megtörténik. Ez kapacitásfüggő: a végleges időpont mindig az egyeztetésnél pontosul.",
       ],
       links: [
         { href: "/teruletek", label: "Zónatérkép és települések" },
@@ -346,7 +346,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mennyiség és gépválasztás",
       p: [
-        "A minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³ anyagot szállítunk — platós, billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.",
+        `A minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³ anyagot szállítunk — platós, billencs vagy konténeres autóval, attól függően, mit kér és hol tudjuk lerakni. Nagyobb mennyiség több fuvarban megy, erről az egyeztetésnél állapodunk meg.`,
       ],
       links: [
         { href: "/anyagok/soder", label: "Sóder anyagoldal" },

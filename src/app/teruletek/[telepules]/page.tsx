@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import {
   company,
   findZone,
+  MAX_ORDER_VOLUME,
   materialGroups,
+  MIN_ORDER_VOLUME,
   settlements,
 } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
@@ -53,7 +55,7 @@ export default async function SettlementPage({
     },
     {
       q: `Milyen anyagokat szállítanak ${s.name} területére?`,
-      a: "Sódert (0/4–0/24 és töltősóder), homokot, kavicsot, kulékavicsot, murvát, bazaltot és földet. Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³.",
+      a: `Sódert (0/4–0/24 és töltősóder), homokot, kavicsot, kulékavicsot, murvát, bazaltot és földet. Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³.`,
     },
   ];
 
@@ -99,7 +101,7 @@ export default async function SettlementPage({
               ))}
             </ul>
             <p className="mt-4 text-xs text-ink-soft">
-              Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³. Tájékoztató
+              Minimum rendelés {MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb {MAX_ORDER_VOLUME} m³. Tájékoztató
               ár — a végleges ajánlatot egyeztetés után adjuk.
             </p>
           </div>

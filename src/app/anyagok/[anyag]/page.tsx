@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { company, findMaterialGroup, materialGroups } from "@/content/site";
+import { company, findMaterialGroup, MAX_ORDER_VOLUME, materialGroups, MIN_ORDER_VOLUME } from "@/content/site";
 import { formatFt, IconPlus, PhoneLink } from "@/lib/ui";
 import { withBasePath } from "@/lib/basepath";
 import { MaterialItemRows } from "@/components/MaterialLedger";
@@ -73,7 +73,7 @@ export default async function MaterialPage({
     },
     {
       q: `Mekkora mennyiségben lehet ${acc} rendelni?`,
-      a: "Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³. Nagyobb mennyiség több fuvarban szállítható — erről egyeztetés után állapodunk meg.",
+      a: `Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³. Nagyobb mennyiség több fuvarban szállítható — erről egyeztetés után állapodunk meg.`,
     },
   ];
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { materialGroups, zones, company, DISCLOSURE_NET, DISCLOSURE_PRICE } from "@/content/site";
+import { materialGroups, zones, company, DISCLOSURE_NET, DISCLOSURE_PRICE, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
@@ -47,7 +47,7 @@ export default function ArakPage() {
     <Section
       kicker="Árlista"
       title="Árak anyagonként és zónánként"
-      lead="Az anyagárak nettó árak, ÁFA nélkül, és nem tartalmazzák a fuvar díját. Minimum rendelés 1 m³; egy fuvarban akár 20 m³."
+      lead={`Az anyagárak nettó árak, ÁFA nélkül, és nem tartalmazzák a fuvar díját. Minimum rendelés ${MIN_ORDER_VOLUME} m³; egy fuvarban akár ${MAX_ORDER_VOLUME} m³.`}
     >
       <JsonLd data={offerCatalog} />
       <JsonLd

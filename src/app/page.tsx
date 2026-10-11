@@ -5,7 +5,9 @@ import {
   DISCLOSURE_PRICE,
   FAQ,
   guides,
+  MAX_ORDER_VOLUME,
   MIERT_HIVJON,
+  MIN_ORDER_VOLUME,
   settlements,
   zones,
 } from "@/content/site";
@@ -22,7 +24,7 @@ import ZonaTerkepLazy from "@/components/ZonaTerkepLazy";
 export default function HomePage() {
   // Ténysor — minden érték a site.ts-ből / a V1 ténysávjából (nincs új állítás)
   const facts = [
-    { value: "1–20 m³", label: "egy fuvarban, saját teherautóval" },
+    { value: `${MIN_ORDER_VOLUME}–${MAX_ORDER_VOLUME} m³`, label: "egy fuvarban, saját teherautóval" },
     { value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
     { value: `${settlements.length} település`, label: "három szállítási zónában" },
     { value: "15+ év", label: "tapasztalat az ömlesztett anyag szállításában" },

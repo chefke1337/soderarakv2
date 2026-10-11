@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { materialGroups, zones } from "@/content/site";
+import { MAX_ORDER_VOLUME, materialGroups, MIN_ORDER_VOLUME, zones } from "@/content/site";
 import { formatFt, IconArrowRight, minPrice } from "@/lib/ui";
 import MaterialPile from "@/components/MaterialPile";
 import HeapRail from "@/components/HeapRail";
@@ -58,7 +58,7 @@ export default function MaterialHeaps() {
           Fuvar, zóna szerint: <strong className="font-semibold text-on-dark">{formatFt(fuelMin).replace(" Ft", "")}–{formatFt(fuelMax)}</strong>
         </span>
         <span>
-          Egy fuvarban: <strong className="font-semibold text-on-dark">1–20 m³</strong>
+          Egy fuvarban: <strong className="font-semibold text-on-dark">{MIN_ORDER_VOLUME}–{MAX_ORDER_VOLUME} m³</strong>
         </span>
       </p>
     </div>

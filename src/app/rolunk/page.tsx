@@ -84,10 +84,6 @@ export default function RolunkPage() {
                 <dd className="font-medium">{company.name}</dd>
               </div>
               <div>
-                <dt className="text-ink-soft">Telephely</dt>
-                <dd className="font-medium">{company.address.full}</dd>
-              </div>
-              <div>
                 <dt className="text-ink-soft">Ügyfélfogadás</dt>
                 <dd className="font-medium">
                   {company.hours.days}, {company.hours.time}

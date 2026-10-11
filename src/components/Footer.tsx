@@ -23,13 +23,11 @@ export default function Footer() {
             <span className="font-display text-2xl font-bold">Sóder árak</span>
           </Link>
           <p className="mt-4 text-sm text-on-dark-muted">{company.businessUnit}</p>
-          <address className="mt-4 text-sm leading-relaxed text-on-dark-muted not-italic">
+          <p className="mt-4 text-sm leading-relaxed text-on-dark-muted">
             {company.name}
             <br />
-            {company.address.full}
-            <br />
             {company.hours.days}, {company.hours.time}
-          </address>
+          </p>
         </div>
 
         <nav aria-label="Lábléc navigáció" className="lg:col-span-2">

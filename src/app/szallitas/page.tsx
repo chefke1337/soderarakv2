@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { zones, RENDELES_LEPESEK, DISCLOSURE_PRICE } from "@/content/site";
+import { zones, RENDELES_LEPESEK, DISCLOSURE_PRICE, MAX_ORDER_VOLUME, MIN_ORDER_VOLUME } from "@/content/site";
 import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
@@ -78,11 +78,11 @@ export default function SzallitasPage() {
             <h2 className="font-display text-heading-md font-bold">Mennyiségi keretek</h2>
             <ul className="mt-4 border-t border-line text-[0.9375rem] leading-relaxed">
               <li className="border-b border-line py-3.5">
-                <strong>Minimum rendelés 1 m³.</strong> Ennél kisebb mennyiségről
+                <strong>Minimum rendelés {MIN_ORDER_VOLUME} m³.</strong> Ennél kisebb mennyiségről
                 érdemes telefonon egyeztetni.
               </li>
               <li className="border-b border-line py-3.5">
-                <strong>Egy fuvarban legfeljebb 20 m³.</strong> Nagyobb mennyiséget
+                <strong>Egy fuvarban legfeljebb {MAX_ORDER_VOLUME} m³.</strong> Nagyobb mennyiséget
                 több fuvarban szállítunk — erre külön egyeztetés szükséges.
               </li>
               <li className="border-b border-line py-3.5">

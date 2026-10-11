@@ -31,7 +31,6 @@ export type OgCardInput = {
   zoneCards?: { label: string; area: string; price: string; id: Zone["id"] }[];
   serviceSteps?: { number: string; title: string; detail: string }[];
   companyFacts?: { value: string; label: string }[];
-  address?: string;
   hours?: string;
 };
 
@@ -453,9 +452,8 @@ function ContactCard({ input }: { input: OgCardInput }) {
             <div style={{ display: "flex", fontSize: 58, fontWeight: 800, lineHeight: 1.03, letterSpacing: -2.3 }}>{input.title}</div>
             <div style={{ display: "flex", color: MUTED, fontSize: 19, lineHeight: 1.35 }}>{input.subtitle}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 2 }}>
-              <div style={{ display: "flex", color: "#0f766e", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>TELEPHELY · BUDAPEST XXII.</div>
-              <div style={{ display: "flex", color: INK, fontSize: 18, fontWeight: 700 }}>{input.address}</div>
-              <div style={{ display: "flex", color: MUTED, fontSize: 14, fontWeight: 600 }}>{input.hours}</div>
+              <div style={{ display: "flex", color: "#0f766e", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>NYITVATARTÁS</div>
+              <div style={{ display: "flex", color: INK, fontSize: 18, fontWeight: 700 }}>{input.hours}</div>
             </div>
           </div>
           <div style={{ width: 470, display: "flex", flexDirection: "column", gap: 14 }}>
@@ -499,7 +497,7 @@ function CompanyCard({ input }: { input: OgCardInput }) {
           <div style={{ display: "flex", color: "#f97316", fontSize: 14, fontWeight: 800, letterSpacing: 2.5 }}>CÉGÜNK · ÜZLETÁGUNK</div>
         </div>
         <div style={{ width: 590, display: "flex", flexDirection: "column", gap: 16 }}>
-          <div style={{ display: "flex", color: "#f97316", fontSize: 15, fontWeight: 800, letterSpacing: 2.7 }}>BUDAFOKI TELEPHELY · SAJÁT FLOTTÁVAL</div>
+          <div style={{ display: "flex", color: "#f97316", fontSize: 15, fontWeight: 800, letterSpacing: 2.7 }}>SAJÁT FLOTTA · ÖMLESZTETT ANYAG</div>
           <div style={{ display: "flex", fontSize: input.title.length > 34 ? 51 : 59, fontWeight: 800, lineHeight: 1.06, letterSpacing: -1.8 }}>{input.title}</div>
           <div style={{ display: "flex", maxWidth: 590, color: "#f1e9d8cc", fontSize: 18, lineHeight: 1.35 }}>{input.subtitle}</div>
         </div>
@@ -534,7 +532,7 @@ function StandardCard({ input }: { input: OgCardInput }) {
       </div>
       <div style={{ position: "relative", display: "flex", alignItems: "center", gap: 22 }}>
         {input.highlight ? <div style={{ display: "flex", fontSize: 23, fontWeight: 800, color: "#1a1614", backgroundColor: "#f97316", borderRadius: 8, padding: "12px 18px" }}>{input.highlight}</div> : null}
-        <div style={{ display: "flex", color: "#f1e9d8cc", fontSize: 17, fontWeight: 500 }}>{company.address.full} · {company.hours.short}</div>
+        <div style={{ display: "flex", color: "#f1e9d8cc", fontSize: 17, fontWeight: 500 }}>{company.businessUnit} · {company.hours.short}</div>
       </div>
     </div>
   );

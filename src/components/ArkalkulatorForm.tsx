@@ -5,16 +5,15 @@ import {
   company,
   DISCLOSURE_PRICE,
   findZone,
+  MAX_ORDER_VOLUME,
   materialGroups,
+  MIN_ORDER_VOLUME,
   settlements,
   zones,
 } from "@/content/site";
 import { formatFt } from "@/lib/ui";
 import FractionScale from "@/components/FractionScale";
 import { sendArkalkulatorSubmit, trackQuoteRequest } from "@/lib/analytics";
-
-const MENNYISEG_MIN = 1;
-const MENNYISEG_MAX = 20;
 
 type Draft = {
   materialSlug: string;
@@ -79,8 +78,8 @@ export default function ArkalkulatorForm() {
     if (
       typeof d.m3 === "number" &&
       Number.isInteger(d.m3) &&
-      d.m3 >= MENNYISEG_MIN &&
-      d.m3 <= MENNYISEG_MAX
+      d.m3 >= MIN_ORDER_VOLUME &&
+      d.m3 <= MAX_ORDER_VOLUME
     ) {
       setM3(d.m3);
     }
@@ -286,8 +285,8 @@ export default function ArkalkulatorForm() {
               id="m3-slider"
               type="range"
               name="mennyiseg"
-              min={MENNYISEG_MIN}
-              max={MENNYISEG_MAX}
+              min={MIN_ORDER_VOLUME}
+              max={MAX_ORDER_VOLUME}
               step={1}
               value={m3}
               onChange={(e) => {
@@ -302,12 +301,12 @@ export default function ArkalkulatorForm() {
               aria-hidden="true"
               className="num mt-1 flex justify-between text-xs text-ink-faint"
             >
-              <span>{MENNYISEG_MIN} m³</span>
-              <span>{MENNYISEG_MAX} m³</span>
+              <span>{MIN_ORDER_VOLUME} m³</span>
+              <span>{MAX_ORDER_VOLUME} m³</span>
             </div>
             <p id="mennyiseg-info" className="mt-2 text-sm text-ink-soft">
-              Minimum rendelés {MENNYISEG_MIN} m³; egy fuvarban legfeljebb{" "}
-              {MENNYISEG_MAX} m³ szállítható.
+              Minimum rendelés {MIN_ORDER_VOLUME} m³; egy fuvarban legfeljebb{" "}
+              {MAX_ORDER_VOLUME} m³ szállítható.
             </p>
           </li>
 

@@ -15,6 +15,14 @@ export const DISCLOSURE_NET =
   "Az anyagárak nettó árak, ÁFA nélkül. A fuvar díja külön, a szállítási zóna szerint.";
 
 /**
+ * Rendelhető mennyiségtartomány — egyetlen forrás a kalkulátor (slider, min/max,
+ * clamp, piszkozat-visszaállítás) és minden megjelenített szöveg számára.
+ * Nem ártól/zónától függ: külön módosítható, ár/díj számítást nem érint.
+ */
+export const MIN_ORDER_VOLUME = 1;
+export const MAX_ORDER_VOLUME = 20;
+
+/**
  * V2 preview: a kanonikus/OG/sitemap URL-ek a V2 publikálási célhoz igazodnak.
  * A workflow NEXT_PUBLIC_SITE_URL-lel állítja; lokálisan is a V2 cél az alapérték.
  * (Az üzleti domain — soderarak.hu — változatlanul a `domain` mezőben marad.)
@@ -63,7 +71,7 @@ export const company = {
   },
   capabilities: [
     "Saját flotta: platós, billencs és konténeres teherautók",
-    "Minimum rendelés 1 m³, egy fuvarban akár 20 m³",
+    `Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban akár ${MAX_ORDER_VOLUME} m³`,
     "Budafok környékén a kiszállás gyakran aznap történik",
     "Több mint 15 év tapasztalat az ömlesztett szállításban",
     "Gyors és egyszerű rendelés",
@@ -496,7 +504,7 @@ export const MIERT_HIVJON = {
 export const FAQ = [
   {
     q: "Mekkora mennyiséget rendelhetek?",
-    a: "Minimum rendelés 1 m³, egy fuvarban legfeljebb 20 m³ anyagot tudunk kiszállítani. Kisebb mennyiséghez érdemes telefonon egyeztetni.",
+    a: `Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³ anyagot tudunk kiszállítani. Kisebb mennyiséghez érdemes telefonon egyeztetni.`,
   },
   {
     q: "Mennyi a fuvar ára?",

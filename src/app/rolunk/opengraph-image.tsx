@@ -10,7 +10,7 @@ export default function OgImage() {
   return ogCard({
     variant: "company",
     title: `${company.name} — Sóderárak üzletág`,
-    subtitle: "Ömlesztett építőanyag értékesítése és szállítása Budafokról, saját telephellyel és saját flottával.",
+    subtitle: "Ömlesztett építőanyag értékesítése és szállítása Budafokról, saját flottával.",
     companyFacts: [
       { value: "Saját", label: "flotta Budafokról" },
       { value: String(settlements.length), label: "kiszolgált település" },
