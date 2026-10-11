@@ -132,6 +132,12 @@ export default function HomePage() {
         layout="split"
         kicker="Így működik"
         title="Rendelés menete"
+        lead={
+          <>
+            Kérdése van az anyagról vagy a mennyiségről? Hívjon:{" "}
+            <PhoneLink className="num link whitespace-nowrap" />
+          </>
+        }
       >
         <OrderRoute />
       </Section>

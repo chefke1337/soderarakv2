@@ -63,7 +63,7 @@ export default function MaterialLedger({
                     </span>
                   </>
                 ) : (
-                  <span className="text-xs text-ink-soft">{g.items.length} tétel</span>
+                  <span className="text-xs text-ink-soft">Frakció nélkül · {g.items.length} tétel</span>
                 )}
               </span>
 
