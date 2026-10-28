@@ -39,7 +39,7 @@ export default function ImpresszumPage() {
         ))}
       </dl>
       <p className="mt-6 max-w-xl text-xs text-ink-soft">
-        Az árak tájékoztató jellegűek, nettó árak (ÁFA nélkül); a fuvar díja
+        Az anyagárak tájékoztató jellegűek, bruttó árak (az ÁFÁ-t tartalmazzák); a fuvar díja
         külön. A végleges ajánlatot egyeztetés után adjuk.
       </p>
     </Section>

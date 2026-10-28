@@ -3,7 +3,7 @@
  * árlista-anyagfotókból — statikus fájl, nincs futásidejű OG-generálás.
  *
  * Futtatás: node scripts/share-image.mjs
- * Kimenet:  public/soderarak-share-v3.png (a src/lib/share.ts hivatkozza)
+ * Kimenet:  public/soderarak-share-v4.png (a src/lib/share.ts hivatkozza)
  *
  * Tartalomváltozásnál új fájlnév (v4, …), hogy a megosztó platformok
  * cache-e ne a régi képet mutassa.
@@ -13,15 +13,16 @@ import { join } from "node:path";
 import { chromium } from "playwright";
 
 const ROOT = process.cwd();
-const OUT = join(ROOT, "public", "soderarak-share-v3.png");
+const OUT = join(ROOT, "public", "soderarak-share-v4.png");
 const photo = (slug) =>
   `data:image/webp;base64,${readFileSync(join(ROOT, "public", "anyagok", "arlista", `${slug}-foto.webp`)).toString("base64")}`;
 
 // Sorrend = árlista sorrendje; a középső oszlop lejjebb csúszik a ritmusért.
+// ANDEZIT NINCS a csempék között: nincs ellenőrzött andezitfotó, és a korábbi
+// bazaltfotót nem adjuk ki andezit hiteles fotójaként (V3 szabály).
 const tiles = [
   ["soder", "Sóder", "40% 55%"],
   ["kavics", "Kavics", "50% 45%"],
-  ["bazalt", "Bazalt", "45% 40%"],
   ["homok", "Homok", "50% 50%"],
   ["murva", "Murva", "50% 50%"],
   ["fold", "Termőföld", "50% 60%"],
@@ -51,7 +52,7 @@ const html = `<!doctype html>
   .chip { font-size: 19px; font-weight: 600; padding: 9px 16px; border-radius: 999px;
     background: #fffaf1; border: 1.5px solid #d8c4a0; color: #24211d; }
   .chip.num { background: #2b2019; border-color: #2b2019; color: #fbf3e4; }
-  .grid { position: absolute; left: 660px; top: 78px; display: grid; grid-template-columns: repeat(3, 152px); gap: 14px; }
+  .grid { position: absolute; left: 660px; top: 122px; display: grid; grid-template-columns: repeat(3, 152px); gap: 14px; }
   .tile { width: 152px; height: 222px; border-radius: 18px; overflow: hidden; position: relative;
     box-shadow: 0 1px 0 rgba(43,32,25,.08), 0 14px 30px -12px rgba(43,32,25,.35); border: 3px solid #fffaf1; }
   .tile:nth-child(3n+2) { transform: translateY(26px); }
@@ -65,8 +66,8 @@ const html = `<!doctype html>
     <div class="lockup"><span class="a">Sóder</span><span class="b">Árak</span></div>
     <h1>Építőanyagok,<br><em>átlátható árak.</em></h1>
     <div class="rule"></div>
-    <div class="materials">Sóder · Homok · Kavics · Murva · Bazalt · Termőföld</div>
-    <div class="chips"><span class="chip num">1–20 m³</span><span class="chip">Árkalkulátor</span><span class="chip">Kiszállítás</span></div>
+    <div class="materials">Sóder · Homok · Kavics · Murva · Andezit · Termőföld</div>
+    <div class="chips"><span class="chip num">1–10 m³</span><span class="chip">Bruttó árak</span><span class="chip">Árkalkulátor</span></div>
   </div>
   <div class="grid">
     ${tiles.map(([slug, , pos]) => `<div class="tile"><img src="${photo(slug)}" style="object-position:${pos}" alt=""></div>`).join("")}

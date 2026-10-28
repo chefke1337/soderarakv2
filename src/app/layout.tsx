@@ -6,7 +6,14 @@ import Footer from "@/components/Footer";
 import MobileCallBar from "@/components/MobileCallBar";
 import ScrollSensor from "@/components/ScrollSensor";
 import { AnalyticsBanner } from "@/components/Analytics";
-import { absoluteUrl, company, DISCLOSURE_NET, DISCLOSURE_PRICE, settlements } from "@/content/site";
+import {
+  absoluteUrl,
+  company,
+  DISCLOSURE_FREIGHT,
+  DISCLOSURE_GROSS,
+  DISCLOSURE_PRICE,
+  serviceAreas,
+} from "@/content/site";
 import { GSC_VERIFICATION } from "@/lib/analytics";
 import { JsonLd } from "@/lib/meta";
 import { SHARE } from "@/lib/share";
@@ -52,7 +59,7 @@ export const metadata: Metadata = {
   },
   description: SHARE.description,
   alternates: { canonical: absoluteUrl("/") },
-  // V2 = alternatív preview: ne versenyezzen az eredeti oldallal a keresőben.
+  // V3 = nem publikus fejlesztői előnézet: ne versenyezzen az éles oldallal.
   // (A noindex nem hozzáférés-védelem; a robots.txt szándékosan NEM tilt,
   // különben a keresők nem látnák ezt a meta-jelzést.)
   robots: { index: false, follow: true },
@@ -98,7 +105,7 @@ const jsonLd = {
       ...company.hours.schema,
     },
   ],
-  areaServed: settlements.map(({ name }) => ({ "@type": "Place", name })),
+  areaServed: serviceAreas.map((a) => ({ "@type": "Place", name: a.name })),
 };
 
 export default function RootLayout({
@@ -117,7 +124,7 @@ export default function RootLayout({
         <AnalyticsBanner />
         <JsonLd data={jsonLd} />
         <p className="sr-only">
-          {DISCLOSURE_PRICE} {DISCLOSURE_NET}
+          {DISCLOSURE_PRICE} {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT}
         </p>
       </body>
     </html>

@@ -2,32 +2,47 @@
 
 import { useEffect, useRef } from "react";
 import type { Map as LeafletMap, LayerGroup } from "leaflet";
-import { settlements, zones } from "@/content/site";
+import { serviceAreas } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
-// komment az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
+// kommentet az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
-/** Zónaszínek — V2 földszín-rámpa (agyag → homok → por). */
-export const zoneColors: Record<string, { stroke: string; fill: string }> = {
-  mag: { stroke: "#b4532f", fill: "rgba(180, 83, 47, 0.30)" },
-  kozel: { stroke: "#b08a4c", fill: "rgba(217, 183, 122, 0.34)" },
-  tavolabbi: { stroke: "#9a8a6c", fill: "rgba(201, 184, 150, 0.32)" },
-};
+/**
+ * V3 LEFEDETTSÉGI TÉRKÉP.
+ *
+ * A V2 háromzónás, kiszínezett poligonos térképe megszűnt: a V3 árazás
+ * irányítószám-alapú, és találomra rajzolt irányítószám-határokat NEM
+ * jelenítünk meg. Ez a térkép kizárólag ÁTTEKINTÉS: a kiszolgált
+ * területek jelölése. A konkrét tarifa a kereshető irányítószámos
+ * díjlistából (PostalTariffTable) jön.
+ *
+ * Megőrzött szabályok: nincs telephely-/depópin, nincs személyes átvétel,
+ * a térkép nem fed a headerre (`isolation: isolate` a konténeren),
+ * OSM-attribúció a helyén, érintőképernyőn az egyujjas húzás az oldalé.
+ */
+
+/** Van-e a területhez jóváhagyott, irányítószám-alapú tarifa? */
+const MARKER = {
+  tariff: { fill: "#a8401a", ring: "#fffaf1" },
+  quote: { fill: "#6e6457", ring: "#fffaf1" },
+} as const;
 
 /** Feliratirány a sűrű pontoknál, hogy a címkék ne fedjék egymást. */
 const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
   budafok: "left",
+  budateteny: "left",
+  nagyteteny: "bottom",
+  "budapest-22-kerulet": "right",
+  albertfalva: "left",
+  "ujbuda-budapest-11-kerulet": "right",
+  csepel: "right",
   torokbalint: "left",
   erd: "left",
   pusztazamor: "bottom",
   soskut: "top",
   diosd: "bottom",
-  ujbuda: "left",
 };
 
-export const fmtEzer = (min: number, max: number) =>
-  `${(min / 1000).toLocaleString("hu-HU")}–${(max / 1000).toLocaleString("hu-HU")}`;
-
-export default function ZonaTerkep({ height = 420 }: { height?: number }) {
+export default function LefedettsegTerkep({ height = 420 }: { height?: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const layersRef = useRef<LayerGroup | null>(null);
@@ -50,7 +65,6 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
           // Érintőképernyőn az egyujjas húzás az oldalt görgesse, ne a térképet
           // (a +/− gombokkal ott is nagyítható).
           dragging: !L.Browser.mobile,
-          // Finomabb illesztés: keskeny kijelzőn se maradjon üres sáv a zónák körül
           zoomSnap: 0.25,
         });
 
@@ -65,66 +79,46 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
 
         const group = L.layerGroup().addTo(map);
 
-        // Zónakörvonalak — egy zóna több, egymástól elvált részből állhat
-        // (pl. a szigeti települések a Dunán át). Minden rész ugyanazt a tooltipet kapja.
-        for (const z of zones) {
-          const style = zoneColors[z.id];
-          for (const ring of z.polygon) {
-            const poly = L.polygon(ring, {
-              color: style.stroke,
-              weight: 2,
-              fillColor: style.fill,
-              fillOpacity: 1,
-            }).addTo(group);
-
-            poly.bindTooltip(
-              `<strong>${z.name}</strong><br/>Fuvar: ${fmtEzer(z.fuelMin, z.fuelMax)} ezer Ft nettó<br/><small>Tájékoztató zónahatár, nem jogi határ.</small>`,
-              { sticky: true },
-            );
-            poly.on("mouseover", () => poly.setStyle({ weight: 3.5 }));
-            poly.on("mouseout", () => poly.setStyle({ weight: 2 }));
-          }
-        }
-
-        // Kiszolgált települések saját jelölése (site.ts) — az OSM-alap feliratai
-        // zoomfüggők, ezért a szolgáltatási terület nevei külön, mindig látható
-        // (nem csak hoverre megjelenő) címkét kapnak. A XXII. kerület nem pont:
-        // Budafok, Budatétény és Nagytétény jelöli.
-        for (const s of settlements) {
-          if (s.slug === "budapest-22-kerulet") continue;
-          const name = s.name.replace(/\s*\(.*\)$/, "");
-          L.circleMarker(s.latlng, {
-            radius: 4,
-            color: "#fffaf1",
+        for (const area of serviceAreas) {
+          const hasTariff = area.freight.kind === "profile";
+          const style = hasTariff ? MARKER.tariff : MARKER.quote;
+          const name = area.shortName;
+          L.circleMarker(area.latlng, {
+            radius: hasTariff ? 6 : 4.5,
+            color: style.ring,
             weight: 1.5,
-            fillColor: "#24211d",
+            fillColor: style.fill,
             fillOpacity: 1,
           })
             .addTo(group)
             .bindTooltip(name, {
               permanent: true,
-              direction: LABEL_DIR[s.slug] ?? "right",
+              direction: LABEL_DIR[area.slug] ?? "right",
               offset: [0, 0],
-              className: "city-label",
-            });
+              className: hasTariff ? "city-label" : "city-label city-label-quote",
+            })
+            .bindPopup(
+              hasTariff
+                ? `<strong>${area.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small>`
+                : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small>`,
+            );
         }
 
-        // A keretezés a tényleges zónákra illeszkedik, nem beégetett nézetre.
-        const points = zones.flatMap((z) => z.polygon.flat());
+        // A keretezés a tényleges jelölésekre illeszkedik, nem beégetett nézetre.
+        const points = serviceAreas.map((a) => a.latlng);
         const bounds = L.latLngBounds(points);
-        // A saját illesztés közben indult mozgás nem felhasználói
         let fitting = false;
         let userMoved = false;
         const fit = () => {
           fitting = true;
-          map.fitBounds(bounds, { padding: [18, 18], maxZoom: 12, animate: false });
+          map.fitBounds(bounds, { padding: [26, 26], maxZoom: 12, animate: false });
           fitting = false;
         };
         if (points.length > 0) fit();
 
         // A doboz méretváltozásakor (ablak, elforgatás, lusta betöltés) a Leaflet
-        // alapból a bal felső sarkot tartja meg — ezért csúszott el a zóna.
-        // Újraillesztünk, amíg a felhasználó nem nagyított/mozgatott maga.
+        // alapból a bal felső sarkot tartja meg — ezért újraillesztünk, amíg a
+        // felhasználó nem nagyított/mozgatott maga.
         map.on("movestart zoomstart", () => {
           if (!fitting) userMoved = true;
         });
@@ -172,7 +166,7 @@ export default function ZonaTerkep({ height = 420 }: { height?: number }) {
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
         className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
         role="region"
-        aria-label="Interaktív szállítási zónatérkép. A zónák és a hozzájuk tartozó tájékoztató fuvarárak az alábbi listában is olvashatók."
+        aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A konkrét fuvardíjak az irányítószámos díjlistában olvashatók."
       />
     </div>
   );

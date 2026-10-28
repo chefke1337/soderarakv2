@@ -2,19 +2,45 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
+  bandLabel,
   company,
-  findZone,
-  MAX_ORDER_VOLUME,
+  findServiceArea,
+  freightProfiles,
+  FREIGHT_VAT_RATE,
+  MIN_ORDER_M3,
   materialGroups,
-  MIN_ORDER_VOLUME,
-  settlements,
+  PERMIT_NOTICE,
+  profileMaxM3,
+  romanDistrict,
+  serviceAreas,
+  SINGLE_TRIP_MAX_M3,
+  UNSUPPORTED_NOTICE,
+  type FreightProfile,
+  type ServiceArea,
 } from "@/content/site";
-import { PhoneLink } from "@/lib/ui";
+import { formatFt, IconArrowRight, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, faqJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 
 export function generateStaticParams() {
-  return settlements.map((s) => ({ telepules: s.slug }));
+  return serviceAreas.map((s) => ({ telepules: s.slug }));
+}
+
+/** A területhez tartozó díjprofil(ok) — egy kerülethez több is lehet (XI.). */
+function profilesFor(area: ServiceArea): FreightProfile[] {
+  if (area.freight.kind !== "profile") return [];
+  const f = area.freight;
+  return freightProfiles.filter(
+    (p) =>
+      p.municipalityId === f.municipalityId &&
+      (f.districtId === undefined || p.districtId === f.districtId),
+  );
+}
+
+function freightRangeLabel(profiles: FreightProfile[]): string | null {
+  if (!profiles.length) return null;
+  const fees = profiles.flatMap((p) => p.bands.map((b) => b.netFee));
+  return `${formatFt(Math.min(...fees))}–${formatFt(Math.max(...fees))}`;
 }
 
 export async function generateMetadata({
@@ -23,155 +49,280 @@ export async function generateMetadata({
   params: Promise<{ telepules: string }>;
 }): Promise<Metadata> {
   const { telepules } = await params;
-  const s = settlements.find((x) => x.slug === telepules);
-  if (!s) return {};
-  const zone = findZone(s.zone);
+  const area = findServiceArea(telepules);
+  if (!area) return {};
+  const profiles = profilesFor(area);
+  const range = freightRangeLabel(profiles);
   return pageMeta({
-    title: `Sóder szállítás ${s.name} — árak, kiszállás`,
-    description: `Sóder, homok, kavics, murva és föld szállítás ${s.name} területére (${zone.name}). Fuvar ${(zone.fuelMin / 1000).toLocaleString("hu-HU")}–${(zone.fuelMax / 1000).toLocaleString("hu-HU")} ezer Ft nettó, tájékoztató ár. Hívás: ${company.phone.display}.`,
-    path: `/teruletek/${s.slug}`,
+    title: `Sóder szállítás ${area.name} — bruttó anyagár, nettó fuvar`,
+    description: range
+      ? `Sóder, homok, kavics, murva, andezit és föld szállítás ${area.name} területére. Fuvar nettó ${range} az irányítószám és a mennyiség szerint; az anyagárak bruttók. Hívás: ${company.phone.display}.`
+      : `Sóder, homok, kavics, murva, andezit és föld szállítás ${area.name} területére egyedi szállítási egyeztetéssel. Hívás: ${company.phone.display}.`,
+    path: `/teruletek/${area.slug}`,
   });
 }
 
-export default async function SettlementPage({
+export default async function AreaPage({
   params,
 }: {
   params: Promise<{ telepules: string }>;
 }) {
   const { telepules } = await params;
-  const s = settlements.find((x) => x.slug === telepules);
-  if (!s) notFound();
-  const zone = findZone(s.zone);
-  const others = settlements.filter((x) => x.zone === s.zone && x.slug !== s.slug);
+  const area = findServiceArea(telepules);
+  if (!area) notFound();
 
-  const settlementFaq = [
+  const profiles = profilesFor(area);
+  const hasTariff = profiles.length > 0;
+  const range = freightRangeLabel(profiles);
+  const allCodes = profiles.flatMap((p) => [...p.postalCodes]);
+  const others = serviceAreas.filter((x) => x.slug !== area.slug).slice(0, 8);
+
+  const areaFaq = [
     {
-      q: `Mennyibe kerül a sóder szállítás ${s.name} területére?`,
-      a: `A fuvar ${s.name} területére (${zone.name}) tájékoztató jelleggel ${(zone.fuelMin / 1000).toLocaleString("hu-HU")}–${(zone.fuelMax / 1000).toLocaleString("hu-HU")} ezer forint nettó. Az anyag ára külön, frakciónként eltér — a végleges árat egyeztetés után adjuk.`,
+      q: `Mennyibe kerül a szállítás ${area.name} területére?`,
+      a: hasTariff
+        ? `A fuvar díja az irányítószámtól és a szállított mennyiségtől függ: ${area.name} esetén nettó ${range}, egy fuvarra. A nettó fuvardíjra ${Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. Az anyagár ettől külön, bruttó Ft/m³ — rá nem kerül még egyszer ÁFA.`
+        : `${UNSUPPORTED_NOTICE} ${area.name} területére jelenleg nincs feltüntetett fuvardíjunk — a korábbi zónás díjakat nem alkalmazzuk automatikusan. Kérjük, hívjon minket a ${company.phone.display} számon.`,
     },
     {
-      q: `Mennyire gyors a kiszállás ${s.name}?`,
-      a: `${zone.name === "Budafok és környéke" ? "Budafok környékén a kiszállás gyakran aznap megtörténik." : `${zone.name} egyeztetett időpontban szállítunk, gyakran 1-2 munkanapon belül.`} Hívás: ${company.phone.display}.`,
+      q: `Mennyire gyors a kiszállás ${area.name}?`,
+      a:
+        area.slug === "budafok" ||
+        area.slug === "budateteny" ||
+        area.slug === "nagyteteny" ||
+        area.slug === "budapest-22-kerulet"
+          ? `Budafok környékén a kiszállás gyakran aznap megtörténik. Hívás: ${company.phone.display}.`
+          : `Egyeztetett időpontban szállítunk. Hívás: ${company.phone.display}.`,
     },
     {
-      q: `Milyen anyagokat szállítanak ${s.name} területére?`,
-      a: `Sódert (0/4–0/24 és töltősóder), homokot, kavicsot, kulékavicsot, murvát, bazaltot és földet. Minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb ${MAX_ORDER_VOLUME} m³.`,
+      q: `Milyen anyagokat szállítanak ${area.name} területére?`,
+      a: `Mosott sódert (0–4-től 0–24-ig és töltősódert), bányahomokot és 0–1 homokot, első osztályú mosott kavicsot és osztályozatlan kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
     },
   ];
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: `Ömlesztett anyag szállítás — ${s.name}`,
-    url: `${company.site.url}/teruletek/${s.slug}/`,
-    areaServed: { "@type": "Place", name: s.name },
+    name: `Ömlesztett anyag szállítás — ${area.name}`,
+    url: `${company.site.url}/teruletek/${area.slug}/`,
+    areaServed: { "@type": "Place", name: area.name },
     provider: { "@id": `${company.site.url}/#business` },
   };
 
   return (
     <Section
-      kicker={`${zone.name} · ${zone.area}`}
-      title={`Sóder szállítás ${s.name}`}
-      lead={`${zone.name} — fuvar ${(zone.fuelMin / 1000).toLocaleString("hu-HU")}–${(zone.fuelMax / 1000).toLocaleString("hu-HU")} ezer Ft nettó, ${zone.leadTime}. Az anyagárak nettó árak, ÁFA nélkül; a fuvar díja külön.`}
+      kicker={
+        hasTariff
+          ? `Irányítószám-alapú fuvardíj${allCodes.length ? ` · ${allCodes.join(", ")}` : ""}`
+          : "Egyedi szállítási egyeztetés"
+      }
+      title={`Sóder szállítás ${area.name}`}
+      lead={
+        hasTariff
+          ? `A fuvar díját az irányítószám és a szállított mennyiség határozza meg — ${area.name} esetén nettó ${range}, egy fuvarra. Az anyagárak bruttó árak, az ÁFÁ-t tartalmazzák.`
+          : `${UNSUPPORTED_NOTICE} ${area.name} területére jelenleg nincs feltüntetett fuvardíjunk — a díjat egyeztetés után adjuk.`
+      }
     >
       <JsonLd data={jsonLd} />
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Főoldal", path: "/" },
           { name: "Területek", path: "/teruletek" },
-          { name: s.name, path: `/teruletek/${s.slug}` },
+          { name: area.name, path: `/teruletek/${area.slug}` },
         ])}
       />
-      <JsonLd data={faqJsonLd(settlementFaq)} />
+      <JsonLd data={faqJsonLd(areaFaq)} />
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-8">
-          <div className="rounded-md border border-line bg-paper p-6 shadow-card">
-            <h2 className="font-display text-xl font-bold">
-              Amit {s.name} területére szállítunk
+          {/* ── Fuvardíj-sávok vagy egyeztetés ── */}
+          {hasTariff ? (
+            <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
+              <h2 className="font-display text-heading-sm font-bold">
+                Fuvardíj-sávok — nettó, egy fuvarra
+              </h2>
+              {profiles.map((p) => {
+                const maxM3 = profileMaxM3(p);
+                return (
+                  <div key={p.id} className="mt-4 border-t border-line pt-4 first:mt-3">
+                    <p className="num text-sm font-semibold">
+                      {p.label}
+                      <span className="block font-sans text-xs font-normal text-ink-soft">
+                        {p.postalCodes.join(", ")}
+                      </span>
+                    </p>
+                    <dl className="num mt-2.5 grid gap-2 sm:grid-cols-2">
+                      {p.bands.map((b) => (
+                        <div
+                          key={b.upTo}
+                          className="flex items-baseline justify-between gap-3 rounded-sm bg-surface-muted px-3 py-2"
+                        >
+                          <dt className="text-xs font-semibold text-ink-soft">
+                            {bandLabel(p, b)}
+                          </dt>
+                          <dd className="font-display text-[0.9375rem] font-bold whitespace-nowrap">
+                            {formatFt(b.netFee)}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                    {maxM3 < SINGLE_TRIP_MAX_M3 && (
+                      <p className="mt-2 text-xs font-semibold text-accent-deep">
+                        {maxM3} m³ felett egyedi egyeztetés szükséges.
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+              <p className="mt-4 text-xs leading-relaxed text-ink-soft">
+                A nettó fuvardíjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.{" "}
+                {PERMIT_NOTICE}
+              </p>
+            </div>
+          ) : (
+            <div className="rounded-[var(--radius-md)] border border-accent/45 bg-brand-soft p-5 md:p-6">
+              <h2 className="font-display text-heading-sm font-bold text-accent-deep">
+                Egyedi szállítási egyeztetés
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-accent-deep">
+                {area.name} területére a V3 árlistában nincs feltüntetett fuvardíj. A
+                korábbi háromzónás díjakat nem alkalmazzuk automatikusan — a fuvar
+                díját telefonos egyeztetés után adjuk meg. Az anyagárak változatlanul
+                bruttó Ft/m³ értékek.
+              </p>
+              <PhoneLink className="num btn btn-primary mt-4" />
+            </div>
+          )}
+
+          {/* ── Anyagok ── */}
+          <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
+            <h2 className="font-display text-heading-sm font-bold">
+              Amit {area.name} területére szállítunk
             </h2>
             <ul className="mt-4 grid gap-2 sm:grid-cols-2">
               {materialGroups.map((g) => (
-                <li key={g.slug} className="rounded-sm border border-line bg-sand/60 px-4 py-3 text-sm">
-                  <Link href={`/anyagok/${g.slug}`} className="inline-flex min-h-11 items-center font-semibold hover:text-brand-dark">
+                <li
+                  key={g.slug}
+                  className="rounded-sm border border-line bg-sand/60 px-4 py-3 text-sm"
+                >
+                  <Link
+                    href={`/anyagok/${g.slug}`}
+                    className="inline-flex min-h-11 items-center font-semibold hover:text-brand-dark"
+                  >
                     {g.name} →
                   </Link>
-                  <span className="mt-0.5 block text-xs text-ink-soft">{g.short}</span>
+                  <span className="mt-0.5 block text-xs leading-relaxed text-ink-soft">
+                    {g.short}
+                  </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-4 text-xs text-ink-soft">
-              Minimum rendelés {MIN_ORDER_VOLUME} m³, egy fuvarban legfeljebb {MAX_ORDER_VOLUME} m³. Tájékoztató
-              ár — a végleges ajánlatot egyeztetés után adjuk.
+            <p className="mt-4 text-xs leading-relaxed text-ink-soft">
+              Minimum rendelés {MIN_ORDER_M3} m³, egy fuvarban legfeljebb{" "}
+              {SINGLE_TRIP_MAX_M3} m³. Tájékoztató ár — a végleges ajánlatot egyeztetés
+              után adjuk.
             </p>
           </div>
 
-          <div className="rounded-md border border-line bg-paper p-6 shadow-card">
-            <h2 className="font-display text-xl font-bold">
-              További települések a zónában
-            </h2>
+          {/* ── További területek ── */}
+          <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
+            <h2 className="font-display text-heading-sm font-bold">További területek</h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {others.map((o) => (
                 <li key={o.slug}>
                   <Link
                     href={`/teruletek/${o.slug}`}
-                    className="inline-flex min-h-11 items-center rounded-full border border-line bg-sand px-3 py-1.5 text-sm hover:border-brand"
+                    className="inline-flex min-h-11 items-center rounded-full border border-line bg-sand px-3 text-sm hover:border-brand"
                   >
-                    {o.name}
+                    {o.shortName}
                   </Link>
                 </li>
               ))}
             </ul>
-            <Link href="/teruletek" className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2">
-              Minden zóna és település →
+            <Link
+              href="/teruletek"
+              className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2"
+            >
+              Minden kiszolgált terület →
             </Link>
           </div>
 
-          <div className="rounded-md border border-line bg-paper p-6 shadow-card">
-            <h2 className="font-display text-xl font-bold">Hasznos útmutatók</h2>
-            <ul className="mt-2 text-sm">
-              <li>
-                <Link href="/utmutatok/mennyi-soder-kell" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
-                  Mennyi sóder kell? →
-                </Link>
-              </li>
-              <li>
-                <Link href="/utmutatok/milyen-soder-kell-a-terko-ala" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
-                  Milyen sóder kell a térkő alá? →
-                </Link>
-              </li>
-              <li>
-                <Link href="/utmutatok/mennyi-ido-a-soder-szallitas" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
-                  Mennyi idő a sóder szállítás? →
-                </Link>
-              </li>
-              <li>
-                <Link href="/utmutatok/mennyibe-kerul-a-soder" className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark">
-                  Mennyibe kerül a sóder? →
-                </Link>
-              </li>
-            </ul>
+          {/* ── GYIK ── */}
+          <div>
+            <h2 className="font-display text-heading-md font-bold">
+              Gyakori kérdések — {area.name}
+            </h2>
+            <dl className="mt-4 border-t border-ink/80">
+              {areaFaq.map((f) => (
+                <div key={f.q} className="border-b border-line py-4">
+                  <dt className="font-semibold">{f.q}</dt>
+                  <dd className="mt-1 max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">
+                    {f.a}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
 
         <aside className="min-w-0 h-fit space-y-5 lg:sticky lg:top-28">
-          <div data-call-region="telepules_oldal" className="rounded-md border border-line bg-sand p-6 shadow-card">
-            <p className="text-sm font-medium text-ink-soft">
-              Ár {s.name} területére
+          <div
+            data-call-region="telepules_oldal"
+            className="rounded-[var(--radius-md)] border border-line bg-sand p-6 shadow-card"
+          >
+            <p className="text-sm font-medium text-ink-soft">Ár {area.name} területére</p>
+            <p className="num mt-2 font-display text-heading-md font-bold text-brand-dark">
+              {hasTariff ? range : "Egyeztetés után"}
             </p>
-            <p className="mt-2 font-display text-2xl font-bold text-brand-dark">
-              {(zone.fuelMin / 1000).toLocaleString("hu-HU")}–
-              {(zone.fuelMax / 1000).toLocaleString("hu-HU")} ezer Ft
+            <p className="mt-1 text-xs leading-relaxed text-ink-soft">
+              {hasTariff
+                ? "nettó fuvardíj egy fuvarra, az irányítószám és a mennyiség szerint"
+                : "a fuvar díját telefonos egyeztetés után adjuk meg"}
             </p>
-            <p className="text-xs text-ink-soft">fuvar, egy fuvarra, nettó</p>
-            <Link
-              href="/arkalkulator"
-              className="mt-4 inline-flex w-full items-center justify-center rounded-sm bg-brand-dark px-5 py-3 font-semibold text-paper shadow-card transition-colors hover:bg-brand-deep"
-            >
-              Kalkulátor anyagra, mennyiségre
+            <Link href="/arkalkulator" className="btn btn-primary mt-4 w-full">
+              Árkalkulátor
+              <IconArrowRight size={17} className="btn-icon btn-icon-move" />
             </Link>
-            <PhoneLink className="mt-2 inline-flex w-full items-center justify-center rounded-sm border border-line bg-paper px-5 py-3 font-semibold transition-colors hover:bg-sand" />
+            <PhoneLink className="num btn btn-outline mt-3 w-full" />
           </div>
+
+          {area.freight.kind === "profile" && area.freight.districtId && (
+            <div className="rounded-[var(--radius-md)] border border-border bg-surface p-6">
+              <p className="text-sm font-medium text-ink-soft">Kerület</p>
+              <p className="mt-1 font-display text-heading-sm font-bold">
+                Budapest {romanDistrict(area.freight.districtId)} kerület
+              </p>
+              <p className="num mt-2 text-xs leading-relaxed text-ink-soft">
+                Irányítószámok: {allCodes.join(", ")}
+              </p>
+              <Link
+                href="/szallitas#fuvardijak"
+                className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2"
+              >
+                Teljes díjlista →
+              </Link>
+            </div>
+          )}
+
+          <nav aria-label="Hasznos útmutatók" className="rounded-[var(--radius-md)] border border-border bg-surface p-6">
+            <h2 className="text-sm font-medium text-ink-soft">Hasznos útmutatók</h2>
+            <ul className="mt-2 text-sm">
+              {[
+                ["mennyi-soder-kell", "Mennyi sóder kell?"],
+                ["mennyibe-kerul-a-soder", "Mennyibe kerül a sóder?"],
+                ["arkalkulator-hasznalata", "Árkalkulátor használata"],
+              ].map(([slug, label]) => (
+                <li key={slug}>
+                  <Link
+                    href={`/utmutatok/${slug}`}
+                    className="inline-flex min-h-11 items-center font-medium hover:text-brand-dark"
+                  >
+                    {label} →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </aside>
       </div>
     </Section>

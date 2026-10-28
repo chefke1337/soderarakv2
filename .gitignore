@@ -33,3 +33,9 @@ og-gallery.html
 .env.local
 .env*.local
 build.log
+
+# Lokális mock backend által rögzített levelek (nem kerülhet a repóba)
+.mock-mail/
+
+# V3 vizuális ellenőrzés képernyőképei (helyben újragenerálható: npm run shots)
+docs/v3-shots/

@@ -5,8 +5,13 @@ export function formatFt(n: number): string {
   return `${n.toLocaleString("hu-HU")} Ft`;
 }
 
-export function priceLabel(priceNet: number | null): string {
-  return priceNet === null ? "Egyeztetés után" : formatFt(priceNet);
+export function priceLabel(price: number | null): string {
+  return price === null ? "Egyeztetés után" : formatFt(price);
+}
+
+/** Ezer forintra rövidített érték a sűrű táblázatokhoz (pl. „22 e Ft"). */
+export function formatEzer(n: number): string {
+  return `${(n / 1000).toLocaleString("hu-HU")} e Ft`;
 }
 
 export function PhoneLink({
@@ -161,8 +166,38 @@ export function IconCalculator({ size = 18, className }: IconProps) {
   );
 }
 
-/** Legalacsonyabb nettó ár egy anyagcsoportban (null = csak egyeztetés után). */
-export function minPrice(items: { priceNet: number | null }[]): number | null {
-  const priced = items.filter((i) => i.priceNet !== null).map((i) => i.priceNet as number);
+export function IconMapPinned({ size = 18, className }: IconProps) {
+  return (
+    <svg {...svgProps(size)} className={className}>
+      <path d="M18 8c0 4.5-6 11-6 11S6 12.5 6 8a6 6 0 0 1 12 0z" />
+      <circle cx="12" cy="8" r="2" />
+      <path d="M8.835 21H5a1 1 0 0 1-.9-1.45l1.2-2.4" />
+      <path d="M18.7 17.15l1.2 2.4A1 1 0 0 1 19 21h-3.835" />
+    </svg>
+  );
+}
+
+export function IconAlert({ size = 18, className }: IconProps) {
+  return (
+    <svg {...svgProps(size)} className={className}>
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+    </svg>
+  );
+}
+
+export function IconDroplets({ size = 18, className }: IconProps) {
+  return (
+    <svg {...svgProps(size)} className={className}>
+      <path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z" />
+      <path d="M12.56 6.6A10.97 10.97 0 0 0 14 3.02c.5 2.5 2 4.9 4 6.5s3 3.5 3 5.5a6.98 6.98 0 0 1-11.91 4.97" />
+    </svg>
+  );
+}
+
+/** Legalacsonyabb BRUTTÓ ár egy tétellistában (null = csak egyeztetés után). */
+export function minPrice(items: { priceGross: number | null }[]): number | null {
+  const priced = items.filter((i) => i.priceGross !== null).map((i) => i.priceGross as number);
   return priced.length ? Math.min(...priced) : null;
 }

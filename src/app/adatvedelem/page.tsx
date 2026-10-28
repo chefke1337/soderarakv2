@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   ...pageMeta({
     title: "Adatvédelmi tájékoztató",
     description:
-      "Adatkezelési tájékoztató: milyen adatokat kezelünk az ajánlatkéréskor, és hogyan kezeljük azokat.",
+      "Adatkezelési tájékoztató: milyen adatokat kezelünk a rendelési igény beküldésekor, hogyan kerülnek hozzánk, és meddig őrizzük meg azokat.",
     path: "/adatvedelem",
   }),
   robots: { index: false },
@@ -18,7 +18,7 @@ export default function AdatvedelemPage() {
     <Section
       kicker="Jogi"
       title="Adatvédelmi tájékoztató"
-      lead="Az ajánlatkéréshez csak a szükséges adatokat kérjük: név és telefonszám."
+      lead="A rendelési igény beküldéséhez csak a szükséges adatokat kérjük: név, e-mail-cím, telefonszám és a szállítási cím."
     >
       <div className="max-w-3xl space-y-6 text-sm leading-relaxed text-ink-soft">
         <section>
@@ -33,22 +33,44 @@ export default function AdatvedelemPage() {
             Milyen adatot és miért?
           </h2>
           <p className="mt-2">
-            Az árkalkulátor ajánlatkéréséhez a nevét és telefonszámát kérjük,
-            valamint az általa megadott anyag-, mennyiség- és helyszín-adatokat
-            az ajánlatadás céljából. Jogalap: a szerződés előkészítése
-            (ajánlatkérés) — a jelentkező adatok megadása önkéntes.
+            Az árkalkulátorból beküldött rendelési igényhez a következő adatokat
+            kezeljük: név, e-mail-cím, telefonszám, a kiválasztott anyag és
+            termékváltozat, a mennyiség, a település, a kerület, az irányítószám,
+            a szállítási cím, a kívánt időpont (ha megadta), a behajtási
+            engedélyre adott válasz, az árösszesítő, a megjegyzés és az árazási
+            verzió. Cél: a rendelési igény feldolgozása és az ajánlatadás.
+            Jogalap: a szerződés előkészítése — az adatok megadása önkéntes, de
+            a megjelölt mezők nélkül az igény nem küldhető be.
+          </p>
+          <p className="mt-2">
+            A beküldés <strong className="font-semibold text-ink">rendelési igénynek</strong>{" "}
+            minősül: a megrendelés a részletek egyeztetése és visszaigazolásunk
+            után válik véglegessé.
           </p>
         </section>
         <section>
           <h2 className="font-display text-lg font-bold text-ink">
-            Hogyan kerül hozzánk az ajánlatkérés?
+            Hogyan kerül hozzánk a rendelési igény?
           </h2>
           <p className="mt-2">
-            Az űrlap az Ön eszközén állítja össze az e-mailt, amelyet az Ön
-            e-mail kliense küld el a {company.email} címre. A weboldal maga nem
-            tárol és nem továbbít szerveroldali adatot. A számítás piszkozata
-            kizárólag az Ön böngészőjében, a saját eszközén tárolódik
-            (localStorage), és bármikor törölheti a böngésző beállításaiban.
+            A beküldött adatokat a weboldal titkosított kapcsolaton, az üzenet
+            törzsében továbbítja a saját beküldés-feldolgozó szolgáltatásunknak,
+            amely az igényt e-mailben juttatja el a {company.email} címre. A
+            válaszcím az Ön megadott e-mail-címe. Személyes adat nem kerül
+            internetcímbe (URL-be), és a feldolgozás során nem naplózzuk az
+            üzenet tartalmát.
+          </p>
+          <p className="mt-2">
+            Visszaélés elleni védelemként a beküldések számát korlátozzuk, és a
+            kétszer elküldött, azonos igényt felismerjük. Ehhez a beküldés
+            technikai azonosítóját és a kérés IP-címét rövid ideig kezeljük.
+          </p>
+          <p className="mt-2">
+            A számítás piszkozata (anyag, mennyiség, település, kerület,
+            irányítószám) kizárólag az Ön böngészőjében, a saját eszközén
+            tárolódik (localStorage), és bármikor törölheti a böngésző
+            beállításaiban. A kapcsolati adatokat (név, e-mail, telefon) a
+            böngésző nem tárolja.
           </p>
         </section>
         <section>
@@ -76,17 +98,18 @@ export default function AdatvedelemPage() {
             A weboldal a Google Analytics 4-et csak hozzájárulás után tölti be:
             első látogatáskor banner kér engedélyt, amelyet bármikor visszavonhat a
             böngésző tárolásának törlésével. Hozzájárulás nélkül a mérés nem indul
-            el, a hívás- és ajánlatkérés-gombok működése ettől független. A mérés
+            el, a hívás- és beküldés-gombok működése ettől független. A mérés
             során az IP-cím anonimizálva kezelődik, hirdetési célú tárolás nem
-            történik. Külső térképi beágyazás (Google Maps) töltődhet a kapcsolati
-            oldalon, amelynek szolgáltatója a betöltéskor saját szabályai szerint
-            kezelhet adatot.
+            történik. A lefedettségi térkép az OpenStreetMap csempeszolgáltatását
+            használja: a térkép megjelenítésekor a böngészője kapcsolatba lép az
+            OpenStreetMap szervereivel, amelyek saját szabályaik szerint
+            kezelhetnek adatot.
           </p>
         </section>
         <section>
-          <h2 className="font-display text-lg font-bold text-ink">Hívás- és ajánlatkérés-mérés</h2>
+          <h2 className="font-display text-lg font-bold text-ink">Hívás- és beküldés-mérés</h2>
           <p className="mt-2">
-            A telefonos és e-mail megkeresések mennyiségét az oldalon belül,
+            A telefonos és e-mailes megkeresések mennyiségét az oldalon belül,
             név nélkül mérjük (melyik gombot, melyik oldalról nyomták meg).
             Személyes adatot ez a mérés nem kezel, az adatkezelő pedig
             {" "}

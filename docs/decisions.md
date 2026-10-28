@@ -318,3 +318,26 @@ referencia marad (sehol nem importált, nem kerül a bundle-be). Nyitott: a
 layout LocalBusiness JSON-LD `PostalAddress`-e a céges (impresszum) címet
 közli — jogi/üzleti megerősítés kell, hogy maradjon-e. Az `llms.txt`
 zóna-, anyag- és árlistája a site.ts 2026-10-11-i állapotához igazítva.
+
+## 2026-10-28 — V3: bruttó anyagár, irányítószámos fuvar, 10 m³ egyfuvaros keret
+Az árazás kettéosztott lett: az ANYAGÁR BRUTTÓ (ÁFÁ-val, `src/content/catalog.ts`),
+a FUVARDÍJ NETTÓ (`src/content/freight.ts`), és a fuvarra 27% ÁFA jön
+(jóváhagyott ügyfélválasz, 2026-10-27). A `src/lib/quote.ts` tiszta függvényei
+kényszerítik ki, hogy a bruttó anyagárra ne kerülhessen még egyszer ÁFA, és hogy
+a nettó fuvardíj ne adódjon közvetlenül a bruttó anyagárhoz végösszegként.
+
+A három szállítási zóna megszűnt: a díj alapja mindig a konkrét irányítószám
+(25 díjprofil), a kerület kiválasztása nem helyettesíti — eltérésnél hibát
+jelzünk, és nem választunk automatikusan másik díjat. Egy fuvarban legfeljebb
+10 m³ (korábban 20). Ahol nincs jóváhagyott tarifa (ismeretlen irányítószám,
+profil feletti mennyiség, 10 m³ felett, ismeretlen Vár-engedélydíj), ott nincs
+összeg — kitalált árat sehol nem mutatunk.
+
+A Bazalt kategória helyére a Nógrádkövesdi andezit került; a régi
+`/anyagok/bazalt/` útvonal noindex átirányító oldalként él tovább. Ellenőrzött
+andezitfotó hiányában a korábbi bazaltfotót NEM adjuk ki andezit fotójaként.
+
+Az éles e-mailküldés szándékosan NINCS aktiválva (nincs szolgáltatói
+hozzáférés): a teljes backend megvan és tesztelt, lokálisan mock módban fut,
+amit a felület egyértelműen jelez. Részletek, nyitott kérdések és az
+ellenőrzés eredménye: `docs/v3-brief.md`, `server/README.md`.

@@ -1,6 +1,6 @@
 import { findMaterialGroup, materialGroups } from "@/content/site";
 import { ogCard } from "@/lib/og";
-import { formatFt } from "@/lib/ui";
+import { formatFt, minPrice } from "@/lib/ui";
 
 export const dynamic = "force-static";
 
@@ -30,17 +30,16 @@ export default async function OgImage({
     });
   }
 
-  const priced = group.items.filter((i) => i.priceNet !== null);
-  const min = priced.length ? Math.min(...priced.map((i) => i.priceNet as number)) : null;
+  const min = minPrice(group.items);
 
   return ogCard({
     variant: "material",
     tone: group.tone,
     title: group.name,
-    kicker: group.short,
+    kicker: group.washed ? `${group.short} · ${group.washed.label}` : group.short,
     subtitle: group.description,
     count: group.items.length,
-    metricLabel: min !== null ? "NETTÓ ÁR / M³-TŐL" : "ANYAGÁR",
+    metricLabel: min !== null ? "BRUTTÓ ÁR / M³-TŐL" : "ANYAGÁR",
     metricValue: min !== null ? formatFt(min) : "Ajánlatkérés",
   });
 }

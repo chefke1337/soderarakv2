@@ -1,14 +1,17 @@
-import { findSettlement, findZone, settlements } from "@/content/site";
+import { findServiceArea, freightProfiles, serviceAreas } from "@/content/site";
 import { ogCard } from "@/lib/og";
 
 export const dynamic = "force-static";
 
 export function generateStaticParams() {
-  return settlements.map((settlement) => ({ telepules: settlement.slug }));
+  return serviceAreas.map((area) => ({ telepules: area.slug }));
 }
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+export const alt = "Kiszállítási terület kártya — Sóderárak";
+
+const ezer = (n: number) => (n / 1000).toLocaleString("hu-HU");
 
 export default async function OgImage({
   params,
@@ -16,29 +19,51 @@ export default async function OgImage({
   params: Promise<{ telepules: string }>;
 }) {
   const { telepules } = await params;
-  const settlement = findSettlement(telepules);
+  const area = findServiceArea(telepules);
 
-  if (!settlement) {
-    const fallbackZone = findZone("mag");
+  if (!area) {
     return ogCard({
       title: "Kiszállítási területek",
       kicker: "Terület",
       variant: "settlement",
       zoneId: "mag",
-      zoneName: fallbackZone.name,
-      highlight: `${fallbackZone.fuelMin / 1000}–${fallbackZone.fuelMax / 1000} ezer Ft`,
+      zoneName: "Budapest és Érd",
+      highlight: "Irányítószám szerinti fuvardíj",
     });
   }
 
-  const zone = findZone(settlement.zone);
+  if (area.freight.kind !== "profile") {
+    return ogCard({
+      variant: "settlement",
+      zoneId: "tavolabbi",
+      zoneName: "Egyedi egyeztetés",
+      title: area.name,
+      kicker: "Terület — egyedi egyeztetés",
+      subtitle:
+        "Ehhez a címhez egyedi szállítási egyeztetés szükséges — a fuvar díját telefonon adjuk meg.",
+      highlight: "Fuvar: egyeztetés után",
+      leadTime: "egyeztetett időpontban",
+    });
+  }
+
+  const f = area.freight;
+  const profiles = freightProfiles.filter(
+    (p) =>
+      p.municipalityId === f.municipalityId &&
+      (f.districtId === undefined || p.districtId === f.districtId),
+  );
+  const fees = profiles.flatMap((p) => p.bands.map((b) => b.netFee));
+
   return ogCard({
     variant: "settlement",
-    zoneId: settlement.zone,
-    zoneName: zone.name,
-    title: settlement.name,
-    kicker: `Terület — ${zone.name}`,
-    subtitle: "Sóder és ömlesztett építőanyag szállítás Budafokról.",
-    highlight: `${zone.fuelMin / 1000}–${zone.fuelMax / 1000} ezer Ft nettó`,
-    leadTime: zone.leadTime,
+    zoneId: "mag",
+    zoneName: profiles[0]?.label ?? area.name,
+    title: area.name,
+    kicker: `Terület — ${area.shortName}`,
+    subtitle:
+      "Sóder és ömlesztett építőanyag szállítás. Az anyagár bruttó, a fuvardíj nettó.",
+    highlight: `${ezer(Math.min(...fees))}–${ezer(Math.max(...fees))} ezer Ft nettó fuvar`,
+    leadTime:
+      area.freight.districtId === 22 ? "gyakran aznap" : "egyeztetett időpontban",
   });
 }

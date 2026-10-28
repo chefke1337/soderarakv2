@@ -14,7 +14,7 @@ export default function Footer() {
         <span className="flex-[2] bg-mat-kavics" />
         <span className="flex-[3] bg-accent" />
         <span className="flex-[2] bg-mat-murva" />
-        <span className="flex-[1] bg-mat-bazalt" />
+        <span className="flex-[1] bg-mat-andezit" />
         <span className="flex-[3] bg-mat-fold" />
       </div>
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-8 sm:grid-cols-2 md:gap-10 md:pt-14 md:pb-10 md:px-6 lg:grid-cols-12">
@@ -83,7 +83,7 @@ export default function Footer() {
             © {new Date().getFullYear()} {company.name.replace(/\.$/, "")}. Minden jog fenntartva.
           </p>
           <p className="md:max-w-[60ch] md:text-right">
-            Az árak tájékoztató jellegűek, nettó árak (ÁFA nélkül); a fuvar díja
+            Az anyagárak tájékoztató jellegűek, bruttó árak (az ÁFÁ-t tartalmazzák); a fuvar díja
             külön. A végleges ajánlatot egyeztetés után adjuk.
           </p>
           <p className="flex gap-4">

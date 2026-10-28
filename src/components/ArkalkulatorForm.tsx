@@ -1,39 +1,62 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import {
-  allMaterials,
+  budapestDistricts,
+  CASTLE_DISTRICT_ID,
+  CASTLE_QUESTION,
   company,
-  DISCLOSURE_PRICE,
-  findFreightTier,
-  findZone,
-  MAX_ORDER_VOLUME,
+  DISCLOSURE_GROSS,
+  freightProfiles,
+  isPostalCodeShape,
   materialGroups,
-  MIN_ORDER_VOLUME,
-  settlements,
-  zones,
+  MIN_ORDER_M3,
+  MULTI_TRIP_NOTICE,
+  municipalities,
+  normalizePostalCode,
+  ORDER_INTENT_CTA,
+  ORDER_INTENT_NOTICE,
+  PERMIT_NOTICE,
+  PRICING_VERSION,
+  resolveItemSlug,
+  SINGLE_TRIP_MAX_M3,
+  type CastleAnswer,
+  type MaterialGroup,
+  type MunicipalityId,
 } from "@/content/site";
-import { formatFt } from "@/lib/ui";
+import { computeQuote } from "@/lib/quote";
+import { isValidEmail, isValidPhone } from "@/lib/order";
+import {
+  newIdempotencyKey,
+  ORDER_ENDPOINT_CONFIGURED,
+  submitOrderRequest,
+  type SubmitOutcome,
+} from "@/lib/order-client";
+import { formatFt, IconArrowRight, IconCheck, IconDroplets, IconPhone } from "@/lib/ui";
+import { MATERIAL_COLOR } from "@/components/MaterialGrain";
 import FractionScale from "@/components/FractionScale";
-import { sendArkalkulatorSubmit, trackQuoteRequest } from "@/lib/analytics";
+import QuoteReceipt from "@/components/QuoteReceipt";
+import { trackQuoteRequest, sendArkalkulatorSubmit } from "@/lib/analytics";
+
+/* ──────────────────── Piszkozat (CSAK a számítás, nem a kapcsolat) ──────────────────── */
+
+const DRAFT_KEY = "arkalkulator-draft-v3";
 
 type Draft = {
-  materialSlug: string;
+  itemSlug: string;
   m3: number;
-  settlementSlug: string;
-  name: string;
-  phone: string;
+  municipalityId: MunicipalityId | "";
+  districtId: number | null;
+  postalCode: string;
 };
 
-const DRAFT_KEY = "arkalkulator-draft-v1";
-
-function loadDraft(): Draft | null {
+function loadDraft(): Partial<Draft> | null {
   try {
     const raw = window.localStorage.getItem(DRAFT_KEY);
     if (!raw) return null;
-    const d = JSON.parse(raw) as Draft;
-    if (typeof d !== "object" || d === null) return null;
-    return d;
+    const d = JSON.parse(raw) as Partial<Draft>;
+    return d && typeof d === "object" ? d : null;
   } catch {
     return null; // sérült piszkozat → csendes eldobás
   }
@@ -43,533 +66,1056 @@ function saveDraft(d: Draft) {
   try {
     window.localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
   } catch {
-    // privát mód / kvóta: nem kritikus, elhallgatjuk
+    // privát mód / kvóta: nem kritikus
   }
 }
 
-/** Hungarian-ish phone: optional +36/06 prefix, 7–15 digits total. */
-function isValidPhone(v: string): boolean {
-  const digits = v.replace(/\D/g, "");
-  return (
-    /^[+\d][\d\s\-().]{6,19}$/.test(v.trim()) &&
-    digits.length >= 7 &&
-    digits.length <= 15
-  );
-}
+/* ──────────────────────────────── Komponens ──────────────────────────────── */
+
+type Step = 1 | 2 | 3;
 
 export default function ArkalkulatorForm() {
-  const [materialSlug, setMaterialSlug] = useState("soder-0-24");
-  const [m3, setM3] = useState<number>(8);
-  const [settlementSlug, setSettlementSlug] = useState("budafok");
+  /* ── Számítás állapota ── */
+  const [groupSlug, setGroupSlug] = useState("soder");
+  const [itemSlug, setItemSlug] = useState("soder-0-24");
+  const [m3, setM3] = useState(8);
+  const [overLimit, setOverLimit] = useState(false);
+  const [municipalityId, setMunicipalityId] = useState<MunicipalityId | "">("budapest");
+  const [districtId, setDistrictId] = useState<number | null>(22);
+  const [postalCode, setPostalCode] = useState("");
+  const [castleAnswer, setCastleAnswer] = useState<CastleAnswer>("");
+  const [postalTouched, setPostalTouched] = useState(false);
 
+  /* ── Lépések ── */
+  const [step, setStep] = useState<Step>(1);
+  const [visited, setVisited] = useState<Record<Step, boolean>>({ 1: true, 2: false, 3: false });
+  const stepHeadingRefs = useRef<Record<number, HTMLHeadingElement | null>>({});
+  const movedByUser = useRef(false);
+
+  /* ── Kapcsolat / beküldés ── */
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [touched, setTouched] = useState<{ name?: boolean; phone?: boolean }>({});
-  const [submitState, setSubmitState] = useState<"idle" | "opening" | "error">("idle");
-  const [copied, setCopied] = useState(false);
-  const [restored, setRestored] = useState(false);
-  const [submitCount, setSubmitCount] = useState(0);
-  const [submittedOnce, setSubmittedOnce] = useState(false);
-  const [calcTouched, setCalcTouched] = useState(false);
+  const [address, setAddress] = useState("");
+  const [preferredDate, setPreferredDate] = useState("");
+  const [note, setNote] = useState("");
+  const [privacy, setPrivacy] = useState(false);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitAttempts, setSubmitAttempts] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [outcome, setOutcome] = useState<SubmitOutcome | null>(null);
+  const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+  const idemKey = useRef<string>("");
+  const inFlight = useRef(false);
+  const uid = useId();
 
-  // Piszkozat visszaállítása csak kliensoldalon (SSR-kompatibilis)
+  /* ── Piszkozat visszaállítása (csak kliensen, SSR-barát) ── */
+  const [restored, setRestored] = useState(false);
   useEffect(() => {
     const d = loadDraft();
     if (!d) return;
-    // Régi, azóta megszűnt anyag-/településazonosító a piszkozatból: csendesen
-    // eldobjuk, marad az alapérték (nem jelenik meg "üres" vagy hibás állapot).
-    if (d.materialSlug && allMaterials.some((i) => i.slug === d.materialSlug)) {
-      setMaterialSlug(d.materialSlug);
+    const resolved = resolveItemSlug(d.itemSlug);
+    if (resolved) {
+      setItemSlug(resolved);
+      const g = materialGroups.find((x) => x.items.some((i) => i.slug === resolved));
+      if (g) setGroupSlug(g.slug);
     }
     if (
       typeof d.m3 === "number" &&
       Number.isInteger(d.m3) &&
-      d.m3 >= MIN_ORDER_VOLUME &&
-      d.m3 <= MAX_ORDER_VOLUME
+      d.m3 >= MIN_ORDER_M3 &&
+      d.m3 <= SINGLE_TRIP_MAX_M3
     ) {
       setM3(d.m3);
     }
-    if (d.settlementSlug && settlements.some((s) => s.slug === d.settlementSlug)) {
-      setSettlementSlug(d.settlementSlug);
+    if (d.municipalityId && municipalities.some((mm) => mm.id === d.municipalityId)) {
+      setMunicipalityId(d.municipalityId);
+      if (d.municipalityId !== "budapest") setDistrictId(null);
     }
-    if (d.name) setName(d.name);
-    if (d.phone) setPhone(d.phone);
+    if (typeof d.districtId === "number" && budapestDistricts.some((x) => x.id === d.districtId)) {
+      setDistrictId(d.districtId);
+    }
+    if (typeof d.postalCode === "string" && isPostalCodeShape(d.postalCode)) {
+      setPostalCode(normalizePostalCode(d.postalCode));
+    }
     setRestored(true);
   }, []);
 
-  // V2: előtöltés az árlistáról / anyagválasztóból érkezve (?anyag=<tétel-slug>).
-  // A piszkozat utáni effektben fut, így az URL-ben kért anyag élvez elsőbbséget.
+  /* ── Előtöltés az árlistáról: ?anyag=<tétel-slug> (régi azonosító is) ── */
   useEffect(() => {
     try {
-      const wanted = new URLSearchParams(window.location.search).get("anyag");
-      if (wanted && materialGroups.some((g) => g.items.some((i) => i.slug === wanted))) {
-        setMaterialSlug(wanted);
-      }
+      const wanted = resolveItemSlug(new URLSearchParams(window.location.search).get("anyag"));
+      if (!wanted) return;
+      setItemSlug(wanted);
+      const g = materialGroups.find((x) => x.items.some((i) => i.slug === wanted));
+      if (g) setGroupSlug(g.slug);
     } catch {
       // érvénytelen URL: marad az alapértelmezett / visszaállított anyag
     }
   }, []);
 
-  const material = useMemo(
-    () => materialGroups.flatMap((g) => g.items).find((i) => i.slug === materialSlug),
-    [materialSlug],
+  const group: MaterialGroup =
+    materialGroups.find((g) => g.slug === groupSlug) ?? materialGroups[0]!;
+  const item = useMemo(
+    () => materialGroups.flatMap((g) => g.items).find((i) => i.slug === itemSlug),
+    [itemSlug],
   );
-  const settlement = useMemo(
-    () => settlements.find((s) => s.slug === settlementSlug),
-    [settlementSlug],
+
+  useEffect(() => {
+    saveDraft({ itemSlug, m3, municipalityId, districtId, postalCode });
+  }, [itemSlug, m3, municipalityId, districtId, postalCode]);
+
+  /* ── Hiteles számítás (ugyanaz a modul fut a szerveren is) ── */
+  const quote = useMemo(
+    () =>
+      computeQuote({
+        item,
+        m3,
+        freight: {
+          municipalityId,
+          districtId,
+          postalCode,
+          // 10 m³ felett nincs egyfuvaros tarifa → a modell egyedi ajánlatot jelez.
+          m3: overLimit ? SINGLE_TRIP_MAX_M3 + 1 : m3,
+        },
+        castleAnswer,
+      }),
+    [item, m3, municipalityId, districtId, postalCode, castleAnswer, overLimit],
   );
-  const zone = settlement ? findZone(settlement.zone) : null;
 
-  // Állapot mentése minden változásnál
+  const isCastleDistrict = municipalityId === "budapest" && districtId === CASTLE_DISTRICT_ID;
+
+  /* ── Mikro-konverzió: első teljes összegzés SAJÁT módosítás után ── */
+  const reported = useRef(false);
   useEffect(() => {
-    saveDraft({ materialSlug, m3, settlementSlug, name, phone });
-  }, [materialSlug, m3, settlementSlug, name, phone]);
-
-  const nameValid = name.trim().length >= 2;
-  const phoneValid = isValidPhone(phone);
-  const formValid = nameValid && phoneValid;
-
-  // Mennyiségi fuvardíj-sáv a kiválasztott zónában — a slider 1–20 közötti
-  // egész értékeken mindig talál sávot (a site.ts tiers 1–20-at lefedi),
-  // de a lookup típusa szerint elvben hiányozhat, ezért védetten kezeljük.
-  const tier = useMemo(() => (zone ? findFreightTier(zone.id, m3) : undefined), [zone, m3]);
-
-  const estimate = useMemo(() => {
-    if (!material || !zone || !tier) return null;
-    const materialTotal =
-      material.priceNet !== null ? material.priceNet * m3 : null;
-    return {
-      materialTotal,
-      freightFee: tier.fee,
-      needsNegotiation: tier.needsNegotiation ?? false,
-      tierLabel: `${tier.minQty}–${tier.maxQty} m³`,
-      total: materialTotal !== null ? materialTotal + tier.fee : null,
-    };
-  }, [material, zone, tier, m3]);
-
-  // Mikro-konverzió: az első SAJÁT módosítás után először teljes az összegzés
-  // (material + zone) → arkalkulator_submit, oldalletöltésenként egyszer.
-  // A calcTouched kapu kell: mountoláskor a default értékekkel is teljes lenne
-  // az összegzés — az nem konverzió. A localStorage-ből visszaállított piszkozat
-  // szintén NEM váltja ki (az nem felhasználói tevékenység).
-  // (Az estimate DEKLARÁCIÓJA UTÁN kell lennie — dep-array render közben értékelődik ki.)
-  useEffect(() => {
-    if (!calcTouched || submittedOnce || !estimate || !material || !zone) return;
+    if (reported.current || !movedByUser.current) return;
+    if (quote.freightResult.kind !== "ok" || !item) return;
+    reported.current = true;
     sendArkalkulatorSubmit({
-      material: material.slug,
-      m3: Number(m3),
-      settlement: settlement?.slug ?? "?",
-      zone: zone.id,
+      material: item.slug,
+      m3,
+      settlement: postalCode,
+      zone: quote.freightResult.profile.id,
     });
-    setSubmittedOnce(true);
-  }, [calcTouched, submittedOnce, estimate, material, zone, m3, settlement]);
+  }, [quote, item, m3, postalCode]);
 
-  function buildMailto(): string {
-    const subject = `Ajánlatkérés: ${material?.name ?? "anyag"} ${m3} m³ — ${settlement?.name ?? ""}`;
-    const rows: string[] = [];
-    rows.push("Ajánlatkérés a soderarak.hu árkalkulátorából:");
-    rows.push("");
-    rows.push(`Anyag: ${material?.name ?? "?"}${material?.fraction ? ` (${material.fraction})` : ""}`);
-    rows.push(`Mennyiség: ${m3} m³`);
-    rows.push(`Helyszín: ${settlement?.name ?? "?"} (${zone?.name ?? "?"})`);
-    rows.push("");
-    if (estimate) {
-      if (estimate.materialTotal !== null) {
-        rows.push(`Tájékoztató anyagár: ${formatFt(estimate.materialTotal)} nettó`);
-        rows.push(`Tájékoztató fuvar (${estimate.tierLabel} sáv): ${formatFt(estimate.freightFee)} nettó`);
-        rows.push(`Tájékoztató összesen: ${formatFt(estimate.total ?? 0)} nettó (ÁFA nélkül)`);
-      } else {
-        rows.push("Anyagár: egyeztetés után (az árlista nem tartalmaz árat)");
-        rows.push(`Tájékoztató fuvar (${estimate.tierLabel} sáv): ${formatFt(estimate.freightFee)} nettó`);
-      }
-      if (estimate.needsNegotiation) {
-        rows.push("Ez a mennyiség külön egyeztetést igényel. A fenti összeg tájékoztató jellegű.");
-      }
-    }
-    rows.push("");
-    rows.push(`Név: ${name.trim()}`);
-    rows.push(`Telefon: ${phone.trim()}`);
-    rows.push("");
-    rows.push(DISCLAIMER_TEXT);
-    return `mailto:${company.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(rows.join("\n"))}`;
-  }
+  /* ── Lépésváltás helyes fókuszkezeléssel ── */
+  // A fókuszt NEM a kattintáskezelőben mozgatjuk: a lépésváltás elrejti az
+  // előző panel tartalmát (benne a megnyomott gombbal), és a böngésző ilyenkor
+  // a <body>-ra ejtheti a fókuszt — egy rAF-fel korábbi focus() hívást ez
+  // felülírhat. Ezért a DOM-commit UTÁN, effektben fókuszálunk.
+  const pendingFocus = useRef(false);
+  const goToStep = useCallback((next: Step) => {
+    movedByUser.current = true;
+    pendingFocus.current = true;
+    setStep(next);
+    setVisited((v) => ({ ...v, [next]: true }));
+  }, []);
 
-  async function copySummary() {
-    const text = [
-      `Ajánlatkérés — ${company.site.name}`,
-      `Anyag: ${material?.name ?? "?"}`,
-      `Mennyiség: ${m3} m³`,
-      `Helyszín: ${settlement?.name ?? "?"}`,
-      `Név: ${name.trim()}`,
-      `Telefon: ${phone.trim()}`,
-    ].join("\n");
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
-    } catch {
-      setSubmitState("error");
-    }
-  }
+  useEffect(() => {
+    if (!pendingFocus.current) return;
+    pendingFocus.current = false;
+    // A lépés címe tabIndex={-1}: képernyőolvasóval is követhető a váltás.
+    stepHeadingRefs.current[step]?.focus();
+  }, [step]);
 
-  function handleSubmit(e: React.FormEvent) {
+  /* ── Űrlapvalidáció ── */
+  const nameValid = name.trim().length >= 2;
+  const emailValid = isValidEmail(email);
+  const phoneValid = isValidPhone(phone);
+  const addressValid = address.trim().length >= 4;
+  const postalValid = isPostalCodeShape(postalCode);
+  const districtValid = municipalityId !== "budapest" || districtId !== null;
+  const canSubmit =
+    nameValid && emailValid && phoneValid && addressValid && postalValid && districtValid && privacy;
+
+  const err = (field: string, ok: boolean) => (touched[field] || submitAttempts > 0) && !ok;
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setTouched({ name: true, phone: true });
-    setSubmitCount((count) => count + 1);
-    if (!formValid) return;
+    setSubmitAttempts((n) => n + 1);
+    setTouched((t) => ({
+      ...t,
+      name: true,
+      email: true,
+      phone: true,
+      address: true,
+      postalCode: true,
+      privacy: true,
+    }));
+    setPostalTouched(true);
+    setServerErrors({});
+    if (!canSubmit || submitting || inFlight.current) return;
+
+    // Dupla beküldés: egy kulcs az adott beküldésre; csak siker után újul.
+    if (!idemKey.current) idemKey.current = newIdempotencyKey();
+    inFlight.current = true;
+    setSubmitting(true);
+    setOutcome(null);
+
     try {
       trackQuoteRequest({
-        material: material?.slug ?? "?",
-        m3: Number(m3),
-        settlement: settlement?.slug ?? "?",
-        zone: zone?.id ?? "?",
+        material: item?.slug ?? "?",
+        m3,
+        settlement: postalCode,
+        zone: quote.freightResult.kind === "ok" ? quote.freightResult.profile.id : "egyeztetes",
       });
-      window.location.href = buildMailto();
-      setSubmitState("opening");
     } catch {
-      setSubmitState("error");
+      // mérés hibája nem akadályozza a beküldést
     }
+
+    const result = await submitOrderRequest({
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      materialSlug: itemSlug,
+      m3,
+      municipalityId: (municipalityId || "budapest") as MunicipalityId,
+      districtId: municipalityId === "budapest" ? districtId : null,
+      postalCode,
+      address: address.trim(),
+      preferredDate: preferredDate.trim(),
+      castleAnswer,
+      note: note.trim(),
+      pricingVersion: PRICING_VERSION,
+      clientTotalGross: quote.totalGross,
+      idempotencyKey: idemKey.current,
+      privacyAccepted: true,
+    });
+
+    setOutcome(result);
+    if (result.status === "invalid") setServerErrors(result.errors);
+    // Sikeres (vagy duplikált) beküldés után új kulcs kell a következőhöz.
+    if (result.status === "sent") idemKey.current = "";
+    setSubmitting(false);
+    inFlight.current = false;
   }
 
-  const showNameError = touched.name && !nameValid;
-  const showPhoneError = touched.phone && !phoneValid;
-
   const field =
-    "mt-2 w-full rounded-sm border border-line-strong bg-paper px-3.5 py-3 text-base transition-colors hover:border-ink focus-visible:border-ink";
+    "mt-1.5 w-full rounded-sm border border-border-strong bg-surface px-3.5 py-3 text-base transition-colors hover:border-text focus-visible:border-text";
+  const fieldErr =
+    "mt-1.5 w-full rounded-sm border border-red-700 bg-surface px-3.5 py-3 text-base transition-colors";
+
+  const selectedCodeSets = useMemo(() => {
+    if (municipalityId === "budapest" && districtId) {
+      return freightProfiles
+        .filter((p) => p.municipalityId === "budapest" && p.districtId === districtId)
+        .map((p) => p.postalCodes.join(", "));
+    }
+    if (municipalityId === "erd") {
+      return freightProfiles.filter((p) => p.id === "erd").map((p) => p.postalCodes.join(", "));
+    }
+    return [];
+  }, [municipalityId, districtId]);
 
   return (
     <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
-      {/* ─── Számítás: pontosan 3 input ─── */}
-      <section aria-labelledby="kalk-cim" className="lg:col-span-7">
-        <h2 id="kalk-cim" className="font-display text-heading-md font-bold">
-          Számoljon három lépésben
-        </h2>
+      {/* ═══════════════════ Lépések ═══════════════════ */}
+      <div className="min-w-0 lg:col-span-7">
+        <StepRail step={step} visited={visited} onJump={goToStep} />
 
-        <ol className="mt-6 border-t border-ink/80">
-          <li className="border-b border-line py-6">
-            <label htmlFor="anyag" className="flex items-baseline gap-3 font-semibold">
-              <span aria-hidden="true" className="num text-sm text-ink-faint">1</span>
-              Anyag
-            </label>
-            <select
-              id="anyag"
-              value={materialSlug}
-              onChange={(e) => {
-                setCalcTouched(true);
-                setMaterialSlug(e.target.value);
-              }}
-              className={field}
-            >
+        {/* ── 1. Anyag ── */}
+        <StepPanel
+          index={1}
+          active={step === 1}
+          title="Melyik anyagra van szüksége?"
+          headingRef={(el) => {
+            stepHeadingRefs.current[1] = el;
+          }}
+        >
+          <fieldset>
+            <legend className="text-sm font-semibold text-text-muted">Anyagcsoport</legend>
+            <div className="mt-2.5 flex flex-wrap gap-2">
               {materialGroups.map((g) => (
-                <optgroup key={g.slug} label={g.name}>
-                  {g.items.map((i) => (
-                    <option key={i.slug} value={i.slug}>
-                      {i.name}
-                      {i.priceNet !== null ? ` — ${formatFt(i.priceNet)}/m³` : " — ár egyeztetés után"}
+                <button
+                  key={g.slug}
+                  type="button"
+                  aria-pressed={g.slug === groupSlug}
+                  onClick={() => {
+                    movedByUser.current = true;
+                    setGroupSlug(g.slug);
+                    setItemSlug(g.items[0]!.slug);
+                  }}
+                  className="mat-chip"
+                  data-active={g.slug === groupSlug}
+                  style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
+                >
+                  <span aria-hidden="true" className="mat-chip-dot" />
+                  {g.name}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          {group.washed && (
+            <p className="mt-3.5 inline-flex items-center gap-2 rounded-full bg-petrol-soft/50 px-3 py-1.5 text-xs font-semibold text-petrol-deep">
+              <IconDroplets size={14} />
+              {group.washed.label}
+            </p>
+          )}
+
+          <fieldset className="mt-4">
+            <legend className="text-sm font-semibold text-text-muted">
+              Termékváltozat — bruttó Ft/m³
+            </legend>
+            <ul className="mt-2.5 space-y-2">
+              {group.items.map((i) => {
+                const selected = i.slug === itemSlug;
+                return (
+                  <li key={i.slug}>
+                    <label className="variant-card" data-active={selected}>
+                      <input
+                        type="radio"
+                        name={`${uid}-variant`}
+                        value={i.slug}
+                        checked={selected}
+                        onChange={() => {
+                          movedByUser.current = true;
+                          setItemSlug(i.slug);
+                        }}
+                        className="variant-radio"
+                      />
+                      <span className="min-w-0">
+                        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                          <span className="font-display text-[1.0625rem] font-bold">{i.name}</span>
+                          {i.qualifier && (
+                            <span className="text-xs font-medium text-text-muted">{i.qualifier}</span>
+                          )}
+                          {i.washed && (
+                            <span className="badge-washed">
+                              <IconDroplets size={11} />
+                              {i.washed.label}
+                            </span>
+                          )}
+                          {i.unclassified && <span className="badge-plain">osztályozatlan</span>}
+                        </span>
+                        <span className="mt-1 block text-sm leading-snug text-text-muted">
+                          {i.use}
+                        </span>
+                        {i.fraction && (
+                          <span className="mt-2 block max-w-[16rem]">
+                            <FractionScale fraction={i.fraction} />
+                            <span className="num mt-1 block text-xs text-text-muted">
+                              {i.fraction}
+                            </span>
+                          </span>
+                        )}
+                      </span>
+                      <span className="num shrink-0 text-right">
+                        <span className="block font-display text-heading-sm font-bold whitespace-nowrap">
+                          {i.priceGross !== null ? formatFt(i.priceGross) : "—"}
+                        </span>
+                        <span className="block text-xs text-text-muted">bruttó / m³</span>
+                      </span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
+          </fieldset>
+
+          <p className="mt-4 text-xs leading-relaxed text-text-muted">{DISCLOSURE_GROSS}</p>
+
+          <StepNav onNext={() => goToStep(2)} nextLabel="Tovább: mennyiség" />
+        </StepPanel>
+
+        {/* ── 2. Mennyiség ── */}
+        <StepPanel
+          index={2}
+          active={step === 2}
+          title="Mennyi anyagra van szüksége?"
+          headingRef={(el) => {
+            stepHeadingRefs.current[2] = el;
+          }}
+        >
+          <div className="qty-block">
+            <div className="flex items-end justify-between gap-4">
+              <label htmlFor={`${uid}-m3`} className="text-sm font-semibold text-text-muted">
+                Mennyiség egy fuvarban
+              </label>
+              <p aria-hidden="true" className="num font-display text-[2.5rem] leading-none font-bold">
+                {m3}
+                <span className="ml-1 text-[1.25rem] font-semibold text-text-muted">m³</span>
+              </p>
+            </div>
+
+            <div className="mt-3 flex items-center gap-3">
+              <button
+                type="button"
+                className="qty-step"
+                aria-label="Egy köbméterrel kevesebb"
+                disabled={m3 <= MIN_ORDER_M3}
+                onClick={() => {
+                  movedByUser.current = true;
+                  setM3((v) => Math.max(MIN_ORDER_M3, v - 1));
+                }}
+              >
+                <span aria-hidden="true">−</span>
+              </button>
+              <input
+                id={`${uid}-m3`}
+                type="range"
+                min={MIN_ORDER_M3}
+                max={SINGLE_TRIP_MAX_M3}
+                step={1}
+                value={m3}
+                onChange={(e) => {
+                  movedByUser.current = true;
+                  setM3(Number(e.target.value));
+                }}
+                aria-valuetext={`${m3} köbméter`}
+                aria-describedby={`${uid}-m3-info`}
+                className="qty-slider flex-1"
+              />
+              <button
+                type="button"
+                className="qty-step"
+                aria-label="Egy köbméterrel több"
+                disabled={m3 >= SINGLE_TRIP_MAX_M3}
+                onClick={() => {
+                  movedByUser.current = true;
+                  setM3((v) => Math.min(SINGLE_TRIP_MAX_M3, v + 1));
+                }}
+              >
+                <span aria-hidden="true">+</span>
+              </button>
+            </div>
+
+            <div aria-hidden="true" className="num mt-1 flex justify-between text-xs text-text-muted">
+              <span>{MIN_ORDER_M3} m³</span>
+              <span>{SINGLE_TRIP_MAX_M3} m³</span>
+            </div>
+
+            {/* A díjsávok láthatóan, az árazás logikájával egyezően */}
+            <ul aria-hidden="true" className="num mt-3 grid grid-cols-4 gap-1 text-[0.6875rem]">
+              {[
+                { label: "≤ 2", hit: m3 <= 2 },
+                { label: "2–5", hit: m3 > 2 && m3 <= 5 },
+                { label: "5–7", hit: m3 > 5 && m3 <= 7 },
+                { label: "7–10", hit: m3 > 7 },
+              ].map((b) => (
+                <li
+                  key={b.label}
+                  data-hit={b.hit}
+                  className="band-pip rounded-sm px-1.5 py-1 text-center font-semibold"
+                >
+                  {b.label} m³
+                </li>
+              ))}
+            </ul>
+
+            <p id={`${uid}-m3-info`} className="mt-3 text-sm leading-relaxed text-text-muted">
+              Minimum rendelés {MIN_ORDER_M3} m³. Egy fuvarban legfeljebb{" "}
+              <strong className="font-semibold text-text">{SINGLE_TRIP_MAX_M3} m³</strong>{" "}
+              szállítható — a fuvardíj sávja ez alapján dől el.
+            </p>
+
+            <label className="over-limit mt-4">
+              <input
+                type="checkbox"
+                checked={overLimit}
+                onChange={(e) => {
+                  movedByUser.current = true;
+                  setOverLimit(e.target.checked);
+                }}
+              />
+              <span>
+                <strong className="font-semibold">Több mint {SINGLE_TRIP_MAX_M3} m³ kell.</strong>{" "}
+                {MULTI_TRIP_NOTICE} Nagyobb mennyiség több fuvarban szállítható; a többfuvaros
+                díjat egyeztetés után adjuk.
+              </span>
+            </label>
+          </div>
+
+          <StepNav
+            onBack={() => goToStep(1)}
+            onNext={() => goToStep(3)}
+            nextLabel="Tovább: szállítási cím"
+          />
+        </StepPanel>
+
+        {/* ── 3. Cím ── */}
+        <StepPanel
+          index={3}
+          active={step === 3}
+          title="Hová szállítsunk?"
+          headingRef={(el) => {
+            stepHeadingRefs.current[3] = el;
+          }}
+        >
+          <fieldset>
+            <legend className="text-sm font-semibold text-text-muted">Település</legend>
+            <div className="seg mt-2.5">
+              {municipalities.map((mm) => (
+                <button
+                  key={mm.id}
+                  type="button"
+                  aria-pressed={municipalityId === mm.id}
+                  data-active={municipalityId === mm.id}
+                  onClick={() => {
+                    movedByUser.current = true;
+                    setMunicipalityId(mm.id);
+                    setDistrictId(mm.id === "budapest" ? 22 : null);
+                    setCastleAnswer("");
+                  }}
+                  className="seg-btn"
+                >
+                  {mm.name}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-text-muted">
+              Más településre is szállítunk, de ahhoz egyedi szállítási egyeztetés
+              szükséges — kérjük, hívjon minket.
+            </p>
+          </fieldset>
+
+          <div className="mt-5 grid gap-5 sm:grid-cols-2">
+            {municipalityId === "budapest" && (
+              <div>
+                <label htmlFor={`${uid}-kerulet`} className="block text-sm font-semibold">
+                  Kerület{" "}
+                  <span aria-hidden="true" className="text-accent-deep">
+                    *
+                  </span>
+                </label>
+                <select
+                  id={`${uid}-kerulet`}
+                  value={districtId ?? ""}
+                  onChange={(e) => {
+                    movedByUser.current = true;
+                    setDistrictId(e.target.value ? Number(e.target.value) : null);
+                    setCastleAnswer("");
+                  }}
+                  className={field}
+                >
+                  <option value="">Válasszon kerületet…</option>
+                  {budapestDistricts.map((d) => (
+                    <option key={d.id} value={d.id}>
+                      {d.label}
                     </option>
                   ))}
-                </optgroup>
-              ))}
-            </select>
-            {material && (
-              <div className="mt-3 grid gap-3 rounded-sm bg-sand px-4 py-3 sm:grid-cols-[minmax(0,1fr)_10rem] sm:items-center">
-                <p className="text-sm leading-snug text-ink-soft">{material.use}</p>
-                {material.fraction ? (
-                  <div>
-                    <FractionScale fraction={material.fraction} showTicks />
-                  </div>
-                ) : null}
+                </select>
+                <p className="mt-1.5 text-xs leading-relaxed text-text-muted">
+                  A kerület kiválasztása nem helyettesíti az irányítószámot — azt külön,
+                  kötelezően kérjük.
+                </p>
               </div>
             )}
-          </li>
 
-          <li className="border-b border-line py-6">
-            <div className="flex items-baseline justify-between gap-3">
-              <label htmlFor="m3-slider" className="flex items-baseline gap-3 font-semibold">
-                <span aria-hidden="true" className="num text-sm text-ink-faint">2</span>
-                Mennyiség (m³)
+            <div>
+              <label htmlFor={`${uid}-isz`} className="block text-sm font-semibold">
+                Irányítószám{" "}
+                <span aria-hidden="true" className="text-accent-deep">
+                  *
+                </span>
               </label>
-              <output
-                htmlFor="m3-slider"
-                aria-hidden="true"
-                className="num font-display text-[1.375rem] leading-none font-bold text-ink"
-              >
-                {m3} m³
-              </output>
+              <input
+                id={`${uid}-isz`}
+                type="text"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                maxLength={4}
+                placeholder="1221"
+                value={postalCode}
+                onChange={(e) => {
+                  movedByUser.current = true;
+                  setPostalCode(normalizePostalCode(e.target.value));
+                }}
+                onBlur={() => {
+                  setPostalTouched(true);
+                  setTouched((t) => ({ ...t, postalCode: true }));
+                }}
+                aria-invalid={postalTouched && !postalValid}
+                aria-describedby={`${uid}-isz-info`}
+                className={`num ${postalTouched && !postalValid ? fieldErr : field}`}
+              />
+              <p id={`${uid}-isz-info`} className="mt-1.5 text-xs leading-relaxed text-text-muted">
+                {selectedCodeSets.length
+                  ? `Érvényes kódok: ${selectedCodeSets.join(" · ")}`
+                  : "Négy számjegy, a szállítási cím irányítószáma."}
+              </p>
+              {postalTouched && !postalValid && (
+                <p role="alert" className="mt-1 text-xs font-medium text-red-700">
+                  Az irányítószám négy számjegy (például 1221).
+                </p>
+              )}
+              {municipalityId === "budapest" && districtId === 11 && (
+                <p className="mt-1.5 rounded-sm bg-surface-muted px-2.5 py-2 text-xs leading-relaxed">
+                  A XI. kerületben az <strong className="num font-semibold">1112</strong> és{" "}
+                  <strong className="num font-semibold">1118</strong> irányítószám eltérő
+                  díjprofilba tartozik, mint a kerület többi kódja.
+                </p>
+              )}
             </div>
-            <input
-              id="m3-slider"
-              type="range"
-              name="mennyiseg"
-              min={MIN_ORDER_VOLUME}
-              max={MAX_ORDER_VOLUME}
-              step={1}
-              value={m3}
-              onChange={(e) => {
-                setCalcTouched(true);
-                setM3(Number(e.target.value));
-              }}
-              aria-valuetext={`${m3} köbméter`}
-              aria-describedby="mennyiseg-info"
-              className="qty-slider mt-3"
-            />
-            <div
-              aria-hidden="true"
-              className="num mt-1 flex justify-between text-xs text-ink-faint"
-            >
-              <span>{MIN_ORDER_VOLUME} m³</span>
-              <span>{MAX_ORDER_VOLUME} m³</span>
-            </div>
-            <p id="mennyiseg-info" className="mt-2 text-sm text-ink-soft">
-              Minimum rendelés {MIN_ORDER_VOLUME} m³; egy fuvarban legfeljebb{" "}
-              {MAX_ORDER_VOLUME} m³ szállítható.
-            </p>
-          </li>
+          </div>
 
-          <li className="py-6">
-            <label htmlFor="telepules" className="flex items-baseline gap-3 font-semibold">
-              <span aria-hidden="true" className="num text-sm text-ink-faint">3</span>
-              Helyszín (település)
+          <div className="mt-5">
+            <label htmlFor={`${uid}-cim`} className="block text-sm font-semibold">
+              Szállítási cím{" "}
+              <span aria-hidden="true" className="text-accent-deep">
+                *
+              </span>
             </label>
-            <select
-              id="telepules"
-              value={settlementSlug}
-              onChange={(e) => {
-                setCalcTouched(true);
-                setSettlementSlug(e.target.value);
-              }}
-              aria-describedby="zona-info"
-              className={field}
-            >
-              {zones.map((z) => (
-                <optgroup key={z.id} label={z.name}>
-                  {settlements
-                    .filter((s) => s.zone === z.id)
-                    .map((s) => (
-                      <option key={s.slug} value={s.slug}>
-                        {s.name}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-            </select>
-            {zone && tier && (
-              <p id="zona-info" className="mt-2 text-sm text-ink-soft">
-                Zóna: <span className="font-medium text-ink">{zone.name}</span>, fuvar{" "}
-                {m3} m³-re{" "}
-                <span className="num font-medium text-ink">{formatFt(tier.fee)}</span>
-                {tier.needsNegotiation ? " (külön egyeztetés szükséges)" : ""}
-                , kiszállás {zone.leadTime}.
-              </p>
-            )}
-          </li>
-        </ol>
-      </section>
-
-      {/* ─── Eredmény ─── */}
-      <section
-        data-call-region="calculator_form"
-        aria-labelledby="eredmeny-cim"
-        className="h-fit lg:sticky lg:top-28 lg:col-span-5"
-      >
-        <div className="overflow-hidden rounded-[var(--radius-lg)] bg-surface shadow-pop">
-          <div className="on-dark relative bg-surface-dark px-5 pt-6 pb-5 text-on-dark md:px-7">
-            <div aria-hidden="true" className="absolute inset-x-0 top-0 flex h-1.5"><span className="flex-1 bg-mat-homok" /><span className="flex-1 bg-mat-soder" /><span className="flex-1 bg-accent" /><span className="flex-1 bg-mat-fold" /></div>
-            <h2 id="eredmeny-cim" className="font-display text-heading-sm font-bold">
-              Tájékoztató összegzés
-            </h2>
-
-            {material && zone && estimate ? (
-              <>
-                <dl aria-live="polite" aria-atomic="true" className="num mt-4 space-y-3 text-[0.9375rem]">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-on-dark-muted">
-                      {material.name}
-                      {material.fraction ? ` (${material.fraction})` : ""} × {m3} m³
-                    </dt>
-                    <dd className="text-right font-semibold whitespace-nowrap">
-                      {estimate.materialTotal !== null ? (
-                        formatFt(estimate.materialTotal)
-                      ) : (
-                        <span className="text-on-dark-muted">egyeztetés után</span>
-                      )}
-                    </dd>
-                  </div>
-                  <div className="flex justify-between gap-4 border-t border-on-dark/20 pt-3">
-                    <dt className="text-on-dark-muted">
-                      Fuvar — {zone.name}
-                      <span className="block text-xs">{estimate.tierLabel} sáv</span>
-                    </dt>
-                    <dd className="text-right font-semibold whitespace-nowrap">
-                      {formatFt(estimate.freightFee)}
-                    </dd>
-                  </div>
-                  <div className="border-t-2 border-on-dark/60 pt-3">
-                    <dt className="font-semibold">Összesen (nettó)</dt>
-                    <dd key={`${estimate.total}-${m3}`} className="mt-1 swap-in font-display text-[1.375rem] leading-tight font-bold tracking-tight whitespace-nowrap text-amber min-[400px]:text-[1.625rem] md:text-[2.125rem]">
-                      {estimate.total !== null ? (
-                        formatFt(estimate.total)
-                      ) : (
-                        <span className="text-lg">egyeztetés után</span>
-                      )}
-                    </dd>
-                  </div>
-                </dl>
-                {estimate.needsNegotiation && (
-                  <p
-                    role="status"
-                    className="mt-3 rounded-sm border border-amber/50 bg-amber/10 px-3 py-2 text-xs leading-relaxed font-medium text-amber"
-                  >
-                    Ez a mennyiség külön egyeztetést igényel. A megjelenített összeg tájékoztató jellegű.
-                  </p>
-                )}
-              </>
-            ) : (
-              <p role="status" className="mt-4 text-sm text-on-dark-muted">
-                Válasszon anyagot és települést az összegzéshez.
-              </p>
-            )}
-
-            <p className="mt-4 rounded-sm bg-surface-dark-2 px-3 py-2 text-xs leading-relaxed font-medium text-on-dark-muted">
-              {DISCLOSURE_PRICE} Az árak nettó értékek, ÁFA nélkül.
-            </p>
-            {restored && (
-              <p className="mt-3 text-xs text-on-dark-muted">
-                Korábban megkezdett számítás visszaállítva.
+            <input
+              id={`${uid}-cim`}
+              type="text"
+              autoComplete="street-address"
+              placeholder="Utca, házszám"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              onBlur={() => setTouched((t) => ({ ...t, address: true }))}
+              aria-invalid={err("address", addressValid)}
+              aria-describedby={err("address", addressValid) ? `${uid}-cim-hiba` : undefined}
+              className={err("address", addressValid) ? fieldErr : field}
+            />
+            {err("address", addressValid) && (
+              <p id={`${uid}-cim-hiba`} role="alert" className="mt-1 text-xs font-medium text-red-700">
+                Kérjük, adja meg a szállítási címet (utca, házszám).
               </p>
             )}
           </div>
 
-          {/* ─── Lead űrlap ─── */}
-          <form onSubmit={handleSubmit} noValidate className="px-5 pt-6 pb-6 md:px-7">
-            <p className="font-semibold">Kérjen ajánlatot — hívunk vagy válaszolunk</p>
+          {/* ── Behajtási engedély ── */}
+          <div className="permit mt-5">
+            <p className="text-sm leading-relaxed">{PERMIT_NOTICE}</p>
 
-            {submitCount > 0 && !formValid && (
-              <p id="quote-validation-summary" role="alert" className="mt-3 text-sm font-medium text-red-700">
-                Ellenőrizze a nevet és a telefonszámot az ajánlatkérés elküldése előtt.
-              </p>
-            )}
-
-            <div className="mt-4 space-y-4">
-              <div>
-                <label htmlFor="nev" className="block text-sm font-medium">
-                  Név <span aria-hidden="true" className="text-brand-dark">*</span>
-                </label>
-                <input
-                  id="nev"
-                  name="nev"
-                  type="text"
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  onBlur={() => setTouched((t) => ({ ...t, name: true }))}
-                  aria-invalid={showNameError}
-                  aria-describedby={[
-                    showNameError ? "nev-hiba" : null,
-                    submitCount > 0 && !formValid ? "quote-validation-summary" : null,
-                  ].filter(Boolean).join(" ") || undefined}
-                  className={`mt-1.5 w-full rounded-sm border bg-paper px-3.5 py-3 transition-colors hover:border-ink focus-visible:border-ink ${
-                    showNameError ? "border-red-700" : "border-line-strong"
-                  }`}
-                />
-                {showNameError && (
-                  <p id="nev-hiba" role="alert" className="mt-1 text-xs text-red-700">
-                    Kérjük, adja meg a nevét (legalább 2 karakter).
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label htmlFor="telefon" className="block text-sm font-medium">
-                  Telefon <span aria-hidden="true" className="text-brand-dark">*</span>
-                </label>
-                <input
-                  id="telefon"
-                  name="telefon"
-                  type="tel"
-                  inputMode="tel"
-                  required
-                  autoComplete="tel"
-                  placeholder="+36 30 123 4567"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
-                  aria-invalid={showPhoneError}
-                  aria-describedby={[
-                    showPhoneError ? "telefon-hiba" : null,
-                    submitCount > 0 && !formValid ? "quote-validation-summary" : null,
-                  ].filter(Boolean).join(" ") || undefined}
-                  className={`num mt-1.5 w-full rounded-sm border bg-paper px-3.5 py-3 transition-colors hover:border-ink focus-visible:border-ink ${
-                    showPhoneError ? "border-red-700" : "border-line-strong"
-                  }`}
-                />
-                {showPhoneError && (
-                  <p id="telefon-hiba" role="alert" className="mt-1 text-xs text-red-700">
-                    Kérjük, érvényes telefonszámot adjon meg (pl. +36 30 123 4567).
-                  </p>
-                )}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="btn btn-lg btn-primary mt-5 w-full"
-            >
-              Ajánlatkérés elküldése
-            </button>
-
-            {submitState === "opening" && (
-              <div
-                data-call-region="quote_form_success"
-                role="status"
-                className="mt-4 rounded-sm border border-moss/40 bg-moss/10 p-3 text-xs leading-relaxed"
-              >
-                <p className="font-semibold text-moss">Megnyitjuk az e-mail kliensét…</p>
-                <p className="mt-1 text-ink-soft">
-                  Ha nem történik semmi, másolja le az összegzést, vagy hívjon minket:{" "}
-                  <a href={`tel:${company.phone.raw}`} className="num font-semibold">
-                    {company.phone.display}
-                  </a>
+            {isCastleDistrict && (
+              <fieldset className="mt-4 border-t border-border-strong pt-4">
+                <legend className="font-display text-[1.0625rem] font-bold">
+                  {CASTLE_QUESTION}
+                </legend>
+                <p className="mt-1 text-xs leading-relaxed text-text-muted">
+                  Ezt irányítószám alapján nem tudjuk eldönteni, ezért rákérdezünk.
                 </p>
-                <button
-                  type="button"
-                  onClick={copySummary}
-                  className="mt-2 min-h-10 rounded-sm border border-line-strong bg-paper px-3 font-semibold"
-                >
-                  {copied ? "Kimásolva ✓" : "Összegzés másolása"}
-                </button>
-              </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(
+                    [
+                      ["igen", "Igen"],
+                      ["nem", "Nem"],
+                      ["nem-tudom", "Nem tudom"],
+                    ] as [CastleAnswer, string][]
+                  ).map(([value, label]) => (
+                    <label key={value} className="radio-pill" data-active={castleAnswer === value}>
+                      <input
+                        type="radio"
+                        name={`${uid}-var`}
+                        value={value}
+                        checked={castleAnswer === value}
+                        onChange={() => {
+                          movedByUser.current = true;
+                          setCastleAnswer(value);
+                        }}
+                      />
+                      {label}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
             )}
-            {submitState === "error" && (
-              <div
-                data-call-region="calculator_error_recovery"
-                role="alert"
-                className="mt-4 rounded-sm border border-red-700/40 bg-red-50 p-3 text-xs leading-relaxed"
-              >
-                <p className="font-semibold text-red-700">
-                  Nem sikerült megnyitni az e-mail klienst.
-                </p>
-                <p className="mt-1 text-ink-soft">
-                  Hívjon minket közvetlenül:{" "}
-                  <a href={`tel:${company.phone.raw}`} className="num font-semibold">
-                    {company.phone.display}
-                  </a>{" "}
-                  ({company.hours.short}), vagy írjon ide: {company.email}.
-                </p>
-              </div>
-            )}
+          </div>
 
-            <p className="mt-3 text-xs leading-relaxed text-ink-soft">
-              Az űrlap az e-mail kliensét nyitja meg a megadott adatokkal az
-              info@soderarak.hu címre. A piszkozat az Ön eszközén marad.
+          <StepNav onBack={() => goToStep(2)} />
+
+          <p className="mt-5 text-sm text-text-muted">
+            Az árösszesítő jobbra (mobilon alább) frissül. Rendelési igényt az összesítő
+            alatt küldhet.
+          </p>
+        </StepPanel>
+      </div>
+
+      {/* ═══════════════════ Összesítő + beküldés ═══════════════════ */}
+      <section
+        data-call-region="calculator_form"
+        aria-labelledby="osszesito-cim"
+        className="min-w-0 h-fit space-y-5 lg:sticky lg:top-28 lg:col-span-5"
+      >
+        <QuoteReceipt item={item} quote={quote} overLimit={overLimit} />
+
+        {restored && (
+          <p className="text-xs text-text-muted">
+            Korábban megkezdett számítás visszaállítva. A kapcsolati adatokat nem
+            tároljuk az eszközén.
+          </p>
+        )}
+
+        {/* ── Rendelési igény ── */}
+        <form
+          onSubmit={handleSubmit}
+          noValidate
+          aria-labelledby={`${uid}-igeny-cim`}
+          className="rounded-[var(--radius-lg)] border border-border-strong bg-surface p-5 md:p-6"
+        >
+          <h2 id={`${uid}-igeny-cim`} className="font-display text-heading-sm font-bold">
+            Rendelési igény beküldése
+          </h2>
+          <p className="mt-2 text-sm leading-relaxed text-text-muted">{ORDER_INTENT_NOTICE}</p>
+
+          {!ORDER_ENDPOINT_CONFIGURED && (
+            <p className="mock-banner mt-3">
+              <strong className="font-semibold">A beküldés nincs konfigurálva.</strong> Ebben a
+              környezetben nincs beállítva beküldési végpont, ezért a küldés nem fog
+              megtörténni. Kérjük, hívjon minket:{" "}
+              <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
+                {company.phone.display}
+              </a>
             </p>
-          </form>
-        </div>
+          )}
+
+          <div className="mt-4 space-y-4">
+            <Field
+              id={`${uid}-nev`}
+              label="Név"
+              required
+              value={name}
+              onChange={setName}
+              onBlur={() => setTouched((t) => ({ ...t, name: true }))}
+              invalid={err("name", nameValid) || Boolean(serverErrors.name)}
+              error={serverErrors.name ?? "Kérjük, adja meg a nevét (legalább 2 karakter)."}
+              autoComplete="name"
+            />
+            <Field
+              id={`${uid}-email`}
+              label="E-mail"
+              required
+              type="email"
+              inputMode="email"
+              value={email}
+              onChange={setEmail}
+              onBlur={() => setTouched((t) => ({ ...t, email: true }))}
+              invalid={err("email", emailValid) || Boolean(serverErrors.email)}
+              error={serverErrors.email ?? "Kérjük, érvényes e-mail-címet adjon meg."}
+              autoComplete="email"
+              hint={`A rendelési igényt a ${company.email} címre küldjük; a válaszcím az Ön e-mail-címe lesz.`}
+            />
+            <Field
+              id={`${uid}-tel`}
+              label="Telefon"
+              required
+              type="tel"
+              inputMode="tel"
+              placeholder="+36 30 123 4567"
+              value={phone}
+              onChange={setPhone}
+              onBlur={() => setTouched((t) => ({ ...t, phone: true }))}
+              invalid={err("phone", phoneValid) || Boolean(serverErrors.phone)}
+              error={serverErrors.phone ?? "Kérjük, érvényes telefonszámot adjon meg."}
+              autoComplete="tel"
+              numeric
+            />
+            <Field
+              id={`${uid}-datum`}
+              label="Kívánt időpont"
+              type="date"
+              value={preferredDate}
+              onChange={setPreferredDate}
+              invalid={false}
+              error=""
+              hint="Nem kötelező — az időpontot egyeztetjük."
+            />
+            <div>
+              <label htmlFor={`${uid}-megj`} className="block text-sm font-semibold">
+                Megjegyzés
+              </label>
+              <textarea
+                id={`${uid}-megj`}
+                rows={3}
+                maxLength={2000}
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                className={field}
+              />
+            </div>
+          </div>
+
+          <label className="privacy mt-4">
+            <input
+              type="checkbox"
+              checked={privacy}
+              onChange={(e) => setPrivacy(e.target.checked)}
+              onBlur={() => setTouched((t) => ({ ...t, privacy: true }))}
+              aria-invalid={err("privacy", privacy)}
+            />
+            <span className="text-sm leading-relaxed">
+              Elolvastam és elfogadom az{" "}
+              <Link href="/adatvedelem" className="link">
+                adatkezelési tájékoztatót
+              </Link>
+              .{" "}
+              <span aria-hidden="true" className="text-accent-deep">
+                *
+              </span>
+            </span>
+          </label>
+          {err("privacy", privacy) && (
+            <p role="alert" className="mt-1 text-xs font-medium text-red-700">
+              Az adatkezelési tájékoztató elfogadása szükséges.
+            </p>
+          )}
+
+          {submitAttempts > 0 && !canSubmit && (
+            <p role="alert" className="mt-3 text-sm font-medium text-red-700">
+              Kérjük, töltse ki a csillaggal jelölt mezőket, és adja meg az irányítószámot.
+            </p>
+          )}
+
+          <button type="submit" disabled={submitting} className="btn btn-lg btn-primary mt-5 w-full">
+            {submitting ? (
+              <>
+                <span className="spinner" aria-hidden="true" />
+                Küldés folyamatban…
+              </>
+            ) : (
+              <>
+                {ORDER_INTENT_CTA}
+                <IconArrowRight size={18} className="btn-icon btn-icon-move" />
+              </>
+            )}
+          </button>
+
+          <div aria-live="polite" aria-atomic="true" className="mt-4 empty:mt-0">
+            {outcome && <Outcome outcome={outcome} />}
+          </div>
+
+          <p className="mt-4 text-xs leading-relaxed text-text-muted">
+            A beküldés nem végleges megrendelés. Kérdés esetén hívjon:{" "}
+            <a href={`tel:${company.phone.raw}`} className="num font-semibold">
+              {company.phone.display}
+            </a>{" "}
+            ({company.hours.short}).
+          </p>
+        </form>
       </section>
     </div>
   );
 }
 
-const DISCLAIMER_TEXT =
-  "Tájékoztató ár. A végleges ajánlatot egyeztetés után adjuk.";
+/* ──────────────────────────── Részkomponensek ──────────────────────────── */
+
+const STEP_LABELS: Record<Step, string> = { 1: "Anyag", 2: "Mennyiség", 3: "Cím" };
+
+function StepRail({
+  step,
+  visited,
+  onJump,
+}: {
+  step: Step;
+  visited: Record<Step, boolean>;
+  onJump: (s: Step) => void;
+}) {
+  return (
+    <nav aria-label="Kalkulátor lépései" className="step-rail">
+      <ol>
+        {([1, 2, 3] as Step[]).map((s) => (
+          <li key={s}>
+            <button
+              type="button"
+              onClick={() => onJump(s)}
+              aria-current={step === s ? "step" : undefined}
+              data-state={step === s ? "current" : visited[s] ? "done" : "todo"}
+              className="step-dot"
+            >
+              <span aria-hidden="true" className="step-num">
+                {visited[s] && step !== s ? <IconCheck size={13} /> : s}
+              </span>
+              <span className="step-label">{STEP_LABELS[s]}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+}
+
+function StepPanel({
+  index,
+  active,
+  title,
+  headingRef,
+  children,
+}: {
+  index: number;
+  active: boolean;
+  title: string;
+  headingRef: (el: HTMLHeadingElement | null) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <section
+      aria-labelledby={`step-${index}-cim`}
+      // A nem aktív lépés is a DOM-ban marad: a tartalom JS és animáció nélkül
+      // is elérhető, csak az aktív lépés kap kiemelt felületet.
+      className="step-panel"
+      data-active={active}
+    >
+      <h2
+        id={`step-${index}-cim`}
+        ref={headingRef}
+        tabIndex={-1}
+        className="step-title font-display text-heading-md font-bold"
+      >
+        <span aria-hidden="true" className="num step-title-num">
+          {index}
+        </span>
+        {title}
+      </h2>
+      <div className="step-body">{children}</div>
+    </section>
+  );
+}
+
+function StepNav({
+  onBack,
+  onNext,
+  nextLabel,
+}: {
+  onBack?: () => void;
+  onNext?: () => void;
+  nextLabel?: string;
+}) {
+  if (!onBack && !onNext) return null;
+  return (
+    <div className="mt-6 flex flex-wrap gap-3">
+      {onNext && (
+        <button type="button" onClick={onNext} className="btn btn-primary">
+          {nextLabel ?? "Tovább"}
+          <IconArrowRight size={17} className="btn-icon btn-icon-move" />
+        </button>
+      )}
+      {onBack && (
+        <button type="button" onClick={onBack} className="btn btn-outline">
+          Vissza
+        </button>
+      )}
+    </div>
+  );
+}
+
+function Field({
+  id,
+  label,
+  value,
+  onChange,
+  onBlur,
+  invalid,
+  error,
+  required = false,
+  type = "text",
+  inputMode,
+  placeholder,
+  autoComplete,
+  hint,
+  numeric = false,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  onBlur?: () => void;
+  invalid: boolean;
+  error: string;
+  required?: boolean;
+  type?: string;
+  inputMode?: "text" | "numeric" | "tel" | "email";
+  placeholder?: string;
+  autoComplete?: string;
+  hint?: string;
+  numeric?: boolean;
+}) {
+  const describedBy = [invalid && error ? `${id}-hiba` : null, hint ? `${id}-hint` : null]
+    .filter(Boolean)
+    .join(" ");
+  return (
+    <div>
+      <label htmlFor={id} className="block text-sm font-semibold">
+        {label}
+        {required && (
+          <span aria-hidden="true" className="ml-0.5 text-accent-deep">
+            *
+          </span>
+        )}
+      </label>
+      <input
+        id={id}
+        type={type}
+        inputMode={inputMode}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+        required={required}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        aria-invalid={invalid}
+        aria-describedby={describedBy || undefined}
+        className={`${numeric ? "num " : ""}mt-1.5 w-full rounded-sm border bg-surface px-3.5 py-3 text-base transition-colors hover:border-text focus-visible:border-text ${
+          invalid ? "border-red-700" : "border-border-strong"
+        }`}
+      />
+      {hint && (
+        <p id={`${id}-hint`} className="mt-1.5 text-xs leading-relaxed text-text-muted">
+          {hint}
+        </p>
+      )}
+      {invalid && error && (
+        <p id={`${id}-hiba`} role="alert" className="mt-1 text-xs font-medium text-red-700">
+          {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function Outcome({ outcome }: { outcome: SubmitOutcome }) {
+  if (outcome.status === "sent") {
+    return (
+      <div
+        data-call-region="order_intent_success"
+        className={`outcome ${outcome.mock ? "outcome-mock" : "outcome-ok"}`}
+      >
+        <p className="font-semibold">
+          {outcome.mock
+            ? "MOCK MÓD — valódi e-mail NEM ment ki"
+            : outcome.duplicate
+              ? "Ezt az igényt már megkaptuk"
+              : "Rendelési igény beérkezett"}
+        </p>
+        <p className="mt-1">{outcome.message}</p>
+        {outcome.totalMismatch && (
+          <p className="mt-1.5 font-medium">
+            Megjegyzés: a szerveroldali, hiteles összeg eltér a képernyőn mutatottól —
+            kollégánk az egyeztetésnél pontosítja.
+          </p>
+        )}
+        <p className="mt-1.5">
+          Ez még <strong className="font-semibold">nem végleges megrendelés</strong>: a
+          részletek egyeztetése és visszaigazolásunk után válik véglegessé.
+        </p>
+      </div>
+    );
+  }
+
+  const tone = outcome.status === "rate-limited" ? "outcome-warn" : "outcome-error";
+  return (
+    <div role="alert" className={`outcome ${tone}`} data-call-region="order_intent_error">
+      <p className="font-semibold">
+        {outcome.status === "timeout"
+          ? "A beküldés időtúllépéssel leállt"
+          : outcome.status === "rate-limited"
+            ? "Túl sok beküldés"
+            : outcome.status === "invalid"
+              ? "Ellenőrizze az adatokat"
+              : outcome.status === "not-configured"
+                ? "A beküldés nincs konfigurálva"
+                : "A beküldés nem sikerült"}
+      </p>
+      <p className="mt-1">{outcome.message}</p>
+      <a
+        href={`tel:${company.phone.raw}`}
+        className="num mt-2 inline-flex items-center gap-2 font-semibold underline"
+      >
+        <IconPhone size={15} />
+        {company.phone.display}
+      </a>
+    </div>
+  );
+}

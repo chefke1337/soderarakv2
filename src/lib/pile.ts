@@ -9,7 +9,7 @@
  * A csúcs aszimmetrikus (peak ≠ 0.5), a kontúrra a magassággal arányos,
  * anyagonként eltérő finom egyenetlenség kerül — a talp így egyenes marad.
  * Lágy anyag (homok, sóder, kavics, föld): sűrű mintavétel + Catmull–Rom
- * görbe. Szögletes anyag (murva, bazalt): ritkább pontok, egyenes élek.
+ * görbe. Szögletes anyag (murva, andezit): ritkább pontok, egyenes élek.
  */
 import { GRAIN_SEED, GRAIN_SHAPE, MATERIAL_COLOR, grainData, grainToSvg, type Tone } from "./grain";
 
@@ -49,8 +49,8 @@ export const PILE: Record<Tone, PileSpec> = {
   // murva: szögletes, enyhén egyenetlen, jobbra billenő csúcs
   murva: { left: 6, right: 194, peak: 0.42, height: 54, a: 1.42, b: 1.2, faceted: true, samples: 19,
     ripples: [[1.3, 6, 2.6], [0.8, 13, 1.1]] },
-  // bazalt: kissé meredekebb, élesebb csúcs, tört élek
-  bazalt: { left: 9, right: 191, peak: 0.56, height: 57, a: 1.45, b: 1.15, faceted: true, samples: 17,
+  // andezit: kissé meredekebb, élesebb csúcs, tört élek
+  andezit: { left: 9, right: 191, peak: 0.56, height: 57, a: 1.45, b: 1.15, faceted: true, samples: 17,
     ripples: [[1.6, 7, 0.3], [1.0, 15, 1.4]] },
   // föld: organikus, rögös, kicsit kétpúpú
   fold: { left: 5, right: 195, peak: 0.44, height: 52, a: 1.85, b: 1.3, faceted: false, samples: 46,
@@ -121,14 +121,14 @@ export function pileTopY(tone: Tone): number {
 
 /**
  * Anyagonkénti kiegészítő szemcseréteg a kupacon (a csempe fölött):
- * sóder finom frakció, murva/bazalt apró szögletes törmelék világos
+ * sóder finom frakció, murva/andezit apró szögletes törmelék világos
  * élekkel (textúrakontraszt), föld nagyobb, áttetsző rögök.
  */
 export const PILE_DETAIL: Partial<Record<Tone, { count: number; min: number; max: number; kind: "round" | "pebble" | "angular"; colors: string[]; opacity: number; seed: number }>> = {
   soder: { count: 70, min: 0.35, max: 0.9, kind: "round", colors: ["#6e5a40", "#efe2c8"], opacity: 0.9, seed: 101 },
   kavics: { count: 26, min: 0.9, max: 1.8, kind: "pebble", colors: ["#f0ebe2"], opacity: 0.55, seed: 103 },
   murva: { count: 44, min: 0.8, max: 2, kind: "angular", colors: ["#857760", "#f6f1e7"], opacity: 0.9, seed: 107 },
-  bazalt: { count: 46, min: 0.8, max: 2.2, kind: "angular", colors: ["#8c847b", "#1d1a18", "#a39a90"], opacity: 0.85, seed: 109 },
+  andezit: { count: 46, min: 0.8, max: 2.2, kind: "angular", colors: ["#a39a90", "#4e4740", "#b8afa5"], opacity: 0.85, seed: 109 },
   fold: { count: 16, min: 3, max: 6.5, kind: "round", colors: ["#4a3020", "#8a6644"], opacity: 0.45, seed: 113 },
 };
 
@@ -152,7 +152,7 @@ export function pileSvg(tone: Tone, id: string): string {
   const detail = det
     ? grainData({ count: det.count, min: det.min, max: det.max, kind: det.kind }, det.colors, det.seed, 70, 40).map(grainToSvg).join("")
     : "";
-  const light = tone === "bazalt" || tone === "fold" ? 0.2 : 0.16;
+  const light = tone === "andezit" || tone === "fold" ? 0.2 : 0.16;
   return [
     "<defs>",
     `<pattern id="${k}-t" width="${120 * tile}" height="${60 * tile}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})"><rect width="120" height="60" fill="${col.base}"/>${base}</g></pattern>`,

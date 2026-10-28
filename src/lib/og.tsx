@@ -1,6 +1,10 @@
 import { ImageResponse } from "next/og";
 import { company } from "@/content/site";
-import type { MaterialGroup, Zone } from "@/content/site";
+import type { MaterialGroup } from "@/content/site";
+
+/** Dekoratív stíluskulcs az OG-kártyákhoz (nem üzleti zónaadat — a V3
+ *  árazás irányítószám-alapú; ez csak a kártya színsávját választja). */
+type OgZoneId = "mag" | "kozel" | "tavolabbi";
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -18,7 +22,7 @@ export type OgCardInput = {
   count?: number;
   metricLabel?: string;
   metricValue?: string;
-  zoneId?: Zone["id"];
+  zoneId?: OgZoneId;
   zoneName?: string;
   mapLabel?: string;
   leadTime?: string;
@@ -28,7 +32,7 @@ export type OgCardInput = {
   priceRange?: string;
   priceUnit?: string;
   priceCards?: { label: string; value: string; detail: string; tone: "amber" | "olive" | "stone" }[];
-  zoneCards?: { label: string; area: string; price: string; id: Zone["id"] }[];
+  zoneCards?: { label: string; area: string; price: string; id: OgZoneId }[];
   serviceSteps?: { number: string; title: string; detail: string }[];
   companyFacts?: { value: string; label: string }[];
   hours?: string;
@@ -39,14 +43,14 @@ const MATERIAL_STYLE: Record<NonNullable<OgCardInput["tone"]>, { paper: string; 
   homok: { paper: "#f6e8c8", accent: "#b45309", ink: "#1c1917", stone: "#d6b98a", glow: "#fbf4e0" },
   kavics: { paper: "#dfeae7", accent: "#0f766e", ink: "#12403b", stone: "#8fb8b1", glow: "#f0f6f4" },
   murva: { paper: "#eae8e1", accent: "#57534e", ink: "#1c1917", stone: "#a8a29e", glow: "#f5f4ef" },
-  bazalt: { paper: "#292524", accent: "#f97316", ink: "#faf6ef", stone: "#57534e", glow: "#837f7a" },
+  andezit: { paper: "#3a342f", accent: "#f97316", ink: "#faf6ef", stone: "#6b625a", glow: "#9b9188" },
   fold: { paper: "#e8ecd6", accent: "#3f6212", ink: "#1c1917", stone: "#a3b18a", glow: "#f4f7e6" },
 };
 
 const ZONE_STYLE: Record<NonNullable<OgCardInput["zoneId"]>, { accent: string; wash: string; label: string }> = {
-  mag: { accent: "#c2410c", wash: "#ffedd5", label: "BUDAFOK ÉS KÖRNYÉKE" },
-  kozel: { accent: "#ea580c", wash: "#fdf0e0", label: "KÖZELI AGGLOMERÁCIÓ" },
-  tavolabbi: { accent: "#f97316", wash: "#fdf3e7", label: "TÁVOLABBI AGGLOMERÁCIÓ" },
+  mag: { accent: "#c2410c", wash: "#ffedd5", label: "KISZOLGÁLT TERÜLET" },
+  kozel: { accent: "#ea580c", wash: "#fdf0e0", label: "KISZOLGÁLT TERÜLET" },
+  tavolabbi: { accent: "#f97316", wash: "#fdf3e7", label: "EGYEDI EGYEZTETÉS" },
 };
 
 const GRAIN_POINTS = [
@@ -82,7 +86,7 @@ function BrandMark({ dark = false }: { dark?: boolean }) {
 
 function MaterialArtwork({ tone }: { tone: NonNullable<OgCardInput["tone"]> }) {
   const palette = MATERIAL_STYLE[tone];
-  const angular = tone === "murva" || tone === "bazalt";
+  const angular = tone === "murva" || tone === "andezit";
   const points = angular ? FRAGMENT_POINTS : GRAIN_POINTS;
   const shapeColor = [palette.stone, palette.glow, palette.accent];
   return (
@@ -415,9 +419,12 @@ function ShippingCard({ input }: { input: OgCardInput }) {
             return (
               <div key={card.id} style={{ position: "relative", flex: 1, height: 207, display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden", borderRadius: 17, padding: "18px 19px", backgroundColor: "#faf6ef", color: INK, borderTop: `5px solid ${palette.accent}` }}>
                 <div style={{ position: "absolute", right: -35, top: -55, width: 135, height: 135, borderRadius: "50%", backgroundColor: palette.wash }} />
-                <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 8 }}>
-                  <div style={{ display: "flex", color: palette.accent, fontSize: 12, fontWeight: 800, letterSpacing: 1.7 }}>{palette.label}</div>
-                  <div style={{ display: "flex", width: 276, color: INK, fontSize: 15, fontWeight: 600, lineHeight: 1.25 }}>{card.area}</div>
+                {/* A kártya SAJÁT megnevezése (pl. „Budapest", „Érd") a fő
+                    felirat; a paletta felirata csak dekoratív besorolás. */}
+                <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 5 }}>
+                  <div style={{ display: "flex", color: palette.accent, fontSize: 11, fontWeight: 800, letterSpacing: 1.6 }}>{palette.label}</div>
+                  <div style={{ display: "flex", color: INK, fontSize: 25, fontWeight: 800, letterSpacing: -0.5, lineHeight: 1.05 }}>{card.label}</div>
+                  <div style={{ display: "flex", width: 276, color: MUTED, fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{card.area}</div>
                 </div>
                 <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 4 }}>
                   <div style={{ display: "flex", color: MUTED, fontSize: 11, fontWeight: 700, letterSpacing: 1.4 }}>FUVAR · NETTÓ</div>

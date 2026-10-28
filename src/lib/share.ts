@@ -7,14 +7,14 @@ import { absoluteUrl } from "@/content/site";
  */
 export const SHARE = {
   siteName: "Sóder Árak",
-  title: "Sóder Árak – sóder, homok, kavics, murva, bazalt és föld",
+  title: "Sóder Árak – sóder, homok, kavics, murva, andezit és föld",
   description:
-    "Anyagárak, rendelés 1–20 m³ között és szállítási díjak egy helyen. Válasszon anyagot, számoljon az árkalkulátorral, és egyeztessük a kiszállítás részleteit!",
+    "Bruttó anyagárak, rendelés 1–10 m³ között és irányítószám szerinti fuvardíjak egy helyen. Válasszon anyagot, számoljon az árkalkulátorral, és küldjön rendelési igényt!",
   image: {
-    url: absoluteUrl("/soderarak-share-v3.png"),
+    url: absoluteUrl("/soderarak-share-v4.png"),
     width: 1200,
     height: 630,
-    alt: "Sóder Árak — építőanyagok, átlátható árak: sóder, homok, kavics, murva, bazalt és termőföld fotói",
+    alt: "Sóder Árak — építőanyagok, átlátható árak: sóder, kavics, homok, murva és termőföld fotói",
     type: "image/png",
   },
 } as const;

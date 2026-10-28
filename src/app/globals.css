@@ -3,6 +3,8 @@
    a fő, minden oldalon hivatkozott stíluslapba kerüljön — lásd
    scripts/prepare-static-export.mjs (korábbi CSS_CHUNK_LOAD_FAILED hiba). */
 @import "leaflet/dist/leaflet.css";
+/* V3 komponens-réteg (lásd a fájl fejlécét) */
+@import "./v3-components.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)
@@ -38,7 +40,7 @@
   --color-mat-homok: #dcb767;
   --color-mat-kavics: #9c968c;
   --color-mat-murva: #cbbfa9;
-  --color-mat-bazalt: #45403b;
+  --color-mat-andezit: #6b625a;
   --color-mat-fold: #6e4b31;
 
   /* ── Kompatibilitási aliasok (a meglévő aloldalak osztályaihoz) ── */

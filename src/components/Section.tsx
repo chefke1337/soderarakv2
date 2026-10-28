@@ -61,12 +61,16 @@ export default function Section({
           {kicker}
         </p>
       )}
+      {/* `display-heading`: hosszú magyar összetett szavak (pl.
+          „anyagválasztáshoz") 360px-en 40px-es betűmérettel nem férnek ki —
+          a legszűkebb kijelzőn kisebb a fokozat, és elválasztás is engedélyezett.
+          A szöveg NEM zsugorodik olvashatatlanra, és nincs rejtett túlcsordulás. */}
       <Title
         id={headingId}
-        className={`mt-3 font-display font-bold text-balance tracking-display ${
+        className={`display-heading mt-3 font-display font-bold text-balance tracking-display ${
           big
-            ? "text-[2.5rem] leading-[1.02] md:text-display"
-            : "text-[2rem] leading-[1.06] md:text-heading-lg"
+            ? "text-[2rem] leading-[1.04] min-[400px]:text-[2.5rem] min-[400px]:leading-[1.02] md:text-display"
+            : "text-[1.75rem] leading-[1.08] min-[400px]:text-[2rem] min-[400px]:leading-[1.06] md:text-heading-lg"
         }`}
       >
         {title}

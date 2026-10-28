@@ -40,6 +40,15 @@ const routes = walkHtml(OUT).map((file) => {
       ? `/${rel.slice(0, -"index.html".length)}`
       : `/${rel}`;
   return { file, route };
+}).filter(({ file, route }) => {
+  // Átirányító oldalak (meta refresh — pl. az örökölt /anyagok/bazalt/) nem
+  // auditálhatók: a lap azonnal elnavigál, és a futási kontextus megszűnik.
+  // Ezeknek nincs saját elrendezésük, csak egy cím és egy link.
+  if (/<meta[^>]+http-equiv="refresh"/i.test(readFileSync(file, "utf8"))) {
+    console.log(`⤳ ${route} kihagyva (átirányító oldal, nincs saját elrendezés)`);
+    return false;
+  }
+  return true;
 });
 if (!routes.length) throw new Error("No exported HTML files found in `out/`.");
 
@@ -77,11 +86,32 @@ if (!FULL_AUDIT && pendingRoutes.length === 0) {
 const auditTargets = FULL_AUDIT ? routes : pendingRoutes;
 console.log(`360px audit: ${auditTargets.length}/${routes.length} route${FULL_AUDIT ? " (TELJES)" : " (változott route-ok)"}...`);
 
+// A basePath-os build (GH_PAGES_BASE_PATH, pl. „/soderarakv2") minden eszközt
+// és belső linket előtaggal ír ki. A kiszolgálónak le kell vennie ezt az
+// előtagot, különben a CSS és a JS 404-el, és az audit CSS NÉLKÜLI oldalt mér
+// (hamis „blocked control"/overflow találatok).
+function detectBasePath() {
+  const fromEnv = (process.env.GH_PAGES_BASE_PATH ?? "").replace(/\/+$/, "");
+  if (fromEnv) return fromEnv;
+  // Környezeti változó nélkül is felismerjük a buildbe sütött előtagot, hogy az
+  // audit soha ne mérjen véletlenül CSS nélküli oldalt.
+  const home = join(OUT, "index.html");
+  if (!existsSync(home)) return "";
+  const match = readFileSync(home, "utf8").match(/href="([^"]*)\/_next\/static\/css\//);
+  return match?.[1]?.replace(/\/+$/, "") ?? "";
+}
+const BASE_PATH = detectBasePath();
+if (BASE_PATH) console.log(`basePath felismerve: ${BASE_PATH}`);
+const stripBase = (p) =>
+  BASE_PATH && (p === BASE_PATH || p.startsWith(`${BASE_PATH}/`))
+    ? p.slice(BASE_PATH.length) || "/"
+    : p;
+
 const routeFiles = new Map(routes.map(({ file, route }) => [route, file]));
 const server = createServer((req, res) => {
   let pathname;
   try {
-    pathname = decodeURIComponent(new URL(req.url ?? "/", "http://localhost").pathname);
+    pathname = stripBase(decodeURIComponent(new URL(req.url ?? "/", "http://localhost").pathname));
   } catch {
     res.writeHead(400).end("Bad request");
     return;

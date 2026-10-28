@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { company, DISCLOSURE_NET, DISCLOSURE_PRICE, materialGroups } from "@/content/site";
+import {
+  company,
+  DISCLOSURE_FREIGHT,
+  DISCLOSURE_PRICE,
+  materialGroups,
+} from "@/content/site";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
-import MaterialLedger, { LedgerHeader } from "@/components/MaterialLedger";
+import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
 
 export const metadata: Metadata = pageMeta({
-  title: "Anyagok — sóder, homok, kavics, murva, bazalt, föld",
+  title: "Anyagok — sóder, homok, kavics, murva, andezit, föld",
   description:
-    "Ömlesztett építőanyagaink: sóder frakciók (0/4–0/24), natúr homok, kerti és kulékavics, murva, bazalt és termőföld. Tájékoztató nettó árak Ft/m³.",
+    "Ömlesztett építőanyagaink: mosott sóder frakciók (0–4-től 0–24-ig), bányahomok, első osztályú mosott kavics és osztályozatlan kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Bruttó árak Ft/m³.",
   path: "/anyagok",
 });
 
@@ -16,7 +21,7 @@ export default function AnyagokPage() {
     <Section
       kicker="Anyagaink"
       title="Ömlesztett anyagok frakciónként"
-      lead="Csak ezeket az anyagokat szállítjuk. Minden ár nettó, ÁFA nélkül; a fuvar díja külön. Amelyik anyag ára nincs feltüntetve, arról egyeztetés után adunk ajánlatot."
+      lead="Csak ezeket az anyagokat szállítjuk. Az árak bruttó árak, az ÁFÁ-t tartalmazzák; a fuvar díja külön, nettó értékben számolódik. Amelyik anyag ára nincs feltüntetve, arról egyeztetés után adunk ajánlatot."
     >
       <JsonLd
         data={breadcrumbJsonLd([
@@ -41,9 +46,12 @@ export default function AnyagokPage() {
           })),
         }}
       />
+      <GrossPriceBanner className="mb-6" />
       <LedgerHeader />
       <MaterialLedger headingLevel={2} />
-      <p className="mt-4 text-sm text-ink-soft">{DISCLOSURE_NET} {DISCLOSURE_PRICE}</p>
+      <p className="mt-4 text-sm leading-relaxed text-ink-soft">
+        {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
+      </p>
     </Section>
   );
 }

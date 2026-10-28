@@ -44,6 +44,14 @@ const routes = htmlFiles.map((file) => {
       ? `/${rel.slice(0, -"index.html".length)}`
       : `/${rel}`;
   return { file, route };
+}).filter(({ file, route }) => {
+  // Átirányító oldalak (meta refresh — pl. az örökölt /anyagok/bazalt/) nem
+  // auditálhatók: a lap azonnal elnavigál, és a futási kontextus megszűnik.
+  if (/<meta[^>]+http-equiv="refresh"/i.test(readFileSync(file, "utf8"))) {
+    console.log(`a11y: ⤳ ${route} kihagyva (átirányító oldal)`);
+    return false;
+  }
+  return true;
 });
 
 // ── Change-gated audit (2026-10-03 rendszer-audit) ──
@@ -90,11 +98,29 @@ if (!FULL_AUDIT && pendingRoutes.length === 0 && routes.length > 0) {
 const auditTargets = FULL_AUDIT ? routes : pendingRoutes;
 console.log(`a11y: ${auditTargets.length}/${routes.length} route auditálása${FULL_AUDIT ? " (TELJES)" : " (változott route-ok)"}...`);
 
+// A basePath-os build (GH_PAGES_BASE_PATH) minden eszközt előtaggal hivatkozik;
+// előtag-levágás nélkül a CSS/JS 404-elne, és az audit stílus nélküli oldalt
+// mérne (hamis kontraszt- és fókusz-találatok).
+function detectBasePath() {
+  const fromEnv = (process.env.GH_PAGES_BASE_PATH ?? "").replace(/\/+$/, "");
+  if (fromEnv) return fromEnv;
+  const home = join(OUT, "index.html");
+  if (!existsSync(home)) return "";
+  const match = readFileSync(home, "utf8").match(/href="([^"]*)\/_next\/static\/css\//);
+  return match?.[1]?.replace(/\/+$/, "") ?? "";
+}
+const BASE_PATH = detectBasePath();
+if (BASE_PATH) console.log(`a11y: basePath felismerve: ${BASE_PATH}`);
+const stripBase = (p) =>
+  BASE_PATH && (p === BASE_PATH || p.startsWith(`${BASE_PATH}/`))
+    ? p.slice(BASE_PATH.length) || "/"
+    : p;
+
 const routeFiles = new Map(routes.map(({ file, route }) => [route, file]));
 const server = createServer((req, res) => {
   let pathname;
   try {
-    pathname = decodeURIComponent(new URL(req.url ?? "/", "http://localhost").pathname);
+    pathname = stripBase(decodeURIComponent(new URL(req.url ?? "/", "http://localhost").pathname));
   } catch {
     res.writeHead(400).end("Bad request");
     return;

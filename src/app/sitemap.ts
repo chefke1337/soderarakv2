@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { company, materialGroups, settlements, guides, updated } from "@/content/site";
+import { company, materialGroups, serviceAreas, guides, updated } from "@/content/site";
 
 export const dynamic = "force-static";
 
@@ -25,7 +25,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const settlementPages: MetadataRoute.Sitemap = settlements.map((s) => ({
+  const areaPages: MetadataRoute.Sitemap = serviceAreas.map((s) => ({
     url: `${base}/teruletek/${s.slug}/`,
     lastModified: updated,
     changeFrequency: "monthly",
@@ -39,5 +39,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.3,
   }));
 
-  return [...staticPages, ...materialPages, ...settlementPages, ...guidePages];
+  return [...staticPages, ...materialPages, ...areaPages, ...guidePages];
 }

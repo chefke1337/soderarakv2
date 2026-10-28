@@ -1,27 +1,20 @@
 import Link from "next/link";
-import { materialGroups, type MaterialGroup, type MaterialItem } from "@/content/site";
-import { formatFt, IconCalculator, IconPlus, minPrice } from "@/lib/ui";
+import {
+  DISCLOSURE_GROSS,
+  materialGroups,
+  type MaterialGroup,
+  type MaterialItem,
+} from "@/content/site";
+import { formatFt, IconCalculator, IconDroplets, IconPlus, minPrice } from "@/lib/ui";
 import FractionScale, { parseFraction } from "@/components/FractionScale";
-import { MATERIAL_COLOR } from "@/components/MaterialGrain";
+import MaterialGrain, { MATERIAL_COLOR } from "@/components/MaterialGrain";
 import { withBasePath } from "@/lib/basepath";
 
-/**
- * Árlista-sorok valódi anyagfotói — csak ebben a listában (a főoldali
- * kupac-grafikák és az anyagoldalak textúrái külön forrásból jönnek).
- * A kivágás anyagonként hangolt: a panel desktopon széles, mobilon keskeny-magas.
- */
-const LEDGER_PHOTO: Record<MaterialGroup["tone"], { src: string; position: string }> = {
-  soder: { src: "/anyagok/arlista/soder-foto.webp", position: "40% 55%" },
-  homok: { src: "/anyagok/arlista/homok-foto.webp", position: "50% 50%" },
-  kavics: { src: "/anyagok/arlista/kavics-foto.webp", position: "50% 45%" },
-  murva: { src: "/anyagok/arlista/murva-foto.webp", position: "50% 50%" },
-  bazalt: { src: "/anyagok/arlista/bazalt-foto.webp", position: "45% 40%" },
-  fold: { src: "/anyagok/arlista/fold-foto.webp", position: "50% 60%" },
-};
-
-/** Egy anyagcsoport teljes szemcse-tartománya a tételek frakcióiból (pl. „0–24 mm"). */
+/** Egy anyagcsoport teljes szemcse-tartománya a tételek frakcióiból. */
 function groupRange(g: MaterialGroup): string | undefined {
-  const ranges = g.items.map((i) => parseFraction(i.fraction)).filter(Boolean) as [number, number][];
+  const ranges = g.items
+    .map((i) => parseFraction(i.fraction))
+    .filter(Boolean) as [number, number][];
   if (!ranges.length) return undefined;
   const a = Math.min(...ranges.map((r) => r[0]));
   const b = Math.max(...ranges.map((r) => r[1]));
@@ -29,11 +22,14 @@ function groupRange(g: MaterialGroup): string | undefined {
 }
 
 /**
- * Anyagok + árlista EGY blokkban (a V1 kártyarács + ár-accordion helyett).
+ * Anyagok + BRUTTÓ árlista egy blokkban.
  * Natív <details>: JS nélkül nyílik, billentyűzettel kezelhető.
- * Sor: textúra · név · szemcse-tartomány · induló ár · lenyitás.
- * Lenyitva: minden tétel felhasználással, frakció-skálával, árral és
- * közvetlen kalkulátor-linkkel (az anyag előre kiválasztva).
+ * Sor: anyagpanel · név + mosott-jelölés · szemcse-tartomány · induló bruttó
+ * ár · lenyitás. Lenyitva: minden tétel felhasználással, frakció-skálával,
+ * bruttó árral és közvetlen kalkulátor-linkkel.
+ *
+ * Ahol nincs ellenőrzött anyagfotó (andezit), a stilizált szemcseminta
+ * jelenik meg — régi fotót NEM adunk ki más anyag hiteles fotójaként.
  */
 export default function MaterialLedger({
   openAll = false,
@@ -57,27 +53,41 @@ export default function MaterialLedger({
             className="mat-card group relative overflow-hidden rounded-[var(--radius-md)] border border-border/70 bg-surface shadow-card"
             style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
           >
-            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem]">
+            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10.5rem_7.5rem]">
               {/* teljes magasságú anyagpanel: a kártya „képe" (dekoratív — a név mellette áll) */}
-              <span aria-hidden="true" className="mat-panel relative block overflow-hidden bg-[var(--mat)]">
+              <span
+                aria-hidden="true"
+                className="mat-panel relative block overflow-hidden bg-[var(--mat)]"
+              >
                 <span className="mat-grain absolute inset-0">
-                  {/* statikus export, unoptimized képek: a next/image itt nem ad hozzá semmit */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={withBasePath(LEDGER_PHOTO[g.tone].src)}
-                    alt=""
-                    width={360}
-                    height={360}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                    style={{ objectPosition: LEDGER_PHOTO[g.tone].position }}
-                  />
+                  {g.photo ? (
+                    /* statikus export, unoptimized képek: a next/image itt nem ad hozzá semmit */
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={withBasePath(g.photo.src)}
+                      alt=""
+                      width={360}
+                      height={360}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                      style={{ objectPosition: g.photo.position }}
+                    />
+                  ) : (
+                    <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} scale={1.15} />
+                  )}
                 </span>
               </span>
+
               <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
+                {g.washed && (
+                  <span className="badge-washed mt-1.5">
+                    <IconDroplets size={11} />
+                    {g.washed.label}
+                  </span>
+                )}
               </span>
 
               <span className="hidden self-center pr-4 md:block">
@@ -89,25 +99,28 @@ export default function MaterialLedger({
                     </span>
                   </>
                 ) : (
-                  <span className="text-xs text-ink-soft">Frakció nélkül · {g.items.length} tétel</span>
+                  <span className="text-xs text-ink-soft">
+                    Frakció nélkül · {g.items.length} tétel
+                  </span>
                 )}
               </span>
 
-              {/* Mobilon ár + nyitásjelző egy oszlopban (nincs külön sor);
-                  md+-on a wrapper „eltűnik" (contents), a két cella saját hasáb. */}
+              {/* Mobilon ár + nyitásjelző egy oszlopban; md+-on a wrapper
+                  „eltűnik" (contents), a két cella saját hasáb. */}
               <span className="flex flex-col items-end justify-between gap-2 py-3.5 pr-3.5 md:contents">
                 <span className="num text-right md:self-center md:py-4 md:pr-5">
                   {min !== null ? (
                     <>
-                      <span className="block font-display text-heading-sm font-bold">{formatFt(min)}</span>
-                      <span className="block text-xs text-ink-soft">-tól / m³ nettó</span>
+                      <span className="block font-display text-heading-sm font-bold">
+                        {formatFt(min)}
+                      </span>
+                      <span className="block text-xs text-ink-soft">-tól / m³ bruttó</span>
                     </>
                   ) : (
                     <span className="block text-sm font-medium text-ink-soft">egyeztetés után</span>
                   )}
                 </span>
 
-                {/* egyértelmű nyitás-jelző: felirat + ikon */}
                 <span className="flex items-center gap-2 text-sm font-semibold text-accent-deep md:justify-end md:border-l md:border-border/60 md:pr-5 md:pl-4">
                   <span className="mat-toggle-label">
                     <span className="group-open:hidden">Tételek</span>
@@ -124,7 +137,9 @@ export default function MaterialLedger({
             </summary>
 
             <div className="details-body border-t border-border/60 px-4 pt-5 pb-6 md:pr-8 md:pl-[9rem]">
-              <p className="max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">{g.description}</p>
+              <p className="max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">
+                {g.description}
+              </p>
 
               <MaterialItemRows items={g.items} className="mt-4" />
 
@@ -142,7 +157,7 @@ export default function MaterialLedger({
   );
 }
 
-/** Tétel-sorok: név + felhasználás · frakció-skála · nettó ár · kalkulátor-link. */
+/** Tétel-sorok: név + jelölés + felhasználás · frakció-skála · BRUTTÓ ár · kalkulátor-link. */
 export function MaterialItemRows({
   items,
   className = "",
@@ -158,11 +173,18 @@ export function MaterialItemRows({
           className="grid gap-x-6 gap-y-2 p-4 sm:grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] md:items-center"
         >
           <div className="min-w-0">
-            <p className="font-semibold">
+            <p className="flex flex-wrap items-baseline gap-x-2 gap-y-1 font-semibold">
               {item.name}
-              {item.note && (
-                <span className="ml-2 text-xs font-medium text-ink-soft">{item.note.toLowerCase()}</span>
+              {item.qualifier && (
+                <span className="text-xs font-medium text-ink-soft">{item.qualifier}</span>
               )}
+              {item.washed && (
+                <span className="badge-washed">
+                  <IconDroplets size={11} />
+                  {item.washed.label}
+                </span>
+              )}
+              {item.unclassified && <span className="badge-plain">osztályozatlan</span>}
             </p>
             <p className="mt-0.5 text-sm leading-snug text-ink-soft">{item.use}</p>
           </div>
@@ -178,8 +200,15 @@ export function MaterialItemRows({
             )}
           </div>
 
-          <p className="num font-display text-lg font-bold sm:row-start-1 sm:col-start-2 sm:text-right md:row-start-auto md:col-start-auto">
-            {item.priceNet !== null ? formatFt(item.priceNet) : (
+          <p className="num sm:row-start-1 sm:col-start-2 sm:text-right md:row-start-auto md:col-start-auto">
+            {item.priceGross !== null ? (
+              <>
+                <span className="block font-display text-lg font-bold">
+                  {formatFt(item.priceGross)}
+                </span>
+                <span className="block text-xs text-ink-soft">bruttó / m³</span>
+              </>
+            ) : (
               <span className="font-sans text-sm font-medium text-ink-soft">egyeztetés után</span>
             )}
           </p>
@@ -203,13 +232,31 @@ export function LedgerHeader() {
   return (
     <div
       aria-hidden="true"
-      className="mb-3 hidden items-end text-xs font-medium text-ink-soft md:grid md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10rem_7.5rem] [&>span:nth-child(2)]:pl-6 [&>span:nth-child(4)]:pr-5"
+      className="mb-3 hidden items-end text-xs font-medium text-ink-soft md:grid md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10.5rem_7.5rem] [&>span:nth-child(2)]:pl-6 [&>span:nth-child(4)]:pr-5"
     >
       <span />
       <span>Anyag</span>
       <span>Szemcseméret, 0–64 mm skálán</span>
-      <span className="text-right">Nettó ár</span>
+      <span className="text-right">Bruttó ár / m³</span>
       <span />
     </div>
+  );
+}
+
+/** Jól látható árjelölés-sáv az árlisták fölé. */
+export function GrossPriceBanner({ className = "" }: { className?: string }) {
+  return (
+    <p
+      className={`gross-banner ${className}`}
+      // A felirat jogi/üzleti jelentőségű: minden árlistán meg kell jelennie.
+    >
+      <span aria-hidden="true" className="gross-banner-mark">
+        ÁFA
+      </span>
+      <span>
+        <strong className="font-semibold">{DISCLOSURE_GROSS}</strong> A fuvar díja ettől
+        külön, nettó értékben számolódik — a fuvardíjra jön az ÁFA.
+      </span>
+    </p>
   );
 }

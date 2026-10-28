@@ -23,7 +23,7 @@ const OUT = "out";
 const PNG_SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
 // A főoldal megosztási borítója statikus public/-fájl (src/lib/share.ts), nem
 // fájl-konvenciós opengraph-image útvonal — a többi oldalé változatlan.
-const HOME_SHARE_IMAGE = "/soderarak-share-v3.png";
+const HOME_SHARE_IMAGE = "/soderarak-share-v4.png";
 // Must mirror next.config.ts's basePath: same-origin asset links in the
 // exported HTML (e.g. the stylesheet <link>) carry this prefix, but the
 // files on disk under OUT/ never do (GitHub Pages applies the "/repo-name"

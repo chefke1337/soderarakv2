@@ -4,14 +4,14 @@
  * PRNG → SSR és kliens egyezik, nincs layout shift.
  */
 
-export type Tone = "homok" | "soder" | "kavics" | "murva" | "bazalt" | "fold";
+export type Tone = "homok" | "soder" | "kavics" | "murva" | "andezit" | "fold";
 
 export const MATERIAL_COLOR: Record<Tone, { base: string; grains: string[]; ink: "dark" | "light" }> = {
   homok: { base: "#dcb767", grains: ["#c99f4c", "#e8cd8c", "#b88a3a", "#f1dca6"], ink: "dark" },
   soder: { base: "#b89a6e", grains: ["#d4bb92", "#8e7350", "#a68558", "#e3d0ad", "#7a6448"], ink: "dark" },
   kavics: { base: "#a49e94", grains: ["#cfc9be", "#7d776e", "#b7aa95", "#8f8a82", "#e0d8c9"], ink: "dark" },
   murva: { base: "#cbbfa9", grains: ["#ece4d4", "#a99b82", "#ddd3c0", "#8f826c"], ink: "dark" },
-  bazalt: { base: "#45403b", grains: ["#5d5751", "#2c2926", "#6e6760", "#383430"], ink: "light" },
+  andezit: { base: "#6b625a", grains: ["#8a8077", "#4e4740", "#9b9188", "#5f574f"], ink: "light" },
   fold: { base: "#6e4b31", grains: ["#5a3b26", "#83603f", "#4a3020", "#946e4a"], ink: "light" },
 };
 
@@ -23,11 +23,11 @@ export const GRAIN_SHAPE: Record<Tone, GrainSpec> = {
   soder: { count: 90, min: 0.8, max: 4.2, kind: "pebble" },
   kavics: { count: 34, min: 3.2, max: 7.5, kind: "pebble" },
   murva: { count: 46, min: 2, max: 5.5, kind: "angular" },
-  bazalt: { count: 50, min: 1.8, max: 5, kind: "angular" },
+  andezit: { count: 50, min: 1.8, max: 5, kind: "angular" },
   fold: { count: 120, min: 0.6, max: 2.2, kind: "round" },
 };
 
-export const GRAIN_SEED: Record<Tone, number> = { homok: 11, soder: 23, kavics: 37, murva: 41, bazalt: 53, fold: 67 };
+export const GRAIN_SEED: Record<Tone, number> = { homok: 11, soder: 23, kavics: 37, murva: 41, andezit: 53, fold: 67 };
 
 export function prng(seed: number) {
   let s = seed >>> 0;
