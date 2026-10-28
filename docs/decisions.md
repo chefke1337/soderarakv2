@@ -341,3 +341,26 @@ Az éles e-mailküldés szándékosan NINCS aktiválva (nincs szolgáltatói
 hozzáférés): a teljes backend megvan és tesztelt, lokálisan mock módban fut,
 amit a felület egyértelműen jelez. Részletek, nyitott kérdések és az
 ellenőrzés eredménye: `docs/v3-brief.md`, `server/README.md`.
+
+## 2026-10-28 — V3 GitHub Pages előnézet: új, önálló cél-repó
+A `v2` preview mintáját követve (`docs/github-pages-soderarak.md`,
+`.github/workflows/deploy-v2-pages.yml`) létrejött egy új, kifejezetten a V3
+előnézetnek szánt publikus repó: `chefke1337/soderarakv3` →
+`https://chefke1337.github.io/soderarakv3/`. Ez a `chefke1337/soderarakv2`
+(ahol maga a forráskód él) `v3` branch-éből épül, de **másik** repóba
+publikál — nem a saját `gh-pages` ágra (azt a V2 build foglalja), hanem a
+`chefke1337/soderarakv3` repó `gh-pages` ágára, SSH deploy key-jel
+(`SODERARAKV3_DEPLOY_KEY` secret a forrás-repón, csak a cél-repóra kap írási
+jogot — ugyanaz a minta, mint a `docs/github-pages-soderarak.md`-ben leírt
+`SODERARAK_DEPLOY_KEY`).
+
+Új workflow: `.github/workflows/deploy-v3-pages.yml` — `push` a `v3`
+branch-re és kézi `workflow_dispatch`, `GH_PAGES_BASE_PATH=/soderarakv3`,
+`NEXT_PUBLIC_SITE_URL=https://chefke1337.github.io/soderarakv3`, egyébként a
+V2-workflow lépéseivel azonos (typecheck, lint, build + export-validátor,
+`peaceiris/actions-gh-pages@v4` publikálás). A V3 `noindex` a layoutban
+kódolt (nem env-függő), ezért a preview is noindex marad — keresőmotorok
+nem indexelik, de a link ismerőinek látható, ugyanúgy, mint a V2 előnézet.
+
+A `SODERARAKV3_DEPLOY_KEY` secret beállítását a titokkezelési jogosultság
+miatt a felhasználó futtatta (`gh secret set`), nem az agent.
