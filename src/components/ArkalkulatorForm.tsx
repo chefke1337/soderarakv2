@@ -408,6 +408,12 @@ export default function ArkalkulatorForm() {
           index={1}
           active={step === 1}
           title="Melyik anyagra van szüksége?"
+          summary={
+            visited[1] && item
+              ? `${item.name} · ${item.priceGross !== null ? `${formatFt(item.priceGross)}/m³ bruttó` : "egyeztetés után"}`
+              : undefined
+          }
+          onEdit={() => goToStep(1)}
           headingRef={(el) => {
             stepHeadingRefs.current[1] = el;
           }}
@@ -513,6 +519,14 @@ export default function ArkalkulatorForm() {
           index={2}
           active={step === 2}
           title="Mennyi anyagra van szüksége?"
+          summary={
+            visited[2]
+              ? overLimit
+                ? `${SINGLE_TRIP_MAX_M3} m³ felett — többfuvaros, egyedi ajánlat`
+                : `${m3} m³`
+              : undefined
+          }
+          onEdit={() => goToStep(2)}
           headingRef={(el) => {
             stepHeadingRefs.current[2] = el;
           }}
@@ -628,6 +642,8 @@ export default function ArkalkulatorForm() {
           index={3}
           active={step === 3}
           title="Hová szállítsunk?"
+          summary={visited[3] && postalCode ? `${postalCode}${address.trim() ? ` · ${address.trim()}` : ""}` : undefined}
+          onEdit={() => goToStep(3)}
           headingRef={(el) => {
             stepHeadingRefs.current[3] = el;
           }}
@@ -1000,6 +1016,35 @@ export default function ArkalkulatorForm() {
           </p>
         </form>
       </section>
+
+      {/* Mobilon az összesítő a lépések alatt van: élő tájékoztató összeg +
+          ugrás az összesítőhöz + hívás. (A globális mobilsáv itt rejtve.) */}
+      <div className="calc-bar sm:hidden" data-call-region="calculator_bar">
+        <div aria-live="polite" className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-text-muted">Tájékoztató összeg, bruttó</p>
+          <p key={quote.totalGross ?? quote.totalBlockedReason ?? "x"} className="swap-in num truncate font-display text-[1.125rem] leading-tight font-bold">
+            {quote.totalGross !== null
+              ? formatFt(quote.totalGross)
+              : quote.totalBlockedReason === "incomplete"
+                ? "Irányítószám kell"
+                : "Egyeztetés szükséges"}
+          </p>
+        </div>
+        <button
+          type="button"
+          className="calc-bar-btn"
+          onClick={() => {
+            const el = document.getElementById("osszesito-cim");
+            const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            el?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+          }}
+        >
+          Összesítő
+        </button>
+        <a href={`tel:${company.phone.raw}`} className="calc-bar-call" aria-label={`Hívás: ${company.phone.display}`}>
+          <IconPhone size={19} />
+        </a>
+      </div>
     </div>
   );
 }
@@ -1046,12 +1091,17 @@ function StepPanel({
   active,
   title,
   headingRef,
+  summary,
+  onEdit,
   children,
 }: {
   index: number;
   active: boolean;
   title: string;
   headingRef: (el: HTMLHeadingElement | null) => void;
+  /** Összecsukott állapotban a már megadott választás (pl. „0–24 sóder”). */
+  summary?: string;
+  onEdit?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -1073,6 +1123,16 @@ function StepPanel({
         </span>
         {title}
       </h2>
+      {!active && summary && (
+        <p className="step-summary">
+          <span className="min-w-0">{summary}</span>
+          {onEdit && (
+            <button type="button" onClick={onEdit} className="step-edit">
+              Módosítás<span className="sr-only">: {title}</span>
+            </button>
+          )}
+        </p>
+      )}
       <div className="step-body">{children}</div>
     </section>
   );
