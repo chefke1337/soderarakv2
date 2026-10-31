@@ -1,0 +1,53 @@
+name: V3 QA (no deploy)
+
+# Egyszeri ellenőrző futás a qa/** ágakra: a repó saját, valódi böngészős
+# auditjai (axe WCAG, 360px mobil-layout, kalkulátor + rendelési igény smoke)
+# — amit a fejlesztői környezet (npm nélkül) nem tud lefuttatni. Semmit nem
+# publikál, és nem kerül be a v3 ágba.
+
+on:
+  push:
+    branches:
+      - "qa/**"
+
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Unit tests (pricing, freight, quote, order)
+        run: npm run test:all 2>&1 | tail -n 20
+
+      # 1) A publikus előnézettel azonos build (nincs beküldési végpont, basePath)
+      - name: Build (as published, basePath=/soderarakv3)
+        env:
+          GH_PAGES_BASE_PATH: /soderarakv3
+          NEXT_PUBLIC_SITE_URL: https://chefke1337.github.io/soderarakv3
+        run: npx next build && node scripts/prepare-static-export.mjs
+      - name: a11y (axe WCAG A/AA) — published build
+        run: npm run test:a11y 2>&1 | tail -n 40
+      - name: mobile layout 360px — published build
+        run: npm run test:mobile 2>&1 | tail -n 40
+
+      # 2) Mock végponttal (a valódi beküldési út, MOCK jelöléssel)
+      - name: Build with mock order endpoint
+        env:
+          NEXT_PUBLIC_ORDER_API_URL: http://127.0.0.1:8788/order
+        run: rm -rf .next out && npx next build && node scripts/prepare-static-export.mjs
+      - name: Smoke (calculator + order intent, mock backend)
+        run: |
+          npm run mock:order > mock.log 2>&1 &
+          sleep 3
+          npm run test:smoke 2>&1 | tail -n 80
