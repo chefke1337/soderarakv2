@@ -88,8 +88,10 @@ export default function MaterialLedger({
                   return w ? (
                     <span className="badge-washed mt-1.5">
                       <IconDroplets size={11} />
-                      {w.mark.label}
-                      {w.scope === "some" && <span className="font-medium"> · frakciók</span>}
+                      <span>
+                        {w.mark.label}
+                        {w.scope === "some" && <span className="font-medium"> · frakciók</span>}
+                      </span>
                     </span>
                   ) : null;
                 })()}
