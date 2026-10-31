@@ -40,7 +40,7 @@ export const MAX_ORDER_VOLUME = SINGLE_TRIP_MAX_M3;
  * (Az üzleti domain — soderarak.hu — változatlanul a `domain` mezőben marad.)
  */
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://chefke1337.github.io/soderarakv2"
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://chefke1337.github.io/soderarakv3"
 ).replace(/\/+$/, "");
 
 /** true: ez egy nem publikus V3 előnézeti build → noindex. */
