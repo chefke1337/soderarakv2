@@ -37,7 +37,7 @@ export default function CalculatorEntry() {
               Árkalkulátor indítása
             </Link>
             <Link
-              href={`/arkalkulator?anyag=${e.material.slug}`}
+              href={`/arkalkulator?anyag=${e.material.slug}&m3=${e.m3}&irsz=${e.postalCode}`}
               className="btn btn-lg btn-outline-cream"
             >
               Ezzel a példával kezdem

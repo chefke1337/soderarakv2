@@ -403,3 +403,18 @@ export function resolveItemSlug(slug: string | null | undefined): string | undef
   const mapped = LEGACY_ITEM_SLUGS[slug];
   return mapped && allMaterials.some((m) => m.slug === mapped) ? mapped : undefined;
 }
+
+/**
+ * Egy anyagcsoport mosott-jelölése egységesen minden felületen:
+ * - `scope: "group"` — a teljes csoportra igaz (Sóder);
+ * - `scope: "some"` — csak egyes tételekre (Kavics: a frakcionált tételek,
+ *   a kulé nem) → a jelölést mindig hatókörrel kell megjeleníteni.
+ * A mosottság NEM terjed ki automatikusan más csoportokra.
+ */
+export function groupWashed(
+  g: MaterialGroup,
+): { mark: WashedMark; scope: "group" | "some" } | null {
+  if (g.washed) return { mark: g.washed, scope: "group" };
+  const first = g.items.find((i) => i.washed)?.washed;
+  return first ? { mark: first, scope: "some" } : null;
+}

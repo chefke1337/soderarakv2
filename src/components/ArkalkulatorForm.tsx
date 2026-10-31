@@ -25,6 +25,7 @@ import {
   type CastleAnswer,
   type MaterialGroup,
   type MunicipalityId,
+  groupWashed,
 } from "@/content/site";
 import { computeQuote } from "@/lib/quote";
 import { isValidEmail, isValidPhone } from "@/lib/order";
@@ -151,6 +152,11 @@ export default function ArkalkulatorForm() {
         setItemSlug(wanted);
         const g = materialGroups.find((x) => x.items.some((i) => i.slug === wanted));
         if (g) setGroupSlug(g.slug);
+      }
+      /* ?m3=<egész> (pl. a főoldali példából): csak az engedett 1–10 m³ tartományban. */
+      const m3Param = Number(params.get("m3"));
+      if (Number.isInteger(m3Param) && m3Param >= MIN_ORDER_M3 && m3Param <= SINGLE_TRIP_MAX_M3) {
+        setM3(m3Param);
       }
       /* ?irsz=<irányítószám> a Területek oldalról: csak jóváhagyott profilnál
          töltjük elő a települést / kerületet / irányítószámot. */
@@ -359,10 +365,11 @@ export default function ArkalkulatorForm() {
             </div>
           </fieldset>
 
-          {group.washed && (
+          {groupWashed(group) && (
             <p className="mt-3.5 inline-flex items-center gap-2 rounded-full bg-petrol-soft/50 px-3 py-1.5 text-xs font-semibold text-petrol-deep">
               <IconDroplets size={14} />
-              {group.washed.label}
+              {groupWashed(group)!.mark.label}
+              {groupWashed(group)!.scope === "group" ? " — minden változat" : " — a jelölt változatok"}
             </p>
           )}
 
@@ -393,7 +400,7 @@ export default function ArkalkulatorForm() {
                           {i.qualifier && (
                             <span className="text-xs font-medium text-text-muted">{i.qualifier}</span>
                           )}
-                          {i.washed && (
+                          {i.washed && !group.washed && (
                             <span className="badge-washed">
                               <IconDroplets size={11} />
                               {i.washed.label}
