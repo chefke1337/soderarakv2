@@ -52,6 +52,15 @@
 .badge-washed {
   background: var(--color-petrol-soft);
   color: var(--color-petrol-deep);
+  /* A hosszabb jóváhagyott címke („Első osztályú, mosott kavics · frakciók")
+     keskeny oszlopban törhet — nem lóghat rá a szomszédos gombra. */
+  max-width: 100%;
+  white-space: normal;
+  line-height: 1.25;
+  border-radius: 0.625rem;
+}
+.badge-washed > svg {
+  flex-shrink: 0;
 }
 .badge-plain {
   border: 1px solid var(--color-border-strong);
