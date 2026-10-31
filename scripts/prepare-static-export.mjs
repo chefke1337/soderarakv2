@@ -218,7 +218,10 @@ for (const file of htmlFiles) {
   const baseUrl = canonicalUrl.href;
   // A 404-es dokumentum a gyökér kanonikus útját örökli (nincs saját URL-je),
   // de saját metaadatot és saját hibakártyát kap — a fájlnév egyértelmű jelző.
-  const isNotFoundPage = /(?:^|[\\/])404\.html$/.test(file);
+  // Next trailingSlash export mellett MINDKÉT fájlt kiírja (tartalmuk azonos):
+  // a statikus hosztok konvenciója szerinti out/404.html-t, és a route saját
+  // out/404/index.html-jét is — mindkettőt a hibakártya-ágra kell irányítani.
+  const isNotFoundPage = /(?:^|[\\/])404\.html$/.test(file) || /(?:^|[\\/])404[\\/]index\.html$/.test(file);
   if (isNotFoundPage) {
     // Next nem köti be a /404/opengraph-image útvonalat a 404 dokumentumba,
     // ezért itt irányítjuk át a közösségi kép hivatkozásokat a hibakártyára.
