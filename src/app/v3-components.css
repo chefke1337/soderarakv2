@@ -1680,3 +1680,35 @@ legend.bench-label {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
+
+/* Anyag-index mobilon: két hasáb, tömörebb adatsor (a hat fotó egymás alatt
+   ~3000 px lenne). Az ár marad a legerősebb elem. */
+@media (max-width: 39.99rem) {
+  .mat-index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 0.75rem;
+  }
+  .mat-tile h3 {
+    font-size: 1.125rem;
+  }
+  .mat-tile-body > p.text-sm {
+    font-size: 0.8125rem;
+  }
+  .mat-tile-meta {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .mat-tile-meta > p {
+    text-align: left;
+  }
+  .mat-tile-meta .font-display {
+    font-size: 1.1875rem;
+  }
+  .mat-tile .badge-washed {
+    white-space: normal;
+  }
+  .mat-tile-body .text-xs {
+    font-size: 0.6875rem;
+  }
+}
