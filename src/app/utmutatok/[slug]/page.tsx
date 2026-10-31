@@ -430,10 +430,11 @@ export default async function GuidePage({
           className="rounded-md border border-line bg-sand p-4 text-sm"
         >
           Nem tudja, melyik anyag való a munkájához?{" "}
-          <Link href="/anyagok" className="font-semibold text-brand-deep underline underline-offset-2">
+          <Link href="/anyagok" className="font-semibold whitespace-nowrap text-brand-deep underline underline-offset-2">
             Nézze meg az anyagainkat
           </Link>
-          , vagy hívjon: <PhoneLink className="font-semibold text-brand-deep underline underline-offset-2" /> —
+          , vagy hívjon:{" "}
+          <PhoneLink className="num font-semibold whitespace-nowrap text-brand-deep underline underline-offset-2" /> —
           szívesen segítünk kiválasztani.
         </p>
 
