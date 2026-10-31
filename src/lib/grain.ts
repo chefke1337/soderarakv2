@@ -78,6 +78,8 @@ export function grainData(spec: GrainSpec, colors: string[], seed: number, W: nu
 export function grainToSvg(g: Grain): string {
   if (g.kind === "circle") return `<circle cx="${g.cx}" cy="${g.cy}" r="${g.r}" fill="${g.fill}"/>`;
   if (g.kind === "ellipse")
-    return `<ellipse cx="${g.cx}" cy="${g.cy}" rx="${g.rx}" ry="${g.ry}" transform="rotate(${g.rot} ${g.cx} ${g.cy})" fill="${g.fill}"/>`;
+    // translate(cx cy) rotate(a) ≡ rotate(a cx cy) egy origó-középpontú ellipszisre —
+    // azonos rajz, rövidebb jelölés (a kupacok HTML-je és RSC-adata kisebb).
+    return `<ellipse rx="${g.rx}" ry="${g.ry}" transform="translate(${g.cx} ${g.cy})rotate(${g.rot})" fill="${g.fill}"/>`;
   return `<polygon points="${g.points}" fill="${g.fill}"/>`;
 }
