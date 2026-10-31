@@ -97,7 +97,7 @@ function matches(entry: DistrictEntry, q: string): boolean {
   });
 }
 
-export default function AreaFinder() {
+export default function AreaFinder({ compact = false }: { compact?: boolean } = {}) {
   const [query, setQuery] = useState("");
   const uid = useId();
   const q = norm(query);
@@ -180,7 +180,7 @@ export default function AreaFinder() {
       )}
 
       {/* Kerületek és Érd */}
-      {results.length > 0 && (
+      {results.length > 0 && (!compact || (q && !exactZip)) && (
         <ul className="area-list">
           {results.map((e) => (
             <li key={e.key}>
@@ -230,7 +230,7 @@ export default function AreaFinder() {
       )}
 
       {/* Egyedi egyeztetés */}
-      {quoteHits.length > 0 && (
+      {quoteHits.length > 0 && (!compact || (q && !exactZip)) && (
         <div className="area-quote">
           <p className="font-semibold">Egyedi egyeztetéssel</p>
           <p className="mt-1 text-sm leading-relaxed text-text-muted">{UNSUPPORTED_NOTICE}</p>
