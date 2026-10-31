@@ -411,3 +411,19 @@ remote-ra (ellenőrizve `git ls-remote`-dal) — a `chefke1337/soderarakv3`
 cél-repó `gh-pages` ága már létezik (korábbi manuális/egyszeri deployból),
 de a forrás-ág hiánya miatt ez jelenleg nem a mai állapotot tükrözi. Push
 jóváhagyásra vár.
+
+## 2026-10-31 — V3.1: kalkulátor-első hero, területkereső, őszinte e-mailes átadás
+Ügyfél-brief (V3 prémium web- és interaction design): a fő út anyag →
+mennyiség → irányítószám → árösszesítő → rendelési igény. Döntések:
+- A heróban a kalkulátor lett az elsődleges út (gyors ajánlat-szelvény, sima
+  GET-űrlap), a telefon másodlagos; a mobil alsó sáv ugyanígy (Árkalkulátor +
+  Hívás), a kalkulátoron élő tájékoztató összeggel.
+- Végpont nélküli (publikus) buildben a beküldés nem zsákutca és nem álcázott
+  siker: a felhasználó saját levelezőjében nyílik meg az összesítővel kitöltött
+  e-mail (`mailto:`); a felület kimondja, hogy az igény az elküldéssel érkezik,
+  és nem végleges megrendelés. Végponttal a korábbi viselkedés változatlan.
+- A Területek oldalon a 23 kártya helyett kereshető, ékezetfüggetlen
+  kerület/terület/irányítószám-kereső; csak jóváhagyott adatból — városrészt
+  nem találtunk ki (a `telepulesek.txt` nem áll rendelkezésre).
+- Az árazási logika, árak, szövegszabályok változatlanok. Részletek:
+  `docs/v3.1-design.md`.
