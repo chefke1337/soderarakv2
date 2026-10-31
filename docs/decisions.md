@@ -441,3 +441,21 @@ mennyiség → irányítószám → árösszesítő → rendelési igény. Dönt
   AnimatedContent elvetve. Indoklás és tokenek: `docs/v3.2-motion.md`.
 - Kavics: a jóváhagyott „Első osztályú, mosott kavics" jelölés a katalógus
   fejlécében is megjelenik, „a frakcionált tételekre" hatókörrel (a kulé nem mosott).
+
+## 2026-10-31 — V3.3: szerkesztői főoldal
+Önkritika a V3.2 után: a hero alatt az oldal sablonos volt (kicker + cím +
+kártya ismétlődött), a legerősebb vizuális eszköz — a valódi anyagfotók —
+80 px-es bélyegképként rejtőzött, a terrakotta kalkulátor-blokk a hero-pult
+duplikátuma volt, a rendelés menete két képernyőnyi szöveg, a lefedettség
+kérdésére térkép felelt a pontos irányítószám-válasz helyett. Döntések:
+- Anyag-index valódi fotókkal (max. ~370 px csempe — a fotók ~400 px-esek),
+  az andezitnél jelölt szemcse-illusztráció; a teljes 23 tételes, lenyitható
+  lista az /arak oldalon (ott alapból nyitva).
+- „Szállítunk a címére?" a főoldalon: kompakt irányítószám-kereső példa-
+  keresésekkel; a térkép a /teruletek oldalon marad.
+- Rendelés menete: a jóváhagyott öt lépés teljes szövege, desktopon
+  vízszintes útvonal (CSS), mobilon függőleges sín.
+- Kalkulátor-belépő blokk a főoldalról kivéve (a pult élőben végzi).
+- „Miért hívjon minket?" a sötét lezárás első fele, számozott ígéretlistával;
+  egyetlen hívás-CTA a záró blokkban.
+Mért (helyi, azonos feltételek): főoldali HTML 492 → 334 KB, CLS 0.
