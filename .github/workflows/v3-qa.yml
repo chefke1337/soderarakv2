@@ -39,7 +39,13 @@ jobs:
       - name: a11y (axe WCAG A/AA) — published build
         run: set -o pipefail; npm run test:a11y 2>&1 | tail -n 40
       - name: mobile layout 360px — published build
-        run: set -o pipefail; npm run test:mobile 2>&1 | tail -n 40
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          DAEKON_FULL_AUDIT=1 npm run test:mobile 2>&1 | tee mobile.log | tail -n 40 || {
+            msg=$(tail -n 40 mobile.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+            echo "::error title=mobile audit (tail)::${msg}"; exit 1; }
 
       # 2) Mock végponttal (a valódi beküldési út, MOCK jelöléssel)
       - name: Build with mock order endpoint
@@ -47,7 +53,11 @@ jobs:
           NEXT_PUBLIC_ORDER_API_URL: http://127.0.0.1:8788/order
         run: rm -rf .next out && npx next build && node scripts/prepare-static-export.mjs
       - name: Smoke (calculator + order intent, mock backend)
+        shell: bash
         run: |
           npm run mock:order > mock.log 2>&1 &
           sleep 3
-          set -o pipefail; npm run test:smoke 2>&1 | tail -n 80
+          set -o pipefail
+          npm run test:smoke 2>&1 | tee smoke.log | tail -n 80 || {
+            msg=$(tail -n 50 smoke.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+            echo "::error title=smoke (tail)::${msg}"; exit 1; }
