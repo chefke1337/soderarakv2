@@ -863,7 +863,7 @@ export default function ArkalkulatorForm() {
                 Töltse ki az adatokat, és a gomb a saját levelezőprogramjában nyit egy e-mailt
                 az összesítővel a <span className="whitespace-nowrap">{company.email}</span> címre —
                 az igény akkor érkezik meg, ha az e-mailt elküldi. Telefonon is leadhatja:{" "}
-                <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
+                <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap underline">
                   {company.phone.display}
                 </a>
                 .
@@ -994,7 +994,7 @@ export default function ArkalkulatorForm() {
                     nyissa meg innen
                   </a>
                   , vagy hívjon:{" "}
-                  <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
+                  <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap underline">
                     {company.phone.display}
                   </a>
                   .
