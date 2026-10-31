@@ -459,3 +459,24 @@ kérdésére térkép felelt a pontos irányítószám-válasz helyett. Döntés
 - „Miért hívjon minket?" a sötét lezárás első fele, számozott ígéretlistával;
   egyetlen hívás-CTA a záró blokkban.
 Mért (helyi, azonos feltételek): főoldali HTML 492 → 334 KB, CLS 0.
+
+## 2026-10-31 — V3.4: visszaállás az eredeti V3 dizájnra + célzott hangolás
+Ügyfél-utasítás: „ne építsd át így merészen a meglévőt, tuningold" — a V3 a
+V2 kinézete + az ügyféltől kapott adat. Döntések:
+- A V3.1–V3.3 dizájn-átépítései (hero-pult, anyag-index, rendelési lépések,
+  mobil kalkulátor-sáv, mailto-átadás, mozgás-token módosítások) visszavonva;
+  a főoldal, a kalkulátor, a kupacsor és az árlista az eredeti V3 (5d7982c)
+  állapotában van. Ez fölülírja a V3.1–V3.3 bejegyzéseket.
+- Megmaradt: a kereshető területlista (AreaFinder) a /teruletek oldalon és a
+  hosszú telefonszám-linkek `whitespace-nowrap` javítása (360 px tap-target).
+- Új: az ügyfél kerület → városrész listája (`src/content/districts.ts`,
+  szó szerint, kiegészítés nélkül). Kereshető ékezet nélkül; a megosztott
+  városrészek (pl. Gellérthegy, Sashegy, Háros) minden megadott kerületnél
+  szerepelnek, „a listán a … kerületnél is" jelöléssel. Városrészből NEM
+  következtetünk irányítószámra vagy díjra; a lista statikus HTML-ben is
+  benne van (prerenderelt `<details>`). Teszt: `npm run test:districts`.
+- Új: a kalkulátor `?irsz=` paramétert is olvas (csak jóváhagyott
+  díjprofilú irányítószámnál tölti elő a települést/kerületet/irányítószámot);
+  számítás nem változott.
+- Adatellenőrzés az ügyfél-specifikáció ellen: 23 anyagár, 25 díjprofil,
+  minden irányítószám-lista és a 27%-os fuvar-ÁFA egyezik (0 eltérés).

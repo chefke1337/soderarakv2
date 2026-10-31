@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  DISCLOSURE_GROSS,
   materialGroups,
   type MaterialGroup,
   type MaterialItem,
@@ -81,24 +82,12 @@ export default function MaterialLedger({
               <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
-                {(() => {
-                  // Következetes jelölés: csoportszintű (Mosott sóder), vagy ha a
-                  // csoportnak csak egyes tételei mosottak (Kavics: a kulé nem),
-                  // ugyanaz a jóváhagyott címke, a hatókör megnevezésével.
-                  const mark = g.washed ?? g.items.find((x) => x.washed)?.washed;
-                  if (!mark) return null;
-                  return (
-                    <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="badge-washed">
-                        <IconDroplets size={11} />
-                        {mark.label}
-                      </span>
-                      {!g.washed && (
-                        <span className="text-xs text-ink-soft">a frakcionált tételekre</span>
-                      )}
-                    </span>
-                  );
-                })()}
+                {g.washed && (
+                  <span className="badge-washed mt-1.5">
+                    <IconDroplets size={11} />
+                    {g.washed.label}
+                  </span>
+                )}
               </span>
 
               <span className="hidden self-center pr-4 md:block">
@@ -262,11 +251,11 @@ export function GrossPriceBanner({ className = "" }: { className?: string }) {
       // A felirat jogi/üzleti jelentőségű: minden árlistán meg kell jelennie.
     >
       <span aria-hidden="true" className="gross-banner-mark">
-        Bruttó
+        ÁFA
       </span>
       <span>
-        <strong className="font-semibold">Bruttó anyagárak, Ft/m³.</strong> Az anyagárak az
-        ÁFÁ-t tartalmazzák. A szállítás díja külön fizetendő (nettó fuvardíj + ÁFA).
+        <strong className="font-semibold">{DISCLOSURE_GROSS}</strong> A fuvar díja ettől
+        külön, nettó értékben számolódik — a fuvardíjra jön az ÁFA.
       </span>
     </p>
   );

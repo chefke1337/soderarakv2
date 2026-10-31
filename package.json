@@ -29,9 +29,10 @@
     "test:pricing": "node --experimental-strip-types tests/pricing.test.mjs",
     "mock:order": "node --experimental-strip-types --no-warnings scripts/mock-order-server.mjs",
     "test:freight": "node --experimental-strip-types tests/freight.test.mjs",
+    "test:districts": "node --experimental-strip-types tests/districts.test.mjs",
     "test:quote": "node --experimental-strip-types tests/quote.test.mjs",
     "test:order": "node --experimental-strip-types tests/order.test.mjs",
-    "test:all": "npm run test:pricing && npm run test:freight && npm run test:quote && npm run test:order",
+    "test:all": "npm run test:pricing && npm run test:freight && npm run test:quote && npm run test:districts && npm run test:order",
     "test:smoke": "node scripts/v3-smoke.mjs",
     "shots": "node scripts/v3-screenshots.mjs"
   },

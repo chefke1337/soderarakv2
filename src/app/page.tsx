@@ -10,18 +10,18 @@ import {
   freightProfiles,
   guides,
   HERO,
-  allMaterials,
-  materialGroups,
   MIERT_HIVJON,
   MIN_ORDER_M3,
   PERMIT_NOTICE,
   quoteOnlyAreas,
   SINGLE_TRIP_MAX_M3,
+  tariffedAreas,
 } from "@/content/site";
 import {
   CalculatorCta,
   formatFt,
   IconArrowRight,
+  IconCheck,
   IconMapPinned,
   IconPhone,
   MailLink,
@@ -30,13 +30,11 @@ import {
 import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
-import HeroConfigurator from "@/components/HeroConfigurator";
-import MaterialPile from "@/components/MaterialPile";
-import { withBasePath } from "@/lib/basepath";
-import { GrossPriceBanner } from "@/components/MaterialLedger";
-import MaterialIndex from "@/components/MaterialIndex";
-import OrderSteps from "@/components/OrderSteps";
-import AreaFinder from "@/components/AreaFinder";
+import MaterialHeaps from "@/components/MaterialHeaps";
+import CalculatorEntry from "@/components/CalculatorEntry";
+import OrderRoute from "@/components/OrderRoute";
+import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
+import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
   const freightMinNet = Math.min(...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)));
@@ -74,23 +72,20 @@ export default function HomePage() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
-          {/* Felső sor: a cím nyitott, széles tördelést kap; a leírás és a
-              terület jobbra, alsó élre zárva. A mozgás sorrendje a figyelem
-              útja: cím → értékígéret → következő lépés (a pult). */}
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
-            <div className="min-w-0 lg:col-span-8">
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <div className="min-w-0 lg:col-span-7">
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
-              <h1 className="rise rise-2 mt-5 max-w-[14ch] font-display text-[2.5rem] leading-[0.96] font-bold tracking-display text-balance sm:text-[3.5rem] lg:max-w-none lg:text-[4.5rem] xl:text-[5rem]">
+              <h1 className="rise rise-2 mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
                 {HERO.title}
               </h1>
             </div>
-            <div className="min-w-0 lg:col-span-4 lg:pb-3">
-              <p className="rise rise-3 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted">
+            <div className="min-w-0 lg:col-span-5 lg:pb-2">
+              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
                 {HERO.lead}
               </p>
-              <div className="rise rise-3 hero-areas mt-4">
+              <div className="rise rise-3 hero-areas mt-5">
                 <span className="hero-area-pill">
                   <IconMapPinned size={13} />
                   Budapest mind a {budapestDistricts.length} kerülete
@@ -100,18 +95,22 @@ export default function HomePage() {
                   Érd
                 </span>
               </div>
+              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:max-w-[24rem] lg:flex-col">
+                <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
+                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
+                  {company.phone.display}
+                </PhoneLink>
+                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
+                  Árkalkulátor indítása
+                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
+                </CalculatorCta>
+              </div>
             </div>
           </div>
 
-          {/* Rendelőpult: anyag (kupacválasztó) → változat, mennyiség → irányítószám
-              → élő tájékoztató ár → kalkulátor. */}
-          <div className="rise rise-4 mt-8 lg:mt-12">
-            <HeroConfigurator
-              action={withBasePath("/arkalkulator/")}
-              piles={Object.fromEntries(
-                materialGroups.map((g) => [g.slug, <MaterialPile key={g.slug} tone={g.tone} id={`pult-${g.slug}`} />]),
-              )}
-            />
+          {/* Mintasor: hat anyaghalom teljes szélességben */}
+          <div className="mt-9 md:mt-12 lg:mt-14">
+            <MaterialHeaps />
           </div>
           <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
             {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
@@ -143,114 +142,173 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Anyag-index: valódi anyagfotók, bruttó induló ár ─── */}
-      <section id="anyagok-arak" aria-labelledby="anyagok-arak-cim" className="bg-page text-text">
-        <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-24">
-          <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
-            <div className="min-w-0 lg:col-span-7">
-              <p className="label-strata text-brand-deep">Anyagok és árak</p>
-              <h2
-                id="anyagok-arak-cim"
-                className="mt-3 font-display text-[2rem] leading-[1.04] font-bold tracking-display text-balance md:text-heading-lg"
-              >
-                Hat anyag, {allMaterials.length} tétel — bruttó Ft/m³ árakkal
-              </h2>
-            </div>
-            <div className="min-w-0 lg:col-span-5">
-              <GrossPriceBanner />
-            </div>
-          </div>
-          <div className="mt-8 md:mt-12">
-            <MaterialIndex />
-          </div>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/arak" className="btn btn-outline">
-              Teljes bruttó árlista, mind a {allMaterials.length} tétel
-              <IconArrowRight size={17} className="btn-icon btn-icon-move" />
-            </Link>
-            <p className="text-sm text-text-muted">
-              Ami nincs a listán, arról telefonon egyeztetünk:{" "}
-              <PhoneLink className="num link whitespace-nowrap" />
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* ─── Anyagok + bruttó árlista — egy blokk ─── */}
+      <Section
+        headingLevel={2}
+        id="anyagok-arak"
+        kicker="Anyagok és árak"
+        title="Minden tétel szemcsemérettel és bruttó árral"
+        lead={
+          <>
+            Nyissa le az anyagot: látja a frakciót a közös mm-skálán, a felhasználást,
+            a mosott-jelölést és a köbméterárat. Ami nincs a listán, arról telefonon
+            egyeztetünk.
+          </>
+        }
+      >
+        <GrossPriceBanner className="mb-6" />
+        <LedgerHeader />
+        <MaterialLedger />
+      </Section>
 
-      {/* ─── Szállítunk a címére? — irányítószám-kereső a főoldalon ─── */}
-      <section id="terulet" aria-labelledby="terulet-cim" className="bg-surface-muted text-text">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:px-6 md:py-24 lg:grid-cols-12 lg:gap-12">
-          <div className="min-w-0 lg:col-span-5">
-            <p className="label-strata text-brand-deep">Hol szállítunk</p>
-            <h2
-              id="terulet-cim"
-              className="mt-3 font-display text-[2rem] leading-[1.04] font-bold tracking-display text-balance md:text-heading-lg"
-            >
-              Szállítunk a címére?
-            </h2>
-            <p className="mt-4 max-w-[46ch] text-[1.0625rem] leading-relaxed text-text-muted">
-              Budapest mind a {budapestDistricts.length} kerülete és Érd. A fuvardíj alapja
-              mindig a szállítási cím irányítószáma — írja be, és megmondjuk.
+      {/* ─── Kalkulátor-belépő (terrakotta) ─── */}
+      <CalculatorEntry />
+
+      {/* ─── Rendelés menete ─── */}
+      <Section
+        headingLevel={2}
+        id="rendeles"
+        layout="split"
+        kicker="Így működik"
+        title="Rendelés menete"
+        lead={
+          <>
+            Kérdése van az anyagról vagy a mennyiségről? Hívjon:{" "}
+            <PhoneLink className="num link whitespace-nowrap" />
+          </>
+        }
+      >
+        <OrderRoute />
+      </Section>
+
+      {/* ─── Hol szállítunk — lefedettség és irányítószámos árazás ─── */}
+      <Section
+        headingLevel={2}
+        id="terulet"
+        tone="muted"
+        kicker="Hol szállítunk"
+        title="Budapest és Érd — a fuvardíj alapja az irányítószám"
+        lead="A térkép a lefedettséget mutatja; a konkrét díjat mindig a megadott irányítószám és a szállított mennyiség határozza meg."
+      >
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
+          <div className="min-w-0 lg:col-span-6">
+            <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
+              <LefedettsegTerkepLazy height={420} legend={false} />
+            </div>
+            <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
+              <span
+                aria-hidden="true"
+                className="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-surface-accent"
+              />
+              <span>
+                A jelölések a kiszolgált területeket mutatják, nem irányítószám-határokat.
+              </span>
             </p>
-            <dl className="delivery-facts">
-              <div>
-                <dt>Fuvardíj</dt>
-                <dd>
-                  {freightProfiles.length} díjprofil, nettó{" "}
-                  <strong className="num">{formatFt(freightMinNet)}</strong>-tól, +{" "}
-                  {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA
+          </div>
+
+          <div className="min-w-0 lg:col-span-6">
+            <dl className="border-t-2 border-text">
+              <div className="border-b border-line py-4 md:py-5">
+                <dt className="font-display text-heading-xs font-bold">
+                  Irányítószám-alapú fuvardíj
+                </dt>
+                <dd className="mt-1 text-sm leading-relaxed text-ink-soft">
+                  Budapest mind a {budapestDistricts.length} kerülete és Érd —{" "}
+                  {freightProfiles.length} díjprofil, négy mennyiségi sávban (≤2, 2–5,
+                  5–7, 7–10 m³). A legalacsonyabb nettó fuvardíj{" "}
+                  <strong className="num font-semibold text-ink">
+                    {formatFt(freightMinNet)}
+                  </strong>
+                  ; a fuvardíjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.
                 </dd>
               </div>
-              <div>
-                <dt>Egy fuvar</dt>
-                <dd>
-                  legfeljebb <strong className="num">{SINGLE_TRIP_MAX_M3} m³</strong> — felette
-                  többfuvaros, egyedi ajánlat
+              <div className="border-b border-line py-4 md:py-5">
+                <dt className="font-display text-heading-xs font-bold">
+                  Egy fuvarban legfeljebb {SINGLE_TRIP_MAX_M3} m³
+                </dt>
+                <dd className="mt-1 text-sm leading-relaxed text-ink-soft">
+                  Nagyobb mennyiséghez kérjen egyedi, többfuvaros ajánlatot — a
+                  többfuvaros díjat egyeztetés után adjuk.
                 </dd>
               </div>
-              <div>
-                <dt>Behajtás</dt>
-                <dd>{PERMIT_NOTICE}</dd>
+              <div className="border-b border-line py-4 md:py-5">
+                <dt className="font-display text-heading-xs font-bold">Behajtási engedély</dt>
+                <dd className="mt-1 text-sm leading-relaxed text-ink-soft">{PERMIT_NOTICE}</dd>
               </div>
-              <div>
-                <dt>Egyeztetéssel</dt>
-                <dd>{quoteOnlyAreas.map((x) => x.name).join(", ")}</dd>
+              <div className="border-b border-line py-4 md:py-5">
+                <dt className="font-display text-heading-xs font-bold">Egyedi egyeztetés</dt>
+                <dd className="mt-1 text-sm leading-relaxed text-ink-soft">
+                  {quoteOnlyAreas.map((a) => a.name).join(", ")} — ezekhez a
+                  településekhez jelenleg nincs feltüntetett fuvardíjunk. Ehhez a
+                  címhez egyedi szállítási egyeztetés szükséges.
+                </dd>
               </div>
             </dl>
-          </div>
-          <div className="min-w-0 lg:col-span-7">
-            <AreaFinder compact />
-            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-              <Link href="/teruletek" className="link font-semibold">
-                Minden kerület és irányítószám
-              </Link>
-              <Link href="/szallitas" className="link font-semibold">
+
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Link href="/szallitas" className="btn btn-primary">
                 Fuvardíjak irányítószám szerint
+                <IconArrowRight size={17} className="btn-icon btn-icon-move" />
+              </Link>
+              <Link href="/teruletek" className="btn btn-outline">
+                Kiszolgált területek ({tariffedAreas.length + quoteOnlyAreas.length})
               </Link>
             </div>
           </div>
         </div>
-      </section>
+      </Section>
 
-      {/* ─── Rendelés menete — tömör, vízszintes útvonal (desktop) ─── */}
-      <section id="rendeles" aria-labelledby="rendeles-cim" className="bg-page text-text">
-        <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-24">
-          <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-4">
-            <div>
-              <p className="label-strata text-brand-deep">Így működik</p>
-              <h2
-                id="rendeles-cim"
-                className="mt-3 font-display text-[2rem] leading-[1.04] font-bold tracking-display md:text-heading-lg"
-              >
-                Rendelés menete
-              </h2>
-            </div>
-            <p className="max-w-[44ch] text-[1.0625rem] leading-relaxed text-text-muted">
-              Kérdése van az anyagról vagy a mennyiségről? Hívjon:{" "}
-              <PhoneLink className="num link whitespace-nowrap" />
+      {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg ─── */}
+      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
+        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:gap-y-8 md:px-6 md:py-24 lg:grid-cols-12">
+          <div className="min-w-0 lg:col-span-6">
+            <p className="label-strata text-brand-deep">Miért mi</p>
+            <h2
+              id="miert-hivjon-cim"
+              className="mt-3 font-display text-[2rem] leading-[1.06] font-bold tracking-display text-balance md:text-heading-lg"
+            >
+              {MIERT_HIVJON.title}
+            </h2>
+            <p className="mt-5 max-w-[52ch] border-l-4 border-accent pl-4 font-display text-heading-sm leading-snug font-medium text-text">
+              {MIERT_HIVJON.lead}
+            </p>
+            <p className="mt-4 max-w-[60ch] text-[1.0625rem] leading-relaxed text-text-muted">
+              {MIERT_HIVJON.body}
             </p>
           </div>
-          <div className="mt-10 md:mt-14">
-            <OrderSteps />
+
+          <div className="order-last min-w-0 lg:order-none lg:col-span-6 lg:col-start-1 lg:row-start-2">
+            <div className="border-t border-border-strong pt-6" data-call-region="miert_hivjon">
+              <p className="max-w-[56ch] text-[1.0625rem] leading-relaxed">
+                {MIERT_HIVJON.closing}
+              </p>
+              <PhoneLink className="num btn btn-lg btn-primary mt-5">
+                <IconPhone size={20} className="btn-icon" />
+                Hívjon minket: {company.phone.display}
+              </PhoneLink>
+            </div>
+          </div>
+
+          <div className="min-w-0 lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pt-14">
+            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
+              <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
+              <ul className="mt-4">
+                {MIERT_HIVJON.list.map((item) => (
+                  <li
+                    key={item}
+                    className="flex gap-3.5 border-b border-on-dark/15 py-3 last:border-0 last:pb-0 md:py-3.5"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber/15 text-amber"
+                    >
+                      <IconCheck size={15} />
+                    </span>
+                    <span className="text-[1.0625rem] leading-snug">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
@@ -326,50 +384,6 @@ export default function HomePage() {
         </nav>
       </Section>
 
-      {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg; a sötét lezárás
-           első fele (a hívás-CTA a közvetlenül utána következő záró blokkban
-           áll, így nincs két versengő elsődleges gomb). ─── */}
-      <section
-        id="miert-hivjon"
-        aria-labelledby="miert-hivjon-cim"
-        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
-      >
-        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
-        <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-8 px-4 pt-12 pb-10 md:px-6 md:pt-24 md:pb-16 lg:grid-cols-12">
-          <div className="min-w-0 lg:col-span-6">
-            <p className="label-strata text-amber">Miért mi</p>
-            <h2
-              id="miert-hivjon-cim"
-              className="mt-3 font-display text-[2rem] leading-[1.04] font-bold tracking-display text-balance md:text-heading-lg"
-            >
-              {MIERT_HIVJON.title}
-            </h2>
-            <p className="mt-5 max-w-[48ch] border-l-4 border-accent pl-4 font-display text-heading-sm leading-snug font-medium">
-              {MIERT_HIVJON.lead}
-            </p>
-            <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed text-on-dark-muted">
-              {MIERT_HIVJON.body}
-            </p>
-            <p className="mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed text-on-dark-muted">
-              {MIERT_HIVJON.closing}
-            </p>
-          </div>
-          <div className="min-w-0 lg:col-span-6 lg:pt-12">
-            <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
-            <ul className="promise-list">
-              {MIERT_HIVJON.list.map((item, i) => (
-                <li key={item}>
-                  <span aria-hidden="true" className="promise-num num">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
       {/* ─── Záró hívás: sötét lezárás, a footerrel egy tömbben ─── */}
       <section
         data-call-region="zaro_cta"
@@ -377,7 +391,7 @@ export default function HomePage() {
         className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
       >
         <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
-        <div className="mx-auto grid max-w-6xl gap-8 border-t border-on-dark/15 px-4 py-12 md:grid-cols-12 md:gap-10 md:px-6 md:py-20">
+        <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-12 md:gap-10 md:px-6 md:py-24">
           <div className="min-w-0 md:col-span-6">
             <p className="label-strata text-amber">Rendelés</p>
             <h2

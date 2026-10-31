@@ -60,7 +60,8 @@ export default function TeruletekPage() {
             </p>
           </div>
           <p className="mt-2 mb-5 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
-            Minden kerületbe szállítunk. A XI. kerületben az 1112 és 1118 irányítószám
+            Minden kerületbe szállítunk. Kereshet kerületre, városrészre (pl. Kelenföld,
+            Rákoshegy) vagy irányítószámra. A XI. kerületben az 1112 és 1118 irányítószám
             eltérő díjprofilba tartozik — ezért a díjhoz mindig a pontos irányítószám kell.
           </p>
           <AreaFinder />

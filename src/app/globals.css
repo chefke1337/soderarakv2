@@ -100,13 +100,10 @@
      enter = egyszeri belépő (hero, rétegek, lépések)
      stagger = lépcsőzés két elem között — rövid, hogy a tartalom ne várakoztasson */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
-  /* Motion-specifikáció (V3.2): szerepek szerint — lásd docs/v3.2-motion.md.
-     feedback 120–180 · állapot 180–280 · panel/menü 220–360 · belépés 350–550 · stagger 30–60 */
-  --dur-fast: 160ms;   /* interakciós visszajelzés (hover, lenyomás, chip) */
-  --dur-ui: 240ms;     /* UI-állapotváltás (kiválasztás, ikon, tartalomcsere) */
-  --dur-panel: 300ms;  /* menü, lenyitható panel, kalkulátorlépés */
-  --dur-enter: 460ms;  /* hero / szekció belépés, összeg-kiemelés lecsengése */
-  --stagger: 45ms;
+  --dur-fast: 170ms;
+  --dur-ui: 260ms;
+  --dur-enter: 460ms;
+  --stagger: 50ms;
   --move-sm: 8px;
   --move-md: 14px;
 }
@@ -540,7 +537,7 @@ summary::-webkit-details-marker {
   transform: scale(1.12) rotate(-1.5deg);
 }
 
-/* ── Mobil menü: nyitás/zárás átmenettel (panel-token, rövid stagger) ── */
+/* ── Mobil menü: nyitás/zárás átmenettel ── */
 .menu-panel {
   opacity: 0;
   visibility: hidden;
@@ -556,20 +553,17 @@ summary::-webkit-details-marker {
   visibility: visible;
   transform: none;
   transition:
-    opacity var(--dur-panel) var(--ease-out-soft),
-    transform var(--dur-panel) var(--ease-out-soft),
+    opacity var(--dur-ui) var(--ease-out-soft),
+    transform var(--dur-ui) var(--ease-out-soft),
     visibility 0s;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .menu-panel[data-open="true"] li {
-    animation: enter-down var(--dur-panel) var(--ease-out-soft) both;
-    animation-delay: calc(var(--i, 0) * 30ms);
-  }
+.menu-panel[data-open="true"] li {
+  animation: enter-up var(--dur-ui) var(--ease-out-soft) both;
+  animation-delay: calc(var(--i, 0) * 20ms);
 }
 @media (prefers-reduced-motion: reduce) {
   .menu-panel,
   .menu-panel[data-open="true"] {
-    transform: none;
     transition: none;
   }
 }
@@ -609,7 +603,63 @@ summary::-webkit-details-marker {
   text-decoration-skip-ink: auto;
 }
 
-/* ── Hero anyagválasztó: kártyák belépése (a pult saját stílusa: v3-components.css) ── */
+/* ── Hero mintasor: anyaghalmok ── */
+/* < lg: natív vízszintes sáv. Csak oldalirányban görget (függőleges
+   gesztus az oldalé marad), a vékony görgetősáv egérrel is kezelhető,
+   az oldalirányú „túlgörgetés" nem lapoz vissza a böngészőben. */
+.heap-rail {
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 250 241 / 0.35) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heap-rail {
+    scroll-behavior: smooth;
+  }
+}
+/* Kupackártya: a kupac önálló SVG-sziluett, alatta név/ár/nyíl.
+   Visszajelzés felület- és keretváltással, a kupac nem mozdul
+   (nem ugrik, nem hullámzik) — csak a fény erősödik rajta kicsit. */
+.heap {
+  background-color: color-mix(in srgb, var(--color-on-dark) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-on-dark) 11%, transparent);
+  transition:
+    background-color var(--dur-ui) var(--ease-out-soft),
+    border-color var(--dur-ui) var(--ease-out-soft),
+    transform var(--dur-fast) var(--ease-out-soft);
+}
+.heap .pile-shade {
+  transition: opacity var(--dur-ui) var(--ease-out-soft);
+}
+.heap:active {
+  transform: scale(0.985);
+  transition-duration: 60ms;
+}
+.heap-arrow {
+  transition: transform var(--dur-fast) var(--ease-out-soft);
+}
+.heap:focus-visible {
+  outline: 2px solid var(--color-amber);
+}
+.heap:focus-visible,
+.heap:hover {
+  border-color: color-mix(in srgb, var(--color-on-dark) 24%, transparent);
+}
+@media (hover: hover) and (pointer: fine) {
+  .heap:hover {
+    background-color: color-mix(in srgb, var(--color-on-dark) 8%, transparent);
+  }
+  .heap:hover .pile-shade {
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .heap:focus-visible .heap-arrow,
+  .heap:hover .heap-arrow {
+    transform: translateX(2px);
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   .heap-in {
     animation: enter-up var(--dur-enter) var(--ease-out-soft) both;
@@ -626,33 +676,6 @@ summary::-webkit-details-marker {
 .mat-card[open] {
   border-color: rgb(194 65 12 / 0.45);
   box-shadow: var(--shadow-pop);
-}
-/* Nyitott állapot nem csak színnel: a fejléc sávja is jelöl. */
-.mat-card[open] > .mat-summary {
-  background: color-mix(in srgb, var(--color-surface-muted) 45%, var(--color-surface));
-  box-shadow: inset 0 -2px 0 var(--color-accent);
-}
-/* Lenyitás magasság-átmenettel (ugrás nélkül), ahol a böngésző tudja;
-   máshol azonnali — a tartalom mindkét esetben teljes. */
-@supports (interpolate-size: allow-keywords) {
-  :root {
-    interpolate-size: allow-keywords;
-  }
-  .mat-card::details-content {
-    block-size: 0;
-    overflow-y: clip;
-    transition:
-      block-size var(--dur-panel) var(--ease-out-soft),
-      content-visibility var(--dur-panel) allow-discrete;
-  }
-  .mat-card[open]::details-content {
-    block-size: auto;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .mat-card::details-content {
-      transition: none;
-    }
-  }
 }
 .mat-summary {
   border-radius: inherit;

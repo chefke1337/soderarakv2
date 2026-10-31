@@ -14,13 +14,15 @@ import {
   serviceAreas,
   UNSUPPORTED_NOTICE,
 } from "@/content/site";
+import { budapestDistrictAreas, DISTRICT_AREAS_SOURCE } from "@/content/districts";
 import { IconArrowRight, IconPhone } from "@/lib/ui";
 
 /**
- * Kereshető területlista: kerület (római vagy arab számmal), kiemelt
- * terület neve (Budafok, Újbuda, Csepel…) és irányítószám szerint,
- * ékezetfüggetlenül. Csak jóváhagyott adatból dolgozik (freight.ts,
- * serviceAreas) — városrészt, határt vagy díjat nem talál ki.
+ * Kereshető területlista: kerület (római vagy arab számmal), kerületnév,
+ * városrész (az ügyfél listája, districts.ts) és irányítószám szerint,
+ * ékezetfüggetlenül. Díj csak jóváhagyott adatból (freight.ts) — városrészből
+ * nem következtet irányítószámra vagy tarifára; a több kerületnél szereplő
+ * városrészek minden megadott kerületnél megjelennek, jelölve.
  * Egy városrész-találat tájékoztató: a díjat mindig az irányítószám dönti el.
  */
 
@@ -50,7 +52,25 @@ type DistrictEntry = {
   /** Díjprofilonként csoportosított irányítószámok. */
   groups: { codes: readonly string[]; separate: boolean; split?: boolean }[];
   districtId: number | null;
+  /** Az ügyfél listája szerinti kerületnév (pl. Újbuda). */
+  districtName?: string;
+  /** Városrészek az ügyfél listájából. */
+  areas: readonly string[];
 };
+
+/** Városrész alapneve (zárójeles megjegyzés nélkül), normalizálva. */
+const baseName = (a: string) => norm(a.replace(/\s*\(.*\)\s*$/, ""));
+
+/** Mely kerületekben szerepel egy városrész neve (megosztott nevek jelöléséhez). */
+const AREA_DISTRICTS = new Map<string, number[]>();
+for (const d of budapestDistrictAreas) {
+  for (const a of d.areas) {
+    const k = baseName(a);
+    AREA_DISTRICTS.set(k, [...(AREA_DISTRICTS.get(k) ?? []), d.id]);
+  }
+}
+const otherDistricts = (area: string, own: number) =>
+  (AREA_DISTRICTS.get(baseName(area)) ?? []).filter((id) => id !== own);
 
 const ENTRIES: DistrictEntry[] = [
   ...budapestDistricts.map((d) => {
@@ -66,6 +86,8 @@ const ENTRIES: DistrictEntry[] = [
         .filter((n) => !/^Budapest /.test(n)),
       groups: profiles.map((p) => ({ codes: p.postalCodes, separate: isSeparateProfile(p), split: profiles.length > 1 })),
       districtId: d.id,
+      districtName: budapestDistrictAreas.find((x) => x.id === d.id)?.name,
+      areas: budapestDistrictAreas.find((x) => x.id === d.id)?.areas ?? [],
     };
   }),
   {
@@ -76,6 +98,7 @@ const ENTRIES: DistrictEntry[] = [
       .filter((p) => p.municipalityId === "erd")
       .map((p) => ({ codes: p.postalCodes, separate: false })),
     districtId: null,
+    areas: [],
   },
 ];
 
@@ -92,9 +115,17 @@ function matches(entry: DistrictEntry, q: string): boolean {
     const romanIdx = ROMAN.findIndex((r) => norm(r) === t);
     if (romanIdx >= 0) return entry.districtId === romanIdx + 1;
     // „Budapest" nélkül: különben minden „bud…" kezdetű keresés minden kerületet adna.
-    const hay = norm([entry.title.replace(/^Budapest /, ""), ...entry.aliases].join(" "));
+    const hay = norm(
+      [entry.title.replace(/^Budapest /, ""), entry.districtName ?? "", ...entry.aliases, ...entry.areas].join(" "),
+    );
     return t.length >= 2 && hay.includes(t);
   });
+}
+
+/** A keresésre illeszkedő városrészek (kiemeléshez a sor fejlécében). */
+function areaHits(entry: DistrictEntry, q: string): string[] {
+  if (!q || /\d/.test(q) || q.length < 3) return [];
+  return entry.areas.filter((a) => norm(a).includes(q));
 }
 
 export default function AreaFinder({ compact = false }: { compact?: boolean } = {}) {
@@ -116,7 +147,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
     <div className="area-finder">
       <div className="area-search">
         <label htmlFor={`${uid}-q`} className="block font-display text-heading-xs font-bold">
-          Keresés kerületre, területre vagy irányítószámra
+          Keresés kerületre, városrészre vagy irányítószámra
         </label>
         <div className="area-search-field">
           <input
@@ -124,7 +155,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
             type="search"
             inputMode="search"
             autoComplete="off"
-            placeholder="pl. XI. kerület, Budafok, 1118"
+            placeholder="pl. XI. kerület, Kelenföld, 1118"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-describedby={`${uid}-hint ${uid}-count`}
@@ -136,7 +167,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
           )}
         </div>
         <p id={`${uid}-hint`} className="mt-2 text-sm leading-relaxed text-text-muted">
-          Ékezet nélkül is kereshet. Egy terület vagy kerület találata tájékoztató — a
+          Ékezet nélkül is kereshet. Egy városrész vagy kerület találata tájékoztató — a
           konkrét fuvardíjat mindig a szállítási cím irányítószáma határozza meg.
         </p>
         <p id={`${uid}-count`} aria-live="polite" className="sr-only">
@@ -147,7 +178,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
       {compact && !query && (
         <div className="area-examples">
           <span>Próbálja ki:</span>
-          {["1221", "XI. kerület", "Budafok", "Érd", "1118"].map((ex) => (
+          {["1221", "XI. kerület", "Kelenföld", "Érd", "1118"].map((ex) => (
             <button key={ex} type="button" className="area-example" onClick={() => setQuery(ex)}>
               {ex}
             </button>
@@ -198,9 +229,18 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
               <details className="area-row" open={Boolean(q) && results.length <= 3}>
                 <summary>
                   <span className="min-w-0 flex-1">
-                    <span className="block font-display text-[1.0625rem] font-bold">{e.title}</span>
-                    {e.aliases.length > 0 && (
-                      <span className="block text-sm text-text-muted">{e.aliases.join(" · ")}</span>
+                    <span className="block font-display text-[1.0625rem] font-bold">
+                      {e.title}
+                      {e.districtName && <span className="font-medium text-text-muted"> · {e.districtName}</span>}
+                    </span>
+                    {areaHits(e, q).length > 0 ? (
+                      <span className="block text-sm text-text-muted">
+                        Városrész: <mark className="area-hit">{areaHits(e, q).join(", ")}</mark>
+                      </span>
+                    ) : (
+                      e.aliases.length > 0 && (
+                        <span className="block text-sm text-text-muted">{e.aliases.join(" · ")}</span>
+                      )
                     )}
                   </span>
                   <span className="num shrink-0 text-xs font-semibold text-text-muted">
@@ -233,11 +273,39 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                   <p className="mt-3 text-xs leading-relaxed text-text-muted">
                     Válasszon irányítószámot: a kalkulátor ezzel előtöltve nyílik meg.
                   </p>
+                  {e.districtId !== null && e.areas.length > 0 && (
+                    <div className="area-parts">
+                      <p className="text-xs font-semibold text-text-muted">
+                        Városrészek <span className="font-normal">(tájékoztató — a díjat az irányítószám dönti el)</span>
+                      </p>
+                      <ul className="area-part-list" aria-label={`${e.title} városrészei`}>
+                        {e.areas.map((a) => {
+                          const others = otherDistricts(a, e.districtId!);
+                          const hit = q.length >= 3 && !/\d/.test(q) && norm(a).includes(q);
+                          return (
+                            <li key={a} className={hit ? "is-hit" : undefined}>
+                              {a}
+                              {others.length > 0 && (
+                                <span className="area-part-shared">
+                                  {" "}
+                                  — a listán a {others.map((id) => `${romanDistrict(id)}`).join(", ")} kerületnél is
+                                </span>
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </details>
             </li>
           ))}
         </ul>
+      )}
+
+      {results.some((e) => e.areas.length > 0) && (!compact || (q && !exactZip)) && (
+        <p className="mt-3 text-xs leading-relaxed text-text-muted">{DISTRICT_AREAS_SOURCE}</p>
       )}
 
       {/* Egyedi egyeztetés */}
@@ -262,7 +330,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
         <div className="area-empty" role="status">
           <p className="font-display text-heading-xs font-bold">Nincs találat erre: „{query.trim()}”</p>
           <p className="mt-1 text-sm leading-relaxed text-text-muted">
-            Próbálja kerületszámmal (pl. „11” vagy „XI”), vagy írja be a szállítási cím
+            Próbálja kerületszámmal (pl. „11” vagy „XI”), városrésszel, vagy írja be a szállítási cím
             négyjegyű irányítószámát. Ha a cím nincs a listán, hívjon — egyedi
             egyeztetéssel sok helyre szállítunk.
           </p>

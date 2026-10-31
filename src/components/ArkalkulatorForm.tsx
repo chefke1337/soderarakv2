@@ -142,12 +142,7 @@ export default function ArkalkulatorForm() {
     setRestored(true);
   }, []);
 
-  /* ── Előtöltés URL-ből ──
-     ?anyag=<tétel-slug> (régi azonosító is) — az árlistáról és a hero gyors
-     ajánlatából; ?m3=1–10 vagy ?m3=tobb; ?irsz=<4 számjegy>. Az irányítószám
-     csak akkor választ települést/kerületet, ha jóváhagyott díjprofilhoz
-     tartozik — egyébként csak a mezőt tölti, a választás a felhasználóé.
-     Ha a hero már megadta az anyagot és a mennyiséget, a 3. lépésnél nyitunk. */
+  /* ── Előtöltés az árlistáról: ?anyag=<tétel-slug> (régi azonosító is) ── */
   useEffect(() => {
     try {
       const params = new URLSearchParams(window.location.search);
@@ -157,35 +152,17 @@ export default function ArkalkulatorForm() {
         const g = materialGroups.find((x) => x.items.some((i) => i.slug === wanted));
         if (g) setGroupSlug(g.slug);
       }
-
-      const rawM3 = params.get("m3");
-      const n = Number(rawM3);
-      const m3Given = rawM3 === "tobb" || (Number.isInteger(n) && n >= MIN_ORDER_M3 && n <= SINGLE_TRIP_MAX_M3);
-      if (rawM3 === "tobb") setOverLimit(true);
-      else if (m3Given) {
-        setM3(n);
-        setOverLimit(false);
-      }
-
-      const rawIrsz = params.get("irsz");
-      const irsz = rawIrsz && isPostalCodeShape(rawIrsz) ? normalizePostalCode(rawIrsz) : "";
-      if (irsz) {
-        setPostalCode(irsz);
-        setPostalTouched(true);
-        const profile = findProfileByPostalCode(irsz);
-        if (profile) {
-          setMunicipalityId(profile.municipalityId);
-          setDistrictId(profile.municipalityId === "budapest" ? (profile.districtId ?? null) : null);
-          setCastleAnswer("");
-        }
-      }
-
-      if (wanted && (m3Given || irsz)) {
-        setStep(3);
-        setVisited({ 1: true, 2: true, 3: true });
+      /* ?irsz=<irányítószám> a Területek oldalról: csak jóváhagyott profilnál
+         töltjük elő a települést / kerületet / irányítószámot. */
+      const zip = normalizePostalCode(params.get("irsz") ?? "");
+      const profile = isPostalCodeShape(zip) ? findProfileByPostalCode(zip) : undefined;
+      if (profile) {
+        setMunicipalityId(profile.municipalityId);
+        setDistrictId(profile.municipalityId === "budapest" ? (profile.districtId ?? null) : null);
+        setPostalCode(zip);
       }
     } catch {
-      // érvénytelen URL: marad az alapértelmezett / visszaállított állapot
+      // érvénytelen URL: marad az alapértelmezett / visszaállított anyag
     }
   }, []);
 
@@ -282,14 +259,6 @@ export default function ArkalkulatorForm() {
     setServerErrors({});
     if (!canSubmit || submitting || inFlight.current) return;
 
-    // Nincs beküldési végpont: e-mailes átadás, nem álcázott „siker".
-    if (!ORDER_ENDPOINT_CONFIGURED) {
-      setOutcome(null);
-      setMailHandoff(true);
-      window.location.href = mailtoHref;
-      return;
-    }
-
     // Dupla beküldés: egy kulcs az adott beküldésre; csak siker után újul.
     if (!idemKey.current) idemKey.current = newIdempotencyKey();
     inFlight.current = true;
@@ -351,52 +320,6 @@ export default function ArkalkulatorForm() {
     return [];
   }, [municipalityId, districtId]);
 
-  /* ── E-mailes átadás, ha nincs beküldési végpont (statikus előnézet) ──
-     Nem szimulálunk sikeres beküldést: a felhasználó SAJÁT levelezőprogramja
-     nyílik meg az összesítővel kitöltve, és az igény csak akkor érkezik meg,
-     ha ő elküldi. Adatot az oldal nem továbbít sehová. */
-  const mailtoHref = useMemo(() => {
-    const place =
-      municipalityId === "budapest"
-        ? `Budapest${districtId ? ` ${budapestDistricts.find((d) => d.id === districtId)?.label ?? ""}` : ""}`
-        : municipalities.find((mm) => mm.id === municipalityId)?.name ?? "";
-    const lines = [
-      "Rendelési igény (tájékoztató árkalkuláció alapján)",
-      "",
-      `Anyag: ${item?.name ?? "—"} (${group.name})`,
-      `Mennyiség: ${overLimit ? `${SINGLE_TRIP_MAX_M3} m³ felett — többfuvaros ajánlatot kérek` : `${m3} m³`}`,
-      `Település: ${place.trim()}`,
-      `Irányítószám: ${postalCode || "—"}`,
-      `Szállítási cím: ${address.trim() || "—"}`,
-      ...(isCastleDistrict ? [`Vár területén: ${castleAnswer || "nincs megadva"}`] : []),
-      "",
-      quote.material.subtotalGross !== null
-        ? `Anyag bruttó részösszeg: ${formatFt(quote.material.subtotalGross)}`
-        : "Anyag: egyeztetés után",
-      quote.freight
-        ? `Fuvar: ${formatFt(quote.freight.net)} nettó + ÁFA = ${formatFt(quote.freight.gross)} bruttó`
-        : "Fuvar: egyedi egyeztetés",
-      quote.totalGross !== null
-        ? `Teljes bruttó tájékoztató összeg: ${formatFt(quote.totalGross)}`
-        : "Teljes összeg: egyeztetés után",
-      "",
-      `Név: ${name.trim() || "—"}`,
-      `Telefon: ${phone.trim() || "—"}`,
-      `E-mail: ${email.trim() || "—"}`,
-      `Kívánt időpont: ${preferredDate.trim() || "egyeztetés szerint"}`,
-      ...(note.trim() ? ["", `Megjegyzés: ${note.trim()}`] : []),
-      "",
-      ORDER_INTENT_NOTICE,
-      `Árazási verzió: ${PRICING_VERSION}`,
-    ];
-    const subject = `Rendelési igény — ${item?.name ?? "ömlesztett anyag"}, ${overLimit ? `${SINGLE_TRIP_MAX_M3}+ m³` : `${m3} m³`}`;
-    return `mailto:${company.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
-  }, [
-    municipalityId, districtId, item, group.name, overLimit, m3, postalCode, address,
-    isCastleDistrict, castleAnswer, quote, name, phone, email, preferredDate, note,
-  ]);
-  const [mailHandoff, setMailHandoff] = useState(false);
-
   return (
     <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
       {/* ═══════════════════ Lépések ═══════════════════ */}
@@ -408,12 +331,6 @@ export default function ArkalkulatorForm() {
           index={1}
           active={step === 1}
           title="Melyik anyagra van szüksége?"
-          summary={
-            visited[1] && item
-              ? `${item.name} · ${item.priceGross !== null ? `${formatFt(item.priceGross)}/m³ bruttó` : "egyeztetés után"}`
-              : undefined
-          }
-          onEdit={() => goToStep(1)}
           headingRef={(el) => {
             stepHeadingRefs.current[1] = el;
           }}
@@ -519,14 +436,6 @@ export default function ArkalkulatorForm() {
           index={2}
           active={step === 2}
           title="Mennyi anyagra van szüksége?"
-          summary={
-            visited[2]
-              ? overLimit
-                ? `${SINGLE_TRIP_MAX_M3} m³ felett — többfuvaros, egyedi ajánlat`
-                : `${m3} m³`
-              : undefined
-          }
-          onEdit={() => goToStep(2)}
           headingRef={(el) => {
             stepHeadingRefs.current[2] = el;
           }}
@@ -642,8 +551,6 @@ export default function ArkalkulatorForm() {
           index={3}
           active={step === 3}
           title="Hová szállítsunk?"
-          summary={visited[3] && postalCode ? `${postalCode}${address.trim() ? ` · ${address.trim()}` : ""}` : undefined}
-          onEdit={() => goToStep(3)}
           headingRef={(el) => {
             stepHeadingRefs.current[3] = el;
           }}
@@ -857,18 +764,14 @@ export default function ArkalkulatorForm() {
           <p className="mt-2 text-sm leading-relaxed text-text-muted">{ORDER_INTENT_NOTICE}</p>
 
           {!ORDER_ENDPOINT_CONFIGURED && (
-            <div className="handoff-note mt-4">
-              <p className="font-semibold">Az online beküldés ezen az oldalon még nem aktív.</p>
-              <p className="mt-1">
-                Töltse ki az adatokat, és a gomb a saját levelezőprogramjában nyit egy e-mailt
-                az összesítővel a <span className="whitespace-nowrap">{company.email}</span> címre —
-                az igény akkor érkezik meg, ha az e-mailt elküldi. Telefonon is leadhatja:{" "}
-                <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap underline">
-                  {company.phone.display}
-                </a>
-                .
-              </p>
-            </div>
+            <p className="mock-banner mt-3">
+              <strong className="font-semibold">A beküldés nincs konfigurálva.</strong> Ebben a
+              környezetben nincs beállítva beküldési végpont, ezért a küldés nem fog
+              megtörténni. Kérjük, hívjon minket:{" "}
+              <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap underline">
+                {company.phone.display}
+              </a>
+            </p>
           )}
 
           <div className="mt-4 space-y-4">
@@ -976,7 +879,7 @@ export default function ArkalkulatorForm() {
               </>
             ) : (
               <>
-                {ORDER_ENDPOINT_CONFIGURED ? ORDER_INTENT_CTA : `${ORDER_INTENT_CTA} e-mailben`}
+                {ORDER_INTENT_CTA}
                 <IconArrowRight size={18} className="btn-icon btn-icon-move" />
               </>
             )}
@@ -984,67 +887,17 @@ export default function ArkalkulatorForm() {
 
           <div aria-live="polite" aria-atomic="true" className="mt-4 empty:mt-0">
             {outcome && <Outcome outcome={outcome} />}
-            {mailHandoff && !outcome && (
-              <div className="outcome outcome-warn">
-                <p className="font-semibold">Megnyitottuk a levelezőprogramját</p>
-                <p className="mt-1">
-                  Az összesítővel kitöltött e-mail akkor érkezik meg hozzánk, ha elküldi.
-                  Ha nem nyílt meg semmi,{" "}
-                  <a href={mailtoHref} className="font-semibold underline">
-                    nyissa meg innen
-                  </a>
-                  , vagy hívjon:{" "}
-                  <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap underline">
-                    {company.phone.display}
-                  </a>
-                  .
-                </p>
-                <p className="mt-1.5">
-                  Ez még <strong className="font-semibold">nem végleges megrendelés</strong>: a
-                  részletek egyeztetése és visszaigazolásunk után válik véglegessé.
-                </p>
-              </div>
-            )}
           </div>
 
           <p className="mt-4 text-xs leading-relaxed text-text-muted">
             A beküldés nem végleges megrendelés. Kérdés esetén hívjon:{" "}
-            <a href={`tel:${company.phone.raw}`} className="num font-semibold">
+            <a href={`tel:${company.phone.raw}`} className="num font-semibold whitespace-nowrap">
               {company.phone.display}
             </a>{" "}
             ({company.hours.short}).
           </p>
         </form>
       </section>
-
-      {/* Mobilon az összesítő a lépések alatt van: élő tájékoztató összeg +
-          ugrás az összesítőhöz + hívás. (A globális mobilsáv itt rejtve.) */}
-      <div className="calc-bar sm:hidden" data-call-region="calculator_bar">
-        <div aria-live="polite" className="min-w-0 flex-1">
-          <p className="text-xs font-semibold text-text-muted">Tájékoztató összeg, bruttó</p>
-          <p key={quote.totalGross ?? quote.totalBlockedReason ?? "x"} className="swap-in num truncate font-display text-[1.125rem] leading-tight font-bold">
-            {quote.totalGross !== null
-              ? formatFt(quote.totalGross)
-              : quote.totalBlockedReason === "incomplete"
-                ? "Irányítószám kell"
-                : "Egyeztetés szükséges"}
-          </p>
-        </div>
-        <button
-          type="button"
-          className="calc-bar-btn"
-          onClick={() => {
-            const el = document.getElementById("osszesito-cim");
-            const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-            el?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
-          }}
-        >
-          Összesítő
-        </button>
-        <a href={`tel:${company.phone.raw}`} className="calc-bar-call" aria-label={`Hívás: ${company.phone.display}`}>
-          <IconPhone size={19} />
-        </a>
-      </div>
     </div>
   );
 }
@@ -1064,13 +917,6 @@ function StepRail({
 }) {
   return (
     <nav aria-label="Kalkulátor lépései" className="step-rail">
-      {/* Haladásjelző vonal (a React Bits „Stepper" mintája alapján, saját CSS):
-          a megtett út kitöltődik — dekoratív, a lépésállapotot a gombok hordozzák. */}
-      <span
-        aria-hidden="true"
-        className="step-progress"
-        style={{ "--p": (step - 1) / 2 } as React.CSSProperties}
-      />
       <ol>
         {([1, 2, 3] as Step[]).map((s) => (
           <li key={s}>
@@ -1098,17 +944,12 @@ function StepPanel({
   active,
   title,
   headingRef,
-  summary,
-  onEdit,
   children,
 }: {
   index: number;
   active: boolean;
   title: string;
   headingRef: (el: HTMLHeadingElement | null) => void;
-  /** Összecsukott állapotban a már megadott választás (pl. „0–24 sóder”). */
-  summary?: string;
-  onEdit?: () => void;
   children: React.ReactNode;
 }) {
   return (
@@ -1130,16 +971,6 @@ function StepPanel({
         </span>
         {title}
       </h2>
-      {!active && summary && (
-        <p className="step-summary">
-          <span className="min-w-0">{summary}</span>
-          {onEdit && (
-            <button type="button" onClick={onEdit} className="step-edit">
-              Módosítás<span className="sr-only">: {title}</span>
-            </button>
-          )}
-        </p>
-      )}
       <div className="step-body">{children}</div>
     </section>
   );
