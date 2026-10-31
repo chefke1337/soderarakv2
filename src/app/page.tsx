@@ -97,7 +97,7 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
-            <div className="rise rise-4 min-w-0 lg:col-span-5">
+            <div className="rise rise-4 min-w-0 md:max-w-[36rem] lg:col-span-5 lg:max-w-none">
               <HeroQuickQuote />
             </div>
           </div>

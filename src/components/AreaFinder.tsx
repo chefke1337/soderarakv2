@@ -177,7 +177,7 @@ export default function AreaFinder() {
             <li key={e.key}>
               <details className="area-row" open={Boolean(q) && results.length <= 3}>
                 <summary>
-                  <span className="min-w-0">
+                  <span className="min-w-0 flex-1">
                     <span className="block font-display text-[1.0625rem] font-bold">{e.title}</span>
                     {e.aliases.length > 0 && (
                       <span className="block text-sm text-text-muted">{e.aliases.join(" · ")}</span>
