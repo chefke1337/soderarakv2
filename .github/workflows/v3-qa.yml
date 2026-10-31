@@ -28,7 +28,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
 
       - name: Unit tests (pricing, freight, quote, order)
-        run: npm run test:all 2>&1 | tail -n 20
+        run: set -o pipefail; npm run test:all 2>&1 | tail -n 20
 
       # 1) A publikus előnézettel azonos build (nincs beküldési végpont, basePath)
       - name: Build (as published, basePath=/soderarakv3)
@@ -37,9 +37,9 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://chefke1337.github.io/soderarakv3
         run: npx next build && node scripts/prepare-static-export.mjs
       - name: a11y (axe WCAG A/AA) — published build
-        run: npm run test:a11y 2>&1 | tail -n 40
+        run: set -o pipefail; npm run test:a11y 2>&1 | tail -n 40
       - name: mobile layout 360px — published build
-        run: npm run test:mobile 2>&1 | tail -n 40
+        run: set -o pipefail; npm run test:mobile 2>&1 | tail -n 40
 
       # 2) Mock végponttal (a valódi beküldési út, MOCK jelöléssel)
       - name: Build with mock order endpoint
@@ -50,4 +50,4 @@ jobs:
         run: |
           npm run mock:order > mock.log 2>&1 &
           sleep 3
-          npm run test:smoke 2>&1 | tail -n 80
+          set -o pipefail; npm run test:smoke 2>&1 | tail -n 80
