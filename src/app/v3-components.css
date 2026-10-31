@@ -8,32 +8,40 @@
 
 /* ───────────────────────────── Árjelölés ───────────────────────────── */
 
-/* Jól látható bruttó-felirat az árlisták fölé: nem apró lábjegyzet. */
+/* Jól látható bruttó-felirat az árlisták fölé: nem apró lábjegyzet — de
+   árjegyzék-fejlécként, nem figyelmeztetésként (V3.1: a korábbi piros
+   keretes doboz hibaüzenetnek hatott). Grafit címke + meleg felület. */
 .gross-banner {
   display: flex;
   gap: 0.875rem;
   align-items: center;
-  padding: 0.875rem 1rem;
-  border: 1.5px solid var(--color-accent);
+  padding: 0.75rem 1rem 0.75rem 0.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-left: 4px solid var(--color-accent);
   border-radius: var(--radius-md);
-  background: var(--color-brand-soft);
-  color: var(--color-accent-deep);
+  background: var(--color-surface);
+  color: var(--color-text);
   font-size: 0.9375rem;
   line-height: 1.5;
+}
+.gross-banner strong {
+  color: var(--color-text);
 }
 .gross-banner-mark {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  width: 2.75rem;
-  height: 2.75rem;
+  min-width: 3.25rem;
+  height: 2.5rem;
+  padding-inline: 0.5rem;
   border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-on-dark);
+  background: var(--color-text);
+  color: var(--color-surface);
   font-family: var(--font-display);
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 /* Strukturált terméktulajdonság-jelölések */
@@ -697,4 +705,337 @@
   left: 0;
   width: 1px;
   background: color-mix(in srgb, var(--color-border-strong) 70%, transparent);
+}
+
+/* ───────────────────── Hero gyors ajánlat (V3.1) ───────────────────── */
+
+/* Krém „árjegyzék-szelvény" a sötét heróban: a fő út (anyag → mennyiség →
+   irányítószám) első három lépése. Felül az anyagszín-rétegcsík köti a
+   kupacsorhoz és a lábléchez. */
+.quick-quote {
+  position: relative;
+  overflow: hidden;
+  padding: 1.375rem 1.25rem 1.125rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 28px 60px -32px rgb(0 0 0 / 0.65);
+}
+@media (min-width: 40rem) {
+  .quick-quote {
+    padding: 1.625rem 1.625rem 1.375rem;
+  }
+}
+.quick-quote::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0.375rem;
+  background: linear-gradient(
+    to right,
+    var(--color-mat-homok) 0 18%,
+    var(--color-mat-soder) 18% 40%,
+    var(--color-mat-kavics) 40% 52%,
+    var(--color-accent) 52% 70%,
+    var(--color-mat-murva) 70% 82%,
+    var(--color-mat-fold) 82% 100%
+  );
+}
+.quick-quote-head {
+  padding-bottom: 0.875rem;
+  border-bottom: 1px dashed var(--color-border-strong);
+}
+.quick-quote-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.quick-field-wide {
+  grid-column: 1 / -1;
+}
+.quick-field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+.quick-field select,
+.quick-field input {
+  display: block;
+  width: 100%;
+  min-height: 3rem;
+  margin-top: 0.375rem;
+  padding: 0.625rem 0.75rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-page);
+  color: var(--color-text);
+  font-size: 1rem;
+  transition: border-color var(--dur-fast) var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .quick-field select:hover,
+  .quick-field input:hover {
+    border-color: var(--color-text);
+  }
+}
+.quick-field select:focus-visible,
+.quick-field input:focus-visible {
+  border-color: var(--color-text);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.quick-field input:user-invalid {
+  border-color: #b91c1c;
+}
+.quick-quote-call {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+  margin-top: 0.875rem;
+  font-size: 0.9375rem;
+}
+.quick-quote-call a {
+  min-height: 2.75rem;
+}
+
+/* E-mailes átadás tájékoztató (nincs beküldési végpont): nyugodt,
+   információs hangnem — nem riasztás, és nem álcázott siker. */
+.handoff-note {
+  padding: 0.875rem 1rem;
+  border-left: 4px solid var(--color-amber);
+  border-radius: var(--radius-sm);
+  background: var(--color-page);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+/* ───────────────────── Kalkulátor mobilon (V3.1) ───────────────────── */
+@media (max-width: 30rem) {
+  /* A lépéssáv címkéi ne csonkolódjanak („Mennyi…"): szorosabb belső tér. */
+  .step-rail ol {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+  .step-dot {
+    gap: 0.375rem;
+    padding-inline: 0.25rem;
+    font-size: 0.8125rem;
+  }
+  .step-num {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+  /* Termékváltozatok: kompaktabb kártyák, a teljes tartalom megmarad. */
+  .variant-card {
+    gap: 0.75rem;
+    padding: 0.75rem 0.875rem;
+  }
+  .variant-card .text-sm {
+    font-size: 0.875rem;
+  }
+}
+
+/* ───────────────────── Területkereső (V3.1) ───────────────────── */
+
+.area-search {
+  padding: 1.125rem 1.125rem 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+@media (min-width: 40rem) {
+  .area-search {
+    padding: 1.375rem 1.5rem 1.25rem;
+  }
+}
+.area-search-field {
+  position: relative;
+  margin-top: 0.625rem;
+}
+.area-search-field input {
+  display: block;
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.75rem 6rem 0.75rem 1rem;
+  border: 1.5px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-page);
+  font-size: 1.0625rem;
+  transition: border-color var(--dur-fast) var(--ease-out-soft);
+}
+.area-search-field input:focus-visible {
+  border-color: var(--color-text);
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.area-search-field input::-webkit-search-cancel-button {
+  display: none;
+}
+.area-clear {
+  position: absolute;
+  top: 50%;
+  right: 0.375rem;
+  min-height: 2.75rem;
+  padding-inline: 0.875rem;
+  translate: 0 -50%;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-accent-deep);
+}
+@media (hover: hover) and (pointer: fine) {
+  .area-clear:hover {
+    background: var(--color-surface-muted);
+  }
+}
+
+.area-zip-result {
+  margin-top: 1rem;
+  padding: 1rem 1.125rem;
+  border-left: 4px solid var(--color-moss);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-moss) 8%, var(--color-surface));
+}
+.area-zip-unknown {
+  border-left-color: var(--color-amber);
+  background: var(--color-surface);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .area-zip-result,
+  .area-empty {
+    animation: enter-up var(--dur-ui) var(--ease-out-soft) both;
+  }
+}
+
+.area-list {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+@media (min-width: 64rem) {
+  .area-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+.area-row {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: border-color var(--dur-fast) var(--ease-out-soft);
+}
+.area-row[open] {
+  border-color: var(--color-border-strong);
+}
+.area-row summary {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  list-style: none;
+}
+.area-row summary::-webkit-details-marker {
+  display: none;
+}
+.area-row summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-left: 0.25rem;
+  border-right: 2px solid var(--color-text-muted);
+  border-bottom: 2px solid var(--color-text-muted);
+  rotate: 45deg;
+  translate: 0 -0.125rem;
+  transition: rotate var(--dur-ui) var(--ease-out-soft), translate var(--dur-ui) var(--ease-out-soft);
+}
+.area-row[open] summary::after {
+  rotate: 225deg;
+  translate: 0 0.125rem;
+}
+.area-row summary:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+@media (hover: hover) and (pointer: fine) {
+  .area-row:not([open]):hover {
+    border-color: var(--color-border-strong);
+  }
+}
+.area-row-body {
+  padding: 0.25rem 1rem 1rem;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .area-row[open] .area-row-body {
+    animation: enter-up var(--dur-ui) var(--ease-out-soft) both;
+  }
+}
+.area-zips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+.area-zip {
+  display: inline-grid;
+  place-items: center;
+  min-width: 4rem;
+  min-height: 2.75rem;
+  padding-inline: 0.625rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--color-page);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-soft),
+    border-color var(--dur-fast) var(--ease-out-soft),
+    color var(--dur-fast) var(--ease-out-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .area-zip:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-dark);
+  }
+}
+.area-zip:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.area-zip:active {
+  transform: scale(0.96);
+  transition-duration: 60ms;
+}
+
+.area-quote,
+.area-empty {
+  margin-top: 1rem;
+  padding: 1rem 1.125rem;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-page);
+}
+.area-chip {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding-inline: 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+@media (hover: hover) and (pointer: fine) {
+  .area-chip:hover {
+    border-color: var(--color-text);
+  }
 }

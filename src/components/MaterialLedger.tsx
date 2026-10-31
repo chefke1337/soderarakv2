@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  DISCLOSURE_GROSS,
   materialGroups,
   type MaterialGroup,
   type MaterialItem,
@@ -251,11 +250,11 @@ export function GrossPriceBanner({ className = "" }: { className?: string }) {
       // A felirat jogi/üzleti jelentőségű: minden árlistán meg kell jelennie.
     >
       <span aria-hidden="true" className="gross-banner-mark">
-        ÁFA
+        Bruttó
       </span>
       <span>
-        <strong className="font-semibold">{DISCLOSURE_GROSS}</strong> A fuvar díja ettől
-        külön, nettó értékben számolódik — a fuvardíjra jön az ÁFA.
+        <strong className="font-semibold">Bruttó anyagárak, Ft/m³.</strong> Az anyagárak az
+        ÁFÁ-t tartalmazzák. A szállítás díja külön fizetendő (nettó fuvardíj + ÁFA).
       </span>
     </p>
   );

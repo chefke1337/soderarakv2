@@ -8,6 +8,7 @@ import {
   CASTLE_QUESTION,
   company,
   DISCLOSURE_GROSS,
+  findProfileByPostalCode,
   freightProfiles,
   isPostalCodeShape,
   materialGroups,
@@ -141,16 +142,50 @@ export default function ArkalkulatorForm() {
     setRestored(true);
   }, []);
 
-  /* ── Előtöltés az árlistáról: ?anyag=<tétel-slug> (régi azonosító is) ── */
+  /* ── Előtöltés URL-ből ──
+     ?anyag=<tétel-slug> (régi azonosító is) — az árlistáról és a hero gyors
+     ajánlatából; ?m3=1–10 vagy ?m3=tobb; ?irsz=<4 számjegy>. Az irányítószám
+     csak akkor választ települést/kerületet, ha jóváhagyott díjprofilhoz
+     tartozik — egyébként csak a mezőt tölti, a választás a felhasználóé.
+     Ha a hero már megadta az anyagot és a mennyiséget, a 3. lépésnél nyitunk. */
   useEffect(() => {
     try {
-      const wanted = resolveItemSlug(new URLSearchParams(window.location.search).get("anyag"));
-      if (!wanted) return;
-      setItemSlug(wanted);
-      const g = materialGroups.find((x) => x.items.some((i) => i.slug === wanted));
-      if (g) setGroupSlug(g.slug);
+      const params = new URLSearchParams(window.location.search);
+      const wanted = resolveItemSlug(params.get("anyag"));
+      if (wanted) {
+        setItemSlug(wanted);
+        const g = materialGroups.find((x) => x.items.some((i) => i.slug === wanted));
+        if (g) setGroupSlug(g.slug);
+      }
+
+      const rawM3 = params.get("m3");
+      const n = Number(rawM3);
+      const m3Given = rawM3 === "tobb" || (Number.isInteger(n) && n >= MIN_ORDER_M3 && n <= SINGLE_TRIP_MAX_M3);
+      if (rawM3 === "tobb") setOverLimit(true);
+      else if (m3Given) {
+        setM3(n);
+        setOverLimit(false);
+      }
+
+      const rawIrsz = params.get("irsz");
+      const irsz = rawIrsz && isPostalCodeShape(rawIrsz) ? normalizePostalCode(rawIrsz) : "";
+      if (irsz) {
+        setPostalCode(irsz);
+        setPostalTouched(true);
+        const profile = findProfileByPostalCode(irsz);
+        if (profile) {
+          setMunicipalityId(profile.municipalityId);
+          setDistrictId(profile.municipalityId === "budapest" ? (profile.districtId ?? null) : null);
+          setCastleAnswer("");
+        }
+      }
+
+      if (wanted && (m3Given || irsz)) {
+        setStep(3);
+        setVisited({ 1: true, 2: true, 3: true });
+      }
     } catch {
-      // érvénytelen URL: marad az alapértelmezett / visszaállított anyag
+      // érvénytelen URL: marad az alapértelmezett / visszaállított állapot
     }
   }, []);
 
@@ -247,6 +282,14 @@ export default function ArkalkulatorForm() {
     setServerErrors({});
     if (!canSubmit || submitting || inFlight.current) return;
 
+    // Nincs beküldési végpont: e-mailes átadás, nem álcázott „siker".
+    if (!ORDER_ENDPOINT_CONFIGURED) {
+      setOutcome(null);
+      setMailHandoff(true);
+      window.location.href = mailtoHref;
+      return;
+    }
+
     // Dupla beküldés: egy kulcs az adott beküldésre; csak siker után újul.
     if (!idemKey.current) idemKey.current = newIdempotencyKey();
     inFlight.current = true;
@@ -307,6 +350,52 @@ export default function ArkalkulatorForm() {
     }
     return [];
   }, [municipalityId, districtId]);
+
+  /* ── E-mailes átadás, ha nincs beküldési végpont (statikus előnézet) ──
+     Nem szimulálunk sikeres beküldést: a felhasználó SAJÁT levelezőprogramja
+     nyílik meg az összesítővel kitöltve, és az igény csak akkor érkezik meg,
+     ha ő elküldi. Adatot az oldal nem továbbít sehová. */
+  const mailtoHref = useMemo(() => {
+    const place =
+      municipalityId === "budapest"
+        ? `Budapest${districtId ? ` ${budapestDistricts.find((d) => d.id === districtId)?.label ?? ""}` : ""}`
+        : municipalities.find((mm) => mm.id === municipalityId)?.name ?? "";
+    const lines = [
+      "Rendelési igény (tájékoztató árkalkuláció alapján)",
+      "",
+      `Anyag: ${item?.name ?? "—"} (${group.name})`,
+      `Mennyiség: ${overLimit ? `${SINGLE_TRIP_MAX_M3} m³ felett — többfuvaros ajánlatot kérek` : `${m3} m³`}`,
+      `Település: ${place.trim()}`,
+      `Irányítószám: ${postalCode || "—"}`,
+      `Szállítási cím: ${address.trim() || "—"}`,
+      ...(isCastleDistrict ? [`Vár területén: ${castleAnswer || "nincs megadva"}`] : []),
+      "",
+      quote.material.subtotalGross !== null
+        ? `Anyag bruttó részösszeg: ${formatFt(quote.material.subtotalGross)}`
+        : "Anyag: egyeztetés után",
+      quote.freight
+        ? `Fuvar: ${formatFt(quote.freight.net)} nettó + ÁFA = ${formatFt(quote.freight.gross)} bruttó`
+        : "Fuvar: egyedi egyeztetés",
+      quote.totalGross !== null
+        ? `Teljes bruttó tájékoztató összeg: ${formatFt(quote.totalGross)}`
+        : "Teljes összeg: egyeztetés után",
+      "",
+      `Név: ${name.trim() || "—"}`,
+      `Telefon: ${phone.trim() || "—"}`,
+      `E-mail: ${email.trim() || "—"}`,
+      `Kívánt időpont: ${preferredDate.trim() || "egyeztetés szerint"}`,
+      ...(note.trim() ? ["", `Megjegyzés: ${note.trim()}`] : []),
+      "",
+      ORDER_INTENT_NOTICE,
+      `Árazási verzió: ${PRICING_VERSION}`,
+    ];
+    const subject = `Rendelési igény — ${item?.name ?? "ömlesztett anyag"}, ${overLimit ? `${SINGLE_TRIP_MAX_M3}+ m³` : `${m3} m³`}`;
+    return `mailto:${company.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(lines.join("\n"))}`;
+  }, [
+    municipalityId, districtId, item, group.name, overLimit, m3, postalCode, address,
+    isCastleDistrict, castleAnswer, quote, name, phone, email, preferredDate, note,
+  ]);
+  const [mailHandoff, setMailHandoff] = useState(false);
 
   return (
     <div className="grid gap-8 lg:grid-cols-12 lg:gap-10">
@@ -752,14 +841,18 @@ export default function ArkalkulatorForm() {
           <p className="mt-2 text-sm leading-relaxed text-text-muted">{ORDER_INTENT_NOTICE}</p>
 
           {!ORDER_ENDPOINT_CONFIGURED && (
-            <p className="mock-banner mt-3">
-              <strong className="font-semibold">A beküldés nincs konfigurálva.</strong> Ebben a
-              környezetben nincs beállítva beküldési végpont, ezért a küldés nem fog
-              megtörténni. Kérjük, hívjon minket:{" "}
-              <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
-                {company.phone.display}
-              </a>
-            </p>
+            <div className="handoff-note mt-4">
+              <p className="font-semibold">Az online beküldés ezen az oldalon még nem aktív.</p>
+              <p className="mt-1">
+                Töltse ki az adatokat, és a gomb a saját levelezőprogramjában nyit egy e-mailt
+                az összesítővel a <span className="whitespace-nowrap">{company.email}</span> címre —
+                az igény akkor érkezik meg, ha az e-mailt elküldi. Telefonon is leadhatja:{" "}
+                <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
+                  {company.phone.display}
+                </a>
+                .
+              </p>
+            </div>
           )}
 
           <div className="mt-4 space-y-4">
@@ -867,7 +960,7 @@ export default function ArkalkulatorForm() {
               </>
             ) : (
               <>
-                {ORDER_INTENT_CTA}
+                {ORDER_ENDPOINT_CONFIGURED ? ORDER_INTENT_CTA : `${ORDER_INTENT_CTA} e-mailben`}
                 <IconArrowRight size={18} className="btn-icon btn-icon-move" />
               </>
             )}
@@ -875,6 +968,27 @@ export default function ArkalkulatorForm() {
 
           <div aria-live="polite" aria-atomic="true" className="mt-4 empty:mt-0">
             {outcome && <Outcome outcome={outcome} />}
+            {mailHandoff && !outcome && (
+              <div className="outcome outcome-warn">
+                <p className="font-semibold">Megnyitottuk a levelezőprogramját</p>
+                <p className="mt-1">
+                  Az összesítővel kitöltött e-mail akkor érkezik meg hozzánk, ha elküldi.
+                  Ha nem nyílt meg semmi,{" "}
+                  <a href={mailtoHref} className="font-semibold underline">
+                    nyissa meg innen
+                  </a>
+                  , vagy hívjon:{" "}
+                  <a href={`tel:${company.phone.raw}`} className="num font-semibold underline">
+                    {company.phone.display}
+                  </a>
+                  .
+                </p>
+                <p className="mt-1.5">
+                  Ez még <strong className="font-semibold">nem végleges megrendelés</strong>: a
+                  részletek egyeztetése és visszaigazolásunk után válik véglegessé.
+                </p>
+              </div>
+            )}
           </div>
 
           <p className="mt-4 text-xs leading-relaxed text-text-muted">

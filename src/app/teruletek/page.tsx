@@ -5,15 +5,14 @@ import {
   company,
   freightProfiles,
   quoteOnlyAreas,
-  romanDistrict,
   serviceAreas,
   tariffedAreas,
-  UNSUPPORTED_NOTICE,
 } from "@/content/site";
-import { IconArrowRight, PhoneLink } from "@/lib/ui";
+import { IconArrowRight } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
+import AreaFinder from "@/components/AreaFinder";
 
 export const metadata: Metadata = pageMeta({
   title: "Területek — hol szállítunk sódert és ömlesztett anyagot",
@@ -50,40 +49,30 @@ export default function TeruletekPage() {
       />
 
       <div className="space-y-12">
-        {/* ── Budapest kerületei ── */}
+        {/* ── Kereshető területlista (kerület, terület, irányítószám) ── */}
         <div>
           <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
             <h2 className="font-display text-heading-md font-bold">
-              Budapest — mind a {budapestDistricts.length} kerület
+              Budapest — mind a {budapestDistricts.length} kerület, és Érd
             </h2>
             <p className="num text-sm font-semibold text-brand-deep">
-              {freightProfiles.filter((p) => p.municipalityId === "budapest").length} díjprofil
+              {freightProfiles.length} díjprofil
             </p>
           </div>
-          <p className="mt-2 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
+          <p className="mt-2 mb-5 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
             Minden kerületbe szállítunk. A XI. kerületben az 1112 és 1118 irányítószám
-            eltérő díjprofilba tartozik. A XXI. kerület (Csepel) a V3 árlistával ismét
-            támogatott.
+            eltérő díjprofilba tartozik — ezért a díjhoz mindig a pontos irányítószám kell.
           </p>
-          <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {budapestDistricts.map((d) => (
-              <li
-                key={d.id}
-                className="rounded-[var(--radius-md)] border border-border bg-surface px-4 py-3"
-              >
-                <p className="font-display text-heading-xs font-bold">
-                  {romanDistrict(d.id)} kerület
-                </p>
-                <p className="num mt-0.5 text-xs leading-relaxed text-ink-soft">
-                  {d.postalCodes.join(", ")}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <Link href="/szallitas#fuvardijak" className="btn btn-primary mt-5">
-            Fuvardíjak irányítószám szerint
-            <IconArrowRight size={17} className="btn-icon btn-icon-move" />
-          </Link>
+          <AreaFinder />
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/arkalkulator" className="btn btn-primary">
+              Árkalkulátor indítása
+              <IconArrowRight size={17} className="btn-icon btn-icon-move" />
+            </Link>
+            <Link href="/szallitas#fuvardijak" className="btn btn-outline">
+              Teljes díjlista irányítószám szerint
+            </Link>
+          </div>
         </div>
 
         {/* ── Kiemelt területek saját oldallal ── */}
@@ -109,29 +98,6 @@ export default function TeruletekPage() {
               </li>
             ))}
           </ul>
-        </div>
-
-        {/* ── Egyedi egyeztetés ── */}
-        <div>
-          <h2 className="font-display text-heading-md font-bold">Egyedi egyeztetés</h2>
-          <p className="mt-2 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
-            {UNSUPPORTED_NOTICE} Az alábbi településekhez a V3 árlistában nincs
-            feltüntetett fuvardíj — a korábbi zónás díjakat automatikusan nem
-            alkalmazzuk.
-          </p>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {quoteOnlyAreas.map((s) => (
-              <li key={s.slug}>
-                <Link
-                  href={`/teruletek/${s.slug}`}
-                  className="inline-flex min-h-11 items-center rounded-full border border-line-strong bg-surface px-4 text-sm font-medium hover:border-ink"
-                >
-                  {s.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <PhoneLink className="num btn btn-outline mt-5" />
         </div>
 
         {/* ── Térkép ── */}

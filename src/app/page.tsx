@@ -31,6 +31,7 @@ import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
+import HeroQuickQuote from "@/components/HeroQuickQuote";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -72,17 +73,17 @@ export default function HomePage() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
-          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+          {/* Felső sor: üzenet balra, a fő út (gyors ajánlat → kalkulátor) jobbra.
+              Mobilon: cím → leírás → terület → ajánlatpanel, egymás alatt. */}
+          <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
-              <h1 className="rise rise-2 mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
+              <h1 className="rise rise-2 mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.25rem] xl:text-[4.75rem]">
                 {HERO.title}
               </h1>
-            </div>
-            <div className="min-w-0 lg:col-span-5 lg:pb-2">
-              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
+              <p className="rise rise-3 mt-6 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted">
                 {HERO.lead}
               </p>
               <div className="rise rise-3 hero-areas mt-5">
@@ -95,16 +96,9 @@ export default function HomePage() {
                   Érd
                 </span>
               </div>
-              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:max-w-[24rem] lg:flex-col">
-                <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
-                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
-                  {company.phone.display}
-                </PhoneLink>
-                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
-                  Árkalkulátor indítása
-                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
-                </CalculatorCta>
-              </div>
+            </div>
+            <div className="rise rise-4 min-w-0 lg:col-span-5">
+              <HeroQuickQuote />
             </div>
           </div>
 
