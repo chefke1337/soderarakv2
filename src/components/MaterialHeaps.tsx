@@ -4,6 +4,7 @@ import {
   materialGroups,
   MIN_ORDER_M3,
   SINGLE_TRIP_MAX_M3,
+  groupWashed,
 } from "@/content/site";
 import { formatFt, IconArrowRight, IconDroplets, minPrice } from "@/lib/ui";
 import MaterialPile from "@/components/MaterialPile";
@@ -66,10 +67,10 @@ export default function MaterialHeaps() {
                 <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
                   {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                 </span>
-                {g.washed && (
+                {groupWashed(g) && (
                   <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
                     <IconDroplets size={11} />
-                    mosott
+                    {groupWashed(g)!.scope === "group" ? "mosott" : "mosott frakciók"}
                   </span>
                 )}
               </Link>

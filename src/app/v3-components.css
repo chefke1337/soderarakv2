@@ -63,15 +63,18 @@
 .receipt {
   position: relative;
 }
-/* A példaszelvény enyhén megdöntve ül a terrakotta panelen; hoverre kiegyenesedik. */
+/* A példaszelvény egyenesen áll (komolyabb, „bizonylat" hatás); a felső
+   perforált él jelzi, hogy ez egy kiállított összesítő. */
 .receipt-tilt {
-  rotate: -1.2deg;
-  transition: rotate var(--dur-enter) var(--ease-out-soft);
+  border-top: 3px solid var(--color-accent);
 }
-@media (hover: hover) and (pointer: fine) {
-  .receipt-tilt:hover {
-    rotate: 0deg;
-  }
+.receipt-tilt::before {
+  content: "";
+  position: absolute;
+  inset: -3px 0 auto 0;
+  height: 3px;
+  background: repeating-linear-gradient(90deg, transparent 0 10px, var(--color-surface) 10px 14px);
+  pointer-events: none;
 }
 
 /* ─────────────────────────── Kalkulátor lépések ─────────────────────────── */

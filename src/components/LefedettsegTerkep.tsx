@@ -111,7 +111,14 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         let userMoved = false;
         const fit = () => {
           fitting = true;
-          map.fitBounds(bounds, { padding: [26, 26], maxZoom: 12, animate: false });
+          // A címkék alapból jobbra nyúlnak a ponttól → jobb oldalon több hely kell,
+          // különben a szélső feliratok (XI., XXI. kerület) levágódnak.
+          map.fitBounds(bounds, {
+            paddingTopLeft: [40, 30],
+            paddingBottomRight: [104, 30],
+            maxZoom: 12,
+            animate: false,
+          });
           fitting = false;
         };
         if (points.length > 0) fit();

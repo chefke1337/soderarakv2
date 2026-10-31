@@ -65,8 +65,8 @@ export default function KapcsolatPage() {
             <div className="border-b border-line py-4">
               <dt className="text-sm text-ink-soft">Rendelési igény</dt>
               <dd className="mt-1 text-sm leading-relaxed">
-                {ORDER_INTENT_NOTICE}
-                <Link href="/arkalkulator" className="btn btn-primary mt-3">
+                <span className="block">{ORDER_INTENT_NOTICE}</span>
+                <Link href="/arkalkulator" className="btn btn-primary mt-3 w-fit">
                   Árkalkulátor és beküldés
                   <IconArrowRight size={17} className="btn-icon btn-icon-move" />
                 </Link>

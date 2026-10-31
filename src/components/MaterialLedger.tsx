@@ -4,6 +4,7 @@ import {
   materialGroups,
   type MaterialGroup,
   type MaterialItem,
+  groupWashed,
 } from "@/content/site";
 import { formatFt, IconCalculator, IconDroplets, IconPlus, minPrice } from "@/lib/ui";
 import FractionScale, { parseFraction } from "@/components/FractionScale";
@@ -82,12 +83,16 @@ export default function MaterialLedger({
               <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
-                {g.washed && (
-                  <span className="badge-washed mt-1.5">
-                    <IconDroplets size={11} />
-                    {g.washed.label}
-                  </span>
-                )}
+                {(() => {
+                  const w = groupWashed(g);
+                  return w ? (
+                    <span className="badge-washed mt-1.5">
+                      <IconDroplets size={11} />
+                      {w.mark.label}
+                      {w.scope === "some" && <span className="font-medium"> · frakciók</span>}
+                    </span>
+                  ) : null;
+                })()}
               </span>
 
               <span className="hidden self-center pr-4 md:block">
