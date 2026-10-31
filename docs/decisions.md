@@ -480,3 +480,19 @@ V2 kinézete + az ügyféltől kapott adat. Döntések:
   számítás nem változott.
 - Adatellenőrzés az ügyfél-specifikáció ellen: 23 anyagár, 25 díjprofil,
   minden irányítószám-lista és a 27%-os fuvar-ÁFA egyezik (0 eltérés).
+
+## 2026-10-31 — V3.5: hibajavítás, optimalizálás, visszafogott finomítás
+- Hibák: a „Ezzel a példával kezdem" gomb most a példa mennyiségével és
+  irányítószámával nyitja a kalkulátort (`?m3`, `?irsz`, csak engedett
+  értékre); a lefedettségi térkép szélső címkéi nem vágódnak le (aszimmetrikus
+  fitBounds-padding); a Kapcsolat oldalon a rendelési gomb nem folyik bele a
+  mondatba; a hosszú mosott-címke 390 px-en nem lóg rá a „Tételek" gombra.
+- Mosott-jelölés egy helyről (`groupWashed`): Sóder → az egész csoport;
+  Kavics → „· frakciók" hatókörrel (a kulé nem mosott). A kalkulátor sóder-
+  változatain nem ismétlődik ötször a címke; a csoportcímke mondja meg a hatókört.
+- Komolyabb részlet: a példaszelvény egyenesen áll (nincs döntés), felső
+  perforált éllel.
+- Mérés (helyi, 4× CPU-lassítás): LCP 320–356 ms, CLS 0 — gyorsabb, mint az
+  élő V3.3. A kupac-SVG tömörítését kipróbáltam, ~1–2 KB nyereség → visszavonva.
+- A díjlista kártyás marad (nem fix oszlopos táblázat): az I. kerület eltérő
+  sávjai miatt fix oszloppal díj kerülhetne rossz sávfelirat alá.
