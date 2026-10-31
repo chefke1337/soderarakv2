@@ -155,8 +155,8 @@ export function pileSvg(tone: Tone, id: string): string {
   const light = tone === "andezit" || tone === "fold" ? 0.2 : 0.16;
   return [
     "<defs>",
-    `<pattern id="${k}-t" width="${f1(120 * tile)}" height="${f1(60 * tile)}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})"><rect width="120" height="60" fill="${col.base}"/>${base}</g></pattern>`,
-    det ? `<pattern id="${k}-d" width="${f1(70 * tile)}" height="${f1(40 * tile)}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})" opacity="${det.opacity}">${detail}</g></pattern>` : "",
+    `<pattern id="${k}-t" width="${120 * tile}" height="${60 * tile}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})"><rect width="120" height="60" fill="${col.base}"/>${base}</g></pattern>`,
+    det ? `<pattern id="${k}-d" width="${70 * tile}" height="${40 * tile}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})" opacity="${det.opacity}">${detail}</g></pattern>` : "",
     `<clipPath id="${k}-c"><path d="${d}"/></clipPath>`,
     `<linearGradient id="${k}-x" gradientUnits="userSpaceOnUse" x1="${spec.left}" y1="0" x2="${spec.right}" y2="0">`,
     `<stop offset="0" stop-color="#fff" stop-opacity="${light}"/>`,
