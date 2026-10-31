@@ -3,6 +3,7 @@ import { materialGroups, type MaterialGroup } from "@/content/site";
 import { withBasePath } from "@/lib/basepath";
 import { formatFt, IconArrowRight, IconDroplets, minPrice } from "@/lib/ui";
 import FractionScale, { parseFraction } from "@/components/FractionScale";
+import MaterialGrain from "@/components/MaterialGrain";
 
 /**
  * Főoldali anyag-index (V3.3): a valódi anyagfotók a főszereplők — eddig csak
@@ -45,8 +46,9 @@ export default function MaterialIndex() {
                 />
               ) : (
                 <>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={withBasePath(g.texture)} alt={g.textureAlt} width={400} height={360} loading="lazy" decoding="async" />
+                  <span className="mat-tile-grain" role="img" aria-label={`${g.name} — stilizált szemcse-illusztráció (nincs ellenőrzött fotó)`}>
+                    <MaterialGrain tone={g.tone} id={`index-${g.slug}`} scale={1.6} />
+                  </span>
                   <span className="mat-tile-tag">Illusztráció</span>
                 </>
               )}

@@ -144,6 +144,17 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
         </p>
       </div>
 
+      {compact && !query && (
+        <div className="area-examples">
+          <span>Próbálja ki:</span>
+          {["1221", "XI. kerület", "Budafok", "Érd", "1118"].map((ex) => (
+            <button key={ex} type="button" className="area-example" onClick={() => setQuery(ex)}>
+              {ex}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Pontos irányítószám: közvetlen válasz + kalkulátor */}
       {exactZip && (
         <div className={`area-zip-result ${exactProfile ? "" : "area-zip-unknown"}`} role="status">
