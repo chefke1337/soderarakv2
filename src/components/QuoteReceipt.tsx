@@ -116,7 +116,7 @@ export default function QuoteReceipt({
           {quote.totalGross !== null ? (
             <p
               key={quote.totalGross}
-              className="num swap-in mt-1 font-display text-[1.75rem] leading-tight font-bold tracking-tight whitespace-nowrap text-accent-deep min-[400px]:text-[2.125rem] md:text-[2.375rem]"
+              className="num value-flash mt-1 font-display text-[1.75rem] leading-tight font-bold tracking-tight whitespace-nowrap text-accent-deep min-[400px]:text-[2.125rem] md:text-[2.375rem]"
             >
               {formatFt(quote.totalGross)}
             </p>
@@ -211,7 +211,8 @@ function Row({
     >
       <dt className={emphasis ? "font-medium text-text" : "text-text-muted"}>{label}</dt>
       <dd
-        className={`text-right whitespace-nowrap ${emphasis ? "font-display text-[1.0625rem] font-bold" : "font-semibold"}`}
+        key={emphasis ? (value ?? "egyeztetes") : undefined}
+        className={`text-right whitespace-nowrap ${emphasis ? "value-flash font-display text-[1.0625rem] font-bold" : "font-semibold"}`}
       >
         {value ?? <span className="font-sans text-sm font-medium text-text-muted">egyeztetés után</span>}
       </dd>

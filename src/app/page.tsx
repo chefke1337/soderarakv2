@@ -10,6 +10,7 @@ import {
   freightProfiles,
   guides,
   HERO,
+  materialGroups,
   MIERT_HIVJON,
   MIN_ORDER_M3,
   PERMIT_NOTICE,
@@ -30,8 +31,9 @@ import {
 import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
-import MaterialHeaps from "@/components/MaterialHeaps";
-import HeroQuickQuote from "@/components/HeroQuickQuote";
+import HeroConfigurator from "@/components/HeroConfigurator";
+import MaterialPile from "@/components/MaterialPile";
+import { withBasePath } from "@/lib/basepath";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -73,20 +75,23 @@ export default function HomePage() {
           className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
-          {/* Felső sor: üzenet balra, a fő út (gyors ajánlat → kalkulátor) jobbra.
-              Mobilon: cím → leírás → terület → ajánlatpanel, egymás alatt. */}
-          <div className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12">
-            <div className="min-w-0 lg:col-span-7">
+          {/* Felső sor: a cím nyitott, széles tördelést kap; a leírás és a
+              terület jobbra, alsó élre zárva. A mozgás sorrendje a figyelem
+              útja: cím → értékígéret → következő lépés (a pult). */}
+          <div className="grid gap-6 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <div className="min-w-0 lg:col-span-8">
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
-              <h1 className="rise rise-2 mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.25rem] xl:text-[4.75rem]">
+              <h1 className="rise rise-2 mt-5 max-w-[14ch] font-display text-[2.5rem] leading-[0.96] font-bold tracking-display text-balance sm:text-[3.5rem] lg:max-w-none lg:text-[4.5rem] xl:text-[5rem]">
                 {HERO.title}
               </h1>
-              <p className="rise rise-3 mt-6 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted">
+            </div>
+            <div className="min-w-0 lg:col-span-4 lg:pb-3">
+              <p className="rise rise-3 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted">
                 {HERO.lead}
               </p>
-              <div className="rise rise-3 hero-areas mt-5">
+              <div className="rise rise-3 hero-areas mt-4">
                 <span className="hero-area-pill">
                   <IconMapPinned size={13} />
                   Budapest mind a {budapestDistricts.length} kerülete
@@ -97,14 +102,17 @@ export default function HomePage() {
                 </span>
               </div>
             </div>
-            <div className="rise rise-4 min-w-0 md:max-w-[36rem] lg:col-span-5 lg:max-w-none">
-              <HeroQuickQuote />
-            </div>
           </div>
 
-          {/* Mintasor: hat anyaghalom teljes szélességben */}
-          <div className="mt-9 md:mt-12 lg:mt-14">
-            <MaterialHeaps />
+          {/* Rendelőpult: anyag (kupacválasztó) → változat, mennyiség → irányítószám
+              → élő tájékoztató ár → kalkulátor. */}
+          <div className="rise rise-4 mt-8 lg:mt-12">
+            <HeroConfigurator
+              action={withBasePath("/arkalkulator/")}
+              piles={Object.fromEntries(
+                materialGroups.map((g) => [g.slug, <MaterialPile key={g.slug} tone={g.tone} id={`pult-${g.slug}`} />]),
+              )}
+            />
           </div>
           <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
             {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}

@@ -1064,6 +1064,13 @@ function StepRail({
 }) {
   return (
     <nav aria-label="Kalkulátor lépései" className="step-rail">
+      {/* Haladásjelző vonal (a React Bits „Stepper" mintája alapján, saját CSS):
+          a megtett út kitöltődik — dekoratív, a lépésállapotot a gombok hordozzák. */}
+      <span
+        aria-hidden="true"
+        className="step-progress"
+        style={{ "--p": (step - 1) / 2 } as React.CSSProperties}
+      />
       <ol>
         {([1, 2, 3] as Step[]).map((s) => (
           <li key={s}>

@@ -81,12 +81,24 @@ export default function MaterialLedger({
               <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
                 <H className="font-display text-heading-sm font-bold">{g.name}</H>
                 <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
-                {g.washed && (
-                  <span className="badge-washed mt-1.5">
-                    <IconDroplets size={11} />
-                    {g.washed.label}
-                  </span>
-                )}
+                {(() => {
+                  // Következetes jelölés: csoportszintű (Mosott sóder), vagy ha a
+                  // csoportnak csak egyes tételei mosottak (Kavics: a kulé nem),
+                  // ugyanaz a jóváhagyott címke, a hatókör megnevezésével.
+                  const mark = g.washed ?? g.items.find((x) => x.washed)?.washed;
+                  if (!mark) return null;
+                  return (
+                    <span className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+                      <span className="badge-washed">
+                        <IconDroplets size={11} />
+                        {mark.label}
+                      </span>
+                      {!g.washed && (
+                        <span className="text-xs text-ink-soft">a frakcionált tételekre</span>
+                      )}
+                    </span>
+                  );
+                })()}
               </span>
 
               <span className="hidden self-center pr-4 md:block">
