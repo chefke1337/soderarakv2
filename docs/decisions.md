@@ -427,3 +427,17 @@ mennyiség → irányítószám → árösszesítő → rendelési igény. Dönt
   nem találtunk ki (a `telepulesek.txt` nem áll rendelkezésre).
 - Az árazási logika, árak, szövegszabályok változatlanok. Részletek:
   `docs/v3.1-design.md`.
+
+## 2026-10-31 — V3.2 „Material Precision": rendelőpult a heróban, motion-specifikáció
+- A hero kupacsora a pult anyagválasztója lett (kiválasztott állapot: pipa,
+  keret, felület — nem csak szín); a pult élő, tájékoztató becslést ad
+  ugyanazzal a `quote.ts`-szel, mint a kalkulátor. Kitalált összeg nincs:
+  ismeretlen irányítószám, 10 m³ felett és I. kerület (Vár) esetén a
+  végösszeg helyén „—" és az egyeztetés oka áll. JS nélkül sima GET-űrlap.
+- Motion (motion.dev) NEM került be: párhuzamos rendszer lenne a mért
+  CSS-tokenes mozgás mellett, és minden szükséges átmenet CSS-sel megoldható.
+  React Bits: SpotlightCard mintája átdolgozva (egy delegált figyelő, rAF
+  nélkül), Stepper mintája saját CSS-sel; SplitText/BlurText/CountUp/
+  AnimatedContent elvetve. Indoklás és tokenek: `docs/v3.2-motion.md`.
+- Kavics: a jóváhagyott „Első osztályú, mosott kavics" jelölés a katalógus
+  fejlécében is megjelenik, „a frakcionált tételekre" hatókörrel (a kulé nem mosott).

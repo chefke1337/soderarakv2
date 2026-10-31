@@ -163,7 +163,7 @@ export default function HeroConfigurator({ action, piles }: Props) {
                   {washed && (
                     <span className="pick-mark">
                       <IconDroplets size={11} />
-                      {g.washed ? "mosott" : "mosott (frakc.)"}
+                      {g.washed ? "mosott" : "mosott frakciók"}
                     </span>
                   )}
                   <span aria-hidden="true" className="pick-check">
