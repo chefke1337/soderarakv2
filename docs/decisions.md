@@ -364,3 +364,50 @@ nem indexelik, de a link ismerőinek látható, ugyanúgy, mint a V2 előnézet.
 
 A `SODERARAKV3_DEPLOY_KEY` secret beállítását a titokkezelési jogosultság
 miatt a felhasználó futtatta (`gh secret set`), nem az agent.
+
+## 2026-10-31 — V3 újraellenőrzés új sessionben + export-validátor hiba javítva
+
+**Talált és javított hiba:** `npm run build` a `GH_PAGES_BASE_PATH`/
+`NEXT_PUBLIC_SITE_URL` CI-változókkal megegyező, tiszta újrabuildnél
+megbízhatóan elhasalt: `scripts/prepare-static-export.mjs` `isNotFoundPage`
+felismerése csak az `out/404.html`-re illesztett regexet, de Next
+`trailingSlash: true` export mellett a 404-es oldal **mindkét** fájlként
+kiíródik (`out/404.html` ÉS `out/404/index.html`, bájtazonos tartalommal).
+A duplikátumot a validátor sima oldalként kezelte, ahol a megosztási kép
+a főoldal (`soderarak-share-v4.png`) linkjére mutatott a saját 404-kártya
+helyett → `fail("unexpected social image URL …")`. Javítás: a regex most a
+`404/index.html` alakot is felismeri. Reprodukálva két független tiszta
+(`.next`+`out` törlés utáni) buildnél, mindkét alkalommal ugyanott bukott;
+a javítás után a CI-változókkal futó build a dokumentált 44 HTML-oldal / 44
+saját OG-kép / 39 kanonikus eredményt adja, és az OG-hash regresszió is
+egyezik a bázissal.
+
+**Miért maradhatott rejtve korábban:** nem derült ki, melyik korábbi
+ellenőrző futás nem ütközött bele — a jelenség kizárólag a fájlnév-
+illesztéshez kötött, nem a `GH_PAGES_BASE_PATH`/`NEXT_PUBLIC_SITE_URL`
+beállítástól függ, de a `node_modules`-ban rögzített Next-verzió
+(`15.5.27`) megegyezik a lockfile-beli verzióval, tehát nem verziódrift
+okozta.
+
+**Teljes újraellenőrzés eredménye (ugyanaz a `v3` branch, külön session):**
+`tsc --noEmit` OK, `next lint` 0 hiba (1 örökölt figyelmeztetés, mint
+korábban), `tests/pricing.test.mjs` 170/170, `tests/freight.test.mjs`
+3635/3635, `tests/quote.test.mjs` 440/440, `tests/order.test.mjs` 132/132,
+production build (CI-változókkal) OK, `npm run test:mobile` 43/43 route
+(valódi Playwright, 360px), `npm run test:a11y` 43/43 route (valódi
+Playwright + axe, WCAG A/AA 2.0–2.2), `npm run test:smoke` 34/34 (valódi
+böngészős kalkulátor- és rendelésiigény-folyam, mock háttérrel) — minden
+szám pontosan egyezik a 2026-10-28-i `docs/v3-brief.md` 10. szakaszával,
+tehát a dokumentált állapot ma is érvényes, a build-hiba kivételével.
+
+**Nem végzett ellenőrzés:** a Claude-in-Chrome böngészőkiterjesztés nem
+volt csatlakoztatva ebben a sessionben, ezért vizuális/manuális böngészős
+bejárás nem történt — a fenti Playwright-alapú automatizált auditok
+(mobil, a11y, smoke) futottak valódi Chromiumban, de képernyőképes emberi
+átnézés nem.
+
+**A `v3` branch ezidáig NEM lett pusholva** a `chefke1337/soderarakv2`
+remote-ra (ellenőrizve `git ls-remote`-dal) — a `chefke1337/soderarakv3`
+cél-repó `gh-pages` ága már létezik (korábbi manuális/egyszeri deployból),
+de a forrás-ág hiánya miatt ez jelenleg nem a mai állapotot tükrözi. Push
+jóváhagyásra vár.
