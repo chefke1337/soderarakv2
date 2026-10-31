@@ -51,6 +51,8 @@ jobs:
       - name: Build with mock order endpoint
         env:
           NEXT_PUBLIC_ORDER_API_URL: http://127.0.0.1:8788/order
+          GH_PAGES_BASE_PATH: /soderarakv3
+          NEXT_PUBLIC_SITE_URL: https://chefke1337.github.io/soderarakv3
         shell: bash
         run: |
           set -o pipefail
