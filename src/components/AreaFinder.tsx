@@ -33,13 +33,22 @@ const norm = (s: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
+/** Egy kerületen belüli eltérő díjprofil (pl. XI. 1112, 1118) — az alap
+ *  profil azonosítója „-alap" végű, ha a kerületnek több profilja van. */
+function isSeparateProfile(p: { id: string; municipalityId: string; districtId?: number }): boolean {
+  const siblings = freightProfiles.filter(
+    (q) => q.municipalityId === p.municipalityId && q.districtId === p.districtId,
+  );
+  return siblings.length > 1 && !p.id.endsWith("-alap");
+}
+
 type DistrictEntry = {
   key: string;
   title: string;
   /** A kerülethez rendelt kiemelt területek nevei (pl. Újbuda, Albertfalva). */
   aliases: string[];
   /** Díjprofilonként csoportosított irányítószámok. */
-  groups: { codes: readonly string[]; separate: boolean }[];
+  groups: { codes: readonly string[]; separate: boolean; split?: boolean }[];
   districtId: number | null;
 };
 
@@ -55,7 +64,7 @@ const ENTRIES: DistrictEntry[] = [
         .filter((a) => a.freight.kind === "profile" && a.freight.districtId === d.id)
         .map((a) => a.name.replace(/\s*\(Budapest [^)]*\)/, ""))
         .filter((n) => !/^Budapest /.test(n)),
-      groups: profiles.map((p) => ({ codes: p.postalCodes, separate: profiles.length > 1 && p.id.split("-").length > 2 })),
+      groups: profiles.map((p) => ({ codes: p.postalCodes, separate: isSeparateProfile(p), split: profiles.length > 1 })),
       districtId: d.id,
     };
   }),
@@ -145,7 +154,7 @@ export default function AreaFinder() {
               </p>
               <p className="mt-1 text-sm leading-relaxed">
                 Jóváhagyott, irányítószám-alapú fuvardíjunk van ide.
-                {exactProfile.id.split("-").length > 2 &&
+                {isSeparateProfile(exactProfile) &&
                   ` Ez az irányítószám a kerületen belül külön díjprofilba tartozik (${exactProfile.postalCodes.join(", ")}).`}
               </p>
               <Link href={`/arkalkulator/?irsz=${exactZip}`} className="btn btn-primary mt-3">
@@ -190,8 +199,10 @@ export default function AreaFinder() {
                 <div className="area-row-body">
                   {e.groups.map((g, i) => (
                     <div key={i} className={i > 0 ? "mt-3" : undefined}>
-                      {g.separate && (
-                        <p className="mb-1.5 text-xs font-semibold text-accent-deep">Külön díjprofil</p>
+                      {g.split && (
+                        <p className={`mb-1.5 text-xs font-semibold ${g.separate ? "text-accent-deep" : "text-text-muted"}`}>
+                          {g.separate ? "Külön díjprofil" : "A kerület többi irányítószáma"}
+                        </p>
                       )}
                       <ul className="area-zips" aria-label={`${e.title} irányítószámai`}>
                         {g.codes.map((c) => (
