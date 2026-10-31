@@ -51,7 +51,13 @@ jobs:
       - name: Build with mock order endpoint
         env:
           NEXT_PUBLIC_ORDER_API_URL: http://127.0.0.1:8788/order
-        run: rm -rf .next out && npx next build && node scripts/prepare-static-export.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          rm -rf .next out
+          (npx next build && node scripts/prepare-static-export.mjs) 2>&1 | tee mockbuild.log | tail -n 30 || {
+            msg=$(tail -n 40 mockbuild.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+            echo "::error title=mock build (tail)::${msg}"; exit 1; }
       - name: Smoke (calculator + order intent, mock backend)
         shell: bash
         run: |
