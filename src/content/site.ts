@@ -18,8 +18,11 @@ import {
   bandLabel,
   MIN_ORDER_M3,
   SINGLE_TRIP_MAX_M3,
+  budapestDistricts,
+  romanDistrict,
   type MunicipalityId,
 } from "./freight.ts";
+import { districtAreas } from "./districts.ts";
 
 export * from "./catalog.ts";
 export * from "./freight.ts";
@@ -183,14 +186,42 @@ export function findServiceArea(slug: string): ServiceArea | undefined {
 }
 
 export const tariffedAreas = serviceAreas.filter((s) => s.freight.kind === "profile");
-export const quoteOnlyAreas = serviceAreas.filter((s) => s.freight.kind === "quote");
 
-/** Belső referencia-koordináta (nem publikus): sehol nem jelenik meg az oldalon,
- * a térkép sem jelöli. A telephely/depó nyilvánosan nem szerepelhet. */
-export const depot: { latlng: [number, number]; label: string } = {
-  latlng: [47.4294, 18.9937],
-  label: "Telephely — 1221 Budapest, Arany János út 152.",
-};
+/**
+ * Területi aloldal (/teruletek/[slug]): a térképes `serviceAreas` + minden
+ * olyan budapesti kerület saját oldala, amelyhez még nincs kerületi oldal.
+ * A kerületi oldalak tartalma kerületenként valóban eltér (saját díjsávok,
+ * irányítószámok, mennyiségi korlát, városrészek) — a központi adatból.
+ * Ezek NEM kerülnek a térképre (nincs hiteles koordinátájuk).
+ */
+export type AreaPage = Pick<ServiceArea, "slug" | "name" | "shortName" | "freight">;
+
+/** Kerületenként a „kanonikus" kerületi oldal (a meglévő 3 slugot megtartva). */
+export function districtPageSlug(districtId: number): string {
+  const existing = serviceAreas.find(
+    (a) => a.freight.kind === "profile" && a.freight.districtId === districtId && /kerület/.test(a.name),
+  );
+  return existing ? existing.slug : `budapest-${districtId}-kerulet`;
+}
+
+export const districtAreaPages: AreaPage[] = budapestDistricts
+  .filter((d) => !serviceAreas.some((a) => a.slug === districtPageSlug(d.id)))
+  .map((d) => {
+    const nick = districtAreas(d.id)?.name;
+    return {
+      slug: districtPageSlug(d.id),
+      name: `Budapest ${romanDistrict(d.id)} kerület${nick ? ` (${nick})` : ""}`,
+      shortName: `${romanDistrict(d.id)} kerület`,
+      freight: { kind: "profile", municipalityId: "budapest", districtId: d.id },
+    };
+  });
+
+export const areaPages: AreaPage[] = [...serviceAreas, ...districtAreaPages];
+
+export function findAreaPage(slug: string): AreaPage | undefined {
+  return areaPages.find((s) => s.slug === slug);
+}
+export const quoteOnlyAreas = serviceAreas.filter((s) => s.freight.kind === "quote");
 
 /* ──────────────────────────── Rendelés menete ──────────────────────────── */
 

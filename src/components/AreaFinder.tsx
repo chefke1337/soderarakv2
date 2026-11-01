@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   budapestDistricts,
   company,
+  districtPageSlug,
   findProfileByPostalCode,
   freightProfiles,
   isPostalCodeShape,
@@ -259,10 +260,20 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                   <p className="mt-3 text-xs leading-relaxed text-text-muted">
                     Válasszon irányítószámot: a kalkulátor ezzel előtöltve nyílik meg.
                   </p>
-                  {e.districtId !== null && e.areas.length > 0 && (
-                    <a href={`#kerulet-${e.districtId}`} className="link mt-1 inline-flex min-h-11 items-center text-sm font-semibold">
-                      A kerület városrészei ↓
-                    </a>
+                  {e.districtId !== null && (
+                    <p className="mt-1 flex flex-wrap gap-x-5">
+                      <Link
+                        href={`/teruletek/${districtPageSlug(e.districtId)}`}
+                        className="link inline-flex min-h-11 items-center text-sm font-semibold"
+                      >
+                        A kerület oldala: díjak, tudnivalók
+                      </Link>
+                      {e.areas.length > 0 && (
+                        <a href={`#kerulet-${e.districtId}`} className="link inline-flex min-h-11 items-center text-sm font-semibold">
+                          Városrészek ↓
+                        </a>
+                      )}
+                    </p>
                   )}
                 </div>
               </details>
