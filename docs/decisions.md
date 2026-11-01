@@ -480,3 +480,42 @@ V2 kinézete + az ügyféltől kapott adat. Döntések:
   számítás nem változott.
 - Adatellenőrzés az ügyfél-specifikáció ellen: 23 anyagár, 25 díjprofil,
   minden irányítószám-lista és a 27%-os fuvar-ÁFA egyezik (0 eltérés).
+
+## 2026-10-31 — V3.5: hibajavítás, optimalizálás, visszafogott finomítás
+- Hibák: a „Ezzel a példával kezdem" gomb most a példa mennyiségével és
+  irányítószámával nyitja a kalkulátort (`?m3`, `?irsz`, csak engedett
+  értékre); a lefedettségi térkép szélső címkéi nem vágódnak le (aszimmetrikus
+  fitBounds-padding); a Kapcsolat oldalon a rendelési gomb nem folyik bele a
+  mondatba; a hosszú mosott-címke 390 px-en nem lóg rá a „Tételek" gombra.
+- Mosott-jelölés egy helyről (`groupWashed`): Sóder → az egész csoport;
+  Kavics → „· frakciók" hatókörrel (a kulé nem mosott). A kalkulátor sóder-
+  változatain nem ismétlődik ötször a címke; a csoportcímke mondja meg a hatókört.
+- Komolyabb részlet: a példaszelvény egyenesen áll (nincs döntés), felső
+  perforált éllel.
+- Mérés (helyi, 4× CPU-lassítás): LCP 320–356 ms, CLS 0 — gyorsabb, mint az
+  élő V3.3. A kupac-SVG tömörítését kipróbáltam, ~1–2 KB nyereség → visszavonva.
+- A díjlista kártyás marad (nem fix oszlopos táblázat): az I. kerület eltérő
+  sávjai miatt fix oszloppal díj kerülhetne rossz sávfelirat alá.
+
+## 2026-11-01 — V3.6: ügyfélkérések (kerületlista SEO, Rólunk, mosott jelölés)
+Forrás: az ügyfél két üzenete (kerület/városrész-lista; Rólunk-szöveg, árak,
+díjak). Ellenőrzés: mind a 23 anyagár, mind a 25 díjprofil és irányítószám-lista
+egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
+- Rólunk: a második bekezdés SZÓ SZERINT az ügyfélé („Minden általunk
+  forgalmazott anyag vizes osztályozási eljáráson megy keresztül…") — a korábbi
+  szűkítés helyett, kifejezett kérésre. „Ez legyen a bau-kontos helyett": a Rólunk
+  oldalon a cégadat-blokk helyére a bemutatkozás került; a jogilag szükséges
+  üzemeltetői adatok az Impresszumban (és a lábléc ©-sorában) maradnak.
+- Mosott-jelölés: „Jó minőségű, mosott sóder" / „Jó minőségű, mosott kavics";
+  minden sóder és minden kavics (a kulé is — az továbbra is méret szerint
+  osztályozatlan). Homok, murva, andezit, föld: nincs mosott-címke. Az /anyagok és
+  /arak oldalon minőségi blokk az ügyfél Rólunk-bekezdésével.
+- Kerületlista SEO: /teruletek-en látható, kerületenkénti index (H3, horgony
+  `#kerulet-N`), Service JSON-LD `areaServed` (kerület → városrészek), a kerületi
+  területoldalakon a kerület városrészei, llms.txt. A keresőben a lenyitott
+  városrész-lista helyett horgonylink (nincs duplikált szöveg). Díj továbbra is
+  csak irányítószámból.
+- Hero-szöveg: az ügyfél mondata nyelvtanilag javított alakban marad
+  („Budapestre, Érdre és környékére").
+- „Töltősóder vagy mosott sóder?" útmutató címe → „…rostált sóder?", mert a
+  töltősóder is mosott.

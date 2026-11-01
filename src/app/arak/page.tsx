@@ -14,7 +14,7 @@ import {
 import { IconArrowRight, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
-import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
+import MaterialLedger, { GrossPriceBanner, LedgerHeader, WashedQualityNote } from "@/components/MaterialLedger";
 import PostalTariffTable from "@/components/PostalTariffTable";
 
 export const metadata: Metadata = pageMeta({
@@ -81,7 +81,8 @@ export default function ArakPage() {
         ])}
       />
 
-      <GrossPriceBanner className="mb-6" />
+      <GrossPriceBanner className="mb-4" />
+      <WashedQualityNote className="mb-6" />
       <LedgerHeader />
       <MaterialLedger openAll headingLevel={2} />
 

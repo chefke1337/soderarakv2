@@ -14,7 +14,7 @@ import Section from "@/components/Section";
 export const metadata: Metadata = pageMeta({
   title: "Rólunk – Minőség minden szemcsében",
   description:
-    "Gondosan osztályozott, kiváló minőségű építőanyagok. Sóderünk, kavicsunk és homokunk vizes osztályozási eljáráson megy keresztül — egyenletes szemcseméret, megbízható minőség magánépítkezőknek és kivitelezőknek.",
+    "Gondosan osztályozott, kiváló minőségű építőanyagok. Jó minőségű, mosott sóder és kavics, vizes osztályozással — egyenletes szemcseméret, megbízható minőség magánépítkezőknek és kivitelezőknek.",
   path: "/rolunk",
 });
 
@@ -96,31 +96,20 @@ export default function RolunkPage() {
               <li className="flex gap-3">
                 <IconDroplets size={17} className="mt-0.5 shrink-0 text-petrol-deep" />
                 <span>
-                  <strong className="font-semibold">{WASHED_SODER.label}</strong> — a teljes
-                  sóderkínálatra.
+                  <strong className="font-semibold">{WASHED_SODER.label}</strong> — minden
+                  sóderünk.
                 </span>
               </li>
               <li className="flex gap-3">
                 <IconDroplets size={17} className="mt-0.5 shrink-0 text-petrol-deep" />
                 <span>
-                  <strong className="font-semibold">{WASHED_KAVICS.label}</strong> — a
-                  frakcionált kavicsokra.
+                  <strong className="font-semibold">{WASHED_KAVICS.label}</strong> — minden
+                  kavicsunk; a kulé is mosott, de méret szerint osztályozatlan (kb. 32–125 mm).
                 </span>
               </li>
               <li className="flex gap-3">
                 <IconCheck size={17} className="mt-0.5 shrink-0 text-text-muted" />
-                <span>
-                  Vizes osztályozás: {washedNames.join(", ")}. Kivétel a{" "}
-                  <strong className="font-semibold">kulé</strong>: nagy szemcseméretű,
-                  osztályozatlan anyag.
-                </span>
-              </li>
-              <li className="flex gap-3">
-                <IconCheck size={17} className="mt-0.5 shrink-0 text-text-muted" />
-                <span>
-                  A mosottság-állítás <strong className="font-semibold">nem</strong> terjed
-                  ki a földre, a murvára és az andezitre.
-                </span>
+                <span>Vizes osztályozás: {washedNames.join(", ")}.</span>
               </li>
             </ul>
             <p className="mt-4 text-xs leading-relaxed text-text-muted">
@@ -129,52 +118,19 @@ export default function RolunkPage() {
             </p>
           </div>
 
-          {/* ── Cégadatok (impresszum-hivatkozás megőrizve) ── */}
-          <div className="rounded-[var(--radius-lg)] border border-border bg-surface-muted p-5 md:p-6">
-            <h2 className="text-sm font-semibold text-text-muted">Üzemeltető és cégadatok</h2>
-            <dl className="mt-3 space-y-2 text-sm">
-              <div>
-                <dt className="text-text-muted">Név</dt>
-                <dd className="font-medium">{company.name}</dd>
-              </div>
-              <div>
-                <dt className="text-text-muted">Üzletág</dt>
-                <dd className="font-medium">{company.businessUnit}</dd>
-              </div>
-              <div>
-                <dt className="text-text-muted">Adószám</dt>
-                <dd className="num font-medium">{company.legal.taxNumber}</dd>
-              </div>
-              <div>
-                <dt className="text-text-muted">Cégjegyzékszám</dt>
-                <dd className="num font-medium">{company.legal.registrationNumber}</dd>
-              </div>
-              <div>
-                <dt className="text-text-muted">Ügyfélfogadás</dt>
-                <dd className="font-medium">
-                  {company.hours.days}, {company.hours.time}
-                </dd>
-              </div>
-              <div data-call-region="rolunk">
-                <dt className="text-text-muted">Telefon</dt>
-                <dd className="font-medium">
-                  <PhoneLink className="num hover:text-brand-dark" />
-                </dd>
-              </div>
-              <div>
-                <dt className="text-text-muted">E-mail</dt>
-                <dd className="font-medium break-all">{company.email}</dd>
-              </div>
-            </dl>
-            <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-              <Link href="/impresszum" className="link">
-                Impresszum
-              </Link>
-              <Link href="/adatvedelem" className="link">
-                Adatkezelési tájékoztató
-              </Link>
-            </p>
-          </div>
+          {/* Cégadatok: az ügyfél kérésére a Rólunk oldalon a bemutatkozás áll a
+              cégadat-blokk helyett; a jogilag szükséges üzemeltetői adatok az
+              Impresszumban maradnak. */}
+          <p className="px-1 text-sm leading-relaxed text-text-muted">
+            Üzemeltetői és cégadatok:{" "}
+            <Link href="/impresszum" className="link">
+              Impresszum
+            </Link>{" "}
+            ·{" "}
+            <Link href="/adatvedelem" className="link">
+              Adatkezelési tájékoztató
+            </Link>
+          </p>
 
           {/* ── Két üzletág, két oldal ── */}
           <div className="rounded-[var(--radius-lg)] border border-petrol/30 bg-surface p-5 md:p-6">

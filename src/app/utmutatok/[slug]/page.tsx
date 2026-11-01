@@ -127,7 +127,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mitől függ az ár?",
       p: [
-        "Két tételből áll a végösszeg: az anyag BRUTTÓ ára köbméterenként, és a fuvar NETTÓ díja, amely a szállítási cím irányítószámától és a szállított mennyiségtől függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, bruttó 10 500 Ft/m³, míg a mosott sóderek (0–4, 0–8, 0–16, 0–24) bruttó 11 500 és 14 000 forint között mozognak köbméterenként.",
+        "Két tételből áll a végösszeg: az anyag BRUTTÓ ára köbméterenként, és a fuvar NETTÓ díja, amely a szállítási cím irányítószámától és a szállított mennyiségtől függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, bruttó 10 500 Ft/m³, míg a rostált sóderek (0–4, 0–8, 0–16, 0–24) bruttó 11 500 és 14 000 forint között mozognak köbméterenként.",
         `Az anyagárak az ÁFÁ-t tartalmazzák, rájuk nem kerül még egyszer ÁFA. A fuvardíj viszont nettó érték: arra ${VAT_PCT}% ÁFA jön. Minden ár tájékoztató jellegű — a végleges ajánlatot egyeztetés után adjuk.`,
       ],
       links: [

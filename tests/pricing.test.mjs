@@ -117,19 +117,18 @@ for (const removed of ["naturfold", "daraltfold", "tragyas-komposztos-fold"]) {
 /* ─────────────── 4. Mosott-jelölés kiterjedése ─────────────── */
 section("Mosott-jelölés (strukturált terméktulajdonság)");
 
-eq("Sóder csoportszintű jelölés", findMaterialGroup("soder").washed?.label, "Mosott sóder");
+// Ügyfél, 2026-11-01: „minden kavics és sóder mosott … jó minőségű MOSOTT".
+eq("Sóder csoportszintű jelölés", findMaterialGroup("soder").washed?.label, "Jó minőségű, mosott sóder");
 check(
   "minden sóder tételen ott a mosott jelölés",
-  findMaterialGroup("soder").items.every((i) => i.washed?.label === "Mosott sóder"),
+  findMaterialGroup("soder").items.every((i) => i.washed?.label === "Jó minőségű, mosott sóder"),
 );
+eq("Kavics csoportszintű jelölés", findMaterialGroup("kavics").washed?.label, "Jó minőségű, mosott kavics");
 check(
-  "a frakcionált kavicsokon ott az első osztályú, mosott jelölés",
-  findMaterialGroup("kavics")
-    .items.filter((i) => i.slug !== "kule")
-    .every((i) => i.washed?.label === "Első osztályú, mosott kavics"),
+  "minden kavics tételen (a kulén is) ott a mosott jelölés",
+  findMaterialGroup("kavics").items.every((i) => i.washed?.label === "Jó minőségű, mosott kavics"),
 );
-check("a kulé osztályozatlanként jelölt", findMaterial("kule").unclassified === true);
-check("a kulén NINCS mosott jelölés", !findMaterial("kule").washed);
+check("a kulé továbbra is osztályozatlanként jelölt", findMaterial("kule").unclassified === true);
 for (const slug of ["murva", "andezit", "fold"]) {
   check(
     `${slug}: a mosottság-állítás nem terjed ki (csoport)`,

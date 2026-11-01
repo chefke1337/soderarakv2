@@ -7,12 +7,12 @@ import {
 } from "@/content/site";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
-import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
+import MaterialLedger, { GrossPriceBanner, LedgerHeader, WashedQualityNote } from "@/components/MaterialLedger";
 
 export const metadata: Metadata = pageMeta({
   title: "Anyagok — sóder, homok, kavics, murva, andezit, föld",
   description:
-    "Ömlesztett építőanyagaink: mosott sóder frakciók (0–4-től 0–24-ig), bányahomok, első osztályú mosott kavics és osztályozatlan kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Bruttó árak Ft/m³.",
+    "Ömlesztett építőanyagaink: jó minőségű, mosott sóder (töltősóder, 0–4-től 0–24-ig), bányahomok, jó minőségű, mosott kavics és kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Bruttó árak Ft/m³.",
   path: "/anyagok",
 });
 
@@ -46,7 +46,8 @@ export default function AnyagokPage() {
           })),
         }}
       />
-      <GrossPriceBanner className="mb-6" />
+      <GrossPriceBanner className="mb-4" />
+      <WashedQualityNote className="mb-6" />
       <LedgerHeader />
       <MaterialLedger headingLevel={2} />
       <p className="mt-4 text-sm leading-relaxed text-ink-soft">

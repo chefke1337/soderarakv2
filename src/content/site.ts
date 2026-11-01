@@ -120,11 +120,8 @@ export const ROLUNK = {
   title: "Rólunk – Minőség minden szemcsében!",
   paragraphs: [
     "Számunkra a kiváló minőség és a megbízhatóság alapvető értékek. Éppen ezért kiemelt figyelmet fordítunk arra, hogy vásárlóink számára gondosan osztályozott, kiváló minőségű építőanyagokat kínáljunk.",
-    // Pontosítva az ügyfél 2026-10-27-i válasza alapján: a vizes osztályozás
-    // állítása a sóderre, kavicsra és homokra szól — így nincs ellentmondás
-    // az osztályozatlan kulé termékkel. A mosottság-állítás NEM terjed ki
-    // földre, murvára és andezitre.
-    "Sóderünk, kavicsunk és homokunk vizes osztályozási eljáráson megy keresztül. Ez az eljárás segít eltávolítani a nem kívánt szennyeződéseket, valamint biztosítja az egyenletesebb szemcseméretet és a megbízható minőséget.",
+    // Az ügyfél (2026-11-01) kérésére SZÓ SZERINT — ne szűkítsd.
+    "Minden általunk forgalmazott anyag vizes osztályozási eljáráson megy keresztül, legyen szó sóderről, kavicsról, homokról. Ez az eljárás segít eltávolítani a nem kívánt szennyeződéseket, valamint biztosítja az egyenletesebb szemcseméretet és a megbízható minőséget.",
     "Célunk, hogy magánépítkezők, kivitelezők és építőipari vállalkozások egyaránt olyan alapanyagokhoz jussanak, amelyek megfelelnek a minőségi elvárásoknak, és amelyekre bátran építhetnek.",
     "Legyen szó betonozásról, alapozásról vagy más építőipari munkáról, nálunk a minőség az első.",
   ],
@@ -374,7 +371,7 @@ export const guides = [
   },
   {
     slug: "toltosoder-es-rostalt-soder",
-    title: "Töltősóder vagy mosott sóder? A különbség",
+    title: "Töltősóder vagy rostált sóder? A különbség",
     excerpt:
       "Miért olcsóbb a töltősóder, és mikor elég az? Anyagminőség, felhasználás és bruttó ár egy helyen.",
   },

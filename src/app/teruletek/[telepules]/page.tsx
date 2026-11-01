@@ -21,6 +21,7 @@ import {
 import { formatFt, IconArrowRight, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, faqJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
+import { districtAreas } from "@/content/districts";
 
 export function generateStaticParams() {
   return serviceAreas.map((s) => ({ telepules: s.slug }));
@@ -72,6 +73,10 @@ export default async function AreaPage({
   if (!area) notFound();
 
   const profiles = profilesFor(area);
+  const district =
+    area.freight.kind === "profile" && area.freight.districtId
+      ? districtAreas(area.freight.districtId)
+      : undefined;
   const hasTariff = profiles.length > 0;
   const range = freightRangeLabel(profiles);
   const allCodes = profiles.flatMap((p) => [...p.postalCodes]);
@@ -96,7 +101,7 @@ export default async function AreaPage({
     },
     {
       q: `Milyen anyagokat szállítanak ${area.name} területére?`,
-      a: `Mosott sódert (0–4-től 0–24-ig és töltősódert), bányahomokot és 0–1 homokot, első osztályú mosott kavicsot és osztályozatlan kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
+      a: `Jó minőségű, mosott sódert (töltősódert és 0–4-től 0–24-ig), bányahomokot és 0–1 homokot, jó minőségű, mosott kavicsot és kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
     },
   ];
 
@@ -191,6 +196,23 @@ export default async function AreaPage({
                 bruttó Ft/m³ értékek.
               </p>
               <PhoneLink className="num btn btn-primary mt-4" />
+            </div>
+          )}
+
+          {/* ── A kerület városrészei (ügyfél listája; tájékoztató, nem díjképző) ── */}
+          {district && (
+            <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
+              <h2 className="font-display text-heading-sm font-bold">
+                Városrészek a {romanDistrict(district.id)} kerületben
+                {district.name ? ` (${district.name})` : ""}
+              </h2>
+              <p className="mt-3 text-sm leading-relaxed">{district.areas.join(", ")}</p>
+              <p className="mt-3 text-xs leading-relaxed text-ink-soft">
+                A fuvardíjat a szállítási cím irányítószáma határozza meg, nem a városrész.{" "}
+                <Link href={`/teruletek#kerulet-${district.id}`} className="link">
+                  Minden kerület és városrész
+                </Link>
+              </p>
             </div>
           )}
 

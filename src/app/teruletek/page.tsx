@@ -5,6 +5,7 @@ import {
   company,
   freightProfiles,
   quoteOnlyAreas,
+  romanDistrict,
   serviceAreas,
   tariffedAreas,
 } from "@/content/site";
@@ -13,10 +14,12 @@ import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 import AreaFinder from "@/components/AreaFinder";
+import DistrictIndex from "@/components/DistrictIndex";
+import { budapestDistrictAreas } from "@/content/districts";
 
 export const metadata: Metadata = pageMeta({
   title: "Területek — hol szállítunk sódert és ömlesztett anyagot",
-  description: `Szolgáltatási terület: Budapest mind a ${budapestDistricts.length} kerülete és Érd, irányítószám-alapú fuvardíjjal. További településekhez (${quoteOnlyAreas.map((a) => a.name).join(", ")}) egyedi szállítási egyeztetés szükséges.`,
+  description: `Sóder, homok, kavics, murva, andezit és föld szállítás Budapest mind a ${budapestDistricts.length} kerületébe és városrészeibe (pl. Kelenföld, Albertfalva, Budafok, Óbuda, Rákoshegy, Csepel) és Érdre, irányítószám-alapú fuvardíjjal. További településekhez (${quoteOnlyAreas.map((a) => a.name).join(", ")}) egyedi egyeztetés.`,
   path: "/teruletek",
 });
 
@@ -48,6 +51,25 @@ export default function TeruletekPage() {
         }}
       />
 
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          name: "Ömlesztett építőanyag szállítás",
+          serviceType: "Sóder, homok, kavics, murva, andezit és föld házhoz szállítása",
+          provider: { "@id": `${company.site.url}/#business` },
+          url: `${company.site.url}/teruletek/`,
+          areaServed: [
+            ...budapestDistrictAreas.map((d) => ({
+              "@type": "AdministrativeArea",
+              name: `Budapest ${romanDistrict(d.id)} kerület${d.name ? ` (${d.name})` : ""}`,
+              containsPlace: d.areas.map((a) => ({ "@type": "Place", name: a })),
+            })),
+            { "@type": "City", name: "Érd" },
+          ],
+        }}
+      />
+
       <div className="space-y-12">
         {/* ── Kereshető területlista (kerület, terület, irányítószám) ── */}
         <div>
@@ -75,6 +97,9 @@ export default function TeruletekPage() {
             </Link>
           </div>
         </div>
+
+        {/* ── Kerületek és városrészek (statikus, indexelhető lista) ── */}
+        <DistrictIndex />
 
         {/* ── Kiemelt területek saját oldallal ── */}
         <div>
