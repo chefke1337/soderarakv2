@@ -35,7 +35,7 @@ jobs:
         env:
           GH_PAGES_BASE_PATH: /soderarakv3
           NEXT_PUBLIC_SITE_URL: https://chefke1337.github.io/soderarakv3
-        run: npx next build && node scripts/prepare-static-export.mjs
+        run: (npx next build || (sleep 10 && npx next build)) && node scripts/prepare-static-export.mjs
       - name: a11y (axe WCAG A/AA) — published build
         run: set -o pipefail; npm run test:a11y 2>&1 | tail -n 40
       - name: mobile layout 360px — published build
@@ -47,6 +47,23 @@ jobs:
             msg=$(tail -n 40 mobile.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
             echo "::error title=mobile audit (tail)::${msg}"; exit 1; }
 
+      - name: Regression (browser) — published build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run test:regression 2>&1 | tee regression.log | tail -n 60 || {
+            msg=$(grep -E "FAIL|regression:" regression.log | tail -n 40 | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+            echo "::error title=regression::${msg}"; exit 1; }
+          msg=$(grep -E "regression:" regression.log | sed -e 's/%/%25/g')
+          echo "::notice title=regression::${msg}"
+      - name: Lighthouse (local static server, mobile preset) — published build
+        continue-on-error: true
+        shell: bash
+        run: |
+          npm run perf:lighthouse 2>&1 | tee lh.log | tail -n 40
+          msg=$(tail -n 30 lh.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+          echo "::notice title=lighthouse::${msg}"
+
       # 2) Mock végponttal (a valódi beküldési út, MOCK jelöléssel)
       - name: Build with mock order endpoint
         env:
@@ -57,7 +74,8 @@ jobs:
         run: |
           set -o pipefail
           rm -rf .next out
-          (npx next build && node scripts/prepare-static-export.mjs) 2>&1 | tee mockbuild.log | tail -n 30 || {
+          # A Google Fonts letöltése a CI-ban időnként átmenetileg elbukik → egy újrapróba.
+          (npx next build || (sleep 10 && npx next build)) 2>&1 | tee mockbuild.log | tail -n 30 && node scripts/prepare-static-export.mjs 2>&1 | tail -n 10 || {
             msg=$(tail -n 40 mockbuild.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
             echo "::error title=mock build (tail)::${msg}"; exit 1; }
       - name: Smoke (calculator + order intent, mock backend)
