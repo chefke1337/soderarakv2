@@ -35,7 +35,7 @@ class MapErrorBoundary extends Component<
         <div
           role="status"
           style={{ "--map-h": `${this.props.height}px` } as React.CSSProperties}
-          className="flex h-[min(var(--map-h),90vw)] w-full items-center justify-center rounded-sm border border-line-strong bg-sand p-6 text-center text-sm text-ink-soft"
+          className="flex h-[min(var(--map-h),72vw)] w-full items-center justify-center rounded-sm border border-line-strong bg-sand p-6 text-center text-sm text-ink-soft"
         >
           A térkép most nem tölthető be. A lefedettség és a fuvardíjak alább
           olvashatók.
@@ -82,7 +82,7 @@ export default function LefedettsegTerkepLazy({
       <div
         ref={hostRef}
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
-        className="min-h-[min(var(--map-h),90vw)]"
+        className="min-h-[min(var(--map-h),72vw)]"
       >
         {shouldLoad ? (
           <MapErrorBoundary height={height}>
@@ -92,7 +92,7 @@ export default function LefedettsegTerkepLazy({
           <div
             role="status"
             style={{ "--map-h": `${height}px` } as React.CSSProperties}
-            className="flex h-[min(var(--map-h),90vw)] w-full items-center justify-center rounded-sm border border-line-strong bg-sand text-sm text-ink-soft"
+            className="flex h-[min(var(--map-h),72vw)] w-full items-center justify-center rounded-sm border border-line-strong bg-sand text-sm text-ink-soft"
           >
             Térkép betöltése…
           </div>

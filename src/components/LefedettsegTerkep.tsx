@@ -268,7 +268,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
       <div
         ref={containerRef}
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
-        className="h-[min(var(--map-h),90vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
+        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
         role="region"
         aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A konkrét fuvardíjak az irányítószámos díjlistában olvashatók."
       />
