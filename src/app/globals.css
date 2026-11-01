@@ -593,6 +593,10 @@ summary::-webkit-details-marker {
 .leaflet-tooltip.city-label::before {
   display: none;
 }
+/* Ütköző felirat (LefedettsegTerkep declutter): rejtve, a pont popupja marad. */
+.leaflet-tooltip.city-label.is-hidden {
+  visibility: hidden;
+}
 
 /* Hero: kiszolgálási terület kiemelése (V1 .em-accent-sm mintájára, sötét alapon) */
 .hero-area {

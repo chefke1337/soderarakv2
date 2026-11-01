@@ -1,8 +1,10 @@
 "use client";
 
 import { useId, useMemo, useState } from "react";
+import Link from "next/link";
 import {
   bandLabel,
+  districtPageSlug,
   freightProfiles,
   FREIGHT_VAT_RATE,
   normalizePostalCode,
@@ -94,7 +96,18 @@ function ProfileRow({ profile }: { profile: FreightProfile }) {
   return (
     <li className="tariff-row">
       <div className="min-w-0">
-        <p className="font-display text-heading-xs font-bold">{profile.label}</p>
+        <p className="font-display text-heading-xs font-bold">
+          {profile.municipalityId === "budapest" && profile.districtId ? (
+            <Link
+              href={`/teruletek/${districtPageSlug(profile.districtId)}`}
+              className="underline-offset-4 hover:text-brand-dark hover:underline"
+            >
+              {profile.label}
+            </Link>
+          ) : (
+            profile.label
+          )}
+        </p>
         <p className="num mt-1 text-sm leading-relaxed text-ink-soft">
           {profile.postalCodes.join(", ")}
         </p>

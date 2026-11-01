@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { freightProfiles, romanDistrict, serviceAreas } from "@/content/site";
+import { districtPageSlug, freightProfiles, romanDistrict } from "@/content/site";
 import { budapestDistrictAreas, DISTRICT_AREAS_SOURCE } from "@/content/districts";
 
 /**
@@ -25,20 +25,14 @@ export default function DistrictIndex() {
           const codes = freightProfiles
             .filter((p) => p.municipalityId === "budapest" && p.districtId === d.id)
             .flatMap((p) => [...p.postalCodes]);
-          const page = serviceAreas.find(
-            (a) => a.freight.kind === "profile" && a.freight.districtId === d.id && /kerület/.test(a.name),
-          );
+          const slug = districtPageSlug(d.id);
           const title = `Budapest ${romanDistrict(d.id)} kerület${d.name ? ` – ${d.name}` : ""}`;
           return (
             <li key={d.id} id={`kerulet-${d.id}`} className="district-index-item">
               <h3 className="font-display text-[1.0625rem] font-bold">
-                {page ? (
-                  <Link href={`/teruletek/${page.slug}`} className="hover:text-brand-dark">
-                    {title}
-                  </Link>
-                ) : (
-                  title
-                )}
+                <Link href={`/teruletek/${slug}`} className="underline-offset-4 hover:text-brand-dark hover:underline">
+                  {title}
+                </Link>
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed text-text">{d.areas.join(", ")}</p>
               {codes.length > 0 && (

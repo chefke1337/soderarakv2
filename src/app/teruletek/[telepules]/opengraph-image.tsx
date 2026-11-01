@@ -1,10 +1,10 @@
-import { findServiceArea, freightProfiles, serviceAreas } from "@/content/site";
+import { areaPages, findAreaPage, freightProfiles } from "@/content/site";
 import { ogCard } from "@/lib/og";
 
 export const dynamic = "force-static";
 
 export function generateStaticParams() {
-  return serviceAreas.map((area) => ({ telepules: area.slug }));
+  return areaPages.map((area) => ({ telepules: area.slug }));
 }
 
 export const size = { width: 1200, height: 630 };
@@ -19,7 +19,7 @@ export default async function OgImage({
   params: Promise<{ telepules: string }>;
 }) {
   const { telepules } = await params;
-  const area = findServiceArea(telepules);
+  const area = findAreaPage(telepules);
 
   if (!area) {
     return ogCard({

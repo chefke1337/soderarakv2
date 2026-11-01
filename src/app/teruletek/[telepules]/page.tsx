@@ -4,7 +4,10 @@ import { notFound } from "next/navigation";
 import {
   bandLabel,
   company,
-  findServiceArea,
+  areaPages,
+  CASTLE_DISTRICT_ID,
+  districtAreaPages,
+  findAreaPage,
   freightProfiles,
   FREIGHT_VAT_RATE,
   MIN_ORDER_M3,
@@ -16,7 +19,7 @@ import {
   SINGLE_TRIP_MAX_M3,
   UNSUPPORTED_NOTICE,
   type FreightProfile,
-  type ServiceArea,
+  type AreaPage,
 } from "@/content/site";
 import { formatFt, IconArrowRight, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, faqJsonLd, JsonLd, pageMeta } from "@/lib/meta";
@@ -24,11 +27,11 @@ import Section from "@/components/Section";
 import { districtAreas } from "@/content/districts";
 
 export function generateStaticParams() {
-  return serviceAreas.map((s) => ({ telepules: s.slug }));
+  return areaPages.map((s) => ({ telepules: s.slug }));
 }
 
 /** A területhez tartozó díjprofil(ok) — egy kerülethez több is lehet (XI.). */
-function profilesFor(area: ServiceArea): FreightProfile[] {
+function profilesFor(area: AreaPage): FreightProfile[] {
   if (area.freight.kind !== "profile") return [];
   const f = area.freight;
   return freightProfiles.filter(
@@ -50,7 +53,7 @@ export async function generateMetadata({
   params: Promise<{ telepules: string }>;
 }): Promise<Metadata> {
   const { telepules } = await params;
-  const area = findServiceArea(telepules);
+  const area = findAreaPage(telepules);
   if (!area) return {};
   const profiles = profilesFor(area);
   const range = freightRangeLabel(profiles);
@@ -69,7 +72,7 @@ export default async function AreaPage({
   params: Promise<{ telepules: string }>;
 }) {
   const { telepules } = await params;
-  const area = findServiceArea(telepules);
+  const area = findAreaPage(telepules);
   if (!area) notFound();
 
   const profiles = profilesFor(area);
@@ -80,7 +83,20 @@ export default async function AreaPage({
   const hasTariff = profiles.length > 0;
   const range = freightRangeLabel(profiles);
   const allCodes = profiles.flatMap((p) => [...p.postalCodes]);
-  const others = serviceAreas.filter((x) => x.slug !== area.slug).slice(0, 8);
+  const districtId = area.freight.kind === "profile" ? area.freight.districtId : undefined;
+  const isDistrictPage = districtAreaPages.some((d) => d.slug === area.slug);
+  // Kerületi oldalon a szomszédos sorszámú kerületek oldalai; egyébként a kiemelt területek.
+  const others: AreaPage[] = isDistrictPage && districtId
+    ? [...districtAreaPages, ...serviceAreas.filter((a) => /kerület/.test(a.name))]
+        .filter((x) => x.slug !== area.slug && x.freight.kind === "profile" && x.freight.districtId !== undefined)
+        .sort((a, b) => {
+          const da = a.freight.kind === "profile" ? Math.abs((a.freight.districtId ?? 0) - districtId) : 99;
+          const db = b.freight.kind === "profile" ? Math.abs((b.freight.districtId ?? 0) - districtId) : 99;
+          return da - db;
+        })
+        .slice(0, 6)
+    : serviceAreas.filter((x) => x.slug !== area.slug).slice(0, 8);
+  const maxM3 = profiles.length ? Math.max(...profiles.map((p) => profileMaxM3(p))) : SINGLE_TRIP_MAX_M3;
 
   const areaFaq = [
     {
@@ -99,6 +115,29 @@ export default async function AreaPage({
           ? `Budafok környékén a kiszállás gyakran aznap megtörténik. Hívás: ${company.phone.display}.`
           : `Egyeztetett időpontban szállítunk. Hívás: ${company.phone.display}.`,
     },
+    ...(hasTariff
+      ? [
+          {
+            q: `Mennyi anyagot visznek ki egy fuvarral ${area.name} területére?`,
+            a:
+              maxM3 < SINGLE_TRIP_MAX_M3
+                ? `Ide egy fuvarral legfeljebb ${maxM3} m³ szállítható a feltüntetett díjjal; ${maxM3} m³ felett egyedi egyeztetés szükséges. Minimum rendelés ${MIN_ORDER_M3} m³.`
+                : `Egy fuvarral legfeljebb ${SINGLE_TRIP_MAX_M3} m³; 10 m³ felett többfuvaros, egyedi ajánlatot adunk. Minimum rendelés ${MIN_ORDER_M3} m³.`,
+          },
+          {
+            q: `Melyik irányítószámokra érvényes a díj?`,
+            a: `${allCodes.join(", ")}. A fuvardíjat mindig a szállítási cím pontos irányítószáma határozza meg${profiles.length > 1 ? " — ebben a kerületben nem minden irányítószám tartozik ugyanabba a díjprofilba" : ""}.`,
+          },
+        ]
+      : []),
+    ...(districtId === CASTLE_DISTRICT_ID
+      ? [
+          {
+            q: "Szállítanak a Várba?",
+            a: `${PERMIT_NOTICE} Ha a cím a Vár területén van, mindenképpen egyeztessen előre telefonon: ${company.phone.display}.`,
+          },
+        ]
+      : []),
     {
       q: `Milyen anyagokat szállítanak ${area.name} területére?`,
       a: `Jó minőségű, mosott sódert (töltősódert és 0–4-től 0–24-ig), bányahomokot és 0–1 homokot, jó minőségű, mosott kavicsot és kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
@@ -110,7 +149,7 @@ export default async function AreaPage({
     "@type": "Service",
     name: `Ömlesztett anyag szállítás — ${area.name}`,
     url: `${company.site.url}/teruletek/${area.slug}/`,
-    areaServed: { "@type": "Place", name: area.name },
+    areaServed: { "@type": districtId ? "AdministrativeArea" : "Place", name: area.name },
     provider: { "@id": `${company.site.url}/#business` },
   };
 
@@ -248,7 +287,9 @@ export default async function AreaPage({
 
           {/* ── További területek ── */}
           <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
-            <h2 className="font-display text-heading-sm font-bold">További területek</h2>
+            <h2 className="font-display text-heading-sm font-bold">
+              {isDistrictPage ? "További kerületek" : "További területek"}
+            </h2>
             <ul className="mt-3 flex flex-wrap gap-2">
               {others.map((o) => (
                 <li key={o.slug}>
@@ -265,7 +306,7 @@ export default async function AreaPage({
               href="/teruletek"
               className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2"
             >
-              Minden kiszolgált terület →
+              Minden kerület és terület →
             </Link>
           </div>
 

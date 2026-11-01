@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import type { Map as LeafletMap, LayerGroup } from "leaflet";
+import type { CircleMarker, Map as LeafletMap, LayerGroup } from "leaflet";
 import { serviceAreas } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // kommentet az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
@@ -42,6 +42,33 @@ const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
   diosd: "bottom",
 };
 
+/**
+ * Feliratok fontossági sorrendje ütközés esetén (kisebb = fontosabb). Keskeny
+ * térképen (mobil) a sűrű budafoki/XI. kerületi pontok feliratai egymásra
+ * csúsznának — ilyenkor a kevésbé fontos felirat rejtve marad; a pont
+ * koppintásra/kattintásra továbbra is megmutatja a nevét (popup), nagyításra
+ * pedig a felirat visszajön.
+ */
+const LABEL_PRIORITY = [
+  "erd",
+  "budapest-22-kerulet",
+  "ujbuda-budapest-11-kerulet",
+  "csepel",
+  "budafok",
+  "albertfalva",
+  "budateteny",
+  "nagyteteny",
+  "diosd",
+  "torokbalint",
+  "tarnok",
+  "soskut",
+  "pusztazamor",
+];
+const labelRank = (slug: string) => {
+  const i = LABEL_PRIORITY.indexOf(slug);
+  return i < 0 ? LABEL_PRIORITY.length : i;
+};
+
 export default function LefedettsegTerkep({ height = 420 }: { height?: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -78,12 +105,13 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         L.control.scale({ imperial: false }).addTo(map);
 
         const group = L.layerGroup().addTo(map);
+        const labelled: { rank: number; marker: CircleMarker }[] = [];
 
         for (const area of serviceAreas) {
           const hasTariff = area.freight.kind === "profile";
           const style = hasTariff ? MARKER.tariff : MARKER.quote;
           const name = area.shortName;
-          L.circleMarker(area.latlng, {
+          const marker = L.circleMarker(area.latlng, {
             radius: hasTariff ? 6 : 4.5,
             color: style.ring,
             weight: 1.5,
@@ -102,7 +130,29 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
                 ? `<strong>${area.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small>`
                 : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small>`,
             );
+          labelled.push({ rank: labelRank(area.slug), marker });
         }
+        labelled.sort((a, b) => a.rank - b.rank);
+
+        /** Ütköző vagy a térképről kilógó feliratok elrejtése, fontossági sorrendben. */
+        const declutter = () => {
+          const box = containerRef.current?.getBoundingClientRect();
+          if (!box) return;
+          const kept: DOMRect[] = [];
+          for (const { marker } of labelled) {
+            const el = marker.getTooltip()?.getElement();
+            if (!el) continue;
+            el.classList.remove("is-hidden");
+            const r = el.getBoundingClientRect();
+            const outside = r.left < box.left || r.right > box.right || r.top < box.top || r.bottom > box.bottom;
+            const hit = kept.some(
+              (k) => r.left < k.right + 2 && r.right > k.left - 2 && r.top < k.bottom + 1 && r.bottom > k.top - 1,
+            );
+            if (outside || hit) el.classList.add("is-hidden");
+            else kept.push(r);
+          }
+        };
+        map.on("zoomend moveend resize", declutter);
 
         // A keretezés a tényleges jelölésekre illeszkedik, nem beégetett nézetre.
         const points = serviceAreas.map((a) => a.latlng);
@@ -122,6 +172,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           fitting = false;
         };
         if (points.length > 0) fit();
+        declutter();
 
         // A doboz méretváltozásakor (ablak, elforgatás, lusta betöltés) a Leaflet
         // alapból a bal felső sarkot tartja meg — ezért újraillesztünk, amíg a
