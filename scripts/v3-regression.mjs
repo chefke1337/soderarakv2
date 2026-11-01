@@ -173,12 +173,14 @@ for (const [w, h] of [[360, 740], [768, 1024], [1440, 900]]) {
       const top = await page.evaluate(() => document.querySelector(".leaflet-container").getBoundingClientRect().top + scrollY);
       await page.evaluate((t) => window.scrollTo(0, t + 30), top);
       await page.waitForTimeout(200);
-      const headerOnTop = await page.evaluate(() => {
-        const h = document.querySelector("body > header, header[class*='sticky']") ?? document.querySelector("header");
+      const hdr = await page.evaluate(() => {
+        const h = document.querySelector("header.sticky, body > header") ?? document.querySelector("header");
         const b = h.getBoundingClientRect();
-        return [b.left + 30, b.left + b.width / 2, b.right - 30].every((x) => h.contains(document.elementFromPoint(x, b.bottom - 4)));
+        const m = document.querySelector(".leaflet-container").getBoundingClientRect();
+        const hits = [b.left + 30, b.left + b.width / 2, b.right - 30].map((x) => h.contains(document.elementFromPoint(x, b.bottom - 4)));
+        return { underHeader: m.top < b.bottom && m.bottom > b.bottom, onTop: hits.every(Boolean) };
       });
-      check(`térkép ${r} ${w}px: a sticky fejléc a térkép fölött marad`, headerOnTop);
+      check(`térkép ${r} ${w}px: a sticky fejléc a térkép fölött marad (térkép a fejléc alatt: ${hdr.underHeader})`, hdr.onTop);
     }
     await ctx.close();
   }

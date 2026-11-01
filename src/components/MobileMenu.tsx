@@ -22,10 +22,23 @@ export default function MobileMenu() {
   useEffect(() => setOpen(false), [pathname]);
 
   // Nyitáskor a fókusz az első menüpontra kerül (billentyűzet, képernyőolvasó)
+  // (A panel láthatósága — főleg reduced-motion alatt — egy-két képkockával a
+  // nyitás után frissül; amíg nem fókuszálható, rövid ideig újrapróbáljuk.)
   useEffect(() => {
     if (!open) return;
-    const id = requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>("a")?.focus());
-    return () => cancelAnimationFrame(id);
+    let tries = 0;
+    let timer = 0;
+    const id = requestAnimationFrame(function tryFocus() {
+      const first = panelRef.current?.querySelector<HTMLElement>("a");
+      first?.focus();
+      if (first && document.activeElement !== first && tries++ < 12) {
+        timer = window.setTimeout(tryFocus, 25);
+      }
+    });
+    return () => {
+      cancelAnimationFrame(id);
+      window.clearTimeout(timer);
+    };
   }, [open]);
 
   useEffect(() => {
