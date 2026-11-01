@@ -200,7 +200,8 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         };
         const declutter = () => {
           const host = containerRef.current;
-          if (!host) return;
+          // (Leszerelés után — a késleltetett második kör már ne fusson.)
+          if (!host || mapRef.current !== map) return;
           const W = host.clientWidth;
           const H = host.clientHeight;
           if (!W || !H) return;
