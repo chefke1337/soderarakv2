@@ -237,7 +237,7 @@ for (const file of htmlFiles) {
     );
     html = html
       .replace(/<title>[\s\S]*?<\/title>/, "<title>404 — Az oldal nem található | Sóderárak</title>")
-      .replace(/(<meta name="description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Sóder, homok, kavics és murva szállítás Budafokról — hívjon, vagy indítsa el az árkalkulátort.$2`)
+      .replace(/(<meta name="description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Sóder, homok, kavics, murva, andezit és föld szállítás Budapestre és Érdre — hívjon, vagy indítsa el az árkalkulátort.$2`)
       .replace(/(<meta property="og:title" content=")[^"]*("\/>)/, `$1404 — Az oldal nem található$2`)
       .replace(/(<meta property="og:description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Hívjon, vagy indítsa el az árkalkulátort.$2`)
       .replace(/(<meta name="twitter:title" content=")[^"]*("\/>)/, `$1404 — Az oldal nem található$2`)

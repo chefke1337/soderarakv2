@@ -87,8 +87,8 @@ export default function Footer() {
             külön. A végleges ajánlatot egyeztetés után adjuk.
           </p>
           <p className="flex gap-4">
-            <Link href="/adatvedelem" className="underline underline-offset-2 hover:text-paper">Adatvédelem</Link>
-            <Link href="/impresszum" className="underline underline-offset-2 hover:text-paper">Impresszum</Link>
+            <Link href="/adatvedelem" className="inline-flex min-h-6 items-center underline underline-offset-2 hover:text-paper">Adatvédelem</Link>
+            <Link href="/impresszum" className="inline-flex min-h-6 items-center underline underline-offset-2 hover:text-paper">Impresszum</Link>
           </p>
         </div>
       </div>
