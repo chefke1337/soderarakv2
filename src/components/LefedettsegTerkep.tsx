@@ -182,7 +182,12 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         const place = (lb: Label, dir: Dir) => {
           lb.marker.unbindTooltip();
           lb.marker.bindTooltip(lb.text, { permanent: true, direction: dir, offset: [0, 0], className: lb.className });
-          return lb.marker.getTooltip()?.getElement() ?? null;
+          const tip = lb.marker.getTooltip();
+          // Az újrakötött feliratot a Leaflet nem mindig pozicionálja azonnal
+          // (pl. reduced-motion alatt) — mérés előtt kényszerített frissítés.
+          if (tip && !lb.marker.isTooltipOpen()) lb.marker.openTooltip();
+          tip?.update();
+          return tip?.getElement() ?? null;
         };
         const declutter = () => {
           const box = containerRef.current?.getBoundingClientRect();
