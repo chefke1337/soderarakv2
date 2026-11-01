@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { Component, type ReactNode, useEffect, useRef, useState } from "react";
-import { quoteOnlyAreas, tariffedAreas } from "@/content/site";
+import { budapestDistricts, quoteOnlyAreas, tariffedAreas } from "@/content/site";
 
 const Map = dynamic(() => import("@/components/LefedettsegTerkep"), {
   ssr: false,
@@ -111,8 +111,9 @@ export default function LefedettsegTerkepLazy({
               <span>
                 <span className="font-medium">Irányítószám-alapú fuvardíj</span>
                 <span className="num block text-ink-soft">
-                  {tariffedAreas.length} kiszolgált terület — a díj a konkrét
-                  irányítószámtól és a mennyiségtől függ
+                  Budapest mind a {budapestDistricts.length} kerülete (római szám), Érd
+                  és {tariffedAreas.filter((a) => !/kerület|Érd/.test(a.name)).length} kiemelt
+                  városrész — a díj a konkrét irányítószámtól és a mennyiségtől függ
                 </span>
               </span>
             </li>
@@ -131,8 +132,9 @@ export default function LefedettsegTerkepLazy({
             </li>
           </ul>
           <p className="mt-2 text-xs leading-relaxed text-ink-soft">
-            A térkép csak áttekintés: a kiszolgált területeket jelöli, nem
-            irányítószám-határokat. A fuvardíj alapja mindig a megadott
+            A térkép csak áttekintés: a kerületeket a hozzávetőleges
+            középpontjuk jelöli, nem irányítószám- vagy kerülethatár. A jelölésre
+            kattintva a terület oldala nyílik. A fuvardíj alapja mindig a megadott
             irányítószám — a pontos díjakat a kereshető díjlista tartalmazza.
           </p>
         </>

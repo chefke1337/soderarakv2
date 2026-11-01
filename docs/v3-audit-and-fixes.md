@@ -62,6 +62,10 @@ Az alábbi PASS csak ott áll, ahol kód + renderelt kimenet + futtatott teszt i
 | S-1 | P2 | 20 kerületnek nem volt saját oldala (csak XI., XXI., XXII.) | — | kerületi oldalak központi adatból (lásd 4.) | 23/23 elérhető (regresszió) |
 | S-2 | P2 | Impresszum meta description túl rövid (53 kar.) | — | bővítve, valós tartalommal | SEO-szkript |
 | U-1 | P2 | 360 px: tördelt „Minden kerület és városrész" / hosszú kerületcím-link középpontja nem a linkre esik | inline link két sorban | blokk/inline-flex, 44 px magas link | 360px audit PASS |
+| D-1 | P0 (adat) | A webalkalmazás-manifest „Tájékoztató **nettó** árak"-at állított (az anyagárak bruttók); a manifest és a 404 leírása „Budafokról" szállítást írt | régi V2-szöveg | „Bruttó anyagárak Ft/m³-ben, a fuvar irányítószám szerint"; 404: „Budapestre és Érdre" | build-kimenet |
+| L-1 | P1 (mérés) | A Lighthouse-mérőszkript base path-os buildnél az összes CSS/JS-re 404-et kapott → a korábbi Lighthouse-pontszámok stílus/JS nélküli oldalt mértek (érvénytelenek) | a harness nem vette le a `/soderarakv3` előtagot | előtag-kezelés (a smoke-teszt mintájára), 4 kategória, 8 route, metrikák | lásd 6. — axe és 360px-audit eszközei helyesek voltak |
+| P-1 | P1 (perf) | Főoldal Lighthouse Performance 67 | (a) a hero H1 (LCP-elem) átlátszóságból úszott be → ~1 s LCP-késés (mért A/B: 3,94–4,03 s → 2,94–3,01 s); (b) a hat kupac inline SVG-je ~70 KB, kétszer (HTML + RSC) | (a) H1 csak elmozdul, azonnal látható; (b) kupacok statikus `/kupac/*.svg` fájlként, méretfoglalással | főoldal HTML 505→350 KB (gz 76→42 KB); Performance 67→86 |
+| U-2 | P2 (a11y) | Lábléc „Adatvédelem"/„Impresszum" link 20 px magas (target-size) | inline szöveg-link | min. 24 px | Lighthouse a11y |
 | H-1 | P3 | Időszakos React #418 hydration-hiba (~1–3% betöltés, a teljes `<body>` kliensoldali újrarenderelése) | NEM javítva — lásd 7. | — | regresszió külön WARN-ként számolja |
 
 ## 3. Térkép (Leaflet + OpenStreetMap)
@@ -100,26 +104,32 @@ Nem készült: városrészenkénti oldal (≈250 csak névben eltérő oldal len
 ### Indexelési döntés
 A V3 jóváhagyott szerepe: **preview** — minden oldal `noindex, follow`. Nincs végleges indexelési jóváhagyás, ezért **megőrizve**. Következmény: az új SEO-oldalak keresőben NEM jelenhetnek meg, amíg az indexelés nincs élesítve; Lighthouse SEO = 66 (egyetlen bukó audit: `is-crawlable`). Élesítési terv (jóváhagyás után): `noindex` le, végleges domain canonical/`NEXT_PUBLIC_SITE_URL`, sitemap beküldése Search Console-ba.
 
-## 6. Mérések (CI, helyi statikus szerver, Lighthouse mobil preset, szimulált throttling)
+## 6. Mérések (CI, helyi statikus szerver, Lighthouse 13 mobil preset, szimulált throttling, javított harness)
 
-| Route | Perf | A11y | BP | SEO |
-|---|---|---|---|---|
-| / | 100 | 96 | 96 | 66* |
-| /arkalkulator/ | 100 | 97 | 96 | 66* |
-| /arak/ | 100 | 97 | 96 | 66* |
-| /teruletek/ | 100 | 96 | 96 | 66* |
-| /teruletek/budapest-14-kerulet/ | 100 | 96 | 96 | 66* |
-| /utmutatok/ | 100 | 96 | 96 | 66* |
-| /anyagok/soder/ | 100 | 96 | 96 | 69* |
-| /teruletek/erd/ | 100 | 96 | 96 | 66* |
+| Route | Perf | A11y | BP | SEO | FCP / LCP / TBT / CLS |
+|---|---|---|---|---|---|
+| / | 86 (előtte 67) | 97* | 100 | 69** | 2,26 s / 3,68 s / 101 ms / 0,001 |
+| /arkalkulator/ | 96 | 100 | 100 | 66** | 1,05 s / 1,80 s / 65 ms / **0,115** |
+| /arak/ | 89 | 100 | 100 | 66** | 2,25 s / 3,30 s / 73 ms / 0 |
+| /teruletek/ | 93 | 100 | 100 | 66** | 2,25 s / 2,85 s / 35 ms / 0 |
+| /teruletek/budapest-14-kerulet/ | 93 | 100 | 100 | 66** | 1,95 s / 3,00 s / 63 ms / 0 |
+| /utmutatok/ | 94 | 100 | 100 | 66** | 2,10 s / 2,70 s / 71 ms / 0 |
+| /anyagok/soder/ | 92 | 100 | 100 | 69** | 2,10 s / 3,15 s / 33 ms / 0 |
+| /teruletek/erd/ | 93 | 100 | 100 | 66** | 1,95 s / 3,00 s / 66 ms / 0 |
 
-\* csak a szándékos noindex miatt. Laborérték egyetlen futásból — nem valós felhasználói Core Web Vitals.
+\* A főoldali `color-contrast` a „Rendelés menete" görgetésre beúszó lépéseit méri beúszás előtti (áttetsző) állapotban — futásonként változó (egy futásban 100); látogatónál a szöveg beúszás után teljes kontraszttal látszik. Az axe (reduced-motion) CI-lépés PASS.
+\*\* Kizárólag a szándékos noindex (`is-crawlable`).
 
-Helyi Playwright (4× CPU-lassítás, 5 futás medián): LCP 320–356 ms, CLS 0.
+Laborérték egyetlen futásból (CI-gépen) — nem valós felhasználói Core Web Vitals. A korábbi dokumentumokban szereplő ~95–97-es főoldali pontszám a hibás harness (L-1) idejéből származhat; nem tekinthető összevethető alapnak.
+
+Helyi Playwright (360 px, 4× CPU, lassú 4G, 4 futás): főoldali LCP 3,94–4,03 s → 2,94–3,01 s a H1-javítással.
 
 ## 7. Fennmaradó tételek
 
 - **H-1 (nyitott):** időszakos React #418 hydration-hiba. Bizonyítékok: a régi élő buildben is jelentkezik; a CSS-átírás visszacsinálásával sem szűnik meg (A/B); a teljes `<body>` újrarenderelődik, a body első eleme a Next 15.4 metadata-outlet `<div hidden>`-je. Látható hatás nincs (azonos tartalom). Valószínű ok: keretrendszer-szintű versenyhelyzet; javítás Next-frissítéssel próbálható — függőségváltás, jóváhagyást igényel.
+- **CLS a kalkulátoron (Lighthouse 0,115):** az aszinkron CSS (CLAUDE.md: mért, tudatos kompromisszum, „ne próbáld újra új mérés nélkül") a szimulált betöltésben stílus nélküli első festést ad. Helyi valódi betöltésnél (3 futás) CLS 0. Javaslat: külön A/B a kritikus CSS kalkulátorra szabott megoldásával — nem ennek az auditnak a hatóköre.
+- **Főoldal Performance 86 (cél 90):** a maradék a nagy RSC-payload (23 tételes árlista + hero) — további csökkentés a főoldali árlista tartalmának átszervezését igényelné (design-döntés).
+- **Ügyfélnek ellenőrzésre:** a „Saját flotta Budafokról" (Rólunk OG-kép) és „Budafokról és környékéről indulunk" (útmutató) szövegek — telephely-állításnak nem minősülnek, de a „nincs telephely" döntés fényében érdemes jóváhagyatni.
 - **BLOCKED:** automatikus rendelés-e-mail (info@soderarak.hu) — levélküldő szolgáltatás bekapcsolása jóváhagyást igényel.
 - **Döntés:** indexelés élesítése.
 - Ügyfélkérdések: XXIII. kerület csak 1237–1239; Diósd/Törökbálint/Tárnok/Sóskút/Pusztazámor tarifa nélkül; andezit-fotó hiányzik.
@@ -134,8 +144,8 @@ Helyi Playwright (4× CPU-lassítás, 5 futás medián): LCP 320–356 ms, CLS 0
 | 360 px mobil-audit | PASS (CI) |
 | `test:regression` (új) | 78 OK, 0 FAIL (+H-1 WARN számlálás) |
 | `test:smoke` (mock backend) | PASS (CI) |
-| Lighthouse (4 kategória, 8 route) | lásd 6. |
+| Lighthouse (4 kategória, 8 route, javított harness) | lásd 6. |
 
 ## 9. Módosított fájlok (audit)
 
-`src/components/LefedettsegTerkep.tsx`, `src/app/globals.css`, `src/components/MobileMenu.tsx`, `src/content/site.ts`, `src/app/teruletek/[telepules]/page.tsx`, `src/app/teruletek/[telepules]/opengraph-image.tsx`, `src/app/sitemap.ts`, `src/components/DistrictIndex.tsx`, `src/components/AreaFinder.tsx`, `src/components/PostalTariffTable.tsx`, `src/app/impresszum/page.tsx`, `scripts/v3-regression.mjs` (új), `scripts/lighthouse-export.mjs`, `tests/area-pages.test.mjs` (új), `package.json`.
+`src/components/LefedettsegTerkep.tsx`, `src/app/globals.css`, `src/app/page.tsx`, `src/components/MaterialHeaps.tsx`, `src/app/kupac/[fajl]/route.ts` (új), `src/components/MaterialPile.tsx` (törölve), `src/app/manifest.ts`, `src/components/Footer.tsx`, `scripts/prepare-static-export.mjs`, `src/components/MobileMenu.tsx`, `src/content/site.ts`, `src/app/teruletek/[telepules]/page.tsx`, `src/app/teruletek/[telepules]/opengraph-image.tsx`, `src/app/sitemap.ts`, `src/components/DistrictIndex.tsx`, `src/components/AreaFinder.tsx`, `src/components/PostalTariffTable.tsx`, `src/app/impresszum/page.tsx`, `scripts/v3-regression.mjs` (új), `scripts/lighthouse-export.mjs`, `tests/area-pages.test.mjs` (új), `package.json`.

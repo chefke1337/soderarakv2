@@ -519,3 +519,13 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
   („Budapestre, Érdre és környékére").
 - „Töltősóder vagy mosott sóder?" útmutató címe → „…rostált sóder?", mert a
   töltősóder is mosott.
+
+## 2026-11-01 — V3 teljes audit (részletek: docs/v3-audit-and-fixes.md)
+- Térkép: feliratok prioritásos ütközéskezelése (mobilon olvashatatlan volt).
+- 20 új kerületi oldal (/teruletek/budapest-N-kerulet) a központi adatból; a
+  meglévő XI./XXI./XXII. slugok maradnak; a térkép nem kapott új jelölést.
+- Városrészenkénti oldal NEM készül (nincs saját díj/irányítószám → vékony tartalom).
+- Hero H1 opacity nélkül úszik be (LCP), kupacok statikus SVG-fájlként (/kupac/*.svg).
+- Lighthouse-harness base path javítás: a korábbi pontszámok érvénytelenek voltak.
+- Indexelés: a V3 marad noindex (nincs élesítési jóváhagyás).
+- Nyitott: időszakos React #418 (H-1), kalkulátor-CLS a szimulációban, főoldal Perf 86.

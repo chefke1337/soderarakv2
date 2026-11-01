@@ -181,6 +181,50 @@ export const serviceAreas: ServiceArea[] = [
   { slug: "pusztazamor", name: "Pusztazámor", shortName: "Pusztazámor", freight: { kind: "quote" }, priority: 3, latlng: [47.4, 18.7833] },
 ];
 
+/**
+ * Budapesti kerületek a lefedettségi térképen: minden kerület egy jelölést kap
+ * a kerület HOZZÁVETŐLEGES középpontjában (áttekintő pont, nem határ, nem cím).
+ * A XI., XXI. és XXII. kerületnek már van saját jelölése (`serviceAreas`), ezért
+ * ott nem duplikálunk. A díj forrása itt is kizárólag az irányítószám.
+ */
+export const DISTRICT_MAP_CENTERS: Record<number, [number, number]> = {
+  1: [47.4968, 19.036],
+  2: [47.537, 18.985],
+  3: [47.567, 19.035],
+  4: [47.564, 19.09],
+  5: [47.5005, 19.052],
+  6: [47.507, 19.065],
+  7: [47.5005, 19.073],
+  8: [47.489, 19.085],
+  9: [47.474, 19.085],
+  10: [47.484, 19.153],
+  12: [47.499, 18.99],
+  13: [47.53, 19.07],
+  14: [47.515, 19.11],
+  15: [47.562, 19.135],
+  16: [47.515, 19.2],
+  17: [47.48, 19.26],
+  18: [47.435, 19.2],
+  19: [47.446, 19.145],
+  20: [47.432, 19.112],
+  23: [47.395, 19.117],
+};
+
+export type DistrictMapPoint = { districtId: number; slug: string; name: string; label: string; latlng: [number, number] };
+
+export const districtMapPoints: DistrictMapPoint[] = budapestDistricts
+  .filter((d) => DISTRICT_MAP_CENTERS[d.id])
+  .map((d) => {
+    const nick = districtAreas(d.id)?.name;
+    return {
+      districtId: d.id,
+      slug: districtPageSlug(d.id),
+      name: `Budapest ${romanDistrict(d.id)} kerület${nick ? ` (${nick})` : ""}`,
+      label: romanDistrict(d.id),
+      latlng: DISTRICT_MAP_CENTERS[d.id]!,
+    };
+  });
+
 export function findServiceArea(slug: string): ServiceArea | undefined {
   return serviceAreas.find((s) => s.slug === slug);
 }

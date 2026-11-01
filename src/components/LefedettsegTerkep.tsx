@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup } from "leaflet";
-import { serviceAreas } from "@/content/site";
+import { districtMapPoints, romanDistrict, serviceAreas } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // kommentet az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
@@ -51,23 +51,33 @@ const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
  */
 const LABEL_PRIORITY = [
   "erd",
-  "budapest-22-kerulet",
-  "ujbuda-budapest-11-kerulet",
-  "csepel",
-  "budafok",
-  "albertfalva",
-  "budateteny",
-  "nagyteteny",
   "diosd",
   "torokbalint",
   "tarnok",
   "soskut",
   "pusztazamor",
+  // a 23 kerület (római számos felirat) — „kerulet-N" kulccsal
+  ...Array.from({ length: 23 }, (_, i) => `kerulet-${i + 1}`),
+  "budafok",
+  "albertfalva",
+  "budateteny",
+  "nagyteteny",
 ];
-const labelRank = (slug: string) => {
-  const i = LABEL_PRIORITY.indexOf(slug);
+/** A kerületi jelöléssel rendelkező kiemelt területek (XI., XXI., XXII.) kulcsa. */
+const DISTRICT_AREA_SLUGS: Record<string, number> = {
+  "ujbuda-budapest-11-kerulet": 11,
+  csepel: 21,
+  "budapest-22-kerulet": 22,
+};
+const labelRank = (key: string) => {
+  const i = LABEL_PRIORITY.indexOf(DISTRICT_AREA_SLUGS[key] ? `kerulet-${DISTRICT_AREA_SLUGS[key]}` : key);
   return i < 0 ? LABEL_PRIORITY.length : i;
 };
+
+/** A Next a base path-ot a kliens-bundle-be is beírja; a popup sima HTML link. */
+const BASE = process.env.__NEXT_ROUTER_BASEPATH ?? "";
+const areaLink = (slug: string, text: string) =>
+  `<a href="${BASE}/teruletek/${slug}/">${text} →</a>`;
 
 export default function LefedettsegTerkep({ height = 420 }: { height?: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -110,7 +120,8 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         for (const area of serviceAreas) {
           const hasTariff = area.freight.kind === "profile";
           const style = hasTariff ? MARKER.tariff : MARKER.quote;
-          const name = area.shortName;
+          const districtId = DISTRICT_AREA_SLUGS[area.slug];
+          const name = districtId ? romanDistrict(districtId) : area.shortName;
           const marker = L.circleMarker(area.latlng, {
             radius: hasTariff ? 6 : 4.5,
             color: style.ring,
@@ -123,14 +134,36 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
               permanent: true,
               direction: LABEL_DIR[area.slug] ?? "right",
               offset: [0, 0],
-              className: hasTariff ? "city-label" : "city-label city-label-quote",
+              className: districtId ? "city-label district-label" : hasTariff ? "city-label" : "city-label city-label-quote",
             })
             .bindPopup(
               hasTariff
-                ? `<strong>${area.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small>`
-                : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small>`,
+                ? `<strong>${area.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small><br/>${areaLink(area.slug, "Díjak és tudnivalók")}`
+                : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small><br/>${areaLink(area.slug, "Részletek")}`,
             );
           labelled.push({ rank: labelRank(area.slug), marker });
+        }
+
+        // Minden további budapesti kerület: hozzávetőleges középpont, római számmal.
+        for (const d of districtMapPoints) {
+          const marker = L.circleMarker(d.latlng, {
+            radius: 5.5,
+            color: MARKER.tariff.ring,
+            weight: 1.5,
+            fillColor: MARKER.tariff.fill,
+            fillOpacity: 1,
+          })
+            .addTo(group)
+            .bindTooltip(d.label, {
+              permanent: true,
+              direction: "right",
+              offset: [0, 0],
+              className: "city-label district-label",
+            })
+            .bindPopup(
+              `<strong>${d.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>Jelölés: a kerület hozzávetőleges középpontja — a díjat a pontos irányítószám adja.</small><br/>${areaLink(d.slug, "Díjak és tudnivalók")}`,
+            );
+          labelled.push({ rank: labelRank(`kerulet-${d.districtId}`), marker });
         }
         labelled.sort((a, b) => a.rank - b.rank);
 
@@ -165,7 +198,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         map.on("zoomend moveend resize", scheduleDeclutter);
 
         // A keretezés a tényleges jelölésekre illeszkedik, nem beégetett nézetre.
-        const points = serviceAreas.map((a) => a.latlng);
+        const points = [...serviceAreas.map((a) => a.latlng), ...districtMapPoints.map((d) => d.latlng)];
         const bounds = L.latLngBounds(points);
         let fitting = false;
         let userMoved = false;
@@ -173,9 +206,12 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           fitting = true;
           // A címkék alapból jobbra nyúlnak a ponttól → jobb oldalon több hely kell,
           // különben a szélső feliratok (XI., XXI. kerület) levágódnak.
+          // Keskeny térképen kisebb margó: a kilógó feliratokat a declutter úgyis
+          // elrejti, így mobilon nem zsugorodik feleslegesen a térkép.
+          const narrow = (containerRef.current?.clientWidth ?? 600) < 520;
           map.fitBounds(bounds, {
-            paddingTopLeft: [40, 30],
-            paddingBottomRight: [104, 30],
+            paddingTopLeft: narrow ? [14, 14] : [40, 30],
+            paddingBottomRight: narrow ? [40, 14] : [104, 30],
             maxZoom: 12,
             animate: false,
           });
