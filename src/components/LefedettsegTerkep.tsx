@@ -206,9 +206,12 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           fitting = true;
           // A címkék alapból jobbra nyúlnak a ponttól → jobb oldalon több hely kell,
           // különben a szélső feliratok (XI., XXI. kerület) levágódnak.
+          // Keskeny térképen kisebb margó: a kilógó feliratokat a declutter úgyis
+          // elrejti, így mobilon nem zsugorodik feleslegesen a térkép.
+          const narrow = (containerRef.current?.clientWidth ?? 600) < 520;
           map.fitBounds(bounds, {
-            paddingTopLeft: [40, 30],
-            paddingBottomRight: [104, 30],
+            paddingTopLeft: narrow ? [14, 14] : [40, 30],
+            paddingBottomRight: narrow ? [40, 14] : [104, 30],
             maxZoom: 12,
             animate: false,
           });
@@ -265,7 +268,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
       <div
         ref={containerRef}
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
-        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
+        className="h-[min(var(--map-h),90vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
         role="region"
         aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A konkrét fuvardíjak az irányítószámos díjlistában olvashatók."
       />
