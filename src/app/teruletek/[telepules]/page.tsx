@@ -247,11 +247,14 @@ export default async function AreaPage({
               </h2>
               <p className="mt-3 text-sm leading-relaxed">{district.areas.join(", ")}</p>
               <p className="mt-3 text-xs leading-relaxed text-ink-soft">
-                A fuvardíjat a szállítási cím irányítószáma határozza meg, nem a városrész.{" "}
-                <Link href={`/teruletek#kerulet-${district.id}`} className="link">
-                  Minden kerület és városrész
-                </Link>
+                A fuvardíjat a szállítási cím irányítószáma határozza meg, nem a városrész.
               </p>
+              <Link
+                href={`/teruletek#kerulet-${district.id}`}
+                className="link mt-1 inline-flex min-h-11 items-center text-sm font-semibold"
+              >
+                Minden kerület és városrész →
+              </Link>
             </div>
           )}
 

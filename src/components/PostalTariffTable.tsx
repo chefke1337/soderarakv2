@@ -100,7 +100,7 @@ function ProfileRow({ profile }: { profile: FreightProfile }) {
           {profile.municipalityId === "budapest" && profile.districtId ? (
             <Link
               href={`/teruletek/${districtPageSlug(profile.districtId)}`}
-              className="underline-offset-4 hover:text-brand-dark hover:underline"
+              className="block underline-offset-4 hover:text-brand-dark hover:underline"
             >
               {profile.label}
             </Link>

@@ -5,7 +5,14 @@ import lighthouse from "lighthouse";
 import { launch } from "chrome-launcher";
 
 const OUT = resolve("out");
-const ROUTES = ["/", "/utmutatok/", "/anyagok/soder/", "/teruletek/erd/"];
+// LH_ALL=1: mind a négy kategória (teljesítmény, akadálymentesség, best
+// practices, SEO) több kulcsroute-on — az audit-jelentéshez. Megjegyzés: a V3
+// szándékosan „noindex", ezért a SEO-kategória az „is-crawlable" auditot
+// buktatja; ez az indexelési döntés következménye, nem hiba.
+const LH_ALL = process.env.LH_ALL === "1";
+const ROUTES = LH_ALL
+  ? ["/", "/arkalkulator/", "/arak/", "/teruletek/", "/teruletek/budapest-14-kerulet/", "/utmutatok/", "/anyagok/soder/", "/teruletek/erd/"]
+  : ["/", "/utmutatok/", "/anyagok/soder/", "/teruletek/erd/"];
 const MIME_TYPES = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -139,7 +146,7 @@ try {
       port: chrome.port,
       output: "json",
       logLevel: "error",
-      onlyCategories: ["performance"],
+      onlyCategories: LH_ALL ? ["performance", "accessibility", "best-practices", "seo"] : ["performance"],
       formFactor: "mobile",
       screenEmulation: { mobile: true, width: 360, height: 800, deviceScaleFactor: 2, disabled: false },
       throttlingMethod: "simulate",
@@ -187,6 +194,13 @@ try {
     ];
     const score = Math.round((categories.performance?.score ?? 0) * 100);
     console.log(`\n${route} — Performance ${score}/100`);
+    if (LH_ALL) {
+      const pct = (k) => Math.round((categories[k]?.score ?? 0) * 100);
+      const seoFails = Object.values(audits)
+        .filter((a) => result.lhr.categories.seo?.auditRefs.some((r) => r.id === a.id && r.weight > 0) && a.score === 0)
+        .map((a) => a.id);
+      console.log(`SCORES ${route} — Performance ${score}, Accessibility ${pct("accessibility")}, Best Practices ${pct("best-practices")}, SEO ${pct("seo")}${seoFails.length ? ` (SEO fail: ${seoFails.join(", ")})` : ""}`);
+    }
     for (const id of performanceAudits) {
       const audit = audits[id];
       if (!audit || (audit.score === 1 && !id.endsWith("insight"))) continue;
