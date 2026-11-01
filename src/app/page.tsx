@@ -77,7 +77,7 @@ export default function HomePage() {
               <p className="rise label-strata text-amber">
                 <span className="whitespace-nowrap">{company.hours.short}</span>
               </p>
-              <h1 className="rise rise-2 mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
+              <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
                 {HERO.title}
               </h1>
             </div>

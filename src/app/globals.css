@@ -193,6 +193,12 @@ body {
     animation: enter-up var(--dur-enter) var(--ease-out-soft) both;
   }
   .rise-2 { animation-delay: var(--stagger); }
+  /* A hero H1 az oldal LCP-eleme: átlátszóságból induló beúszás ~1 s-mal
+     késleltette az LCP-t (mért A/B, 2026-11-01 audit). Ezért csak elmozdul,
+     azonnal látható — a karakter megmarad, a tartalom nincs rejtve. */
+  .rise-solid {
+    animation: enter-up-solid var(--dur-enter) var(--ease-out-soft) both;
+  }
   .rise-3 { animation-delay: calc(var(--stagger) * 2); }
   .rise-4 { animation-delay: calc(var(--stagger) * 3); }
 
@@ -213,6 +219,10 @@ body {
 @keyframes enter-up {
   from { opacity: 0; transform: translateY(var(--move-md)); }
   to { opacity: 1; transform: none; }
+}
+@keyframes enter-up-solid {
+  from { transform: translateY(var(--move-md)); }
+  to { transform: none; }
 }
 
 /* <details> lenyitás: a tartalom finoman beúszik (válasz a felhasználóra) */
