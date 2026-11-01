@@ -52,6 +52,7 @@ const LABEL_DIR: Record<string, Dir> = {
  */
 const LABEL_PRIORITY = [
   "erd",
+  "kerulet-22", // Budafok (a XXII. kerületet képviseli)
   "diosd",
   "torokbalint",
   "tarnok",
@@ -186,6 +187,8 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         const declutter = () => {
           const box = containerRef.current?.getBoundingClientRect();
           if (!box) return;
+          // Keskenyebb térképen tömörebb kerület-feliratok (CSS: .map-compact).
+          containerRef.current?.classList.toggle("map-compact", box.width < 640);
           const dots = labelled.map((lb) => ({ lb, r: (lb.marker.getElement() as Element | undefined)?.getBoundingClientRect() }));
           const kept: DOMRect[] = [];
           const clash = (r: DOMRect, self: Label, avoidDots: boolean) =>

@@ -611,6 +611,14 @@ summary::-webkit-details-marker {
   letter-spacing: 0.01em;
   color: var(--color-accent-deep);
 }
+.map-compact .leaflet-tooltip.city-label {
+  padding: 0 3px;
+  font-size: 10.5px;
+}
+.map-compact .leaflet-tooltip.city-label.district-label {
+  padding: 0 2px;
+  font-size: 9.5px;
+}
 .leaflet-popup-content a {
   font-weight: 600;
   color: var(--color-accent-deep);
