@@ -7,7 +7,8 @@ import {
   groupWashed,
 } from "@/content/site";
 import { formatFt, IconArrowRight, IconDroplets, minPrice } from "@/lib/ui";
-import MaterialPile from "@/components/MaterialPile";
+import { PILE_H, PILE_W } from "@/lib/pile";
+import { withBasePath } from "@/lib/basepath";
 import HeapRail from "@/components/HeapRail";
 
 /**
@@ -51,7 +52,17 @@ export default function MaterialHeaps() {
                 className="heap group flex h-full flex-col rounded-[var(--radius-md)] p-2 outline-offset-2 lg:p-3"
               >
                 {/* a kupac: önálló sziluett a „talajon", kontaktárnyékkal */}
-                <MaterialPile tone={g.tone} id={`heap-${g.slug}`} />
+                {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre
+                    generált SVG; next/image itt nem optimalizálna semmit */}
+                <img
+                  src={withBasePath(`/kupac/${g.tone}.svg`)}
+                  alt=""
+                  width={PILE_W}
+                  height={PILE_H}
+                  decoding="async"
+                  fetchPriority={i < 3 ? "high" : "auto"}
+                  className="pile-img block h-auto w-full"
+                />
                 {/* név + nyíl egy sorban, alatta az ár teljes szélességben */}
                 <span className="mt-1 flex items-center justify-between gap-2">
                   <span className="min-w-0 font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">
