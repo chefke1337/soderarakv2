@@ -188,7 +188,8 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         const GAP = 6;
         const candidate = (x: number, y: number, w: number, h: number, dir: Dir): Box => {
           const left = dir === "right" ? x + GAP : dir === "left" ? x - w - GAP : x - w / 2;
-          const top = dir === "top" ? y - h - GAP : dir === "bottom" ? y + GAP : y - h / 2;
+          // „top": a Leaflet ~1–2 px-szel lejjebb rajzolja (mért), ezt modellezzük.
+          const top = dir === "top" ? y - h - GAP + 2 : dir === "bottom" ? y + GAP : y - h / 2;
           return { left, top, right: left + w, bottom: top + h };
         };
         const setDir = (lb: Label, dir: Dir) => {
@@ -214,7 +215,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           });
           const kept: Box[] = [];
           const hits = (a: Box, b: Box, pad = 0) =>
-            a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + 2 && a.bottom > b.top - 2;
+            a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + 1 && a.bottom > b.top - 1;
           labelled.forEach((lb, i) => {
             const el = lb.marker.getTooltip()?.getElement();
             if (!el) return;
