@@ -14,6 +14,8 @@ import {
   budapestDistricts,
   districtAreaPages,
   districtMapPoints,
+  MAP_DISTRICT_REPRESENTATIVE,
+  mapServiceAreas,
   districtPageSlug,
   findAreaPage,
   freightProfiles,
@@ -46,11 +48,13 @@ check("minden térképjelölésnek van koordinátája", serviceAreas.every((a) =
 section("Térkép: mind a 23 kerület jelölve, egyszer");
 const mapped = new Map();
 for (const p of districtMapPoints) mapped.set(p.districtId, (mapped.get(p.districtId) ?? 0) + 1);
-for (const a of serviceAreas) {
-  if (a.freight.kind === "profile" && a.freight.districtId && /kerület/.test(a.name)) {
-    mapped.set(a.freight.districtId, (mapped.get(a.freight.districtId) ?? 0) + 1);
-  }
+for (const a of mapServiceAreas()) {
+  const d = (a.freight.kind === "profile" && a.freight.districtId && /kerület/.test(a.name) ? a.freight.districtId : undefined)
+    ?? MAP_DISTRICT_REPRESENTATIVE[a.slug];
+  if (d) mapped.set(d, (mapped.get(d) ?? 0) + 1);
 }
+check("a XXII. kerületnek nincs külön jelölése (Budafok képviseli)", !mapServiceAreas().some((a) => a.slug === "budapest-22-kerulet"));
+check("Budafok egyszer szerepel a térképen", mapServiceAreas().filter((a) => a.slug === "budafok").length === 1);
 for (const d of budapestDistricts) eq(`${d.id}. kerület pontosan egy térképjelölés`, mapped.get(d.id), 1);
 check(
   "minden kerületi pont Budapest befoglaló téglalapján belül (47.35–47.62, 18.92–19.34)",

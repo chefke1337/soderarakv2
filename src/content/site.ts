@@ -210,6 +210,15 @@ export const DISTRICT_MAP_CENTERS: Record<number, [number, number]> = {
   23: [47.395, 19.117],
 };
 
+/**
+ * Térkép: a XXII. kerületet a Budafok jelölés képviseli (ügyfélkérés,
+ * 2026-11-01: „Budafokot egyszer jelöld, a XXII-t vedd le"). A XXII. kerületi
+ * aloldal megmarad, csak külön térképjelölése nincs.
+ */
+export const MAP_HIDDEN_AREA_SLUGS = ["budapest-22-kerulet"];
+export const MAP_DISTRICT_REPRESENTATIVE: Record<string, number> = { budafok: 22 };
+export const mapServiceAreas = () => serviceAreas.filter((a) => !MAP_HIDDEN_AREA_SLUGS.includes(a.slug));
+
 export type DistrictMapPoint = { districtId: number; slug: string; name: string; label: string; latlng: [number, number] };
 
 export const districtMapPoints: DistrictMapPoint[] = budapestDistricts

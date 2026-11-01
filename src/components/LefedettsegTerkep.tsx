@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { CircleMarker, Map as LeafletMap, LayerGroup } from "leaflet";
-import { districtMapPoints, romanDistrict, serviceAreas } from "@/content/site";
+import { districtMapPoints, mapServiceAreas, MAP_DISTRICT_REPRESENTATIVE, romanDistrict } from "@/content/site";
 // Leaflet CSS-e globálisan importálva: src/app/globals.css — lásd ott a
 // kommentet az okáról (dinamikus CSS-chunk helyett a fő bundle-ben kell lennie).
 
@@ -27,7 +27,8 @@ const MARKER = {
 } as const;
 
 /** Feliratirány a sűrű pontoknál, hogy a címkék ne fedjék egymást. */
-const LABEL_DIR: Record<string, "left" | "right" | "top" | "bottom"> = {
+type Dir = "left" | "right" | "top" | "bottom";
+const LABEL_DIR: Record<string, Dir> = {
   budafok: "left",
   budateteny: "left",
   nagyteteny: "bottom",
@@ -67,10 +68,10 @@ const LABEL_PRIORITY = [
 const DISTRICT_AREA_SLUGS: Record<string, number> = {
   "ujbuda-budapest-11-kerulet": 11,
   csepel: 21,
-  "budapest-22-kerulet": 22,
 };
 const labelRank = (key: string) => {
-  const i = LABEL_PRIORITY.indexOf(DISTRICT_AREA_SLUGS[key] ? `kerulet-${DISTRICT_AREA_SLUGS[key]}` : key);
+  const d = DISTRICT_AREA_SLUGS[key] ?? MAP_DISTRICT_REPRESENTATIVE[key];
+  const i = LABEL_PRIORITY.indexOf(d ? `kerulet-${d}` : key);
   return i < 0 ? LABEL_PRIORITY.length : i;
 };
 
@@ -115,13 +116,17 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         L.control.scale({ imperial: false }).addTo(map);
 
         const group = L.layerGroup().addTo(map);
-        const labelled: { rank: number; marker: CircleMarker }[] = [];
+        type Label = { rank: number; marker: CircleMarker; text: string; className: string; dir: Dir };
+        const labelled: Label[] = [];
 
-        for (const area of serviceAreas) {
+        for (const area of mapServiceAreas()) {
           const hasTariff = area.freight.kind === "profile";
           const style = hasTariff ? MARKER.tariff : MARKER.quote;
           const districtId = DISTRICT_AREA_SLUGS[area.slug];
           const name = districtId ? romanDistrict(districtId) : area.shortName;
+          const labelClass = districtId ? "city-label district-label" : hasTariff ? "city-label" : "city-label city-label-quote";
+          const labelDir: Dir = LABEL_DIR[area.slug] ?? "right";
+          const repDistrict = MAP_DISTRICT_REPRESENTATIVE[area.slug];
           const marker = L.circleMarker(area.latlng, {
             radius: hasTariff ? 6 : 4.5,
             color: style.ring,
@@ -132,16 +137,16 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
             .addTo(group)
             .bindTooltip(name, {
               permanent: true,
-              direction: LABEL_DIR[area.slug] ?? "right",
+              direction: labelDir,
               offset: [0, 0],
-              className: districtId ? "city-label district-label" : hasTariff ? "city-label" : "city-label city-label-quote",
+              className: labelClass,
             })
             .bindPopup(
               hasTariff
-                ? `<strong>${area.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small><br/>${areaLink(area.slug, "Díjak és tudnivalók")}`
+                ? `<strong>${area.name}${repDistrict ? ` — Budapest ${romanDistrict(repDistrict)} kerület` : ""}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small><br/>${areaLink(area.slug, "Díjak és tudnivalók")}`
                 : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small><br/>${areaLink(area.slug, "Részletek")}`,
             );
-          labelled.push({ rank: labelRank(area.slug), marker });
+          labelled.push({ rank: labelRank(area.slug), marker, text: name, className: labelClass, dir: labelDir });
         }
 
         // Minden további budapesti kerület: hozzávetőleges középpont, római számmal.
@@ -163,26 +168,45 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
             .bindPopup(
               `<strong>${d.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>Jelölés: a kerület hozzávetőleges középpontja — a díjat a pontos irányítószám adja.</small><br/>${areaLink(d.slug, "Díjak és tudnivalók")}`,
             );
-          labelled.push({ rank: labelRank(`kerulet-${d.districtId}`), marker });
+          labelled.push({ rank: labelRank(`kerulet-${d.districtId}`), marker, text: d.label, className: "city-label district-label", dir: "right" });
         }
         labelled.sort((a, b) => a.rank - b.rank);
 
-        /** Ütköző vagy a térképről kilógó feliratok elrejtése, fontossági sorrendben. */
+        /**
+         * Feliratok elhelyezése fontossági sorrendben: ha a felirat a kedvelt
+         * oldalon ütközne (másik felirattal vagy jelölőponttal) vagy kilógna,
+         * a pont másik oldalára kerül (jobb, bal, fent, lent). Csak ha egyik
+         * oldalon sem fér el, marad rejtve (a pont popupja ekkor is megmutatja).
+         */
+        const place = (lb: Label, dir: Dir) => {
+          lb.marker.unbindTooltip();
+          lb.marker.bindTooltip(lb.text, { permanent: true, direction: dir, offset: [0, 0], className: lb.className });
+          return lb.marker.getTooltip()?.getElement() ?? null;
+        };
         const declutter = () => {
           const box = containerRef.current?.getBoundingClientRect();
           if (!box) return;
+          const dots = labelled.map((lb) => ({ lb, r: (lb.marker.getElement() as Element | undefined)?.getBoundingClientRect() }));
           const kept: DOMRect[] = [];
-          for (const { marker } of labelled) {
-            const el = marker.getTooltip()?.getElement();
-            if (!el) continue;
-            el.classList.remove("is-hidden");
-            const r = el.getBoundingClientRect();
-            const outside = r.left < box.left || r.right > box.right || r.top < box.top || r.bottom > box.bottom;
-            const hit = kept.some(
-              (k) => r.left < k.right + 2 && r.right > k.left - 2 && r.top < k.bottom + 1 && r.bottom > k.top - 1,
-            );
-            if (outside || hit) el.classList.add("is-hidden");
-            else kept.push(r);
+          const clash = (r: DOMRect, self: Label) =>
+            r.left < box.left || r.right > box.right || r.top < box.top || r.bottom > box.bottom ||
+            kept.some((k) => r.left < k.right + 2 && r.right > k.left - 2 && r.top < k.bottom + 1 && r.bottom > k.top - 1) ||
+            dots.some((d) => d.lb !== self && d.r && r.left < d.r.right && r.right > d.r.left && r.top < d.r.bottom && r.bottom > d.r.top);
+          for (const lb of labelled) {
+            const order = [lb.dir, ...(["right", "left", "top", "bottom"] as Dir[]).filter((d) => d !== lb.dir)];
+            let placed = false;
+            for (const dir of order) {
+              const el = place(lb, dir);
+              if (!el) break;
+              el.classList.remove("is-hidden");
+              const r = el.getBoundingClientRect();
+              if (!clash(r, lb)) {
+                kept.push(r);
+                placed = true;
+                break;
+              }
+            }
+            if (!placed) place(lb, lb.dir)?.classList.add("is-hidden");
           }
         };
         // A Leaflet a feliratokat a nézetváltás UTÁN pozicionálja (lusta betöltésnél,
@@ -198,7 +222,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         map.on("zoomend moveend resize", scheduleDeclutter);
 
         // A keretezés a tényleges jelölésekre illeszkedik, nem beégetett nézetre.
-        const points = [...serviceAreas.map((a) => a.latlng), ...districtMapPoints.map((d) => d.latlng)];
+        const points = [...mapServiceAreas().map((a) => a.latlng), ...districtMapPoints.map((d) => d.latlng)];
         const bounds = L.latLngBounds(points);
         let fitting = false;
         let userMoved = false;
