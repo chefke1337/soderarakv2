@@ -214,7 +214,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           });
           const kept: Box[] = [];
           const hits = (a: Box, b: Box, pad = 0) =>
-            a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + pad / 2 && a.bottom > b.top - pad / 2;
+            a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom && a.bottom > b.top;
           labelled.forEach((lb, i) => {
             const el = lb.marker.getTooltip()?.getElement();
             if (!el) return;
