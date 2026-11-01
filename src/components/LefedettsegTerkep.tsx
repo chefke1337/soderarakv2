@@ -152,7 +152,17 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
             else kept.push(r);
           }
         };
-        map.on("zoomend moveend resize", declutter);
+        // A Leaflet a feliratokat a nézetváltás UTÁN pozicionálja (lusta betöltésnél,
+        // átméretezéskor egy képkockával később) — ezért a mérés a következő
+        // képkockákra ütemezett, különben minden felirat egy pontban „ütközne".
+        let declutterFrame = 0;
+        const scheduleDeclutter = () => {
+          cancelAnimationFrame(declutterFrame);
+          declutterFrame = requestAnimationFrame(() => {
+            declutterFrame = requestAnimationFrame(declutter);
+          });
+        };
+        map.on("zoomend moveend resize", scheduleDeclutter);
 
         // A keretezés a tényleges jelölésekre illeszkedik, nem beégetett nézetre.
         const points = serviceAreas.map((a) => a.latlng);
@@ -172,7 +182,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           fitting = false;
         };
         if (points.length > 0) fit();
-        declutter();
+        scheduleDeclutter();
 
         // A doboz méretváltozásakor (ablak, elforgatás, lusta betöltés) a Leaflet
         // alapból a bal felső sarkot tartja meg — ezért újraillesztünk, amíg a
