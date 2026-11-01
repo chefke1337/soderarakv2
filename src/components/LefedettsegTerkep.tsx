@@ -188,23 +188,28 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           if (!box) return;
           const dots = labelled.map((lb) => ({ lb, r: (lb.marker.getElement() as Element | undefined)?.getBoundingClientRect() }));
           const kept: DOMRect[] = [];
-          const clash = (r: DOMRect, self: Label) =>
+          const clash = (r: DOMRect, self: Label, avoidDots: boolean) =>
             r.left < box.left || r.right > box.right || r.top < box.top || r.bottom > box.bottom ||
             kept.some((k) => r.left < k.right + 2 && r.right > k.left - 2 && r.top < k.bottom + 1 && r.bottom > k.top - 1) ||
-            dots.some((d) => d.lb !== self && d.r && r.left < d.r.right && r.right > d.r.left && r.top < d.r.bottom && r.bottom > d.r.top);
+            (avoidDots &&
+              dots.some((d) => d.lb !== self && d.r && r.left < d.r.right && r.right > d.r.left && r.top < d.r.bottom && r.bottom > d.r.top));
           for (const lb of labelled) {
             const order = [lb.dir, ...(["right", "left", "top", "bottom"] as Dir[]).filter((d) => d !== lb.dir)];
             let placed = false;
-            for (const dir of order) {
-              const el = place(lb, dir);
-              if (!el) break;
-              el.classList.remove("is-hidden");
-              const r = el.getBoundingClientRect();
-              if (!clash(r, lb)) {
-                kept.push(r);
-                placed = true;
-                break;
+            // 1. kör: se felirat, se jelölőpont ne takarja; 2. kör: pontot takarhat, feliratot nem.
+            for (const avoidDots of [true, false]) {
+              for (const dir of order) {
+                const el = place(lb, dir);
+                if (!el) break;
+                el.classList.remove("is-hidden");
+                const r = el.getBoundingClientRect();
+                if (!clash(r, lb, avoidDots)) {
+                  kept.push(r);
+                  placed = true;
+                  break;
+                }
               }
+              if (placed) break;
             }
             if (!placed) place(lb, lb.dir)?.classList.add("is-hidden");
           }
@@ -234,7 +239,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           // elrejti, így mobilon nem zsugorodik feleslegesen a térkép.
           const narrow = (containerRef.current?.clientWidth ?? 600) < 520;
           map.fitBounds(bounds, {
-            paddingTopLeft: narrow ? [14, 14] : [40, 30],
+            paddingTopLeft: narrow ? [14, 14] : [72, 30],
             paddingBottomRight: narrow ? [40, 14] : [104, 30],
             maxZoom: 12,
             animate: false,
