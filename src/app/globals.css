@@ -603,6 +603,18 @@ summary::-webkit-details-marker {
 .leaflet-tooltip.city-label::before {
   display: none;
 }
+/* Budapesti kerület: rövid, római számos felirat (a teljes név a popupban). */
+.leaflet-tooltip.city-label.district-label {
+  padding: 0 4px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  color: var(--color-accent-deep);
+}
+.leaflet-popup-content a {
+  font-weight: 600;
+  color: var(--color-accent-deep);
+}
 /* Ütköző felirat (LefedettsegTerkep declutter): rejtve, a pont popupja marad. */
 .leaflet-tooltip.city-label.is-hidden {
   visibility: hidden;
