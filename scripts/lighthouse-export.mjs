@@ -99,6 +99,15 @@ const routeFiles = new Map(walkHtml(OUT).map((file) => {
   return [route, file];
 }));
 
+// A publikált build base path alatt fut (pl. /soderarakv3) — az assetek és a
+// route-ok is ezzel az előtaggal hivatkoznak. A korábbi harness ezt nem vette
+// le, ezért base path-os buildnél a CSS/JS 404-et kapott, és a mérés stílus és
+// JS nélküli oldalon futott (2026-11-01 audit, hibás pontszámok). Most a v3-smoke
+// mintájára az index.html-ből olvassuk ki az előtagot.
+const BASE = (
+  readFileSync(join(OUT, "index.html"), "utf8").match(/href="([^"]*)\/_next\/static\/css\//)?.[1] ?? ""
+).replace(/\/+$/, "");
+
 const server = createServer((req, res) => {
   let pathname;
   try {
@@ -107,6 +116,7 @@ const server = createServer((req, res) => {
     res.writeHead(400).end("Bad request");
     return;
   }
+  if (BASE && (pathname === BASE || pathname.startsWith(`${BASE}/`))) pathname = pathname.slice(BASE.length) || "/";
   const file = routeFiles.get(pathname) ?? resolve(OUT, `.${pathname}`);
   if (!file.startsWith(`${OUT}${sep}`) || !existsSync(file) || !statSync(file).isFile()) {
     res.writeHead(404).end("Not found");
@@ -141,7 +151,7 @@ try {
   });
 
   for (const route of ROUTES) {
-    const url = new URL(route, origin).href;
+    const url = new URL(`${BASE}${route}`, origin).href;
     const result = await lighthouse(url, {
       port: chrome.port,
       output: "json",
