@@ -643,8 +643,11 @@ summary::-webkit-details-marker {
     border-color var(--dur-ui) var(--ease-out-soft),
     transform var(--dur-fast) var(--ease-out-soft);
 }
-.heap .pile-shade {
-  transition: opacity var(--dur-ui) var(--ease-out-soft);
+.heap .pile-shade,
+.heap .pile-img {
+  transition:
+    opacity var(--dur-ui) var(--ease-out-soft),
+    filter var(--dur-ui) var(--ease-out-soft);
 }
 .heap:active {
   transform: scale(0.985);
@@ -666,6 +669,11 @@ summary::-webkit-details-marker {
   }
   .heap:hover .pile-shade {
     opacity: 0.7;
+  }
+  /* A kupac fájlként töltődik (/kupac/*.svg) — a belső árnyékréteg nem
+     címezhető, ezért a „fény erősödik" visszajelzés szűrővel. */
+  .heap:hover .pile-img {
+    filter: brightness(1.07);
   }
 }
 @media (prefers-reduced-motion: no-preference) {
