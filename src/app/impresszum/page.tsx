@@ -6,7 +6,7 @@ import Section from "@/components/Section";
 export const metadata: Metadata = {
   ...pageMeta({
     title: "Impresszum",
-    description: `A ${company.site.domain} üzemeltetője: ${company.name}.`,
+    description: `Impresszum: a ${company.site.domain} üzemeltetője ${company.name} — cégadatok, adószám, cégjegyzékszám és elérhetőség.`,
     path: "/impresszum",
   }),
   robots: { index: false },
