@@ -178,54 +178,114 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
          * oldalon ütközne (másik felirattal vagy jelölőponttal) vagy kilógna,
          * a pont másik oldalára kerül (jobb, bal, fent, lent). Csak ha egyik
          * oldalon sem fér el, marad rejtve (a pont popupja ekkor is megmutatja).
+         *
+         * A jelölt helyeket SZÁMOLJUK (pont koordinátája + a felirat mérete, a
+         * Leaflet elhelyezési szabálya és a leaflet.css 6 px-es margója), nem a
+         * DOM-ból olvassuk: újrakötés után a Leaflet aszinkron pozicionál
+         * (reduced-motion alatt mérhetően később), így a DOM-mérés téves volt.
          */
-        const place = (lb: Label, dir: Dir) => {
+        type Box = { left: number; top: number; right: number; bottom: number };
+        const GAP = 6;
+        const candidate = (x: number, y: number, w: number, h: number, dir: Dir): Box => {
+          const left = dir === "right" ? x + GAP : dir === "left" ? x - w - GAP : x - w / 2;
+          // „top": a Leaflet ~1–2 px-szel lejjebb rajzolja (mért), ezt modellezzük.
+          const top = dir === "top" ? y - h - GAP + 2 : dir === "bottom" ? y + GAP : y - h / 2;
+          return { left, top, right: left + w, bottom: top + h };
+        };
+        const setDir = (lb: Label, dir: Dir) => {
+          const tip = lb.marker.getTooltip();
+          if (tip && tip.options.direction === dir) return tip.getElement() ?? null;
           lb.marker.unbindTooltip();
           lb.marker.bindTooltip(lb.text, { permanent: true, direction: dir, offset: [0, 0], className: lb.className });
           return lb.marker.getTooltip()?.getElement() ?? null;
         };
         const declutter = () => {
-          const box = containerRef.current?.getBoundingClientRect();
-          if (!box) return;
-          // Keskenyebb térképen tömörebb kerület-feliratok (CSS: .map-compact).
-          containerRef.current?.classList.toggle("map-compact", box.width < 640);
-          const dots = labelled.map((lb) => ({ lb, r: (lb.marker.getElement() as Element | undefined)?.getBoundingClientRect() }));
-          const kept: DOMRect[] = [];
-          const clash = (r: DOMRect, self: Label, avoidDots: boolean) =>
-            r.left < box.left || r.right > box.right || r.top < box.top || r.bottom > box.bottom ||
-            kept.some((k) => r.left < k.right + 2 && r.right > k.left - 2 && r.top < k.bottom + 1 && r.bottom > k.top - 1) ||
-            (avoidDots &&
-              dots.some((d) => d.lb !== self && d.r && r.left < d.r.right && r.right > d.r.left && r.top < d.r.bottom && r.bottom > d.r.top));
-          for (const lb of labelled) {
+          const host = containerRef.current;
+          // (Leszerelés után — a késleltetett második kör már ne fusson.)
+          if (!host || mapRef.current !== map) return;
+          const W = host.clientWidth;
+          const H = host.clientHeight;
+          if (!W || !H) return;
+          // Keskenyebb térképen tömörebb feliratok (CSS: .map-compact).
+          host.classList.toggle("map-compact", W < 640);
+          const pts = labelled.map((lb) => map.latLngToContainerPoint(lb.marker.getLatLng()));
+          const dots: Box[] = labelled.map((lb, i) => {
+            const r = lb.marker.getRadius() + 1;
+            return { left: pts[i]!.x - r, top: pts[i]!.y - r, right: pts[i]!.x + r, bottom: pts[i]!.y + r };
+          });
+          const kept: Box[] = [];
+          const hits = (a: Box, b: Box, pad = 0) =>
+            a.left < b.right + pad && a.right > b.left - pad && a.top < b.bottom + 1 && a.bottom > b.top - 1;
+          labelled.forEach((lb, i) => {
+            const el = lb.marker.getTooltip()?.getElement();
+            if (!el) return;
+            // (Ha az elem még nincs a DOM-ban, becsült méret — a következő futás pontosít.)
+            const w = el.offsetWidth || lb.text.length * 7 + 8;
+            const h = el.offsetHeight || 16;
+            const { x, y } = pts[i]!;
             const order = [lb.dir, ...(["right", "left", "top", "bottom"] as Dir[]).filter((d) => d !== lb.dir)];
-            let placed = false;
+            let chosen: Dir | null = null;
+            let box: Box | null = null;
             // 1. kör: se felirat, se jelölőpont ne takarja; 2. kör: pontot takarhat, feliratot nem.
             for (const avoidDots of [true, false]) {
               for (const dir of order) {
-                const el = place(lb, dir);
-                if (!el) break;
-                el.classList.remove("is-hidden");
-                const r = el.getBoundingClientRect();
-                if (!clash(r, lb, avoidDots)) {
-                  kept.push(r);
-                  placed = true;
-                  break;
-                }
+                const c = candidate(x, y, w, h, dir);
+                const outside = c.left < 0 || c.top < 0 || c.right > W || c.bottom > H;
+                if (outside || kept.some((k) => hits(c, k, 4))) continue;
+                if (avoidDots && dots.some((d, j) => j !== i && hits(c, d))) continue;
+                chosen = dir;
+                box = c;
+                break;
               }
-              if (placed) break;
+              if (chosen) break;
             }
-            if (!placed) place(lb, lb.dir)?.classList.add("is-hidden");
+            const target = setDir(lb, chosen ?? lb.dir);
+            if (chosen && box) {
+              kept.push(box);
+              target?.classList.remove("is-hidden");
+            } else {
+              target?.classList.add("is-hidden");
+            }
+          });
+        };
+        /**
+         * Végső ellenőrzés a TÉNYLEGES (már elhelyezett) feliratokon: a Leaflet
+         * nem egész pixelre rajzol, ezért a számolt és a valós hely tört pixellel
+         * eltérhet. Ha két látható felirat mégis összeérne, a kevésbé fontos rejtve
+         * marad — így átfedés biztosan nincs.
+         */
+        const verify = () => {
+          if (mapRef.current !== map) return;
+          const seen: DOMRect[] = [];
+          const box = containerRef.current?.getBoundingClientRect();
+          for (const lb of labelled) {
+            const el = lb.marker.getTooltip()?.getElement();
+            if (!el || el.classList.contains("is-hidden")) continue;
+            const r = el.getBoundingClientRect();
+            // még el nem helyezett felirat (a térkép bal felső sarkában) — nem ítélünk
+            if (box && Math.abs(r.left - box.left) < 1 && Math.abs(r.top - box.top) < 1) continue;
+            if (seen.some((k) => r.left < k.right && r.right > k.left && r.top < k.bottom && r.bottom > k.top)) {
+              el.classList.add("is-hidden");
+            } else {
+              seen.push(r);
+            }
           }
         };
-        // A Leaflet a feliratokat a nézetváltás UTÁN pozicionálja (lusta betöltésnél,
-        // átméretezéskor egy képkockával később) — ezért a mérés a következő
-        // képkockákra ütemezett, különben minden felirat egy pontban „ütközne".
         let declutterFrame = 0;
+        let declutterTimer = 0;
         const scheduleDeclutter = () => {
           cancelAnimationFrame(declutterFrame);
           declutterFrame = requestAnimationFrame(() => {
             declutterFrame = requestAnimationFrame(declutter);
           });
+          // Második kör, miután a Leaflet az újrakötött feliratokat is elhelyezte
+          // (mérés a végleges felirat-méretekkel).
+          window.clearTimeout(declutterTimer);
+          declutterTimer = window.setTimeout(() => {
+            declutter();
+            // a második kör esetleges újrakötései is elhelyeződjenek
+            declutterTimer = window.setTimeout(verify, 250);
+          }, 350);
         };
         map.on("zoomend moveend resize", scheduleDeclutter);
 
