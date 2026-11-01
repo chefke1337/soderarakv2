@@ -22,9 +22,11 @@ import {
   PERMIT_NOTICE,
   profileMaxM3,
   quoteOnlyAreas,
+  romanDistrict,
   SINGLE_TRIP_MAX_M3,
   UNSUPPORTED_NOTICE,
 } from "@/content/site";
+import { budapestDistrictAreas, DISTRICT_AREAS_SOURCE } from "@/content/districts";
 
 export const dynamic = "force-static";
 
@@ -81,7 +83,7 @@ function build(): string {
   }
   L.push("");
   L.push(
-    "- Minőségjelölés: a vizes osztályozás a sóderre, a kavicsra és a homokra vonatkozik. Kivétel a kulé: nagy szemcseméretű, osztályozatlan anyag. A mosottság-állítás NEM terjed ki a földre, a murvára és az andezitre.",
+    "- Minőségjelölés: minden sóder és kavics jó minőségű, mosott (a kulé is mosott, de méret szerint osztályozatlan, kb. 32–125 mm). Vizes osztályozás: sóder, kavics, homok.",
   );
   L.push("");
 
@@ -108,6 +110,14 @@ function build(): string {
   L.push(
     "- A Budapest I. kerületi Vár területén külön behajtási engedély és előzetes egyeztetés szükséges; a Várhoz tartozást nem irányítószám alapján döntjük el.",
   );
+  L.push("");
+
+  L.push("## Budapest kerületei és városrészei (tájékoztató)");
+  L.push("");
+  L.push(`- ${DISTRICT_AREAS_SOURCE} A díjat mindig az irányítószám adja, nem a városrész.`);
+  for (const d of budapestDistrictAreas) {
+    L.push(`- ${romanDistrict(d.id)} kerület${d.name ? ` (${d.name})` : ""}: ${d.areas.join(", ")}`);
+  }
   L.push("");
 
   L.push("## Oldalak");

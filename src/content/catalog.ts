@@ -37,14 +37,16 @@ export type WashedMark = {
   detail: string;
 };
 
+// Ügyfél (2026-11-01): „minden kavics és sóder mosott … inkább úgy, hogy
+// jó minőségű MOSOTT". A mosott-jelölés CSAK sóderre és kavicsra vonatkozik.
 export const WASHED_SODER: WashedMark = {
-  label: "Mosott sóder",
-  detail: "Vizes osztályozási eljáráson átment, mosott sóder.",
+  label: "Jó minőségű, mosott sóder",
+  detail: "Vizes osztályozási eljáráson átment, jó minőségű, mosott sóder.",
 };
 
 export const WASHED_KAVICS: WashedMark = {
-  label: "Első osztályú, mosott kavics",
-  detail: "Vizes osztályozási eljáráson átment, első osztályú, mosott kavics.",
+  label: "Jó minőségű, mosott kavics",
+  detail: "Jó minőségű, mosott kavics — az első osztályú frakciók és a kulé is.",
 };
 
 export type MaterialItem = {
@@ -87,7 +89,7 @@ export const materialGroups: MaterialGroup[] = [
   {
     slug: "soder",
     name: "Sóder",
-    short: "Mosott homok–kavics keverék minden alapozáshoz",
+    short: "Jó minőségű, mosott homok–kavics keverék alapozáshoz",
     description:
       "A sóder — kavicsos homoknak is hívják — alap építőanyag, homok és kavics keveréke. Alapozáshoz, betonozáshoz és feltöltéshez használatos. Sóderünk vizes osztályozási eljáráson megy keresztül: mosott, egyenletes szemcseméretű anyag.",
     tone: "soder",
@@ -167,9 +169,10 @@ export const materialGroups: MaterialGroup[] = [
   {
     slug: "kavics",
     name: "Kavics",
-    short: "Mosott kerti kavics és osztályozatlan kulé",
+    short: "Jó minőségű, mosott kavics és kulé",
     description:
-      "Kavicsaink vizes osztályozási eljáráson mennek keresztül: első osztályú, mosott anyag díszítéshez, burkoláshoz és vízelvezetéshez, méret szerinti frakciókban. Kivétel a kulé: az nagy szemcseméretű, osztályozatlan anyag.",
+      "Minden kavicsunk mosott: első osztályú kavics díszítéshez, burkoláshoz és vízelvezetéshez, méret szerinti frakciókban. A kulé is mosott, de méret szerint osztályozatlan, nagy szemcséjű anyag (kb. 32–125 mm).",
+    washed: WASHED_KAVICS,
     tone: "kavics",
     texture: "/anyagok/kavics.svg",
     textureAlt: "Kavics textúra — kerek folyami kövek (stilizált illusztráció)",
@@ -183,6 +186,7 @@ export const materialGroups: MaterialGroup[] = [
         fraction: "kb. 32–125 mm",
         use: "Utak, kocsibeállók, nagy terhelésű felületek feltöltéséhez és vízelvezetéshez. Nagy szemcseméretű, osztályozatlan anyag.",
         unclassified: true,
+        washed: WASHED_KAVICS,
       },
       {
         slug: "gyongykavics-4-8",

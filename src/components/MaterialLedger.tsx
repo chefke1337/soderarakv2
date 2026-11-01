@@ -5,6 +5,9 @@ import {
   type MaterialGroup,
   type MaterialItem,
   groupWashed,
+  ROLUNK,
+  WASHED_KAVICS,
+  WASHED_SODER,
 } from "@/content/site";
 import { formatFt, IconCalculator, IconDroplets, IconPlus, minPrice } from "@/lib/ui";
 import FractionScale, { parseFraction } from "@/components/FractionScale";
@@ -265,5 +268,31 @@ export function GrossPriceBanner({ className = "" }: { className?: string }) {
         külön, nettó értékben számolódik — a fuvardíjra jön az ÁFA.
       </span>
     </p>
+  );
+}
+
+/**
+ * Minőségi blokk az anyaglistánál (ügyfél, 2026-11-01: „ezt is fel kellene
+ * tüntetni még egyszer az anyagoknál … jó minőségű MOSOTT"). A szöveg a
+ * Rólunk oldal ügyfél által megadott bekezdése, szó szerint.
+ */
+export function WashedQualityNote({ className = "" }: { className?: string }) {
+  return (
+    <section aria-labelledby="minoseg-cim" className={`quality-note ${className}`}>
+      <span aria-hidden="true" className="quality-note-mark">
+        <IconDroplets size={20} />
+      </span>
+      <div className="min-w-0">
+        <h2 id="minoseg-cim" className="font-display text-heading-xs font-bold">
+          {WASHED_SODER.label} és {WASHED_KAVICS.label.replace(/^Jó minőségű, /, "")}
+        </h2>
+        <p className="mt-1.5 max-w-[70ch] text-sm leading-relaxed text-text-muted">
+          {ROLUNK.paragraphs[1]}
+        </p>
+        <Link href="/rolunk" className="link mt-2 inline-block text-sm font-semibold">
+          Rólunk – Minőség minden szemcsében
+        </Link>
+      </div>
+    </section>
   );
 }

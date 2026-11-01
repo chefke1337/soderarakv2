@@ -14,7 +14,7 @@ import {
   serviceAreas,
   UNSUPPORTED_NOTICE,
 } from "@/content/site";
-import { budapestDistrictAreas, DISTRICT_AREAS_SOURCE } from "@/content/districts";
+import { budapestDistrictAreas } from "@/content/districts";
 import { IconArrowRight, IconPhone } from "@/lib/ui";
 
 /**
@@ -57,20 +57,6 @@ type DistrictEntry = {
   /** Városrészek az ügyfél listájából. */
   areas: readonly string[];
 };
-
-/** Városrész alapneve (zárójeles megjegyzés nélkül), normalizálva. */
-const baseName = (a: string) => norm(a.replace(/\s*\(.*\)\s*$/, ""));
-
-/** Mely kerületekben szerepel egy városrész neve (megosztott nevek jelöléséhez). */
-const AREA_DISTRICTS = new Map<string, number[]>();
-for (const d of budapestDistrictAreas) {
-  for (const a of d.areas) {
-    const k = baseName(a);
-    AREA_DISTRICTS.set(k, [...(AREA_DISTRICTS.get(k) ?? []), d.id]);
-  }
-}
-const otherDistricts = (area: string, own: number) =>
-  (AREA_DISTRICTS.get(baseName(area)) ?? []).filter((id) => id !== own);
 
 const ENTRIES: DistrictEntry[] = [
   ...budapestDistricts.map((d) => {
@@ -274,38 +260,15 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                     Válasszon irányítószámot: a kalkulátor ezzel előtöltve nyílik meg.
                   </p>
                   {e.districtId !== null && e.areas.length > 0 && (
-                    <div className="area-parts">
-                      <p className="text-xs font-semibold text-text-muted">
-                        Városrészek <span className="font-normal">(tájékoztató — a díjat az irányítószám dönti el)</span>
-                      </p>
-                      <ul className="area-part-list" aria-label={`${e.title} városrészei`}>
-                        {e.areas.map((a) => {
-                          const others = otherDistricts(a, e.districtId!);
-                          const hit = q.length >= 3 && !/\d/.test(q) && norm(a).includes(q);
-                          return (
-                            <li key={a} className={hit ? "is-hit" : undefined}>
-                              {a}
-                              {others.length > 0 && (
-                                <span className="area-part-shared">
-                                  {" "}
-                                  — a listán a {others.map((id) => `${romanDistrict(id)}`).join(", ")} kerületnél is
-                                </span>
-                              )}
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </div>
+                    <a href={`#kerulet-${e.districtId}`} className="link mt-1 inline-flex min-h-11 items-center text-sm font-semibold">
+                      A kerület városrészei ↓
+                    </a>
                   )}
                 </div>
               </details>
             </li>
           ))}
         </ul>
-      )}
-
-      {results.some((e) => e.areas.length > 0) && (!compact || (q && !exactZip)) && (
-        <p className="mt-3 text-xs leading-relaxed text-text-muted">{DISTRICT_AREAS_SOURCE}</p>
       )}
 
       {/* Egyedi egyeztetés */}

@@ -398,7 +398,7 @@ section("A levél kötelező tartalma");
   for (const [label, needle] of must) {
     check(`a levél tartalmazza: ${label}`, text.includes(needle));
   }
-  check("a mosott jelölés is szerepel", /Mosott sóder/.test(text));
+  check("a mosott jelölés is szerepel", /mosott sóder/i.test(text));
 }
 
 {
