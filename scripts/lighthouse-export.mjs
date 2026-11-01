@@ -205,6 +205,14 @@ try {
           .map((r) => r.id);
       console.log(`SCORES ${route} — Performance ${score}, Accessibility ${pct("accessibility")}, Best Practices ${pct("best-practices")}, SEO ${pct("seo")}${seoFails.length ? ` (SEO fail: ${seoFails.join(", ")})` : ""}`);
       console.log(`SCORES   a11y<1: ${fails("accessibility").join(", ") || "—"} | best-practices<1: ${fails("best-practices").join(", ") || "—"}`);
+      const consoleItems = audits["errors-in-console"]?.details?.items ?? [];
+      for (const it of consoleItems.slice(0, 3)) {
+        console.log(`SCORES   console: ${it.source ?? ""} ${String(it.description ?? "").slice(0, 160)} ${it.sourceLocation?.url ?? it.url ?? ""}`);
+      }
+      const targets = audits["target-size"]?.details?.items ?? [];
+      for (const it of targets.slice(0, 3)) {
+        console.log(`SCORES   target-size: ${String(it.node?.snippet ?? "").slice(0, 120)}`);
+      }
     }
     for (const id of performanceAudits) {
       const audit = audits[id];
