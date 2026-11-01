@@ -30,7 +30,7 @@ export default function DistrictIndex() {
           return (
             <li key={d.id} id={`kerulet-${d.id}`} className="district-index-item">
               <h3 className="font-display text-[1.0625rem] font-bold">
-                <Link href={`/teruletek/${slug}`} className="underline-offset-4 hover:text-brand-dark hover:underline">
+                <Link href={`/teruletek/${slug}`} className="block py-1 underline-offset-4 hover:text-brand-dark hover:underline">
                   {title}
                 </Link>
               </h3>
