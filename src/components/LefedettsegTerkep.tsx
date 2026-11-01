@@ -248,6 +248,26 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
             }
           });
         };
+        /**
+         * Végső ellenőrzés a TÉNYLEGES (már elhelyezett) feliratokon: a Leaflet
+         * nem egész pixelre rajzol, ezért a számolt és a valós hely tört pixellel
+         * eltérhet. Ha két látható felirat mégis összeérne, a kevésbé fontos rejtve
+         * marad — így átfedés biztosan nincs.
+         */
+        const verify = () => {
+          if (mapRef.current !== map) return;
+          const seen: DOMRect[] = [];
+          for (const lb of labelled) {
+            const el = lb.marker.getTooltip()?.getElement();
+            if (!el || el.classList.contains("is-hidden")) continue;
+            const r = el.getBoundingClientRect();
+            if (seen.some((k) => r.left < k.right && r.right > k.left && r.top < k.bottom && r.bottom > k.top)) {
+              el.classList.add("is-hidden");
+            } else {
+              seen.push(r);
+            }
+          }
+        };
         let declutterFrame = 0;
         let declutterTimer = 0;
         const scheduleDeclutter = () => {
@@ -258,7 +278,10 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           // Második kör, miután a Leaflet az újrakötött feliratokat is elhelyezte
           // (mérés a végleges felirat-méretekkel).
           window.clearTimeout(declutterTimer);
-          declutterTimer = window.setTimeout(declutter, 350);
+          declutterTimer = window.setTimeout(() => {
+            declutter();
+            requestAnimationFrame(verify);
+          }, 350);
         };
         map.on("zoomend moveend resize", scheduleDeclutter);
 
