@@ -229,7 +229,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
               for (const dir of order) {
                 const c = candidate(x, y, w, h, dir);
                 const outside = c.left < 0 || c.top < 0 || c.right > W || c.bottom > H;
-                if (outside || kept.some((k) => hits(c, k, 2))) continue;
+                if (outside || kept.some((k) => hits(c, k, 4))) continue;
                 if (avoidDots && dots.some((d, j) => j !== i && hits(c, d))) continue;
                 chosen = dir;
                 box = c;
@@ -247,11 +247,16 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           });
         };
         let declutterFrame = 0;
+        let declutterTimer = 0;
         const scheduleDeclutter = () => {
           cancelAnimationFrame(declutterFrame);
           declutterFrame = requestAnimationFrame(() => {
             declutterFrame = requestAnimationFrame(declutter);
           });
+          // Második kör, miután a Leaflet az újrakötött feliratokat is elhelyezte
+          // (mérés a végleges felirat-méretekkel).
+          window.clearTimeout(declutterTimer);
+          declutterTimer = window.setTimeout(declutter, 350);
         };
         map.on("zoomend moveend resize", scheduleDeclutter);
 
