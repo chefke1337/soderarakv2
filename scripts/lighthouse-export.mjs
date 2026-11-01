@@ -216,6 +216,12 @@ try {
       console.log(`SCORES ${route} — Performance ${score}, Accessibility ${pct("accessibility")}, Best Practices ${pct("best-practices")}, SEO ${pct("seo")}${seoFails.length ? ` (SEO fail: ${seoFails.join(", ")})` : ""}`);
       const ms = (id) => Math.round(audits[id]?.numericValue ?? 0);
       console.log(`SCORES   metrics: FCP ${ms("first-contentful-paint")} ms, LCP ${ms("largest-contentful-paint")} ms, TBT ${ms("total-blocking-time")} ms, CLS ${(audits["cumulative-layout-shift"]?.numericValue ?? 0).toFixed(3)}, SI ${ms("speed-index")} ms; LCP elem: ${String(audits["largest-contentful-paint-element"]?.details?.items?.[0]?.items?.[0]?.node?.snippet ?? audits["largest-contentful-paint-element"]?.details?.items?.[0]?.node?.snippet ?? "").slice(0, 120)}`);
+      if (route === "/") {
+        const pick = (id) => JSON.stringify(audits[id]?.details ?? {}).match(/"snippet":"((?:[^"\\]|\\.)*)"/g)?.slice(0, 4).join(" || ") ?? "—";
+        console.log(`SCORES   LCP-elem: ${pick("largest-contentful-paint-element").slice(0, 400)}`);
+        console.log(`SCORES   LCP-bontás: ${JSON.stringify(audits["lcp-breakdown-insight"]?.details?.items?.[0] ?? audits["largest-contentful-paint-element"]?.details?.items?.[1] ?? {}).slice(0, 400)}`);
+        console.log(`SCORES   kontraszt: ${pick("color-contrast").slice(0, 500)}`);
+      }
       console.log(`SCORES   a11y<1: ${fails("accessibility").join(", ") || "—"} | best-practices<1: ${fails("best-practices").join(", ") || "—"}`);
       const consoleItems = audits["errors-in-console"]?.details?.items ?? [];
       for (const it of consoleItems.slice(0, 3)) {
