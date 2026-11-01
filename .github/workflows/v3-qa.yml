@@ -60,8 +60,8 @@ jobs:
         continue-on-error: true
         shell: bash
         run: |
-          npm run perf:lighthouse 2>&1 | tee lh.log | tail -n 40
-          msg=$(tail -n 30 lh.log | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
+          LH_ALL=1 DAEKON_FULL_AUDIT=1 npm run perf:lighthouse 2>&1 | tee lh.log | tail -n 40
+          msg=$(grep -E "^SCORES" lh.log | head -n 60 | sed -e 's/%/%25/g' | awk 'BEGIN{ORS="%0A"}{print}')
           echo "::notice title=lighthouse::${msg}"
 
       # 2) Mock végponttal (a valódi beküldési út, MOCK jelöléssel)
