@@ -257,10 +257,13 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         const verify = () => {
           if (mapRef.current !== map) return;
           const seen: DOMRect[] = [];
+          const box = containerRef.current?.getBoundingClientRect();
           for (const lb of labelled) {
             const el = lb.marker.getTooltip()?.getElement();
             if (!el || el.classList.contains("is-hidden")) continue;
             const r = el.getBoundingClientRect();
+            // még el nem helyezett felirat (a térkép bal felső sarkában) — nem ítélünk
+            if (box && Math.abs(r.left - box.left) < 1 && Math.abs(r.top - box.top) < 1) continue;
             if (seen.some((k) => r.left < k.right && r.right > k.left && r.top < k.bottom && r.bottom > k.top)) {
               el.classList.add("is-hidden");
             } else {
@@ -280,7 +283,8 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           window.clearTimeout(declutterTimer);
           declutterTimer = window.setTimeout(() => {
             declutter();
-            requestAnimationFrame(verify);
+            // a második kör esetleges újrakötései is elhelyeződjenek
+            declutterTimer = window.setTimeout(verify, 250);
           }, 350);
         };
         map.on("zoomend moveend resize", scheduleDeclutter);
