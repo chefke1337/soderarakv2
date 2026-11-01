@@ -199,7 +199,12 @@ try {
       const seoFails = Object.values(audits)
         .filter((a) => result.lhr.categories.seo?.auditRefs.some((r) => r.id === a.id && r.weight > 0) && a.score === 0)
         .map((a) => a.id);
+      const fails = (k) =>
+        (result.lhr.categories[k]?.auditRefs ?? [])
+          .filter((r) => r.weight > 0 && audits[r.id]?.score !== null && audits[r.id]?.score < 1)
+          .map((r) => r.id);
       console.log(`SCORES ${route} — Performance ${score}, Accessibility ${pct("accessibility")}, Best Practices ${pct("best-practices")}, SEO ${pct("seo")}${seoFails.length ? ` (SEO fail: ${seoFails.join(", ")})` : ""}`);
+      console.log(`SCORES   a11y<1: ${fails("accessibility").join(", ") || "—"} | best-practices<1: ${fails("best-practices").join(", ") || "—"}`);
     }
     for (const id of performanceAudits) {
       const audit = audits[id];
