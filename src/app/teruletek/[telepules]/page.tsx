@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  bandLabel,
   company,
   areaPages,
   CASTLE_DISTRICT_ID,
   districtAreaPages,
   findAreaPage,
   freightProfiles,
+  FREIGHT_PUBLIC_NOTICE,
   FREIGHT_VAT_RATE,
   MIN_ORDER_M3,
   materialGroups,
@@ -21,7 +21,7 @@ import {
   type FreightProfile,
   type AreaPage,
 } from "@/content/site";
-import { formatFt, IconArrowRight, PhoneLink } from "@/lib/ui";
+import { IconArrowRight, IconCalculator, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, faqJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 import { districtAreas } from "@/content/districts";
@@ -41,12 +41,6 @@ function profilesFor(area: AreaPage): FreightProfile[] {
   );
 }
 
-function freightRangeLabel(profiles: FreightProfile[]): string | null {
-  if (!profiles.length) return null;
-  const fees = profiles.flatMap((p) => p.bands.map((b) => b.netFee));
-  return `${formatFt(Math.min(...fees))}–${formatFt(Math.max(...fees))}`;
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -56,11 +50,10 @@ export async function generateMetadata({
   const area = findAreaPage(telepules);
   if (!area) return {};
   const profiles = profilesFor(area);
-  const range = freightRangeLabel(profiles);
   return pageMeta({
-    title: `Sóder szállítás ${area.name} — bruttó anyagár, nettó fuvar`,
-    description: range
-      ? `Sóder, homok, kavics, murva, andezit és föld szállítás ${area.name} területére. Fuvar nettó ${range} az irányítószám és a mennyiség szerint; az anyagárak bruttók. Hívás: ${company.phone.display}.`
+    title: `Sóder szállítás ${area.name} — bruttó anyagár, házhoz szállítás`,
+    description: profiles.length
+      ? `Sóder, homok, kavics, murva, andezit és föld szállítás ${area.name} területére. Az anyagárak bruttók; a szállítási díjat az árkalkulátor számolja ki a címre és a mennyiségre. Hívás: ${company.phone.display}.`
       : `Sóder, homok, kavics, murva, andezit és föld szállítás ${area.name} területére egyedi szállítási egyeztetéssel. Hívás: ${company.phone.display}.`,
     path: `/teruletek/${area.slug}`,
   });
@@ -81,7 +74,6 @@ export default async function AreaPage({
       ? districtAreas(area.freight.districtId)
       : undefined;
   const hasTariff = profiles.length > 0;
-  const range = freightRangeLabel(profiles);
   const allCodes = profiles.flatMap((p) => [...p.postalCodes]);
   const districtId = area.freight.kind === "profile" ? area.freight.districtId : undefined;
   const isDistrictPage = districtAreaPages.some((d) => d.slug === area.slug);
@@ -102,7 +94,7 @@ export default async function AreaPage({
     {
       q: `Mennyibe kerül a szállítás ${area.name} területére?`,
       a: hasTariff
-        ? `A fuvar díja az irányítószámtól és a szállított mennyiségtől függ: ${area.name} esetén nettó ${range}, egy fuvarra. A nettó fuvardíjra ${Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. Az anyagár ettől külön, bruttó Ft/m³ — rá nem kerül még egyszer ÁFA.`
+        ? `${FREIGHT_PUBLIC_NOTICE} A szállítási díj nettó, rá ${Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. Az anyagár ettől külön, bruttó Ft/m³ — rá nem kerül még egyszer ÁFA.`
         : `${UNSUPPORTED_NOTICE} ${area.name} területére jelenleg nincs feltüntetett fuvardíjunk — a korábbi zónás díjakat nem alkalmazzuk automatikusan. Kérjük, hívjon minket a ${company.phone.display} számon.`,
     },
     {
@@ -121,12 +113,12 @@ export default async function AreaPage({
             q: `Mennyi anyagot visznek ki egy fuvarral ${area.name} területére?`,
             a:
               maxM3 < SINGLE_TRIP_MAX_M3
-                ? `Ide egy fuvarral legfeljebb ${maxM3} m³ szállítható a feltüntetett díjjal; ${maxM3} m³ felett egyedi egyeztetés szükséges. Minimum rendelés ${MIN_ORDER_M3} m³.`
+                ? `Ide egy fuvarral legfeljebb ${maxM3} m³ szállítható; ${maxM3} m³ felett egyedi egyeztetés szükséges. Minimum rendelés ${MIN_ORDER_M3} m³.`
                 : `Egy fuvarral legfeljebb ${SINGLE_TRIP_MAX_M3} m³; 10 m³ felett többfuvaros, egyedi ajánlatot adunk. Minimum rendelés ${MIN_ORDER_M3} m³.`,
           },
           {
-            q: `Melyik irányítószámokra érvényes a díj?`,
-            a: `${allCodes.join(", ")}. A fuvardíjat mindig a szállítási cím pontos irányítószáma határozza meg${profiles.length > 1 ? " — ebben a kerületben nem minden irányítószám tartozik ugyanabba a díjprofilba" : ""}.`,
+            q: `Melyik irányítószámokra szállítanak itt?`,
+            a: `${allCodes.join(", ")}. Az árkalkulátorban a szállítási cím pontos irányítószámát kérjük.`,
           },
         ]
       : []),
@@ -140,7 +132,7 @@ export default async function AreaPage({
       : []),
     {
       q: `Milyen anyagokat szállítanak ${area.name} területére?`,
-      a: `Jó minőségű, mosott sódert (töltősódert és 0–4-től 0–24-ig), bányahomokot és 0–1 homokot, jó minőségű, mosott kavicsot és kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
+      a: `Jó minőségű, mosott sóderfrakciókat (0–4-től 0–24-ig) és nem mosott töltősódert, bányahomokot és 0–1 homokot, jó minőségű, mosott kavicsot és egyszer mosott kulét, murvát, nógrádkövesdi andezitet, töltő- és termőföldet. Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
     },
   ];
 
@@ -157,13 +149,13 @@ export default async function AreaPage({
     <Section
       kicker={
         hasTariff
-          ? `Irányítószám-alapú fuvardíj${allCodes.length ? ` · ${allCodes.join(", ")}` : ""}`
+          ? `Házhoz szállítás${allCodes.length ? ` · ${allCodes.join(", ")}` : ""}`
           : "Egyedi szállítási egyeztetés"
       }
       title={`Sóder szállítás ${area.name}`}
       lead={
         hasTariff
-          ? `A fuvar díját az irányítószám és a szállított mennyiség határozza meg — ${area.name} esetén nettó ${range}, egy fuvarra. Az anyagárak bruttó árak, az ÁFÁ-t tartalmazzák.`
+          ? `Sóder, homok, kavics, murva, andezit és föld házhoz szállítása ${area.name} területére. Az anyagárak bruttó árak, az ÁFÁ-t tartalmazzák; a szállítási díjat az árkalkulátor számolja ki.`
           : `${UNSUPPORTED_NOTICE} ${area.name} területére jelenleg nincs feltüntetett fuvardíjunk — a díjat egyeztetés után adjuk.`
       }
     >
@@ -182,46 +174,22 @@ export default async function AreaPage({
           {/* ── Fuvardíj-sávok vagy egyeztetés ── */}
           {hasTariff ? (
             <div className="rounded-[var(--radius-md)] border border-border bg-surface p-5 shadow-card md:p-6">
-              <h2 className="font-display text-heading-sm font-bold">
-                Fuvardíj-sávok — nettó, egy fuvarra
-              </h2>
-              {profiles.map((p) => {
-                const maxM3 = profileMaxM3(p);
-                return (
-                  <div key={p.id} className="mt-4 border-t border-line pt-4 first:mt-3">
-                    <p className="num text-sm font-semibold">
-                      {p.label}
-                      <span className="block font-sans text-xs font-normal text-ink-soft">
-                        {p.postalCodes.join(", ")}
-                      </span>
-                    </p>
-                    <dl className="num mt-2.5 grid gap-2 sm:grid-cols-2">
-                      {p.bands.map((b) => (
-                        <div
-                          key={b.upTo}
-                          className="flex items-baseline justify-between gap-3 rounded-sm bg-surface-muted px-3 py-2"
-                        >
-                          <dt className="text-xs font-semibold text-ink-soft">
-                            {bandLabel(p, b)}
-                          </dt>
-                          <dd className="font-display text-[0.9375rem] font-bold whitespace-nowrap">
-                            {formatFt(b.netFee)}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                    {maxM3 < SINGLE_TRIP_MAX_M3 && (
-                      <p className="mt-2 text-xs font-semibold text-accent-deep">
-                        {maxM3} m³ felett egyedi egyeztetés szükséges.
-                      </p>
-                    )}
-                  </div>
-                );
-              })}
-              <p className="mt-4 text-xs leading-relaxed text-ink-soft">
-                A nettó fuvardíjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.{" "}
+              <h2 className="font-display text-heading-sm font-bold">Szállítási díj</h2>
+              <p className="mt-2 text-[0.9375rem] leading-relaxed">{FREIGHT_PUBLIC_NOTICE}</p>
+              {maxM3 < SINGLE_TRIP_MAX_M3 && (
+                <p className="mt-2 text-sm font-semibold text-accent-deep">
+                  Ide egy fuvarral legfeljebb {maxM3} m³ szállítható; e felett egyedi egyeztetés
+                  szükséges.
+                </p>
+              )}
+              <p className="mt-3 text-xs leading-relaxed text-ink-soft">
+                A nettó szállítási díjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.{" "}
                 {PERMIT_NOTICE}
               </p>
+              <Link href="/arkalkulator" className="btn btn-outline mt-4">
+                <IconCalculator size={17} />
+                Szállítási díj kiszámítása
+              </Link>
             </div>
           ) : (
             <div className="rounded-[var(--radius-md)] border border-accent/45 bg-brand-soft p-5 md:p-6">
@@ -247,7 +215,8 @@ export default async function AreaPage({
               </h2>
               <p className="mt-3 text-sm leading-relaxed">{district.areas.join(", ")}</p>
               <p className="mt-3 text-xs leading-relaxed text-ink-soft">
-                A fuvardíjat a szállítási cím irányítószáma határozza meg, nem a városrész.
+                A városrész-lista tájékoztató; az árkalkulátorban a szállítási cím
+                irányítószámát kérjük.
               </p>
               <Link
                 href={`/teruletek#kerulet-${district.id}`}
@@ -337,12 +306,12 @@ export default async function AreaPage({
             className="rounded-[var(--radius-md)] border border-line bg-sand p-6 shadow-card"
           >
             <p className="text-sm font-medium text-ink-soft">Ár {area.name} területére</p>
-            <p className="num mt-2 font-display text-heading-md font-bold text-brand-dark">
-              {hasTariff ? range : "Egyeztetés után"}
+            <p className="mt-2 font-display text-heading-sm font-bold text-brand-dark">
+              {hasTariff ? "Címre szabva, az árkalkulátorral" : "Egyeztetés után"}
             </p>
             <p className="mt-1 text-xs leading-relaxed text-ink-soft">
               {hasTariff
-                ? "nettó fuvardíj egy fuvarra, az irányítószám és a mennyiség szerint"
+                ? "bruttó anyagár + nettó szállítási díj, ÁFA-bontással"
                 : "a fuvar díját telefonos egyeztetés után adjuk meg"}
             </p>
             <Link href="/arkalkulator" className="btn btn-primary mt-4 w-full">
@@ -361,12 +330,6 @@ export default async function AreaPage({
               <p className="num mt-2 text-xs leading-relaxed text-ink-soft">
                 Irányítószámok: {allCodes.join(", ")}
               </p>
-              <Link
-                href="/szallitas#fuvardijak"
-                className="mt-3 inline-flex min-h-11 items-center text-sm font-semibold text-brand-deep underline underline-offset-2"
-              >
-                Teljes díjlista →
-              </Link>
             </div>
           )}
 

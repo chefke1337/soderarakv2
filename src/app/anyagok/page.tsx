@@ -12,7 +12,7 @@ import MaterialLedger, { GrossPriceBanner, LedgerHeader, WashedQualityNote } fro
 export const metadata: Metadata = pageMeta({
   title: "Anyagok — sóder, homok, kavics, murva, andezit, föld",
   description:
-    "Ömlesztett építőanyagaink: jó minőségű, mosott sóder (töltősóder, 0–4-től 0–24-ig), bányahomok, jó minőségű, mosott kavics és kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Bruttó árak Ft/m³.",
+    "Ömlesztett építőanyagaink: jó minőségű, mosott sóderfrakciók (0–4-től 0–24-ig) és nem mosott töltősóder, bányahomok, jó minőségű, mosott kavics és egyszer mosott kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Bruttó árak Ft/m³.",
   path: "/anyagok",
 });
 

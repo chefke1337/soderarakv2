@@ -55,8 +55,8 @@ export const company = {
     url: SITE_URL,
   },
   phone: {
-    raw: "+36309546156",
-    display: "+36 30 954 6156",
+    raw: "+36308528909",
+    display: "+36 30 852 8909",
   },
   email: "info@soderarak.hu",
   /** Céges cím (2026-10-11-i ügyféladat) — kizárólag cégadatként (pl. impresszum,
@@ -123,8 +123,10 @@ export const ROLUNK = {
   title: "Rólunk – Minőség minden szemcsében!",
   paragraphs: [
     "Számunkra a kiváló minőség és a megbízhatóság alapvető értékek. Éppen ezért kiemelt figyelmet fordítunk arra, hogy vásárlóink számára gondosan osztályozott, kiváló minőségű építőanyagokat kínáljunk.",
-    // Az ügyfél (2026-11-01) kérésére SZÓ SZERINT — ne szűkítsd.
-    "Minden általunk forgalmazott anyag vizes osztályozási eljáráson megy keresztül, legyen szó sóderről, kavicsról, homokról. Ez az eljárás segít eltávolítani a nem kívánt szennyeződéseket, valamint biztosítja az egyenletesebb szemcseméretet és a megbízható minőséget.",
+    // Ügyfélszöveg (2026-11-01), a 2026-11-02-i pontosítással: a töltősóder NEM
+    // mosott, a kulé csak egyszer mosott — az általános „minden anyag" állítás
+    // ezzel ellentmondott volna, ezért szűkítve.
+    "Az általunk forgalmazott sóderfrakciók, kavicsok és homok vizes osztályozási eljáráson mennek keresztül. Ez az eljárás segít eltávolítani a nem kívánt szennyeződéseket, valamint biztosítja az egyenletesebb szemcseméretet és a megbízható minőséget. Kivétel a töltősóder, amely nem mosott anyag; a kulé egyszeri mosáson esik át.",
     "Célunk, hogy magánépítkezők, kivitelezők és építőipari vállalkozások egyaránt olyan alapanyagokhoz jussanak, amelyek megfelelnek a minőségi elvárásoknak, és amelyekre bátran építhetnek.",
     "Legyen szó betonozásról, alapozásról vagy más építőipari munkáról, nálunk a minőség az első.",
   ],
@@ -286,7 +288,7 @@ export const RENDELES_LEPESEK = [
   },
   {
     title: "Adja meg a szállítási címet és az irányítószámot",
-    text: "A pontos árajánlat elkészítéséhez kérjük, adja meg a szállítási címet és az irányítószámot, ahová az anyagot kéri. A fuvar díját az irányítószám és a szállított mennyiség határozza meg.",
+    text: "A pontos árajánlat elkészítéséhez kérjük, adja meg a szállítási címet és az irányítószámot, ahová az anyagot kéri. A szállítás díját az árkalkulátor a cím és a mennyiség alapján kiszámolja.",
   },
   {
     title: "Egyeztessük a szállítás időpontját",
@@ -319,6 +321,31 @@ export const MIERT_HIVJON = {
   ],
   closing: "Ön elmondja, mire van szüksége, mi pedig segítünk a megoldásban. Hívjon minket bizalommal, és egyeztessük a részleteket!",
 } as const;
+
+/** Szállítás oldal bevezetője — jóváhagyott ügyfélszöveg (2026-11-02), szó szerint. */
+export const SZALLITAS_INTRO = {
+  title: "Szállítás",
+  paragraphs: [
+    "Cégünk vállalja különböző ömlesztett építőanyagok, sóder, homok, kavics, murva, andezit és föld gyors és megbízható házhoz szállítását.",
+    "Legyen szó kisebb lakossági megrendelésről vagy nagyobb építkezési projektről, igyekszünk minden esetben rugalmasan és a megbeszélt időpontban teljesíteni a kiszállítást.",
+  ],
+  listTitle: "Amit kínálunk:",
+  list: [
+    "Gyors és pontos kiszállítás.",
+    "Megbízható, szervezett fuvarozás.",
+    "Lakossági és vállalkozói megrendelések teljesítése.",
+    "Rugalmas szállítási időpontok, akár aznap.",
+    "Igény szerinti mennyiségű ömlesztett anyag kiszállítása.",
+  ],
+} as const;
+
+/**
+ * Nyilvános tarifaközlés helyett (ügyfél, 2026-11-02): a részletes
+ * irányítószám × mennyiség díjtáblák nem jelennek meg; a díjat a kalkulátor
+ * számolja ki az adott címre és mennyiségre.
+ */
+export const FREIGHT_PUBLIC_NOTICE =
+  "A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést.";
 
 /* ─────────────────────── Rendelési igény (e-mail) ─────────────────────── */
 
@@ -373,7 +400,7 @@ export const FAQ = [
   },
   {
     q: "Mennyi a fuvar ára?",
-    a: `A fuvar díja a szállítási cím irányítószámától és a szállított mennyiségtől függ, négy sávban: ≤2 m³, 2–5 m³, 5–7 m³ és 7–10 m³. A díjak nettó értékek, rájuk ${Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. A pontos összeget az irányítószám megadása után a kalkulátor mutatja; ahol egy kerülethez nagyobb mennyiségre nincs tarifa, ott egyedi egyeztetés szükséges.`,
+    a: `A szállítás díja a szállítási címtől és a szállított mennyiségtől függ. A díj nettó érték, rá ${Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. ${FREIGHT_PUBLIC_NOTICE} Ahol nagyobb mennyiségre nincs egyfuvaros díj, ott egyedi egyeztetés szükséges.`,
   },
   {
     q: "A fuvardíj tartalmazza a behajtási engedélyt?",
@@ -427,7 +454,7 @@ export const guides = [
     slug: "mennyibe-kerul-a-soder",
     title: "Mennyibe kerül a sóder? Bruttó anyagár és nettó fuvar",
     excerpt:
-      "Bruttó anyagár köbméterenként, nettó fuvardíj irányítószám szerint, példaszámítással — így jön ki a sóder végára.",
+      "Bruttó anyagár köbméterenként, külön nettó szállítási díj, példaszámítással — így jön ki a sóder végára.",
   },
   {
     slug: "soder-vagy-murva",
@@ -475,7 +502,7 @@ export const guides = [
     slug: "arkalkulator-hasznalata",
     title: "Árkalkulátor használata lépésről lépésre",
     excerpt:
-      "Anyag + mennyiség + irányítószám: mit számol ki a kalkulátor, és hogyan küldhet rendelési igényt az eredmény mellől.",
+      "Anyag, mennyiség, szállítási cím, összesítés: mit számol ki a kalkulátor, és hogyan küldhet rendelési igényt.",
   },
   {
     slug: "mennyi-ido-a-soder-szallitas",

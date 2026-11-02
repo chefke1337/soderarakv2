@@ -5,7 +5,7 @@ import {
   type MaterialGroup,
   type MaterialItem,
   groupWashed,
-  ROLUNK,
+  itemWash,
   WASHED_KAVICS,
   WASHED_SODER,
 } from "@/content/site";
@@ -13,6 +13,7 @@ import { formatFt, IconCalculator, IconDroplets, IconPlus, minPrice } from "@/li
 import FractionScale, { parseFraction } from "@/components/FractionScale";
 import MaterialGrain, { MATERIAL_COLOR } from "@/components/MaterialGrain";
 import { withBasePath } from "@/lib/basepath";
+import LedgerAccordion, { type LedgerAccordionEntry } from "@/components/LedgerAccordion";
 
 /** Egy anyagcsoport teljes szemcse-tartománya a tételek frakcióiból. */
 function groupRange(g: MaterialGroup): string | undefined {
@@ -27,143 +28,139 @@ function groupRange(g: MaterialGroup): string | undefined {
 
 /**
  * Anyagok + BRUTTÓ árlista egy blokkban.
- * Natív <details>: JS nélkül nyílik, billentyűzettel kezelhető.
- * Sor: anyagpanel · név + mosott-jelölés · szemcse-tartomány · induló bruttó
- * ár · lenyitás. Lenyitva: minden tétel felhasználással, frakció-skálával,
+ * Accordion (ügyfél, 2026-11-02): alapból minden kategória zárt, egyszerre
+ * egy nyitható — lásd `LedgerAccordion`. A fejléc zárt állapotban is mutatja
+ * a nevet, a mosottság pontos összefoglalóját, a szemcse-tartományt és az
+ * induló bruttó árat; lenyitva minden tétel felhasználással, frakció-skálával,
  * bruttó árral és közvetlen kalkulátor-linkkel.
  *
  * Ahol nincs ellenőrzött anyagfotó (andezit), a stilizált szemcseminta
  * jelenik meg — régi fotót NEM adunk ki más anyag hiteles fotójaként.
  */
 export default function MaterialLedger({
-  openAll = false,
   headingLevel = 3,
 }: {
-  openAll?: boolean;
   headingLevel?: 2 | 3;
 }) {
-  const H = headingLevel === 2 ? "h2" : "h3";
+  const entries: LedgerAccordionEntry[] = materialGroups.map((g) => {
+    const min = minPrice(g.items);
+    const range = groupRange(g);
+    const w = groupWashed(g);
+    return {
+      id: `anyag-${g.slug}`,
+      style: { "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties,
+      header: (
+        <>
+          {/* teljes magasságú anyagpanel: a kártya „képe" (dekoratív — a név mellette áll) */}
+          <span aria-hidden="true" className="mat-panel relative block overflow-hidden bg-[var(--mat)]">
+            <span className="mat-grain absolute inset-0">
+              {g.photo ? (
+                /* statikus export, unoptimized képek: a next/image itt nem ad hozzá semmit */
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={withBasePath(g.photo.src)}
+                  alt=""
+                  width={360}
+                  height={360}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover"
+                  style={{ objectPosition: g.photo.position }}
+                />
+              ) : (
+                <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} scale={1.15} />
+              )}
+            </span>
+          </span>
 
-  return (
-    <div className="space-y-2.5">
-      {materialGroups.map((g) => {
-        const min = minPrice(g.items);
-        const range = groupRange(g);
-        return (
-          <details
-            key={g.slug}
-            id={`anyag-${g.slug}`}
-            open={openAll}
-            className="mat-card group relative overflow-hidden rounded-[var(--radius-md)] border border-border/70 bg-surface shadow-card"
-            style={{ "--mat": MATERIAL_COLOR[g.tone].base } as React.CSSProperties}
-          >
-            <summary className="mat-summary grid min-h-[5.5rem] cursor-pointer list-none grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10.5rem_7.5rem]">
-              {/* teljes magasságú anyagpanel: a kártya „képe" (dekoratív — a név mellette áll) */}
+          <span className="block min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
+            <span className="block font-display text-heading-sm font-bold">{g.name}</span>
+            <span className="mt-0.5 block text-sm leading-snug font-normal text-ink-soft">{g.short}</span>
+            {w && w.scope === "group" && (
+              <span className="badge-washed mt-1.5">
+                <IconDroplets size={11} />
+                <span>{w.mark.label}</span>
+              </span>
+            )}
+          </span>
+
+          <span className="hidden self-center pr-4 md:block">
+            {range ? (
+              <>
+                <FractionScale fraction={range} />
+                <span className="num mt-1.5 block text-xs font-normal text-ink-soft">
+                  {range} · {g.items.length} tétel
+                </span>
+              </>
+            ) : (
+              <span className="text-xs font-normal text-ink-soft">
+                Frakció nélkül · {g.items.length} tétel
+              </span>
+            )}
+          </span>
+
+          {/* Mobilon ár + nyitásjelző egy oszlopban; md+-on a wrapper
+              „eltűnik" (contents), a két cella saját hasáb. */}
+          <span className="flex flex-col items-end justify-between gap-2 py-3.5 pr-3.5 md:contents">
+            <span className="num block text-right md:self-center md:py-4 md:pr-5">
+              {min !== null ? (
+                <>
+                  <span className="block font-display text-heading-sm font-bold">{formatFt(min)}</span>
+                  <span className="block text-xs font-normal text-ink-soft">-tól / m³ bruttó</span>
+                </>
+              ) : (
+                <span className="block text-sm font-medium text-ink-soft">egyeztetés után</span>
+              )}
+            </span>
+
+            <span className="flex items-center gap-2 text-sm font-semibold text-accent-deep md:justify-end md:self-stretch md:border-l md:border-border/60 md:pr-5 md:pl-4">
+              <span className="mat-toggle-label">
+                <span className="group-data-[open=true]:hidden">Tételek</span>
+                <span className="hidden group-data-[open=true]:inline">Bezárás</span>
+              </span>
               <span
                 aria-hidden="true"
-                className="mat-panel relative block overflow-hidden bg-[var(--mat)]"
+                className="mat-toggle flex h-8 w-8 items-center justify-center rounded-full bg-page text-ink group-data-[open=true]:rotate-45 group-data-[open=true]:bg-accent group-data-[open=true]:text-on-dark"
               >
-                <span className="mat-grain absolute inset-0">
-                  {g.photo ? (
-                    /* statikus export, unoptimized képek: a next/image itt nem ad hozzá semmit */
-                    /* eslint-disable-next-line @next/next/no-img-element */
-                    <img
-                      src={withBasePath(g.photo.src)}
-                      alt=""
-                      width={360}
-                      height={360}
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                      style={{ objectPosition: g.photo.position }}
-                    />
-                  ) : (
-                    <MaterialGrain tone={g.tone} id={`ledger-${g.slug}`} scale={1.15} />
-                  )}
-                </span>
+                <IconPlus size={16} />
               </span>
+            </span>
+          </span>
+        </>
+      ),
+      panel: (
+        <>
+          <p className="max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">
+            {g.description}
+          </p>
+          {w && w.scope === "some" && (
+            <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-petrol-soft/50 px-3 py-1.5 text-xs font-semibold text-petrol-deep">
+              <IconDroplets size={14} />
+              {w.summary}
+            </p>
+          )}
 
-              <span className="min-w-0 self-center py-3.5 pr-2 pl-3.5 md:py-4 md:pl-6">
-                <H className="font-display text-heading-sm font-bold">{g.name}</H>
-                <span className="mt-0.5 block text-sm leading-snug text-ink-soft">{g.short}</span>
-                {(() => {
-                  const w = groupWashed(g);
-                  return w ? (
-                    <span className="badge-washed mt-1.5">
-                      <IconDroplets size={11} />
-                      <span>
-                        {w.mark.label}
-                        {w.scope === "some" && <span className="font-medium"> · frakciók</span>}
-                      </span>
-                    </span>
-                  ) : null;
-                })()}
-              </span>
+          <MaterialItemRows items={g.items} className="mt-4" />
 
-              <span className="hidden self-center pr-4 md:block">
-                {range ? (
-                  <>
-                    <FractionScale fraction={range} />
-                    <span className="num mt-1.5 block text-xs text-ink-soft">
-                      {range} · {g.items.length} tétel
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-xs text-ink-soft">
-                    Frakció nélkül · {g.items.length} tétel
-                  </span>
-                )}
-              </span>
+          <Link
+            href={`/anyagok/${g.slug}`}
+            className="mt-4 inline-flex min-h-11 items-center font-semibold text-brand-deep underline decoration-brand-dark/40 underline-offset-4 hover:decoration-brand-dark"
+          >
+            {g.name}: részletes leírás és felhasználás
+          </Link>
+        </>
+      ),
+    };
+  });
 
-              {/* Mobilon ár + nyitásjelző egy oszlopban; md+-on a wrapper
-                  „eltűnik" (contents), a két cella saját hasáb. */}
-              <span className="flex flex-col items-end justify-between gap-2 py-3.5 pr-3.5 md:contents">
-                <span className="num text-right md:self-center md:py-4 md:pr-5">
-                  {min !== null ? (
-                    <>
-                      <span className="block font-display text-heading-sm font-bold">
-                        {formatFt(min)}
-                      </span>
-                      <span className="block text-xs text-ink-soft">-tól / m³ bruttó</span>
-                    </>
-                  ) : (
-                    <span className="block text-sm font-medium text-ink-soft">egyeztetés után</span>
-                  )}
-                </span>
-
-                <span className="flex items-center gap-2 text-sm font-semibold text-accent-deep md:justify-end md:border-l md:border-border/60 md:pr-5 md:pl-4">
-                  <span className="mat-toggle-label">
-                    <span className="group-open:hidden">Tételek</span>
-                    <span className="hidden group-open:inline">Bezárás</span>
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="mat-toggle flex h-8 w-8 items-center justify-center rounded-full bg-page text-ink group-open:rotate-45 group-open:bg-accent group-open:text-on-dark"
-                  >
-                    <IconPlus size={16} />
-                  </span>
-                </span>
-              </span>
-            </summary>
-
-            <div className="details-body border-t border-border/60 px-4 pt-5 pb-6 md:pr-8 md:pl-[9rem]">
-              <p className="max-w-[68ch] text-[0.9375rem] leading-relaxed text-ink-soft">
-                {g.description}
-              </p>
-
-              <MaterialItemRows items={g.items} className="mt-4" />
-
-              <Link
-                href={`/anyagok/${g.slug}`}
-                className="mt-4 inline-flex min-h-11 items-center font-semibold text-brand-deep underline decoration-brand-dark/40 underline-offset-4 hover:decoration-brand-dark"
-              >
-                {g.name}: részletes leírás és felhasználás
-              </Link>
-            </div>
-          </details>
-        );
-      })}
-    </div>
+  return (
+    <LedgerAccordion
+      entries={entries}
+      headingLevel={headingLevel}
+      cardClassName="mat-card group relative overflow-hidden rounded-[var(--radius-md)] border border-border/70 bg-surface shadow-card"
+      buttonClassName="mat-summary grid min-h-[5.5rem] w-full cursor-pointer grid-cols-[3.75rem_minmax(0,1fr)_auto] items-stretch text-left md:min-h-[6.5rem] md:grid-cols-[7.5rem_minmax(0,1.25fr)_minmax(0,1fr)_10.5rem_7.5rem]"
+      panelClassName="details-body border-t border-border/60 px-4 pt-5 pb-6 md:pr-8 md:pl-[9rem]"
+    />
   );
 }
 
@@ -188,15 +185,13 @@ export function MaterialItemRows({
               {item.qualifier && (
                 <span className="text-xs font-medium text-ink-soft">{item.qualifier}</span>
               )}
-              {item.washed && (
-                <span className="badge-washed">
-                  <IconDroplets size={11} />
-                  {item.washed.label}
-                </span>
-              )}
+              <WashBadge item={item} />
               {item.unclassified && <span className="badge-plain">osztályozatlan</span>}
             </p>
             <p className="mt-0.5 text-sm leading-snug text-ink-soft">{item.use}</p>
+            {item.washNote && (
+              <p className="mt-1 text-sm leading-snug font-medium text-ink">{item.washNote.detail}</p>
+            )}
           </div>
 
           <div className="min-w-0 sm:col-span-2 md:col-span-1">
@@ -272,9 +267,9 @@ export function GrossPriceBanner({ className = "" }: { className?: string }) {
 }
 
 /**
- * Minőségi blokk az anyaglistánál (ügyfél, 2026-11-01: „ezt is fel kellene
- * tüntetni még egyszer az anyagoknál … jó minőségű MOSOTT"). A szöveg a
- * Rólunk oldal ügyfél által megadott bekezdése, szó szerint.
+ * Minőségi blokk az anyaglistánál. Ügyfél, 2026-11-02: a töltősóder NEM
+ * mosott, a kulé csak egyszer mosott — ezért itt nincs általános „minden
+ * anyag mosott" állítás, csak a pontos, tételszintű összefoglaló.
  */
 export function WashedQualityNote({ className = "" }: { className?: string }) {
   return (
@@ -284,15 +279,45 @@ export function WashedQualityNote({ className = "" }: { className?: string }) {
       </span>
       <div className="min-w-0">
         <h2 id="minoseg-cim" className="font-display text-heading-xs font-bold">
-          {WASHED_SODER.label} és {WASHED_KAVICS.label.replace(/^Jó minőségű, /, "")}
+          {WASHED_SODER.label.replace(/ sóder$/, "")} sóderfrakciók és{" "}
+          {WASHED_KAVICS.label.replace(/^Jó minőségű, /, "")}
         </h2>
         <p className="mt-1.5 max-w-[70ch] text-sm leading-relaxed text-text-muted">
-          {ROLUNK.paragraphs[1]}
+          A rostált sóderfrakciók (0–4-től 0–24-ig) és az osztályozott kavicsok vizes
+          osztályozási eljáráson mennek keresztül. A{" "}
+          <strong className="font-semibold text-text">töltősóder nem mosott</strong>. A{" "}
+          <strong className="font-semibold text-text">kulé egyszer mosott</strong>: egyszeri
+          mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok.
         </p>
         <Link href="/rolunk" className="link mt-2 inline-block text-sm font-semibold">
           Rólunk – Minőség minden szemcsében
         </Link>
       </div>
     </section>
+  );
+}
+
+/** Tételszintű mosottság-badge: mosott / egyszer mosott / nem mosott. */
+export function WashBadge({
+  item,
+  className = "",
+}: {
+  item: Pick<MaterialItem, "washed" | "washNote">;
+  className?: string;
+}) {
+  const w = itemWash(item);
+  if (!w) return null;
+  if (w.kind === "washed") {
+    return (
+      <span className={`badge-washed ${className}`}>
+        <IconDroplets size={11} />
+        {w.label}
+      </span>
+    );
+  }
+  return (
+    <span className={`badge-wash-note ${className}`} data-kind={w.kind} title={w.detail}>
+      {w.label}
+    </span>
   );
 }

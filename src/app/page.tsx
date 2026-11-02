@@ -7,7 +7,6 @@ import {
   DISCLOSURE_PRICE,
   FAQ,
   FREIGHT_VAT_RATE,
-  freightProfiles,
   guides,
   HERO,
   MIERT_HIVJON,
@@ -19,7 +18,6 @@ import {
 } from "@/content/site";
 import {
   CalculatorCta,
-  formatFt,
   IconArrowRight,
   IconCheck,
   IconMapPinned,
@@ -37,15 +35,13 @@ import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/Mat
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
-  const freightMinNet = Math.min(...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)));
-
   // Ténysor — minden érték az adatmodellből vagy a V1/V2 meglévő állításaiból.
   const facts = [
     { value: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³`, label: "egy fuvarban, saját teherautóval" },
     { value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
     {
       value: `${budapestDistricts.length} kerület + Érd`,
-      label: "irányítószám-alapú fuvardíjjal",
+      label: "minden kerületbe szállítunk",
     },
     { value: "Bruttó árak", label: "az anyagárak az ÁFÁ-t tartalmazzák" },
   ];
@@ -181,14 +177,14 @@ export default function HomePage() {
         <OrderRoute />
       </Section>
 
-      {/* ─── Hol szállítunk — lefedettség és irányítószámos árazás ─── */}
+      {/* ─── Hol szállítunk — lefedettség ─── */}
       <Section
         headingLevel={2}
         id="terulet"
         tone="muted"
         kicker="Hol szállítunk"
-        title="Budapest és Érd — a fuvardíj alapja az irányítószám"
-        lead="A térkép a lefedettséget mutatja; a konkrét díjat mindig a megadott irányítószám és a szállított mennyiség határozza meg."
+        title="Budapest és Érd — minden kerületbe szállítunk"
+        lead="A térkép a lefedettséget mutatja. A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."
       >
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="min-w-0 lg:col-span-6">
@@ -210,16 +206,12 @@ export default function HomePage() {
             <dl className="border-t-2 border-text">
               <div className="border-b border-line py-4 md:py-5">
                 <dt className="font-display text-heading-xs font-bold">
-                  Irányítószám-alapú fuvardíj
+                  Szállítási díj — címre szabva
                 </dt>
                 <dd className="mt-1 text-sm leading-relaxed text-ink-soft">
-                  Budapest mind a {budapestDistricts.length} kerülete és Érd —{" "}
-                  {freightProfiles.length} díjprofil, négy mennyiségi sávban (≤2, 2–5,
-                  5–7, 7–10 m³). A legalacsonyabb nettó fuvardíj{" "}
-                  <strong className="num font-semibold text-ink">
-                    {formatFt(freightMinNet)}
-                  </strong>
-                  ; a fuvardíjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.
+                  Budapest mind a {budapestDistricts.length} kerülete és Érd. A szállítási
+                  díjat az árkalkulátor számolja ki a megadott címre és mennyiségre; a nettó
+                  díjra {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön.
                 </dd>
               </div>
               <div className="border-b border-line py-4 md:py-5">
@@ -247,7 +239,7 @@ export default function HomePage() {
 
             <div className="mt-5 flex flex-wrap gap-3">
               <Link href="/szallitas" className="btn btn-primary">
-                Fuvardíjak irányítószám szerint
+                Szállítás részletei
                 <IconArrowRight size={17} className="btn-icon btn-icon-move" />
               </Link>
               <Link href="/teruletek" className="btn btn-outline">
@@ -426,13 +418,13 @@ export default function HomePage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-on-dark-muted">Fuvardíjak</dt>
+                <dt className="text-on-dark-muted">Szállítás</dt>
                 <dd className="mt-1 font-semibold">
                   <Link
                     href="/szallitas"
                     className="inline-flex items-center gap-1 font-medium text-amber underline decoration-amber/40 underline-offset-4 hover:decoration-amber"
                   >
-                    Irányítószám szerint
+                    Részletek
                   </Link>
                 </dd>
               </div>

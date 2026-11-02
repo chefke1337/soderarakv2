@@ -529,3 +529,43 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
 - Lighthouse-harness base path javítás: a korábbi pontszámok érvénytelenek voltak.
 - Indexelés: a V3 marad noindex (nincs élesítési jóváhagyás).
 - Nyitott: időszakos React #418 (H-1), kalkulátor-CLS a szimulációban, főoldal Perf 86.
+
+## 2026-11-02 — Ügyfél-visszajelzés: telefon, ötlépéses kalkulátor, árlista, mosottság, szállítás, tarifák
+- Telefonszám: +36 30 852 8909 / `tel:+36308528909` — egyetlen forrás
+  (`company.phone` a site.ts-ben); az útmutató szövegbe égetett régi száma is
+  interpolált lett. Git history és archív audit-naplók érintetlenek.
+- Kalkulátor: valódi, egyszerre EGY lépéses folyamat — 1 anyag → 2 mennyiség →
+  3 cím → [Tovább] → 4 összesítés → [Megrendelem] → 5 személyes adatok és
+  beküldés. Csak az aktuális lépés van a DOM-ban (a jövőbeli nem fókuszálható);
+  a lépésjelző csak járt ÉS érvényes előzményű lépésre ugrik. Alapérték 1 m³
+  (új indításkor és „Új kalkuláció" után); a piszkozat kulcsa v4-re váltott, a
+  régi 8 m³-es piszkozat nem töltődik vissza. A dokumentált előválasztó link
+  (`?anyag=&m3=&irsz=`, pl. a főoldali 8 m³-es példa) továbbra is működik.
+  Anyagcsoport-váltáskor az érvénytelenné vált frakció kijelölése törlődik.
+  I. kerületben a Vár-kérdés megválaszolása kötelező (a „Nem tudom" is jó).
+- Árlista: saját hozzáférhető accordion (`LedgerAccordion`, gomb +
+  aria-expanded + aria-controls + region), alapból minden zárt, egyszerre egy
+  nyitott; a kattintott sor képernyő-pozíciója váltáskor megmarad. A natív
+  `<details name>` kizárólagosság helyett — az nem kezeli a scrollugrást, és a
+  brief kifejezetten gombos mintát kért.
+- Mosottság: töltősóder „Nem mosott", kulé „Egyszer mosott" (teljes magyarázat
+  a termékrészletben) — strukturált `washNote` mező, NEM `washed`; a sóder és a
+  kavics csoportszintű mosott-állítása megszűnt (pontos `washSummary`). A Rólunk
+  ügyfél-bekezdés („Minden általunk forgalmazott anyag…") ezzel ellentmondott,
+  ezért szűkítve: a sóderfrakciók, kavicsok és homok; kivétel a töltősóder, a
+  kulé egyszer mosott. → Ügyféllel megerősítendő megfogalmazás.
+- Szállítás oldal: a „Saját flottával, irányítószám szerinti fuvardíjjal" blokk
+  helyett a jóváhagyott „Szállítás" szöveg + „Amit kínálunk:" lista. Az „akár
+  aznap" mellé kapacitás-függő megjegyzés került (nem garancia); a 10 m³/fuvar
+  szabály ott marad.
+- Nyilvános tarifák: a kereshető irányítószám × mennyiség díjtábla
+  (PostalTariffTable) törölve az /arak és /szallitas oldalról; a kerületi
+  oldalak díjsáv-blokkja, a díjsáv-/díjprofil-magyarázatok, a „-tól" fuvarárak
+  (hero, OG-kártyák, meta) és az llms.txt díjlistája megszűnt. Helyette:
+  „A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos
+  egyeztetést." A belső tarifalogika (freight.ts) és a kalkulátor számítása
+  változatlan; az összesítő továbbra is mutatja a nettó díjat, ÁFÁ-t, bruttót,
+  a teljes összeget és az engedély-státuszt. FONTOS: a díjadatok a kliens
+  JS-csomagban továbbra is benne vannak (a kalkulátor böngészőben számol) —
+  valódi bizalmassághoz szerveroldali kalkuláció kellene; ehhez nem nyúltunk
+  jóváhagyás nélkül.

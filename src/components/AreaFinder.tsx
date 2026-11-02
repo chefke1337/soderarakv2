@@ -182,12 +182,10 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                 {exactZip} — {exactProfile.municipalityId === "erd" ? "Érd" : `Budapest ${romanDistrict(exactProfile.districtId!)} kerület`}
               </p>
               <p className="mt-1 text-sm leading-relaxed">
-                Jóváhagyott, irányítószám-alapú fuvardíjunk van ide.
-                {isSeparateProfile(exactProfile) &&
-                  ` Ez az irányítószám a kerületen belül külön díjprofilba tartozik (${exactProfile.postalCodes.join(", ")}).`}
+                Ide szállítunk — a szállítási díjat az árkalkulátor kiszámolja.
               </p>
               <Link href={`/arkalkulator/?irsz=${exactZip}`} className="btn btn-primary mt-3">
-                Fuvardíj kiszámítása: {exactZip}
+                Szállítási díj kiszámítása: {exactZip}
                 <IconArrowRight size={17} className="btn-icon btn-icon-move" />
               </Link>
             </>
@@ -237,18 +235,13 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                 <div className="area-row-body">
                   {e.groups.map((g, i) => (
                     <div key={i} className={i > 0 ? "mt-3" : undefined}>
-                      {g.split && (
-                        <p className={`mb-1.5 text-xs font-semibold ${g.separate ? "text-accent-deep" : "text-text-muted"}`}>
-                          {g.separate ? "Külön díjprofil" : "A kerület többi irányítószáma"}
-                        </p>
-                      )}
                       <ul className="area-zips" aria-label={`${e.title} irányítószámai`}>
                         {g.codes.map((c) => (
                           <li key={c}>
                             <Link
                               href={`/arkalkulator/?irsz=${c}`}
                               className="area-zip num"
-                              aria-label={`${c}: fuvardíj kiszámítása`}
+                              aria-label={`${c}: szállítási díj kiszámítása`}
                             >
                               {c}
                             </Link>
@@ -266,7 +259,7 @@ export default function AreaFinder({ compact = false }: { compact?: boolean } = 
                         href={`/teruletek/${districtPageSlug(e.districtId)}`}
                         className="link inline-flex min-h-11 items-center text-sm font-semibold"
                       >
-                        A kerület oldala: díjak, tudnivalók
+                        A kerület oldala: tudnivalók
                       </Link>
                       {e.areas.length > 0 && (
                         <a href={`#kerulet-${e.districtId}`} className="link inline-flex min-h-11 items-center text-sm font-semibold">

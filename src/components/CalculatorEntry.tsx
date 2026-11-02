@@ -27,8 +27,8 @@ export default function CalculatorEntry() {
             Mennyibe kerül házhoz szállítva?
           </h2>
           <p className="mt-4 max-w-[48ch] text-[1.0625rem] leading-relaxed text-on-accent-muted">
-            Anyag, mennyiség, irányítószám — három lépés, és látja a bruttó
-            anyagárat, a nettó fuvardíjat, a fuvar ÁFÁ-ját és a teljes bruttó
+            Anyag, mennyiség, szállítási cím — lépésről lépésre, és látja a bruttó
+            anyagárat, a nettó szállítási díjat, annak ÁFÁ-ját és a teljes bruttó
             tájékoztató összeget. Utána rendelési igényt is küldhet.
           </p>
           <div className="mt-6 grid max-w-[34rem] gap-3 sm:grid-cols-2 md:mt-8 [&>a]:w-full [&>a]:whitespace-nowrap">

@@ -4,6 +4,8 @@ import {
   company,
   materialGroups,
   ROLUNK,
+  NOT_WASHED_TOLTOSODER,
+  ONCE_WASHED_KULE,
   WASHED_KAVICS,
   WASHED_SODER,
 } from "@/content/site";
@@ -14,7 +16,7 @@ import Section from "@/components/Section";
 export const metadata: Metadata = pageMeta({
   title: "Rólunk – Minőség minden szemcsében",
   description:
-    "Gondosan osztályozott, kiváló minőségű építőanyagok. Jó minőségű, mosott sóder és kavics, vizes osztályozással — egyenletes szemcseméret, megbízható minőség magánépítkezőknek és kivitelezőknek.",
+    "Gondosan osztályozott, kiváló minőségű építőanyagok. Jó minőségű, mosott sóderfrakciók és kavicsok, vizes osztályozással — egyenletes szemcseméret, megbízható minőség magánépítkezőknek és kivitelezőknek.",
   path: "/rolunk",
 });
 
@@ -96,20 +98,24 @@ export default function RolunkPage() {
               <li className="flex gap-3">
                 <IconDroplets size={17} className="mt-0.5 shrink-0 text-petrol-deep" />
                 <span>
-                  <strong className="font-semibold">{WASHED_SODER.label}</strong> — minden
-                  sóderünk.
+                  <strong className="font-semibold">{WASHED_SODER.label}</strong> — a rostált
+                  sóderfrakciók (0–4-től 0–24-ig). A töltősóder{" "}
+                  <strong className="font-semibold">{NOT_WASHED_TOLTOSODER.label.toLowerCase()}</strong>.
                 </span>
               </li>
               <li className="flex gap-3">
                 <IconDroplets size={17} className="mt-0.5 shrink-0 text-petrol-deep" />
                 <span>
-                  <strong className="font-semibold">{WASHED_KAVICS.label}</strong> — minden
-                  kavicsunk; a kulé is mosott, de méret szerint osztályozatlan (kb. 32–125 mm).
+                  <strong className="font-semibold">{WASHED_KAVICS.label}</strong> — az
+                  osztályozott kavicsfrakciók. A kulé{" "}
+                  <strong className="font-semibold">{ONCE_WASHED_KULE.label.toLowerCase()}</strong>:{" "}
+                  {ONCE_WASHED_KULE.detail.replace(/^A kulé /, "")} Méret szerint osztályozatlan
+                  (kb. 32–125 mm).
                 </span>
               </li>
               <li className="flex gap-3">
                 <IconCheck size={17} className="mt-0.5 shrink-0 text-text-muted" />
-                <span>Vizes osztályozás: {washedNames.join(", ")}.</span>
+                <span>Vizes osztályozás: {washedNames.join(", ")} — a töltősóder kivételével.</span>
               </li>
             </ul>
             <p className="mt-4 text-xs leading-relaxed text-text-muted">

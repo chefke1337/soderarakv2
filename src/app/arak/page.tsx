@@ -5,22 +5,22 @@ import {
   DISCLOSURE_FREIGHT,
   DISCLOSURE_GROSS,
   DISCLOSURE_PRICE,
-  FREIGHT_VAT_RATE,
+  FREIGHT_PUBLIC_NOTICE,
+  itemWash,
   materialGroups,
   MIN_ORDER_M3,
   PERMIT_NOTICE,
   SINGLE_TRIP_MAX_M3,
 } from "@/content/site";
-import { IconArrowRight, PhoneLink } from "@/lib/ui";
+import { IconArrowRight, IconCalculator, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader, WashedQualityNote } from "@/components/MaterialLedger";
-import PostalTariffTable from "@/components/PostalTariffTable";
 
 export const metadata: Metadata = pageMeta({
   title: "Árak — sóder, homok, kavics, murva, andezit, föld (bruttó Ft/m³)",
   description:
-    "Teljes árlista bruttó Ft/m³-ben, az ÁFÁ-t tartalmazva: sóder 0–4-től 0–24-ig, töltősóder, bányahomok, mosott kavics, kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. Fuvardíjak irányítószám szerint, nettó.",
+    "Teljes árlista bruttó Ft/m³-ben, az ÁFÁ-t tartalmazva: sóder 0–4-től 0–24-ig, töltősóder, bányahomok, mosott kavics, kulé, murva, nógrádkövesdi andezit, töltő- és termőföld. A szállítási díjat az árkalkulátor számolja ki.",
   path: "/arak",
 });
 
@@ -39,12 +39,12 @@ const offerCatalog = {
       itemOffered: {
         "@type": "Product",
         name: `${g.name} — ${item.name}${item.fraction ? ` (${item.fraction})` : ""}`,
-        ...(item.washed
+        ...(itemWash(item)
           ? {
               additionalProperty: {
                 "@type": "PropertyValue",
-                name: "Minőségjelölés",
-                value: item.washed.label,
+                name: "Mosottság",
+                value: itemWash(item)!.label,
               },
             }
           : {}),
@@ -70,8 +70,8 @@ export default function ArakPage() {
   return (
     <Section
       kicker="Árlista"
-      title="Bruttó anyagárak és irányítószámos fuvardíjak"
-      lead={`Az anyagárak bruttó árak, az ÁFÁ-t tartalmazzák. A fuvar díja ettől külön, nettó értékben számolódik, az irányítószám és a mennyiség szerint. Minimum rendelés ${MIN_ORDER_M3} m³; egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`}
+      title="Bruttó anyagárak köbméterenként"
+      lead={`Az anyagárak bruttó árak, az ÁFÁ-t tartalmazzák. A szállítás díja ettől külön, nettó értékben számolódik. Minimum rendelés ${MIN_ORDER_M3} m³; egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`}
     >
       <JsonLd data={offerCatalog} />
       <JsonLd
@@ -84,24 +84,23 @@ export default function ArakPage() {
       <GrossPriceBanner className="mb-4" />
       <WashedQualityNote className="mb-6" />
       <LedgerHeader />
-      <MaterialLedger openAll headingLevel={2} />
+      <MaterialLedger headingLevel={2} />
 
-      {/* ── Fuvardíjak: irányítószámos, kereshető lista ── */}
-      <h2 id="fuvardijak" className="mt-16 font-display text-heading-md font-bold">
-        Fuvardíjak irányítószám szerint
-      </h2>
-      <p className="mt-2 max-w-[66ch] text-ink-soft">
-        A fuvar díját a szállítási cím <strong className="font-semibold">irányítószáma</strong>{" "}
-        és a szállított mennyiség határozza meg — a kerület kiválasztása önmagában nem
-        elég. Az alábbi összegek nettó fuvardíjak egy fuvarra; rájuk{" "}
-        {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön. A teljes bruttó összeget az{" "}
-        <Link href="/arkalkulator" className="link">
-          árkalkulátor
-        </Link>{" "}
-        számolja ki.
-      </p>
-      <div className="mt-6">
-        <PostalTariffTable />
+      {/* ── Szállítási díj: nyilvános díjtábla helyett (ügyfél, 2026-11-02) ── */}
+      <div
+        id="fuvardijak"
+        className="mt-12 scroll-mt-28 rounded-[var(--radius-md)] border border-border-strong bg-surface p-5 md:p-6"
+      >
+        <h2 className="font-display text-heading-md font-bold">Szállítási díj</h2>
+        <p className="mt-2 max-w-[62ch] text-[0.9375rem] leading-relaxed">
+          {FREIGHT_PUBLIC_NOTICE} A szállítási díj nettó; rá{" "}
+          {Math.round(FREIGHT_VAT_RATE * 100)}% ÁFA jön — a kalkulátor összesítője ezt külön
+          mutatja, a teljes bruttó tájékoztató összeggel együtt.
+        </p>
+        <Link href="/arkalkulator" className="btn btn-outline mt-4">
+          <IconCalculator size={17} />
+          Szállítási díj kiszámítása
+        </Link>
       </div>
 
       {/* ── Záró sáv ── */}

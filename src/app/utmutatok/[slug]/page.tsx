@@ -7,11 +7,10 @@ import {
   EXAMPLE_CALC,
   findGuide,
   FREIGHT_VAT_RATE,
-  freightProfiles,
+  FREIGHT_PUBLIC_NOTICE,
   guides,
   MAX_ORDER_VOLUME,
   MIN_ORDER_VOLUME,
-  profileMaxM3,
   quoteOnlyAreas,
   SINGLE_TRIP_MAX_M3,
 } from "@/content/site";
@@ -19,11 +18,7 @@ import { PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 
-/** V3: az árazás irányítószám-alapú — a korábbi három zóna megszűnt. */
-const FREIGHT_MIN_NET = Math.min(...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)));
-const FREIGHT_MAX_NET = Math.max(...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)));
 const VAT_PCT = Math.round(FREIGHT_VAT_RATE * 100);
-const LIMITED_PROFILES = freightProfiles.filter((p) => profileMaxM3(p) < SINGLE_TRIP_MAX_M3);
 const ft = (n: number) => n.toLocaleString("hu-HU");
 
 export function generateStaticParams() {
@@ -127,7 +122,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mitől függ az ár?",
       p: [
-        "Két tételből áll a végösszeg: az anyag BRUTTÓ ára köbméterenként, és a fuvar NETTÓ díja, amely a szállítási cím irányítószámától és a szállított mennyiségtől függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, bruttó 10 500 Ft/m³, míg a rostált sóderek (0–4, 0–8, 0–16, 0–24) bruttó 11 500 és 14 000 forint között mozognak köbméterenként.",
+        "Két tételből áll a végösszeg: az anyag BRUTTÓ ára köbméterenként, és a fuvar NETTÓ díja, amely a szállítási címtől és a szállított mennyiségtől függ. Az anyagár a fajtától és a frakciótól változik — a jelen árlistánkban a töltősóder a legkedvezőbb, bruttó 10 500 Ft/m³, míg a rostált sóderek (0–4, 0–8, 0–16, 0–24) bruttó 11 500 és 14 000 forint között mozognak köbméterenként.",
         `Az anyagárak az ÁFÁ-t tartalmazzák, rájuk nem kerül még egyszer ÁFA. A fuvardíj viszont nettó érték: arra ${VAT_PCT}% ÁFA jön. Minden ár tájékoztató jellegű — a végleges ajánlatot egyeztetés után adjuk.`,
       ],
       links: [
@@ -139,18 +134,18 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "A fuvar díja külön számolandó",
       p: [
-        `Az anyagár mellé a fuvar külön elem, és a szállítási cím irányítószámától, valamint a szállított mennyiségtől függ. Négy mennyiségi sáv van: legfeljebb 2 m³, 2–5 m³, 5–7 m³ és 7–10 m³. A nettó fuvardíj ${ft(FREIGHT_MIN_NET)} és ${ft(FREIGHT_MAX_NET)} forint között alakul — Budapest mind a ${budapestDistricts.length} kerületére és Érdre van feltüntetett díjunk.`,
+        `Az anyagár mellé a fuvar külön elem, és a szállítási címtől, valamint a szállított mennyiségtől függ. Budapest mind a ${budapestDistricts.length} kerületébe és Érdre szállítunk; ${FREIGHT_PUBLIC_NOTICE.charAt(0).toLowerCase()}${FREIGHT_PUBLIC_NOTICE.slice(1)}`,
         `A fuvar egy fuvarra vonatkozik: egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} köbméter szállítható. Ennél nagyobb mennyiséghez kérjen egyedi, többfuvaros ajánlatot — a többfuvaros díjat egyeztetés után adjuk meg.`,
       ],
       links: [
-        { href: "/szallitas", label: "Szállítás és fuvarárak" },
+        { href: "/szallitas", label: "Szállítás" },
         { href: "/teruletek", label: "Kiszállítási területek" },
       ],
     },
     {
       h: "Példaszámítás: 8 m³ Sóder 0/24",
       p: [
-        `Tegyük fel, hogy ${EXAMPLE_CALC.m3} köbméter 0–24-es sódert kér a ${EXAMPLE_CALC.postalCode} irányítószámra. Az anyag bruttó ${ft(EXAMPLE_CALC.material.priceGross!)} Ft/m³, tehát ${EXAMPLE_CALC.m3} × ${ft(EXAMPLE_CALC.material.priceGross!)} = ${ft(EXAMPLE_CALC.materialGross)} forint bruttó. A fuvar ebben a sávban (${EXAMPLE_CALC.bandLabel}) ${ft(EXAMPLE_CALC.freightNet)} forint nettó, amire ${VAT_PCT}% ÁFA jön: ${ft(EXAMPLE_CALC.freightVat)} forint, vagyis ${ft(EXAMPLE_CALC.freightGross)} forint bruttó. A teljes bruttó tájékoztató összeg ${ft(EXAMPLE_CALC.totalGross)} forint.`,
+        `Tegyük fel, hogy ${EXAMPLE_CALC.m3} köbméter 0–24-es sódert kér a ${EXAMPLE_CALC.postalCode} irányítószámra. Az anyag bruttó ${ft(EXAMPLE_CALC.material.priceGross!)} Ft/m³, tehát ${EXAMPLE_CALC.m3} × ${ft(EXAMPLE_CALC.material.priceGross!)} = ${ft(EXAMPLE_CALC.materialGross)} forint bruttó. A fuvar erre a címre és mennyiségre ${ft(EXAMPLE_CALC.freightNet)} forint nettó, amire ${VAT_PCT}% ÁFA jön: ${ft(EXAMPLE_CALC.freightVat)} forint, vagyis ${ft(EXAMPLE_CALC.freightGross)} forint bruttó. A teljes bruttó tájékoztató összeg ${ft(EXAMPLE_CALC.totalGross)} forint.`,
         "Hasonló számítást bármelyik anyagra és irányítószámra elvégezhet az árkalkulátorunkkal — tíz másodpercnél nem tart tovább, és az eredmény mellől rendelési igényt is küldhet.",
       ],
       links: [{ href: "/arkalkulator", label: "Próbálja ki a kalkulátort" }],
@@ -165,10 +160,10 @@ const BODY: Record<string, GuideSection[]> = {
   ],
   "arkalkulator-hasznalata": [
     {
-      h: "Három bemenet, két perc",
+      h: "Lépésről lépésre",
       p: [
         `A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a szállítási címet. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a BRUTTÓ köbméterár. A mennyiség ${MIN_ORDER_VOLUME} és ${MAX_ORDER_VOLUME} köbméter között választható, hiszen a minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban pedig legfeljebb ${MAX_ORDER_VOLUME} m³ fér.`,
-        "A címnél külön adja meg a települést, Budapest esetén a kerületet, és — kötelezően, külön mezőben — az irányítószámot. A kerület kiválasztása nem helyettesíti az irányítószámot: a fuvardíj alapja mindig a konkrét irányítószám. Ha a kettő nem egyezik, a kalkulátor hibát jelez, és nem választ helyette másik díjat.",
+        "A címnél külön adja meg a települést, Budapest esetén a kerületet, és — kötelezően, külön mezőben — az irányítószámot és az utcát, házszámot. Ha a kerület és az irányítószám nem egyezik, a kalkulátor hibát jelez. A cím után külön összesítés következik; a „Megrendelem” gombbal léphet tovább a kapcsolattartási adatokhoz, és csak ott küldi el a rendelési igényt.",
       ],
       links: [
         { href: "/anyagok", label: "Nézze meg anyagainkat" },
@@ -179,8 +174,8 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Mit számol ki pontosan?",
       p: [
-        `Az anyag BRUTTÓ árát megszorozza a köbméterekkel — erre nem kerül még egyszer ÁFA —, majd külön kiírja az irányítószám és a mennyiség szerinti NETTÓ fuvardíjat, annak ${VAT_PCT}%-os ÁFÁ-ját és a bruttó fuvardíjat. ${EXAMPLE_CALC.m3} köbméter 0–24-es sóder a ${EXAMPLE_CALC.postalCode} irányítószámra például ${ft(EXAMPLE_CALC.materialGross)} forint bruttó anyagot és ${ft(EXAMPLE_CALC.freightNet)} + ${ft(EXAMPLE_CALC.freightVat)} = ${ft(EXAMPLE_CALC.freightGross)} forint bruttó fuvart ad — ${ft(EXAMPLE_CALC.totalGross)} forintos teljes bruttó összeget.`,
-        `${SINGLE_TRIP_MAX_M3} m³ felett egyedi, többfuvaros ajánlat szükséges. Néhány kerületben kisebb a felső korlát (${LIMITED_PROFILES.map((p) => `${p.label}: ${profileMaxM3(p)} m³`).join(", ")}) — ott a kalkulátor egyedi egyeztetést jelez, és nem mutat kitalált árat.`,
+        `Az anyag BRUTTÓ árát megszorozza a köbméterekkel — erre nem kerül még egyszer ÁFA —, majd külön kiírja a címre és a mennyiségre számolt NETTÓ fuvardíjat, annak ${VAT_PCT}%-os ÁFÁ-ját és a bruttó fuvardíjat. ${EXAMPLE_CALC.m3} köbméter 0–24-es sóder a ${EXAMPLE_CALC.postalCode} irányítószámra például ${ft(EXAMPLE_CALC.materialGross)} forint bruttó anyagot és ${ft(EXAMPLE_CALC.freightNet)} + ${ft(EXAMPLE_CALC.freightVat)} = ${ft(EXAMPLE_CALC.freightGross)} forint bruttó fuvart ad — ${ft(EXAMPLE_CALC.totalGross)} forintos teljes bruttó összeget.`,
+        `${SINGLE_TRIP_MAX_M3} m³ felett egyedi, többfuvaros ajánlat szükséges. Néhány címnél kisebb a fuvaronkénti felső korlát — ott a kalkulátor egyedi egyeztetést jelez, és nem mutat kitalált árat.`,
       ],
       links: [{ href: "/arkalkulator", label: "Árkalkulátor indítása" }],
     },
@@ -269,7 +264,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Ár szempontból",
       p: [
-        "Az alapárak egymás mellett állnak: a töltősóder bruttó 10 500 forint köbméterenként, a 0–24-es mosott sóder 13 500, a 0–22-es poros murva 14 000 forint. A döntés tehát inkább felhasználás, mint ár kérdése — a fuvar díja mindegyiknél ugyanúgy az irányítószámtól és a mennyiségtől függ.",
+        "Az alapárak egymás mellett állnak: a töltősóder bruttó 10 500 forint köbméterenként, a 0–24-es mosott sóder 13 500, a 0–22-es poros murva 14 000 forint. A döntés tehát inkább felhasználás, mint ár kérdése — a szállítás díja mindegyiknél ugyanúgy számolódik.",
       ],
       links: [{ href: "/arak", label: "Teljes árlista" }],
     },
@@ -301,7 +296,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Példa: 20 m²-es kocsibeálló",
       p: [
-        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni. 0–22-es murvával az anyag bruttó 4 × 14 000 = 56 000 forint. A fuvar a 1221-es irányítószámra (Budapest XXII. kerület), a 2–5 m³ sávban 22 000 forint nettó, azaz 5 940 forint ÁFÁ-val 27 940 forint bruttó — összesen 83 940 forint bruttó.",
+        "20 négyzetméteren 15 centiméteres alapréteggel 3 köbméter anyagot számolunk; tömörítési ráhagyással érdemes 4 köbméterre tervezni. 0–22-es murvával az anyag bruttó 4 × 14 000 = 56 000 forint. A fuvar a 1221-es irányítószámra (Budapest XXII. kerület) erre a mennyiségre 22 000 forint nettó, azaz 5 940 forint ÁFÁ-val 27 940 forint bruttó — összesen 83 940 forint bruttó.",
         "A pontos összeget az árkalkulátor adja meg bármelyik településre — tíz másodpercnél nem tart tovább.",
       ],
       links: [
@@ -320,7 +315,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Töltősóder: feltöltésre",
       p: [
-        "A töltősóder erőssége a tömörség és az ár: bruttó 10 500 forint köbméterenként, és a feltöltéseknél pont erre van szükség. Ahogy a neve is jelzi, töltésre való — utak, parkok feltöltésére és beton alatti alapozáshoz —, nem pedig beton készítésére.",
+        "A töltősóder erőssége a tömörség és az ár: bruttó 10 500 forint köbméterenként, és a feltöltéseknél pont erre van szükség. Ahogy a neve is jelzi, töltésre való — utak, parkok feltöltésére és beton alatti alapozáshoz —, nem pedig beton készítésére. A töltősóder nem mosott anyag; a rostált sóderfrakciók mosottak.",
       ],
       links: [{ href: "/anyagok/soder", label: "Sóder anyagoldal" }],
     },
@@ -334,7 +329,7 @@ const BODY: Record<string, GuideSection[]> = {
       h: "Így döntsön gyorsan",
       p: [
         "Ahol csak feltölti a terepet és tömörít, elég a töltősóder — jóval kevesbe kerül. Ahol a keverékből beton lesz, ott rostált frakció kell. Kocsibeállónál a két anyag váltja egymást: alul töltősóder vagy murva, a betonos munkáknál rostált.",
-        "Bizonytalan esetben hívja a +36 30 954 6156-os számot: anyag szerint segítünk választani.",
+        `Bizonytalan esetben hívja a ${company.phone.display} telefonszámot: anyag szerint segítünk választani.`,
       ],
       links: [
         { href: "/utmutatok/mennyibe-kerul-a-soder", label: "Mennyibe kerül a sóder?" },
@@ -376,7 +371,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Így zajlik a rendelés",
       p: [
-        `Először hívja a ${company.phone.display} számot, vagy küldje el, mire van szüksége: anyag, mennyiség, szállítási cím és irányítószám. Visszaigazoljuk az anyagot és a mennyiséget, a fuvar árát az irányítószám szerint, és rögzítjük az időpontot. Ezután a megbeszélt időpontban kiszállítjuk, és a helyszínen az előre egyeztetett helyre lerakodjuk.`,
+        `Először hívja a ${company.phone.display} számot, vagy küldje el, mire van szüksége: anyag, mennyiség, szállítási cím és irányítószám. Visszaigazoljuk az anyagot, a mennyiséget és a szállítás díját, és rögzítjük az időpontot. Ezután a megbeszélt időpontban kiszállítjuk, és a helyszínen az előre egyeztetett helyre lerakodjuk.`,
       ],
     },
   ],

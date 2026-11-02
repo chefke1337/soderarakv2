@@ -8,19 +8,18 @@
  */
 
 import {
-  bandLabel,
   budapestDistricts,
   company,
   DISCLOSURE_GROSS,
   DISCLOSURE_PRICE,
+  FREIGHT_PUBLIC_NOTICE,
   FREIGHT_VAT_RATE,
-  freightProfiles,
   guides,
+  itemWash,
   materialGroups,
   MIN_ORDER_M3,
   MULTI_TRIP_NOTICE,
   PERMIT_NOTICE,
-  profileMaxM3,
   quoteOnlyAreas,
   romanDistrict,
   SINGLE_TRIP_MAX_M3,
@@ -73,36 +72,24 @@ function build(): string {
     const items = g.items
       .map((i) => {
         const price = i.priceGross === null ? "ár egyeztetés után" : ft(i.priceGross);
-        const marks = [i.qualifier, i.washed?.label, i.unclassified ? "osztályozatlan" : null]
+        const marks = [i.qualifier, itemWash(i)?.label, i.unclassified ? "osztályozatlan" : null]
           .filter(Boolean)
           .join(", ");
         return `${i.name}${marks ? ` [${marks}]` : ""} ${price}`;
       })
       .join("; ");
-    L.push(`- ${g.name}${g.washed ? ` (${g.washed.label})` : ""}: ${items}`);
+    L.push(`- ${g.name}${g.washSummary ? ` (${g.washSummary.replace(/\.$/, "")})` : g.washed ? ` (${g.washed.label})` : ""}: ${items}`);
   }
   L.push("");
   L.push(
-    "- Minőségjelölés: minden sóder és kavics jó minőségű, mosott (a kulé is mosott, de méret szerint osztályozatlan, kb. 32–125 mm). Vizes osztályozás: sóder, kavics, homok.",
+    "- Mosottság: a rostált sóderfrakciók (0–4…0–24) és az osztályozott kavicsok jó minőségű, mosott anyagok. A töltősóder NEM mosott. A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok (méret szerint osztályozatlan, kb. 32–125 mm).",
   );
   L.push("");
 
-  L.push("## Fuvardíjak irányítószám szerint (NETTÓ Ft, egy fuvarra)");
+  L.push("## Szállítási díj");
   L.push("");
-  L.push(
-    "- A fuvardíj alapja mindig a szállítási cím irányítószáma. A kerület kiválasztása önmagában nem határozza meg a díjat.",
-  );
-  L.push("- Sávhatárok (felső határ zártan): ≤2 m³, 2–5 m³, 5–7 m³, 7–10 m³.");
-  L.push("");
-  for (const p of freightProfiles) {
-    const bands = p.bands.map((b) => `${bandLabel(p, b)}: ${ft(b.netFee)}`).join("; ");
-    const limit =
-      profileMaxM3(p) < SINGLE_TRIP_MAX_M3
-        ? ` — ${profileMaxM3(p)} m³ felett egyedi egyeztetés`
-        : "";
-    L.push(`- ${p.label} (${p.postalCodes.join(", ")}): ${bands}${limit}`);
-  }
-  L.push("");
+  L.push(`- ${FREIGHT_PUBLIC_NOTICE}`);
+  L.push("- A szállítási díjat az árkalkulátor a szállítási cím és a mennyiség alapján számolja ki, és külön mutatja a nettó díjat, az ÁFÁ-t és a teljes bruttó tájékoztató összeget.");
   L.push(`- ${UNSUPPORTED_NOTICE}`);
   L.push(
     `- Jelenleg NINCS feltüntetett fuvardíj: ${quoteOnlyAreas.map((a) => a.name).join(", ")}.`,
@@ -114,7 +101,7 @@ function build(): string {
 
   L.push("## Budapest kerületei és városrészei (tájékoztató)");
   L.push("");
-  L.push(`- ${DISTRICT_AREAS_SOURCE} A díjat mindig az irányítószám adja, nem a városrész.`);
+  L.push(`- ${DISTRICT_AREAS_SOURCE}`);
   for (const d of budapestDistrictAreas) {
     L.push(`- ${romanDistrict(d.id)} kerület${d.name ? ` (${d.name})` : ""}: ${d.areas.join(", ")}`);
   }
@@ -124,8 +111,8 @@ function build(): string {
   L.push("");
   for (const [path, label] of [
     ["/", "Főoldal"],
-    ["/arak", "Árak (bruttó anyagárak + irányítószámos fuvardíjak)"],
-    ["/arkalkulator", "Árkalkulátor (anyag + mennyiség + irányítószám)"],
+    ["/arak", "Árak (bruttó anyagárak)"],
+    ["/arkalkulator", "Árkalkulátor (anyag + mennyiség + szállítási cím)"],
     ["/anyagok", "Anyagok"],
     ["/szallitas", "Szállítás"],
     ["/teruletek", "Területek"],

@@ -19,7 +19,7 @@
  * Futtatás: node scripts/v3-regression.mjs
  */
 import { createServer } from "node:http";
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, resolve } from "node:path";
 import { chromium } from "playwright";
 
@@ -215,7 +215,10 @@ for (const [w, h] of [[360, 740], [768, 1024], [1440, 900]]) {
   }
   await input.fill("1118");
   await page.waitForTimeout(120);
-  check("kereső 1118 → külön díjprofil", (await page.locator(".area-zip-result").innerText()).includes("külön díjprofil"));
+  {
+    const r = await page.locator(".area-zip-result").innerText();
+    check("kereső 1118 → kalkulátor-link, belső díjprofil-magyarázat nélkül", r.includes("Szállítási díj kiszámítása: 1118") && !/díjprofil/.test(r));
+  }
   await input.fill("9999");
   await page.waitForTimeout(120);
   check("kereső 9999 → nincs jóváhagyott tarifa", (await page.locator(".area-zip-result").innerText()).includes("nincs jóváhagyott tarifa"));
@@ -237,31 +240,116 @@ for (const [w, h] of [[360, 740], [768, 1024], [1440, 900]]) {
     const resp = await page.goto(`${origin}${href}`, { waitUntil: "load" });
     const body = await page.locator("main").innerText();
     const firstCode = (await page.locator(`a[href*="irsz="], .num`).allInnerTexts()).join(" ");
-    if (resp?.status() === 200 && /Fuvardíj-sávok/.test(body) && /Városrészek a /.test(body) && /\d{4}/.test(firstCode)) ok++;
+    if (resp?.status() === 200 && /Szállítási díj/.test(body) && !/Fuvardíj-sávok|díjprofil/.test(body) && /Városrészek a /.test(body) && /\d{4}/.test(firstCode)) ok++;
     else console.log(`  kerület ${d}: ${href} ${resp?.status()}`);
   }
-  check(`kerületi oldalak: ${ok}/23 elérhető, díjsávokkal és városrészekkel`, ok === 23);
+  check(`kerületi oldalak: ${ok}/23 elérhető, városrészekkel, nyilvános díjtábla nélkül`, ok === 23);
   await page.goto(url("/teruletek/budapest-1-kerulet/"), { waitUntil: "load" });
   check("I. kerület oldal: Vár-egyeztetés szerepel", /Vár/.test(await page.locator("main").innerText()));
   await page.goto(url("/teruletek/budapest-5-kerulet/"), { waitUntil: "load" });
-  check("V. kerület oldal: 5 m³ feletti egyedi egyeztetés szerepel", /5 m³ felett egyedi egyeztetés/.test(await page.locator("main").innerText()));
+  check("V. kerület oldal: 5 m³ feletti egyedi egyeztetés szerepel", /5 m³ felett egyedi egyeztetés|e felett egyedi egyeztetés/.test(await page.locator("main").innerText()));
   await ctx.close();
 }
 
-/* ── 6. Kalkulátor: hiányzó tarifa, üres beküldés ── */
+/* ── 6. Kalkulátor: előválasztó link, hiányzó tarifa ── */
 {
   const { ctx, page } = await newPage(1280, 1000);
   await page.goto(url("/arkalkulator/?anyag=soder-0-24&m3=4&irsz=9999"), { waitUntil: "load" });
   await page.waitForTimeout(300);
-  const t = (await page.locator("main").innerText()).replace(/\u00a0/g, " ");
+  const t = (await page.locator("main").innerText()).replace(/ /g, " ");
   check("kalkulátor: ismeretlen irányítószám nem töltődik elő és nincs 0 Ft-os fuvar", !/Fuvar[^\n]*\b0 Ft/.test(t));
-  const submit = page.locator("button[type=submit]").filter({ hasText: /beküldése|elküldése/ }).first();
-  if (await submit.count()) {
-    await submit.click();
-    await page.waitForTimeout(300);
-    const after = await page.locator("main").innerText();
-    check("kalkulátor: üres beküldés → hibaüzenet, nincs sikerüzenet", /kötelező|adja meg|hiányzik|nincs konfigurálva/i.test(after) && !/sikeresen|megkaptuk/i.test(after));
+  check("kalkulátor: az előválasztó link az 1. lépésen nyit, a változat kijelölve", (await page.locator("#step-1-cim").count()) === 1 && (await page.getByRole("radio", { name: /0–24 sóder/ }).isChecked()));
+  check("kalkulátor: nincs beküldő gomb az első lépésen", (await page.locator("button[type=submit]").count()) === 0);
+  await page.getByRole("button", { name: /Tovább: mennyiség/ }).click();
+  check("kalkulátor: dokumentált ?m3=4 előválasztás megmarad", (await page.locator("input[type=range]").inputValue()) === "4");
+  await ctx.close();
+}
+
+/* ── 7. Árlista: alapból zárt accordion, egyszerre egy nyitott ── */
+for (const w of [390, 768, 1440]) {
+  const { ctx, page } = await newPage(w, 900);
+  await page.goto(url("/arak/"), { waitUntil: "load" });
+  const btns = page.locator(".mat-card button[aria-expanded]");
+  const n = await btns.count();
+  const expanded = async () => (await btns.evaluateAll((els) => els.map((e) => e.getAttribute("aria-expanded"))));
+  check(`${w}px /arak: ${n} kategória, alapból mind zárt`, n === 6 && (await expanded()).every((v) => v === "false"));
+  check(`${w}px /arak: zárt panelek rejtettek`, (await page.locator(".mat-card [role=region]:not([hidden])").count()) === 0);
+  check(`${w}px /arak: zárt állapotban is látszik a név és az induló ár`, /Sóder[\s\S]*Ft[\s\S]*-tól/.test(await btns.first().innerText()));
+  await btns.nth(0).click();
+  let e = await expanded();
+  check(`${w}px /arak: egy kategória nyitható`, e[0] === "true" && e.filter((v) => v === "true").length === 1);
+  const ctrl = await btns.nth(0).getAttribute("aria-controls");
+  check(`${w}px /arak: aria-controls a nyitott panelre mutat`, Boolean(ctrl) && (await page.locator(`#${ctrl}:not([hidden])`).count()) === 1);
+  // hosszú (murva, 6 tétel) nyitott kategória után egy lejjebb lévő megnyitása: nincs scrollugrás
+  await btns.nth(3).click();
+  await btns.nth(4).scrollIntoViewIfNeeded();
+  const before = await btns.nth(4).evaluate((el) => el.getBoundingClientRect().top);
+  await btns.nth(4).click();
+  await page.waitForTimeout(100);
+  const after = await btns.nth(4).evaluate((el) => el.getBoundingClientRect().top);
+  e = await expanded();
+  check(`${w}px /arak: másik nyitása bezárja az előzőt`, e[3] === "false" && e[4] === "true" && e.filter((v) => v === "true").length === 1);
+  check(`${w}px /arak: nincs scrollugrás (Δ=${Math.round(after - before)} px)`, Math.abs(after - before) <= 3);
+  await btns.nth(4).click();
+  check(`${w}px /arak: a nyitott kategória bezárható`, (await expanded()).every((v) => v === "false"));
+  // billentyűzet
+  await btns.nth(1).focus();
+  await page.keyboard.press("Enter");
+  check(`${w}px /arak: Enterrel nyílik`, (await expanded())[1] === "true");
+  await page.keyboard.press("Space");
+  check(`${w}px /arak: Space-szel zárul`, (await expanded())[1] === "false");
+  const focusVisible = await btns.nth(1).evaluate((el) => getComputedStyle(el).outlineStyle !== "none");
+  check(`${w}px /arak: látható fókusz`, focusVisible);
+  await ctx.close();
+}
+
+/* ── 8. Tartalom: telefonszám, mosottság, szállítás, nyilvános tarifák ── */
+{
+  const htmlFiles = [];
+  (function walk(dir) {
+    for (const entry of readdirSync(dir)) {
+      const full = join(dir, entry);
+      if (statSync(full).isDirectory()) walk(full);
+      else if (entry.endsWith(".html") || entry.endsWith(".txt")) htmlFiles.push(full);
+    }
+  })(OUT);
+  const OLD_PHONE = /954[\s -]?6156|309546156/;
+  const withOld = htmlFiles.filter((f) => OLD_PHONE.test(readFileSync(f, "utf8")));
+  check(`régi telefonszám sehol a generált oldalakon (${withOld.length} fájl)`, withOld.length === 0);
+  const TARIFF = /Fuvardíjak irányítószám szerint|Fuvardíj-sávok|tariff-row|díjprofil|Saját flottával, irányítószám/;
+  const withTariff = htmlFiles.filter((f) => TARIFF.test(readFileSync(f, "utf8")));
+  check(`nincs nyilvános díjtábla / díjprofil-szöveg (${withTariff.map((f) => f.slice(OUT.length)).slice(0, 3).join(", ")})`, withTariff.length === 0);
+
+  const { ctx, page } = await newPage(390, 844);
+  for (const r of ["/", "/kapcsolat/", "/szallitas/", "/rolunk/"]) {
+    await page.goto(url(r), { waitUntil: "load" });
+    const tels = await page.locator("a[href^='tel:']").evaluateAll((els) => els.map((e) => e.getAttribute("href")));
+    check(`${r}: minden tel: link az új számra mutat (${tels.length})`, tels.length > 0 && tels.every((h) => h === "tel:+36308528909"));
   }
+  check("a látható szám formátuma +36 30 852 8909", (await page.locator("main").innerText()).includes("+36 30 852 8909"));
+
+  await page.goto(url("/szallitas/"), { waitUntil: "load" });
+  let t = (await page.locator("main").innerText()).replace(/ /g, " ");
+  check("szállítás: új cím", (await page.locator("h1").innerText()).trim() === "Szállítás");
+  check("szállítás: új bevezető", t.includes("Cégünk vállalja különböző ömlesztett építőanyagok, sóder, homok, kavics, murva, andezit és föld gyors és megbízható házhoz szállítását."));
+  check("szállítás: „Amit kínálunk:” lista 5 ponttal", t.includes("Amit kínálunk:") && ["Gyors és pontos kiszállítás.", "Megbízható, szervezett fuvarozás.", "Lakossági és vállalkozói megrendelések teljesítése.", "Rugalmas szállítási időpontok, akár aznap.", "Igény szerinti mennyiségű ömlesztett anyag kiszállítása."].every((x) => t.includes(x)));
+  check("szállítás: a régi bevezető eltűnt", !/Saját flottával|Nem fuvarozót közvetítünk/.test(t));
+  check("szállítás: a 10 m³/fuvar szabály megmaradt", /legfeljebb 10 m³/.test(t));
+  check("szállítás: kalkulátor/telefon tájékoztatás", t.includes("A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."));
+  check("szállítás: behajtási engedély és Vár-tájékoztatás megmaradt", /Behajtási engedély/.test(t) && /Vár területén/.test(t));
+
+  await page.goto(url("/arak/"), { waitUntil: "load" });
+  await page.locator("#anyag-soder button[aria-expanded]").click();
+  t = await page.locator("#anyag-soder").innerText();
+  check("árlista: töltősóder „Nem mosott”", /Töltősóder[\s\S]*Nem mosott/.test(t));
+  await page.locator("#anyag-kavics button[aria-expanded]").click();
+  t = await page.locator("#anyag-kavics").innerText();
+  check("árlista: kulé „Egyszer mosott” + magyarázat", /Egyszer mosott/.test(t) && /egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok/.test(t));
+  t = (await page.locator("main").innerText()).replace(/ /g, " ");
+  check("árlista: nincs teljes díjtábla, de van kalkulátor-utalás és engedélytájékoztató", !/díjprofil/.test(t) && /A pontos szállítási díjért használja az árkalkulátort/.test(t) && /behajtási engedély/i.test(t));
+  await page.goto(url("/rolunk/"), { waitUntil: "load" });
+  t = await page.locator("main").innerText();
+  check("Rólunk: nincs „Minden általunk forgalmazott anyag” általánosítás", !/Minden általunk forgalmazott anyag/.test(t) && /töltősóder/.test(t));
   await ctx.close();
 }
 

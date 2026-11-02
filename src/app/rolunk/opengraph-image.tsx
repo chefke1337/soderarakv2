@@ -11,9 +11,9 @@ export default function OgImage() {
     variant: "company",
     title: "Minőség minden szemcsében",
     subtitle:
-      "Sóderünk, kavicsunk és homokunk vizes osztályozási eljáráson megy keresztül — egyenletes szemcseméret, megbízható minőség.",
+      "Rostált sóderfrakcióink, kavicsaink és homokunk vizes osztályozási eljáráson mennek keresztül — egyenletes szemcseméret, megbízható minőség.",
     companyFacts: [
-      { value: "Mosott", label: "sóder, kavics, homok" },
+      { value: "Mosott", label: "sóderfrakciók és kavics" },
       { value: "Saját", label: "flotta Budafokról" },
       { value: `${budapestDistricts.length} + Érd`, label: "kiszolgált kerület" },
       { value: company.hours.short, label: "ügyfélfogadás" },

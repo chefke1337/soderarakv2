@@ -84,7 +84,7 @@ export default function QuoteReceipt({
           {freight ? (
             <dl className="num mt-2 space-y-2 text-[0.9375rem]">
               <Row
-                label={`Fuvar nettó díj (${freight.bandLabel})`}
+                label="Fuvar nettó díj (egy fuvar)"
                 value={formatFt(freight.net)}
               />
               <Row
@@ -146,9 +146,8 @@ export default function QuoteReceipt({
             <Notice tone="warn">
               A {freightResult.postalCode} irányítószám nem a kiválasztott területhez
               ({freightResult.selectedLabel}) tartozik
-              {freightResult.actual ? ` — ez a kód a(z) ${freightResult.actual.label} díjprofilhoz tartozik` : ""}.
-              Kérjük, javítsa a kerületet vagy az irányítószámot. Automatikusan nem
-              választunk másik díjat.
+              {freightResult.actual ? ` — ez a kód a(z) ${freightResult.actual.label} területhez tartozik` : ""}.
+              Kérjük, javítsa a kerületet vagy az irányítószámot.
             </Notice>
           )}
 
@@ -160,7 +159,7 @@ export default function QuoteReceipt({
             <Notice tone="warn">
               {freightResult.reason === "above-single-trip"
                 ? MULTI_TRIP_NOTICE
-                : `Ehhez a kerülethez ${freightResult.profileMaxM3} m³ felett nincs feltüntetett fuvardíj — egyedi egyeztetés szükséges. Kitalált árat nem mutatunk.`}
+                : `Ide egy fuvarral legfeljebb ${freightResult.profileMaxM3} m³ szállítható — e felett egyedi egyeztetés szükséges. Kitalált árat nem mutatunk.`}
             </Notice>
           )}
 

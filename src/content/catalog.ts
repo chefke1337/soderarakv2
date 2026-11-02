@@ -5,10 +5,11 @@
  *  - MINDEN anyagár BRUTTÓ, Ft/m³ — az ÁFÁ-t tartalmazza. Erre az árra
  *    SOHA nem kerül még egyszer ÁFA (lásd `src/lib/quote.ts`).
  *  - Az árak a 2026-10-27-i jóváhagyott ügyfélárlistából származnak.
- *  - A mosottság strukturált terméktulajdonság (`washed`), nem szabad szöveg.
- *    Csak oda kerül, ahol az ügyfél kifejezetten megadta: sóder és kavics
- *    (az osztályozatlan kulé KIVÉTEL). Földre, murvára és andezitre a
- *    mosottság-állítás NEM terjed ki.
+ *  - A mosottság strukturált terméktulajdonság (`washed` / `washNote`), nem
+ *    szabad szöveg. Ügyféladat (2026-11-02): a rostált sóderfrakciók és az
+ *    osztályozott kavicsok mosottak; a töltősóder NEM mosott; a kulé egyszeri
+ *    mosáson esett át, de nem olyan tiszta, mint az osztályozott kavicsok.
+ *    Földre, murvára, andezitre és homokra mosottság-jelölés NEM kerül.
  *  - Tanúsítvány vagy további minőségi garancia nem kerül ide.
  */
 
@@ -24,7 +25,7 @@ export const DISCLOSURE_PRICE =
 
 /** A fuvar díja külön, nettó — a bruttó anyagárhoz nem adható közvetlenül. */
 export const DISCLOSURE_FREIGHT =
-  "A fuvar díja külön számolódik, nettó értékben, az irányítószám és a szállított mennyiség szerint.";
+  "A szállítás díja külön számolódik, nettó értékben — a pontos összeget az árkalkulátor mutatja.";
 
 /** Vizuális/típusos anyagazonosító. */
 export type Tone = "soder" | "homok" | "kavics" | "murva" | "andezit" | "fold";
@@ -46,7 +47,25 @@ export const WASHED_SODER: WashedMark = {
 
 export const WASHED_KAVICS: WashedMark = {
   label: "Jó minőségű, mosott kavics",
-  detail: "Jó minőségű, mosott kavics — az első osztályú frakciók és a kulé is.",
+  detail: "Jó minőségű, mosott, méret szerint osztályozott kavics.",
+};
+
+/**
+ * Korlátozó mosottság-jelölés (ügyfél, 2026-11-02). Szándékosan NEM
+ * `washed`: ezek a tételek nem kaphatnak „mosott" minőségi badge-et.
+ */
+export type WashNote = WashedMark & { kind: "not-washed" | "once-washed" };
+
+export const NOT_WASHED_TOLTOSODER: WashNote = {
+  kind: "not-washed",
+  label: "Nem mosott",
+  detail: "A töltősóder nem mosott anyag — feltöltéshez és alapozáshoz való, betonkeveréshez a mosott, rostált sóderfrakciók ajánlottak.",
+};
+
+export const ONCE_WASHED_KULE: WashNote = {
+  kind: "once-washed",
+  label: "Egyszer mosott",
+  detail: "A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok.",
 };
 
 export type MaterialItem = {
@@ -61,6 +80,8 @@ export type MaterialItem = {
   use: string;
   /** Strukturált mosott-jelölés — csak ahol az ügyfél megadta. */
   washed?: WashedMark;
+  /** Korlátozó jelölés (nem mosott / egyszer mosott) — kizárja a `washed`-et. */
+  washNote?: WashNote;
   /** Kifejezett ellenjelölés (osztályozatlan termék). */
   unclassified?: boolean;
 };
@@ -80,8 +101,10 @@ export type MaterialGroup = {
    * NEM nevezünk át más anyag hiteles fotójává.
    */
   photo: { src: string; position: string } | null;
-  /** Csoportszintű mosott-jelölés (ha a csoport minden tételére igaz). */
+  /** Csoportszintű mosott-jelölés (CSAK ha a csoport minden tételére igaz). */
   washed?: WashedMark;
+  /** Csoportszintű, pontos összefoglaló, ha a tételek mosottsága eltér. */
+  washSummary?: string;
   items: MaterialItem[];
 };
 
@@ -89,21 +112,21 @@ export const materialGroups: MaterialGroup[] = [
   {
     slug: "soder",
     name: "Sóder",
-    short: "Jó minőségű, mosott homok–kavics keverék alapozáshoz",
+    short: "Mosott sóderfrakciók és nem mosott töltősóder",
     description:
-      "A sóder — kavicsos homoknak is hívják — alap építőanyag, homok és kavics keveréke. Alapozáshoz, betonozáshoz és feltöltéshez használatos. Sóderünk vizes osztályozási eljáráson megy keresztül: mosott, egyenletes szemcseméretű anyag.",
+      "A sóder — kavicsos homoknak is hívják — alap építőanyag, homok és kavics keveréke. Alapozáshoz, betonozáshoz és feltöltéshez használatos. A rostált sóderfrakciók (0–4-től 0–24-ig) vizes osztályozási eljáráson mennek keresztül: jó minőségű, mosott, egyenletes szemcseméretű anyagok. A töltősóder nem mosott.",
     tone: "soder",
     texture: "/anyagok/soder.svg",
     textureAlt: "Sóder textúra — kavicsos homok szemcsék (stilizált illusztráció)",
     photo: { src: "/anyagok/arlista/soder-foto.webp", position: "40% 55%" },
-    washed: WASHED_SODER,
+    washSummary: "Mosott sóderfrakciók és nem mosott töltősóder.",
     items: [
       {
         slug: "tolto-soder",
         name: "Töltősóder",
         priceGross: 10500,
         use: "Utak, parkok feltöltésére és beton alatti alapozáshoz. Jól összetömörödik, stabil alapot ad nagy terhelésnél.",
-        washed: WASHED_SODER,
+        washNote: NOT_WASHED_TOLTOSODER,
       },
       {
         slug: "soder-0-4",
@@ -169,10 +192,10 @@ export const materialGroups: MaterialGroup[] = [
   {
     slug: "kavics",
     name: "Kavics",
-    short: "Jó minőségű, mosott kavics és kulé",
+    short: "Mosott, osztályozott kavics és egyszer mosott kulé",
     description:
-      "Minden kavicsunk mosott: első osztályú kavics díszítéshez, burkoláshoz és vízelvezetéshez, méret szerinti frakciókban. A kulé is mosott, de méret szerint osztályozatlan, nagy szemcséjű anyag (kb. 32–125 mm).",
-    washed: WASHED_KAVICS,
+      "Az osztályozott kavicsfrakciók jó minőségű, mosott anyagok díszítéshez, burkoláshoz és vízelvezetéshez. A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok; méret szerint osztályozatlan, nagy szemcséjű anyag (kb. 32–125 mm).",
+    washSummary: "Mosott, osztályozott kavicsfrakciók; a kulé egyszer mosott.",
     tone: "kavics",
     texture: "/anyagok/kavics.svg",
     textureAlt: "Kavics textúra — kerek folyami kövek (stilizált illusztráció)",
@@ -186,7 +209,7 @@ export const materialGroups: MaterialGroup[] = [
         fraction: "kb. 32–125 mm",
         use: "Utak, kocsibeállók, nagy terhelésű felületek feltöltéséhez és vízelvezetéshez. Nagy szemcseméretű, osztályozatlan anyag.",
         unclassified: true,
-        washed: WASHED_KAVICS,
+        washNote: ONCE_WASHED_KULE,
       },
       {
         slug: "gyongykavics-4-8",
@@ -410,15 +433,25 @@ export function resolveItemSlug(slug: string | null | undefined): string | undef
 
 /**
  * Egy anyagcsoport mosott-jelölése egységesen minden felületen:
- * - `scope: "group"` — a teljes csoportra igaz (Sóder);
- * - `scope: "some"` — csak egyes tételekre (Kavics: a frakcionált tételek,
- *   a kulé nem) → a jelölést mindig hatókörrel kell megjeleníteni.
+ * - `scope: "group"` — a teljes csoportra igaz;
+ * - `scope: "some"` — csak egyes tételekre (Sóder: a töltősóder nem mosott;
+ *   Kavics: a kulé csak egyszer mosott) → a jelölést mindig hatókörrel, a
+ *   `summary` pontos szövegével kell megjeleníteni, általános badge nélkül.
  * A mosottság NEM terjed ki automatikusan más csoportokra.
  */
 export function groupWashed(
   g: MaterialGroup,
-): { mark: WashedMark; scope: "group" | "some" } | null {
-  if (g.washed) return { mark: g.washed, scope: "group" };
+): { mark: WashedMark; scope: "group" | "some"; summary: string } | null {
+  if (g.washed) return { mark: g.washed, scope: "group", summary: g.washed.label };
   const first = g.items.find((i) => i.washed)?.washed;
-  return first ? { mark: first, scope: "some" } : null;
+  return first ? { mark: first, scope: "some", summary: g.washSummary ?? first.label } : null;
+}
+
+/** Egy tétel mosottság-jelölése egy helyről: mosott / egyszer mosott / nem mosott. */
+export function itemWash(
+  i: Pick<MaterialItem, "washed" | "washNote">,
+): { kind: "washed" | "once-washed" | "not-washed"; label: string; detail: string } | null {
+  if (i.washNote) return { kind: i.washNote.kind, label: i.washNote.label, detail: i.washNote.detail };
+  if (i.washed) return { kind: "washed", label: i.washed.label, detail: i.washed.detail };
+  return null;
 }
