@@ -134,7 +134,7 @@ function MaterialIndexCard({ input }: { input: OgCardInput }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#57534e", fontSize: 16, fontWeight: 700 }}>
           <div style={{ width: 44, height: 2, backgroundColor: "#c2410c" }} />
-          <div style={{ display: "flex" }}>{input.highlight ?? "Nettó árak · fuvar külön"}</div>
+          <div style={{ display: "flex" }}>{input.highlight ?? "Bruttó anyagárak · fuvar külön"}</div>
         </div>
       </div>
     </div>
@@ -158,7 +158,7 @@ function MaterialCard({ input }: { input: OgCardInput }) {
           {input.subtitle ? <div style={{ display: "flex", maxWidth: 670, color: `${palette.ink}bb`, fontSize: 21, lineHeight: 1.3 }}>{input.subtitle}</div> : null}
         </div>
         <div style={{ display: "flex", alignItems: "flex-end", gap: 22 }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}><div style={{ display: "flex", color: palette.accent, fontSize: 12, fontWeight: 800, letterSpacing: 2.5 }}>{input.metricLabel ?? "NETTÓ ÁR"}</div><div style={{ display: "flex", color: palette.ink, fontSize: 31, fontWeight: 800 }}>{input.metricValue ?? input.highlight ?? "Ajánlat egyeztetés után"}</div></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}><div style={{ display: "flex", color: palette.accent, fontSize: 12, fontWeight: 800, letterSpacing: 2.5 }}>{input.metricLabel ?? "BRUTTÓ ÁR"}</div><div style={{ display: "flex", color: palette.ink, fontSize: 31, fontWeight: 800 }}>{input.metricValue ?? input.highlight ?? "Ajánlat egyeztetés után"}</div></div>
           <div style={{ marginBottom: 4, height: 40, width: 1, backgroundColor: `${palette.ink}44` }} />
           <div style={{ display: "flex", color: `${palette.ink}bb`, fontSize: 16, fontWeight: 600 }}>{input.count ?? 0} tétel · Sóderárak</div>
         </div>
@@ -369,7 +369,7 @@ function PricingCard({ input }: { input: OgCardInput }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 50 }}>
           <div style={{ width: 438, display: "flex", flexDirection: "column", gap: 15 }}>
-            <div style={{ display: "flex", color: "#c2410c", fontSize: 16, fontWeight: 800, letterSpacing: 2.4 }}>TÁJÉKOZTATÓ NETTÓ ÁRAK</div>
+            <div style={{ display: "flex", color: "#c2410c", fontSize: 16, fontWeight: 800, letterSpacing: 2.4 }}>TÁJÉKOZTATÓ BRUTTÓ ANYAGÁRAK</div>
             <div style={{ display: "flex", fontSize: 62, fontWeight: 800, lineHeight: 1.02, letterSpacing: -2.1 }}>{input.title}</div>
             <div style={{ display: "flex", maxWidth: 410, color: MUTED, fontSize: 19, lineHeight: 1.4 }}>{input.subtitle ?? "Anyagár köbméterenként · fuvar külön, zónánként"}</div>
           </div>
@@ -392,7 +392,7 @@ function PricingCard({ input }: { input: OgCardInput }) {
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 13, color: MUTED, fontSize: 15, fontWeight: 700 }}>
           <div style={{ width: 43, height: 2, backgroundColor: "#c2410c" }} />
-          Nettó Ft/m³ · Tájékoztató ár · A fuvar díja külön
+          Bruttó Ft/m³ · Tájékoztató ár · A szállítás díja külön
         </div>
       </div>
     </div>
@@ -407,10 +407,10 @@ function ShippingCard({ input }: { input: OgCardInput }) {
       <div style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div style={{ display: "flex", width: 1080, alignItems: "center", justifyContent: "space-between" }}>
           <BrandMark />
-          <div style={{ display: "flex", color: "#f97316", fontSize: 14, fontWeight: 800, letterSpacing: 3 }}>SAJÁT FLOTTÁVAL · BUDAFOKRÓL</div>
+          <div style={{ display: "flex", color: "#f97316", fontSize: 14, fontWeight: 800, letterSpacing: 3 }}>HÁZHOZ SZÁLLÍTÁS · BUDAPEST ÉS ÉRD</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <div style={{ display: "flex", color: "#f97316", fontSize: 16, fontWeight: 800, letterSpacing: 3 }}>SZÁLLÍTÁSI ZÓNÁK</div>
+          <div style={{ display: "flex", color: "#f97316", fontSize: 16, fontWeight: 800, letterSpacing: 3 }}>KISZOLGÁLT TERÜLETEK</div>
           <div style={{ display: "flex", fontSize: 58, fontWeight: 800, letterSpacing: -2, lineHeight: 1 }}>{input.title}</div>
         </div>
         <div style={{ display: "flex", gap: 15 }}>
@@ -427,7 +427,7 @@ function ShippingCard({ input }: { input: OgCardInput }) {
                   <div style={{ display: "flex", width: 276, color: MUTED, fontSize: 14, fontWeight: 600, lineHeight: 1.25 }}>{card.area}</div>
                 </div>
                 <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 4 }}>
-                  <div style={{ display: "flex", color: MUTED, fontSize: 11, fontWeight: 700, letterSpacing: 1.4 }}>FUVAR · NETTÓ</div>
+                  <div style={{ display: "flex", color: MUTED, fontSize: 11, fontWeight: 700, letterSpacing: 1.4 }}>SZÁLLÍTÁSI DÍJ</div>
                   <div style={{ display: "flex", color: INK, fontSize: 24, fontWeight: 800 }}>{card.price}</div>
                 </div>
               </div>
@@ -435,7 +435,7 @@ function ShippingCard({ input }: { input: OgCardInput }) {
           })}
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", color: "#f1e9d8cc", fontSize: 15, fontWeight: 700 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}><div style={{ width: 40, height: 2, backgroundColor: "#f97316" }} />A végleges fuvardíjat egyeztetés után adjuk.</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}><div style={{ width: 40, height: 2, backgroundColor: "#f97316" }} />A pontos szállítási díjat az árkalkulátor számolja ki.</div>
           <div style={{ display: "flex", color: "#f97316" }}>Sóderárak · Budafok</div>
         </div>
       </div>

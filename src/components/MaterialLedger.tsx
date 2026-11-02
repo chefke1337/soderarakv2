@@ -186,7 +186,7 @@ export function MaterialItemRows({
                 <span className="text-xs font-medium text-ink-soft">{item.qualifier}</span>
               )}
               <WashBadge item={item} />
-              {item.unclassified && <span className="badge-plain">osztályozatlan</span>}
+              {item.unclassified && item.qualifier !== "osztályozatlan" && <span className="badge-plain">osztályozatlan</span>}
             </p>
             <p className="mt-0.5 text-sm leading-snug text-ink-soft">{item.use}</p>
             {item.washNote && (

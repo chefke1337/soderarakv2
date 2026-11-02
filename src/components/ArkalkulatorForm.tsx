@@ -576,7 +576,7 @@ export default function ArkalkulatorForm() {
                             <span className="text-xs font-medium text-text-muted">{i.qualifier}</span>
                           )}
                           <WashBadge item={i} />
-                          {i.unclassified && <span className="badge-plain">osztályozatlan</span>}
+                          {i.unclassified && i.qualifier !== "osztályozatlan" && <span className="badge-plain">osztályozatlan</span>}
                         </span>
                         <span className="mt-1 block text-sm leading-snug text-text-muted">{i.use}</span>
                         {w && w.kind !== "washed" && (
