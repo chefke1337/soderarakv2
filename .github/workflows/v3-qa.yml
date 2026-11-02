@@ -27,6 +27,11 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
 
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+
       - name: Unit tests (pricing, freight, quote, order)
         run: set -o pipefail; npm run test:all 2>&1 | tail -n 20
 
