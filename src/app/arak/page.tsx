@@ -6,6 +6,7 @@ import {
   DISCLOSURE_GROSS,
   DISCLOSURE_PRICE,
   FREIGHT_PUBLIC_NOTICE,
+  FREIGHT_VAT_RATE,
   itemWash,
   materialGroups,
   MIN_ORDER_M3,
