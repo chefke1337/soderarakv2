@@ -11,7 +11,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Kiszállítási terület kártya — Sóderárak";
 
-const ezer = (n: number) => (n / 1000).toLocaleString("hu-HU");
 
 export default async function OgImage({
   params,
@@ -28,7 +27,8 @@ export default async function OgImage({
       variant: "settlement",
       zoneId: "mag",
       zoneName: "Budapest és Érd",
-      highlight: "Irányítószám szerinti fuvardíj",
+      metricLabel: "SZÁLLÍTÁSI DÍJ",
+      highlight: "árkalkulátorral",
     });
   }
 
@@ -41,7 +41,8 @@ export default async function OgImage({
       kicker: "Terület — egyedi egyeztetés",
       subtitle:
         "Ehhez a címhez egyedi szállítási egyeztetés szükséges — a fuvar díját telefonon adjuk meg.",
-      highlight: "Fuvar: egyeztetés után",
+      metricLabel: "SZÁLLÍTÁSI DÍJ",
+      highlight: "egyeztetés után",
       leadTime: "egyeztetett időpontban",
     });
   }
@@ -52,7 +53,6 @@ export default async function OgImage({
       p.municipalityId === f.municipalityId &&
       (f.districtId === undefined || p.districtId === f.districtId),
   );
-  const fees = profiles.flatMap((p) => p.bands.map((b) => b.netFee));
 
   return ogCard({
     variant: "settlement",
@@ -61,8 +61,9 @@ export default async function OgImage({
     title: area.name,
     kicker: `Terület — ${area.shortName}`,
     subtitle:
-      "Sóder és ömlesztett építőanyag szállítás. Az anyagár bruttó, a fuvardíj nettó.",
-    highlight: `${ezer(Math.min(...fees))}–${ezer(Math.max(...fees))} ezer Ft nettó fuvar`,
+      "Sóder és ömlesztett építőanyag szállítás. Az anyagár bruttó; a szállítási díjat az árkalkulátor számolja ki.",
+    metricLabel: "SZÁLLÍTÁSI DÍJ",
+      highlight: "árkalkulátorral",
     leadTime:
       area.freight.districtId === 22 ? "gyakran aznap" : "egyeztetett időpontban",
   });

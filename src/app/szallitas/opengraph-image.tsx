@@ -6,33 +6,31 @@ import {
 } from "@/content/site";
 import { ogCard } from "@/lib/og";
 
+// Ügyfél, 2026-11-02: nyilvánosan nem közlünk díjtáblát / díjsávot — a
+// szállítási díjat az árkalkulátor számolja ki.
+
 export const dynamic = "force-static";
-export const alt = "Szállítás — nettó fuvardíjak irányítószám szerint, saját flotta";
+export const alt = "Szállítás — ömlesztett építőanyagok házhoz szállítása Budapesten és Érden";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const ezer = (n: number) => (n / 1000).toLocaleString("hu-HU");
-
 export default function OgImage() {
-  const bp = freightProfiles.filter((p) => p.municipalityId === "budapest");
   const erd = freightProfiles.find((p) => p.id === "erd")!;
-  const bpFees = bp.flatMap((p) => p.bands.map((b) => b.netFee));
-  const erdFees = erd.bands.map((b) => b.netFee);
 
   return ogCard({
     variant: "shipping",
-    title: "Fuvardíj irányítószám szerint",
+    title: "Házhoz szállítás",
     zoneCards: [
       {
         label: "Budapest",
         area: `mind a ${budapestDistricts.length} kerület`,
-        price: `${ezer(Math.min(...bpFees))}–${ezer(Math.max(...bpFees))} ezer Ft`,
+        price: "árkalkulátorral",
         id: "mag",
       },
       {
         label: "Érd",
         area: erd.postalCodes.join(", "),
-        price: `${ezer(Math.min(...erdFees))}–${ezer(Math.max(...erdFees))} ezer Ft`,
+        price: "árkalkulátorral",
         id: "kozel",
       },
       {

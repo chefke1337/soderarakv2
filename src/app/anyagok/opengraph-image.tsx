@@ -10,7 +10,7 @@ export default function OgImage() {
   return ogCard({
     variant: "materialIndex",
     title: "Anyagok frakciónként",
-    subtitle: "Mosott sóder, homok, kavics, murva, nógrádkövesdi andezit és föld.",
+    subtitle: "Sóder, homok, kavics, murva, nógrádkövesdi andezit és föld — bruttó Ft/m³ árakkal.",
     count: materialGroups.length,
     materials: materialGroups.map(({ name, tone }) => ({ name, tone })),
     highlight: "Bruttó árak · fuvar külön, nettó",

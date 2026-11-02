@@ -15,6 +15,7 @@ import {
   LEGACY_GROUP_SLUGS,
   materialGroups,
   PRICING_VERSION,
+  itemWash,
   resolveItemSlug,
 } from "../src/content/catalog.ts";
 import { computeQuote } from "../src/lib/quote.ts";
@@ -117,16 +118,40 @@ for (const removed of ["naturfold", "daraltfold", "tragyas-komposztos-fold"]) {
 /* ─────────────── 4. Mosott-jelölés kiterjedése ─────────────── */
 section("Mosott-jelölés (strukturált terméktulajdonság)");
 
-// Ügyfél, 2026-11-01: „minden kavics és sóder mosott … jó minőségű MOSOTT".
-eq("Sóder csoportszintű jelölés", findMaterialGroup("soder").washed?.label, "Jó minőségű, mosott sóder");
+// Ügyfél, 2026-11-02: a töltősóder NEM mosott; a kulé csak egyszer mosott
+// („A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott
+// kavicsok."). A többi sóderfrakció és kavics mosott marad.
+const soder = findMaterialGroup("soder");
+const kavics = findMaterialGroup("kavics");
+check("Sóder: nincs csoportszintű „mosott” állítás (a töltősóder nem mosott)", soder.washed === undefined);
+eq("Sóder csoport pontos összefoglalója", soder.washSummary, "Mosott sóderfrakciók és nem mosott töltősóder.");
+const tolto = findMaterial("tolto-soder");
+check("töltősóder: NINCS mosott jelölés", tolto.washed === undefined);
+eq("töltősóder: „Nem mosott” tulajdonság", tolto.washNote?.label, "Nem mosott");
+eq("töltősóder: itemWash → not-washed", itemWash(tolto)?.kind, "not-washed");
 check(
-  "minden sóder tételen ott a mosott jelölés",
-  findMaterialGroup("soder").items.every((i) => i.washed?.label === "Jó minőségű, mosott sóder"),
+  "a rostált sóderfrakciók (0–4…0–24) mosottak maradnak",
+  soder.items.filter((i) => i.slug !== "tolto-soder").every((i) => i.washed?.label === "Jó minőségű, mosott sóder" && !i.washNote),
 );
-eq("Kavics csoportszintű jelölés", findMaterialGroup("kavics").washed?.label, "Jó minőségű, mosott kavics");
+check("Kavics: nincs csoportszintű „mosott” állítás (a kulé egyszer mosott)", kavics.washed === undefined);
+const kule = findMaterial("kule");
+check("kulé: NINCS általános mosott minőségi badge", kule.washed === undefined);
+eq("kulé: „Egyszer mosott” rövid jelölés", kule.washNote?.label, "Egyszer mosott");
+eq(
+  "kulé: a teljes magyarázat",
+  kule.washNote?.detail,
+  "A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok.",
+);
+eq("kulé ára változatlan", kule.priceGross, 9500);
+eq("kulé szemcsemérete változatlan", kule.fraction, "kb. 32–125 mm");
 check(
-  "minden kavics tételen (a kulén is) ott a mosott jelölés",
-  findMaterialGroup("kavics").items.every((i) => i.washed?.label === "Jó minőségű, mosott kavics"),
+  "az osztályozott kavicsok mosottak maradnak (nincs rajtuk korlátozás)",
+  kavics.items.filter((i) => i.slug !== "kule").every((i) => i.washed?.label === "Jó minőségű, mosott kavics" && !i.washNote),
+);
+check("egyetlen tételen sincs egyszerre mosott és korlátozó jelölés", allMaterials.every((i) => !(i.washed && i.washNote)));
+check(
+  "csak a töltősóder és a kulé kap korlátozó jelölést",
+  allMaterials.filter((i) => i.washNote).map((i) => i.slug).sort().join(",") === "kule,tolto-soder",
 );
 check("a kulé továbbra is osztályozatlanként jelölt", findMaterial("kule").unclassified === true);
 for (const slug of ["murva", "andezit", "fold"]) {

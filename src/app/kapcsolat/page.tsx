@@ -91,12 +91,12 @@ export default function KapcsolatPage() {
         <div className="min-w-0 lg:col-span-7">
           <h2 className="font-display text-heading-md font-bold">Lefedettség</h2>
           <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-ink-soft">
-            Budapest mind a {budapestDistricts.length} kerületébe és Érdre szállítunk,
-            irányítószám-alapú fuvardíjjal. A térkép áttekintés — a konkrét díjakat a
-            szállítási oldal tartalmazza.
+            Budapest mind a {budapestDistricts.length} kerületébe és Érdre szállítunk. A
+            térkép áttekintés — a pontos szállítási díjért használja az árkalkulátort, vagy
+            kérjen telefonos egyeztetést.
           </p>
-          <Link href="/szallitas#fuvardijak" className="btn btn-outline mt-3">
-            Fuvardíjak irányítószám szerint
+          <Link href="/arkalkulator" className="btn btn-outline mt-3">
+            Szállítási díj kiszámítása
             <IconArrowRight size={17} className="btn-icon btn-icon-move" />
           </Link>
           <div className="mt-4 rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">

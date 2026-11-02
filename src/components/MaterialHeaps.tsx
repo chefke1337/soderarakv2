@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  freightProfiles,
   materialGroups,
   MIN_ORDER_M3,
   SINGLE_TRIP_MAX_M3,
@@ -21,11 +20,6 @@ import HeapRail from "@/components/HeapRail";
  * (HeapRail) — nem lesz belőle magas, boltíves kártyarács. lg-től 6 hasáb.
  */
 export default function MaterialHeaps() {
-  // A legalacsonyabb nettó fuvardíj a jóváhagyott díjprofilokból (nem becsült).
-  const freightMinNet = Math.min(
-    ...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)),
-  );
-
   return (
     <div>
       <div className="mb-3 flex items-baseline justify-between gap-4 text-sm text-on-dark-muted">
@@ -96,10 +90,8 @@ export default function MaterialHeaps() {
           <strong className="font-semibold text-on-dark">bruttó, ÁFÁ-val</strong>
         </span>
         <span>
-          Fuvar nettó:{" "}
-          <strong className="font-semibold text-on-dark">
-            {formatFt(freightMinNet)}-tól
-          </strong>
+          Szállítási díj:{" "}
+          <strong className="font-semibold text-on-dark">az árkalkulátorban</strong>
         </span>
         <span>
           Egy fuvarban:{" "}

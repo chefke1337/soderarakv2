@@ -12,8 +12,7 @@ import { districtMapPoints, mapServiceAreas, MAP_DISTRICT_REPRESENTATIVE, romanD
  * A V2 háromzónás, kiszínezett poligonos térképe megszűnt: a V3 árazás
  * irányítószám-alapú, és találomra rajzolt irányítószám-határokat NEM
  * jelenítünk meg. Ez a térkép kizárólag ÁTTEKINTÉS: a kiszolgált
- * területek jelölése. A konkrét tarifa a kereshető irányítószámos
- * díjlistából (PostalTariffTable) jön.
+ * területek jelölése. A konkrét szállítási díjat az árkalkulátor számolja.
  *
  * Megőrzött szabályok: nincs telephely-/depópin, nincs személyes átvétel,
  * a térkép nem fed a headerre (`isolation: isolate` a konténeren),
@@ -144,7 +143,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
             })
             .bindPopup(
               hasTariff
-                ? `<strong>${area.name}${repDistrict ? ` — Budapest ${romanDistrict(repDistrict)} kerület` : ""}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>A pontos díj a díjlistából, az irányítószám szerint.</small><br/>${areaLink(area.slug, "Díjak és tudnivalók")}`
+                ? `<strong>${area.name}${repDistrict ? ` — Budapest ${romanDistrict(repDistrict)} kerület` : ""}</strong><br/>Ide szállítunk.<br/><small>A pontos szállítási díjat az árkalkulátor számolja ki.</small><br/>${areaLink(area.slug, "Tudnivalók")}`
                 : `<strong>${area.name}</strong><br/>Egyedi szállítási egyeztetés szükséges.<br/><small>Ehhez a településhez jelenleg nincs feltüntetett fuvardíj.</small><br/>${areaLink(area.slug, "Részletek")}`,
             );
           labelled.push({ rank: labelRank(area.slug), marker, text: name, className: labelClass, dir: labelDir });
@@ -167,7 +166,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
               className: "city-label district-label",
             })
             .bindPopup(
-              `<strong>${d.name}</strong><br/>Irányítószám-alapú fuvardíj.<br/><small>Jelölés: a kerület hozzávetőleges középpontja — a díjat a pontos irányítószám adja.</small><br/>${areaLink(d.slug, "Díjak és tudnivalók")}`,
+              `<strong>${d.name}</strong><br/>Ide szállítunk.<br/><small>Jelölés: a kerület hozzávetőleges középpontja. A pontos szállítási díjat az árkalkulátor számolja ki.</small><br/>${areaLink(d.slug, "Tudnivalók")}`,
             );
           labelled.push({ rank: labelRank(`kerulet-${d.districtId}`), marker, text: d.label, className: "city-label district-label", dir: "right" });
         }
@@ -362,7 +361,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
         className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
         role="region"
-        aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A konkrét fuvardíjak az irányítószámos díjlistában olvashatók."
+        aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A pontos szállítási díjat az árkalkulátor számolja ki."
       />
     </div>
   );

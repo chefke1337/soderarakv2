@@ -3,13 +3,12 @@ import Link from "next/link";
 import {
   budapestDistricts,
   company,
-  freightProfiles,
   quoteOnlyAreas,
   romanDistrict,
   serviceAreas,
   tariffedAreas,
 } from "@/content/site";
-import { IconArrowRight } from "@/lib/ui";
+import { IconArrowRight, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
@@ -19,7 +18,7 @@ import { budapestDistrictAreas } from "@/content/districts";
 
 export const metadata: Metadata = pageMeta({
   title: "Területek — hol szállítunk sódert és ömlesztett anyagot",
-  description: `Sóder, homok, kavics, murva, andezit és föld szállítás Budapest mind a ${budapestDistricts.length} kerületébe és városrészeibe (pl. Kelenföld, Albertfalva, Budafok, Óbuda, Rákoshegy, Csepel) és Érdre, irányítószám-alapú fuvardíjjal. További településekhez (${quoteOnlyAreas.map((a) => a.name).join(", ")}) egyedi egyeztetés.`,
+  description: `Sóder, homok, kavics, murva, andezit és föld szállítás Budapest mind a ${budapestDistricts.length} kerületébe és városrészeibe (pl. Kelenföld, Albertfalva, Budafok, Óbuda, Rákoshegy, Csepel) és Érdre; a szállítási díjat az árkalkulátor számolja ki. További településekhez (${quoteOnlyAreas.map((a) => a.name).join(", ")}) egyedi egyeztetés.`,
   path: "/teruletek",
 });
 
@@ -27,8 +26,8 @@ export default function TeruletekPage() {
   return (
     <Section
       kicker="Szolgáltatási terület"
-      title="Budapest és Érd — irányítószám szerint"
-      lead="A fuvardíj alapja mindig a megadott irányítószám. A lenti oldalak a kiszolgált területeket mutatják; a konkrét díjakat a szállítási oldal kereshető díjlistája tartalmazza."
+      title="Budapest és Érd — minden kerületbe szállítunk"
+      lead="A lenti lista és oldalak a kiszolgált területeket mutatják. A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."
     >
       <JsonLd
         data={breadcrumbJsonLd([
@@ -77,14 +76,10 @@ export default function TeruletekPage() {
             <h2 className="font-display text-heading-md font-bold">
               Budapest — mind a {budapestDistricts.length} kerület, és Érd
             </h2>
-            <p className="num text-sm font-semibold text-brand-deep">
-              {freightProfiles.length} díjprofil
-            </p>
           </div>
           <p className="mt-2 mb-5 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
             Minden kerületbe szállítunk. Kereshet kerületre, városrészre (pl. Kelenföld,
-            Rákoshegy) vagy irányítószámra. A XI. kerületben az 1112 és 1118 irányítószám
-            eltérő díjprofilba tartozik — ezért a díjhoz mindig a pontos irányítószám kell.
+            Rákoshegy) vagy irányítószámra.
           </p>
           <AreaFinder />
           <div className="mt-6 flex flex-wrap gap-3">
@@ -92,9 +87,7 @@ export default function TeruletekPage() {
               Árkalkulátor indítása
               <IconArrowRight size={17} className="btn-icon btn-icon-move" />
             </Link>
-            <Link href="/szallitas#fuvardijak" className="btn btn-outline">
-              Teljes díjlista irányítószám szerint
-            </Link>
+            <PhoneLink className="num btn btn-outline" />
           </div>
         </div>
 
@@ -107,7 +100,7 @@ export default function TeruletekPage() {
             Kiemelt területek, saját oldallal
           </h2>
           <p className="mt-2 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
-            Ezekhez a területekhez van jóváhagyott, irányítószám-alapú fuvardíjunk.
+            Ezekre a területekre a szállítási díjat az árkalkulátor azonnal kiszámolja.
           </p>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {tariffedAreas.map((s) => (
@@ -131,8 +124,7 @@ export default function TeruletekPage() {
           <h2 className="font-display text-heading-md font-bold">Lefedettség a térképen</h2>
           <p className="mt-1 mb-4 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
             Áttekintő jelölések a kiszolgált területekről. A térkép nem rajzol
-            irányítószám-határokat — az árazás alapja a kereshető irányítószámos
-            díjlista.
+            irányítószám-határokat — a pontos díjat az árkalkulátor számolja ki.
           </p>
           <LefedettsegTerkepLazy />
         </div>

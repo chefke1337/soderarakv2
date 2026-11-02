@@ -27,7 +27,7 @@ import {
   type OrderRequest,
 } from "../lib/order.ts";
 import { quoteSummaryLines, type Quote } from "../lib/quote.ts";
-import { findMaterial, PRICING_VERSION } from "../content/catalog.ts";
+import { findMaterial, itemWash, PRICING_VERSION } from "../content/catalog.ts";
 import {
   CASTLE_QUESTION,
   PERMIT_NOTICE,
@@ -194,7 +194,8 @@ export function renderOrderEmail(
   lines.push("");
   lines.push("── Anyag és mennyiség ──");
   lines.push(`Anyag és termékváltozat: ${sanitizeLine(materialName, 160)}`);
-  if (item?.washed) lines.push(`Minőségjelölés: ${sanitizeLine(item.washed.label, 80)}`);
+  const wash = item ? itemWash(item) : null;
+  if (wash) lines.push(`Mosottság: ${sanitizeLine(wash.label, 80)}`);
   if (item?.unclassified) lines.push("Minőségjelölés: osztályozatlan termék");
   lines.push(`Mennyiség: ${value.m3} m³`);
   lines.push("");

@@ -227,7 +227,8 @@ body {
 
 /* <details> lenyitás: a tartalom finoman beúszik (válasz a felhasználóra) */
 @media (prefers-reduced-motion: no-preference) {
-  details[open] > .details-body {
+  details[open] > .details-body,
+  [data-open="true"] > .details-body {
     animation: enter-down var(--dur-ui) var(--ease-out-soft) both;
   }
 }
@@ -715,7 +716,7 @@ summary::-webkit-details-marker {
     border-color var(--dur-ui) var(--ease-out-soft),
     box-shadow var(--dur-ui) var(--ease-out-soft);
 }
-.mat-card[open] {
+.mat-card[data-open="true"] {
   border-color: rgb(194 65 12 / 0.45);
   box-shadow: var(--shadow-pop);
 }
@@ -746,7 +747,7 @@ summary::-webkit-details-marker {
   .mat-card:hover .mat-grain {
     transform: scale(1.1);
   }
-  .mat-card:not([open]):hover .mat-toggle {
+  .mat-card:not([data-open="true"]):hover .mat-toggle {
     background: var(--color-text);
     color: var(--color-surface);
   }

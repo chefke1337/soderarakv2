@@ -402,6 +402,16 @@ section("A levél kötelező tartalma");
 }
 
 {
+  // Ügyfél, 2026-11-02: töltősóder NEM mosott, kulé EGYSZER mosott — a levél is így írja.
+  for (const [slug, label] of [["tolto-soder", "Mosottság: Nem mosott"], ["kule", "Mosottság: Egyszer mosott"]]) {
+    const v = validateOrderRequest({ ...base(), materialSlug: slug, idempotencyKey: `wash-${slug}-0001` }).value;
+    const text = renderOrderEmail(v, recomputeOrderQuote(v), { mismatch: false, mock: false }).text;
+    check(`${slug}: a levélben „${label}”`, text.includes(label));
+    check(`${slug}: a levél nem állítja „mosott sóder/kavics” minőségnek`, !/Jó minőségű, mosott/.test(text));
+  }
+}
+
+{
   // Vár-státusz a levélben
   const v = validateOrderRequest({
     ...base(),

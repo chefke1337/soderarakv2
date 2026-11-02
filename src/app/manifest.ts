@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: `${company.site.name} — ${company.name}`,
     short_name: company.site.name,
     description:
-      "Sóder, homok, kavics, murva, andezit és föld szállítás Budapestre és Érdre. Bruttó anyagárak Ft/m³-ben, a fuvar irányítószám szerint; Budafok környékén gyakran aznap.",
+      "Sóder, homok, kavics, murva, andezit és föld szállítás Budapestre és Érdre. Bruttó anyagárak Ft/m³-ben, a szállítási díj az árkalkulátorban; Budafok környékén gyakran aznap.",
     start_url: withBasePath("/"),
     display: "standalone",
     background_color: "#f2eee4",

@@ -9,7 +9,7 @@ export const SHARE = {
   siteName: "Sóder Árak",
   title: "Sóder Árak – sóder, homok, kavics, murva, andezit és föld",
   description:
-    "Bruttó anyagárak, rendelés 1–10 m³ között és irányítószám szerinti fuvardíjak egy helyen. Válasszon anyagot, számoljon az árkalkulátorral, és küldjön rendelési igényt!",
+    "Bruttó anyagárak, rendelés 1–10 m³ között és szállítási díj az árkalkulátorban. Válasszon anyagot, számoljon az árkalkulátorral, és küldjön rendelési igényt!",
   image: {
     url: absoluteUrl("/soderarak-share-v4.png"),
     width: 1200,

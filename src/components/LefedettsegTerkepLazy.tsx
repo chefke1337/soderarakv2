@@ -109,11 +109,11 @@ export default function LefedettsegTerkepLazy({
                 className="mt-1 inline-block h-3 w-3 shrink-0 rounded-full border-2 border-surface bg-surface-accent"
               />
               <span>
-                <span className="font-medium">Irányítószám-alapú fuvardíj</span>
+                <span className="font-medium">Ide szállítunk</span>
                 <span className="num block text-ink-soft">
                   Budapest mind a {budapestDistricts.length} kerülete (római szám), Érd
                   és {tariffedAreas.filter((a) => !/kerület|Érd/.test(a.name)).length} kiemelt
-                  városrész — a díj a konkrét irányítószámtól és a mennyiségtől függ
+                  városrész — a szállítási díjat az árkalkulátor számolja ki
                 </span>
               </span>
             </li>
@@ -134,8 +134,8 @@ export default function LefedettsegTerkepLazy({
           <p className="mt-2 text-xs leading-relaxed text-ink-soft">
             A térkép csak áttekintés: a kerületeket a hozzávetőleges
             középpontjuk jelöli, nem irányítószám- vagy kerülethatár. A jelölésre
-            kattintva a terület oldala nyílik. A fuvardíj alapja mindig a megadott
-            irányítószám — a pontos díjakat a kereshető díjlista tartalmazza.
+            kattintva a terület oldala nyílik. A pontos szállítási díjért használja az
+            árkalkulátort, vagy kérjen telefonos egyeztetést.
           </p>
         </>
       )}

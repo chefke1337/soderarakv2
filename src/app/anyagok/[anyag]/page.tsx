@@ -33,7 +33,7 @@ export async function generateMetadata({
     title: `${group.name} szállítás Budapestre és Érdre`,
     description: `${group.name}: ${group.short}. ${
       min ? `Bruttó ár már ${formatFt(min)}/m³-től (ÁFÁ-val).` : "Ár egyeztetés után."
-    } Kiszállítás Budapest mind a ${budapestDistricts.length} kerületébe és Érdre, irányítószám-alapú fuvardíjjal.`,
+    } Kiszállítás Budapest mind a ${budapestDistricts.length} kerületébe és Érdre; a szállítási díjat az árkalkulátor számolja ki.`,
     path: `/anyagok/${group.slug}`,
   });
 }
@@ -70,17 +70,20 @@ export default async function MaterialPage({
     },
     {
       q: `Szállítanak ${acc} Budapest minden kerületébe és Érdre?`,
-      a: `Igen. ${group.name} kiszállítása Budapest mind a ${budapestDistricts.length} kerületébe és Érdre megoldható. A fuvar díja a megadott irányítószám és a szállított mennyiség szerint alakul; a Budapest I. kerületi Vár területén külön engedély és előzetes egyeztetés szükséges.`,
+      a: `Igen. ${group.name} kiszállítása Budapest mind a ${budapestDistricts.length} kerületébe és Érdre megoldható. A pontos szállítási díjat az árkalkulátor számolja ki; a Budapest I. kerületi Vár területén külön engedély és előzetes egyeztetés szükséges.`,
     },
     {
       q: `Mekkora mennyiségben lehet ${acc} rendelni?`,
       a: `Minimum rendelés ${MIN_ORDER_M3} m³, egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³. 10 m³ feletti mennyiséghez kérjen egyedi, többfuvaros ajánlatot.`,
     },
-    ...(group.washed
+    ...(group.washed || group.washSummary
       ? [
           {
             q: `Mosott a ${group.name.toLowerCase()}?`,
-            a: `${group.washed.detail} A jelölés terméktulajdonság, nem tanúsítvány.`,
+            a: `${group.washSummary ?? group.washed!.detail} ${group.items
+              .filter((i) => i.washNote)
+              .map((i) => `${i.name}: ${i.washNote!.detail}`)
+              .join(" ")} A jelölés terméktulajdonság, nem tanúsítvány.`.replace(/\s+/g, " "),
           },
         ]
       : []),
@@ -118,10 +121,10 @@ export default async function MaterialPage({
             </div>
           </div>
 
-          {group.washed && (
+          {(group.washed || group.washSummary) && (
             <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-petrol-soft/50 px-3.5 py-2 text-sm font-semibold text-petrol-deep">
               <IconDroplets size={16} />
-              {group.washed.label}
+              {group.washSummary ?? group.washed!.label}
             </p>
           )}
 

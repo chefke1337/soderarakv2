@@ -36,7 +36,7 @@ export default async function OgImage({
     variant: "material",
     tone: group.tone,
     title: group.name,
-    kicker: group.washed ? `${group.short} · ${group.washed.label}` : group.short,
+    kicker: group.short,
     subtitle: group.description,
     count: group.items.length,
     metricLabel: min !== null ? "BRUTTÓ ÁR / M³-TŐL" : "ANYAGÁR",

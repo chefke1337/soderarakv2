@@ -4,41 +4,33 @@ import {
   budapestDistricts,
   CASTLE_QUESTION,
   DISCLOSURE_PRICE,
-  freightProfiles,
+  FREIGHT_PUBLIC_NOTICE,
   FREIGHT_VAT_RATE,
   MIN_ORDER_M3,
   MULTI_TRIP_NOTICE,
   PERMIT_NOTICE,
-  profileMaxM3,
   quoteOnlyAreas,
   RENDELES_LEPESEK,
   SINGLE_TRIP_MAX_M3,
+  SZALLITAS_INTRO,
   UNSUPPORTED_NOTICE,
 } from "@/content/site";
-import { formatFt, IconAlert, IconArrowRight, PhoneLink } from "@/lib/ui";
+import { IconArrowRight, IconCalculator, IconCheck, PhoneLink } from "@/lib/ui";
 import { breadcrumbJsonLd, JsonLd, pageMeta } from "@/lib/meta";
 import Section from "@/components/Section";
-import PostalTariffTable from "@/components/PostalTariffTable";
-
-const freightMinNet = Math.min(...freightProfiles.flatMap((p) => p.bands.map((b) => b.netFee)));
 
 export const metadata: Metadata = pageMeta({
-  title: "Szállítás — fuvardíjak irányítószám szerint, nettó",
-  description: `Billencs és konténeres szállítás saját flottával Budapest mind a ${budapestDistricts.length} kerületébe és Érdre. A fuvardíj az irányítószámtól és a mennyiségtől függ, négy sávban (≤2, 2–5, 5–7, 7–10 m³), nettó ${formatFt(freightMinNet)}-tól. Egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³.`,
+  title: "Szállítás — sóder, homok, kavics, murva, andezit és föld házhoz",
+  description: `Ömlesztett építőanyagok gyors és megbízható házhoz szállítása Budapest mind a ${budapestDistricts.length} kerületébe és Érdre, lakossági és vállalkozói megrendelésre. Egy fuvarban legfeljebb ${SINGLE_TRIP_MAX_M3} m³; a pontos szállítási díjat az árkalkulátor számolja ki.`,
   path: "/szallitas",
 });
-
-/** Azok a profilok, amelyeknél nagyobb mennyiségre nincs tarifa. */
-const limitedProfiles = freightProfiles.filter(
-  (p) => profileMaxM3(p) < SINGLE_TRIP_MAX_M3,
-);
 
 export default function SzallitasPage() {
   return (
     <Section
-      kicker="Szállítás"
-      title="Saját flottával, irányítószám szerinti fuvardíjjal"
-      lead="Nem fuvarozót közvetítünk: saját autóinkkal szállítunk. A fuvar díját a szállítási cím irányítószáma és a szállított mennyiség határozza meg — minden fuvardíj nettó érték, tájékoztató jellegű."
+      kicker="Házhoz szállítás"
+      title={SZALLITAS_INTRO.title}
+      lead={SZALLITAS_INTRO.paragraphs[0]}
     >
       <JsonLd
         data={breadcrumbJsonLd([
@@ -49,6 +41,32 @@ export default function SzallitasPage() {
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-12">
+          {/* ── Bevezető: jóváhagyott ügyfélszöveg (2026-11-02) ── */}
+          <div className="ship-intro">
+            <p className="max-w-[62ch] text-[1.0625rem] leading-relaxed text-ink-soft">
+              {SZALLITAS_INTRO.paragraphs[1]}
+            </p>
+            <h2 className="mt-7 font-display text-heading-sm font-bold">
+              {SZALLITAS_INTRO.listTitle}
+            </h2>
+            <ul className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+              {SZALLITAS_INTRO.list.map((item) => (
+                <li
+                  key={item}
+                  className="flex gap-3 rounded-[var(--radius-sm)] border border-border bg-surface px-4 py-3 text-[0.9375rem] leading-snug font-medium"
+                >
+                  <IconCheck size={18} className="mt-0.5 shrink-0 text-accent-deep" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 max-w-[66ch] text-sm leading-relaxed text-ink-soft">
+              Az aznapi kiszállítás a szabad kapacitástól függ — telefonon egyeztetjük. Egy
+              fuvarban legfeljebb {SINGLE_TRIP_MAX_M3} m³ szállítható; ennél nagyobb mennyiség
+              több fuvarban, egyeztetés után.
+            </p>
+          </div>
+
           {/* ── Hogyan áll össze a díj ── */}
           <div>
             <h2 className="font-display text-heading-md font-bold">Hogyan áll össze a díj?</h2>
@@ -65,7 +83,8 @@ export default function SzallitasPage() {
                 <p className="num font-display text-heading-sm font-bold text-accent-deep">02</p>
                 <p className="mt-1 font-semibold">Fuvar — nettó</p>
                 <p className="mt-1 text-sm leading-relaxed text-ink-soft">
-                  A fuvardíj nettó, az irányítószám és a mennyiségi sáv szerint.
+                  A szállítási díj nettó; az összeget a kalkulátor a megadott címre és
+                  mennyiségre számolja ki.
                 </p>
               </li>
               <li className="rounded-[var(--radius-md)] border border-border bg-surface p-4">
@@ -84,50 +103,16 @@ export default function SzallitasPage() {
             </Link>
           </div>
 
-          {/* ── Sávhatárok ── */}
-          <div>
-            <h2 className="font-display text-heading-md font-bold">Mennyiségi sávok</h2>
-            <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-ink-soft">
-              A sávok felső határa zárt: a pontosan a határhoz tartozó mennyiség az adott
-              sávba esik. Nincs átfedés és nincs rés a sávok között.
-            </p>
-            <ul className="num mt-4 grid gap-2 sm:grid-cols-4">
-              {[
-                { label: "≤ 2 m³", note: "legfeljebb 2 m³" },
-                { label: "2–5 m³", note: "2 felett, 5-ig" },
-                { label: "5–7 m³", note: "5 felett, 7-ig" },
-                { label: "7–10 m³", note: "7 felett, 10-ig" },
-              ].map((b) => (
-                <li
-                  key={b.label}
-                  className="rounded-[var(--radius-sm)] border border-border bg-surface px-3 py-2.5"
-                >
-                  <p className="font-display font-bold">{b.label}</p>
-                  <p className="font-sans text-xs text-ink-soft">{b.note}</p>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 flex gap-2.5 rounded-sm border border-accent/45 bg-brand-soft px-3.5 py-3 text-sm leading-relaxed text-accent-deep">
-              <IconAlert size={16} className="mt-0.5 shrink-0" />
-              <span>
-                A Budapest I. kerület sávjai eltérnek: ≤2, 2–5 és 5–8 m³. Ahol egy
-                kerülethez nagyobb mennyiségre nincs tarifa, ott egyedi egyeztetés
-                szükséges — kitalált árat nem adunk.
-              </span>
-            </p>
-          </div>
-
-          {/* ── Kereshető díjlista ── */}
-          <div>
-            <h2 id="fuvardijak" className="font-display text-heading-md font-bold">
-              Fuvardíjak irányítószám szerint
-            </h2>
-            <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-ink-soft">
-              {freightProfiles.length} díjprofil. A kerület kiválasztása önmagában nem
-              határozza meg a díjat — a fuvardíj alapja mindig a konkrét irányítószám.
-            </p>
-            <div className="mt-5">
-              <PostalTariffTable />
+          {/* ── Szállítási díj: nyilvános díjtábla helyett (ügyfél, 2026-11-02) ── */}
+          <div id="fuvardijak" className="scroll-mt-28 rounded-[var(--radius-md)] border border-border-strong bg-surface p-5 md:p-6">
+            <h2 className="font-display text-heading-md font-bold">Szállítási díj</h2>
+            <p className="mt-2 max-w-[60ch] text-[0.9375rem] leading-relaxed">{FREIGHT_PUBLIC_NOTICE}</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link href="/arkalkulator" className="btn btn-primary">
+                <IconCalculator size={17} />
+                Árkalkulátor
+              </Link>
+              <PhoneLink className="num btn btn-outline" />
             </div>
           </div>
 
@@ -165,15 +150,11 @@ export default function SzallitasPage() {
                 {MULTI_TRIP_NOTICE} Nagyobb mennyiség több fuvarban szállítható — a
                 többfuvaros díjat egyeztetés után adjuk.
               </li>
-              {limitedProfiles.length > 0 && (
-                <li className="border-b border-line py-3.5">
-                  <strong>Kerületi felső korlátok.</strong>{" "}
-                  {limitedProfiles
-                    .map((p) => `${p.label}: ${profileMaxM3(p)} m³`)
-                    .join(" · ")}{" "}
-                  — a felett egyedi egyeztetés.
-                </li>
-              )}
+              <li className="border-b border-line py-3.5">
+                <strong>Egyes címeknél kisebb a fuvaronkénti keret.</strong> Ha a megadott
+                címre és mennyiségre nincs egyfuvaros díj, a kalkulátor egyedi egyeztetést
+                jelez — kitalált árat nem adunk.
+              </li>
               <li className="border-b border-line py-3.5">
                 <strong>Nem támogatott irányítószám.</strong> {UNSUPPORTED_NOTICE} A
                 korábbi vidéki településekhez ({quoteOnlyAreas.map((a) => a.name).join(", ")})
@@ -244,14 +225,15 @@ export default function SzallitasPage() {
           </div>
 
           <div className="rounded-[var(--radius-md)] border border-border bg-surface p-6">
-            <p className="text-sm font-medium text-ink-soft">Legalacsonyabb fuvardíj</p>
-            <p className="num mt-1 font-display text-heading-md font-bold">
-              {formatFt(freightMinNet)}
+            <p className="text-sm font-medium text-ink-soft">Szállítási díj</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              Az anyag, a mennyiség és a cím megadása után a kalkulátor kiszámolja a nettó
+              szállítási díjat, az ÁFÁ-t és a teljes bruttó tájékoztató összeget.
             </p>
-            <p className="mt-1 text-xs leading-relaxed text-ink-soft">
-              nettó, egy fuvarra, ≤2 m³ sávban — a tényleges díj az irányítószámtól
-              függ.
-            </p>
+            <Link href="/arkalkulator" className="btn btn-outline mt-4 w-full">
+              Árkalkulátor
+              <IconArrowRight size={17} className="btn-icon btn-icon-move" />
+            </Link>
           </div>
         </aside>
       </div>
