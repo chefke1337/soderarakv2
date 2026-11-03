@@ -15,7 +15,7 @@ import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export const metadata: Metadata = pageMeta({
   title: "Kapcsolat — hívás, rendelési igény",
-  description: `Hívja a ${company.phone.display}-os számot hétköznap 07:00–17:00 között, vagy küldjön rendelési igényt az árkalkulátorból. Ömlesztett anyag kiszállítás Budapest mind a ${budapestDistricts.length} kerületébe és Érdre.`,
+  description: `Hívja a ${company.phone.display}-os számot hétfőtől péntekig 07:00–16:00 között, vagy küldjön rendelési igényt az árkalkulátorból. Ömlesztett anyag kiszállítás Budapest mind a ${budapestDistricts.length} kerületébe és Érdre.`,
   path: "/kapcsolat",
 });
 
@@ -24,7 +24,7 @@ export default function KapcsolatPage() {
     <Section
       kicker="Kapcsolat"
       title="Hívjon, vagy küldjön rendelési igényt"
-      lead="A rendelés telefonon a leggyorsabb — hétköznap 07:00 és 17:00 között érjük el. Az árkalkulátorból rendelési igényt is küldhet e-mailben."
+      lead="A rendelés telefonon a leggyorsabb — telefonon hétfőtől péntekig 07:00–16:00 között ér el minket. Az árkalkulátorból rendelési igényt is küldhet e-mailben."
     >
       <JsonLd
         data={breadcrumbJsonLd([
@@ -50,7 +50,7 @@ export default function KapcsolatPage() {
               </span>
             </PhoneLink>
             <p className="mt-3 text-sm leading-relaxed text-on-dark-muted">
-              {company.hours.days}, {company.hours.time}. Mondja el, milyen anyagra,
+              {company.hours.sentence} Mondja el, milyen anyagra,
               mennyire és melyik irányítószámra van szüksége.
             </p>
           </div>
@@ -75,7 +75,7 @@ export default function KapcsolatPage() {
             <div className="border-b border-line py-4">
               <dt className="text-sm text-ink-soft">Üzemeltető</dt>
               <dd className="mt-1 text-sm leading-relaxed">
-                {company.name} — {company.businessUnit}.{" "}
+                {company.name}.{" "}
                 <Link href="/impresszum" className="link">
                   Impresszum
                 </Link>

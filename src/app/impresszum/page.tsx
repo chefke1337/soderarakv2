@@ -6,7 +6,7 @@ import Section from "@/components/Section";
 export const metadata: Metadata = {
   ...pageMeta({
     title: "Impresszum",
-    description: `Impresszum: a ${company.site.domain} üzemeltetője ${company.name} — cégadatok, adószám, cégjegyzékszám és elérhetőség.`,
+    description: `Impresszum: a ${company.site.domain} üzemeltetője ${company.name} — székhely, adószám, egyéni vállalkozói nyilvántartási szám és elérhetőség.`,
     path: "/impresszum",
   }),
   robots: { index: false },
@@ -21,16 +21,14 @@ export default function ImpresszumPage() {
     >
       <dl className="max-w-xl space-y-4 text-sm">
         {[
-          ["Üzemeltető", company.name],
-          ["Tevékenység", company.businessUnit],
-          ["Cégjegyzékszám", company.legal.registrationNumber],
+          ["Vállalkozó neve", company.name],
+          ["Székhely", company.address.full],
           ["Adószám", company.legal.taxNumber],
-          ["Cégállapot", company.legal.status],
-          ["Cím", company.address.full],
+          ["Egyéni vállalkozói nyilvántartási szám", company.legal.evRegistrationNumber],
           ["Telefon", company.phone.display],
+          ["Telefonos elérhetőség", company.hours.short],
           ["E-mail", company.email],
-          ["Ügyfélfogadás", `${company.hours.days}, ${company.hours.time}`],
-          ["Weboldal", company.site.domain],
+          ["Weboldal", `${company.site.name} — ${company.site.domain}`],
         ].map(([k, v]) => (
           <div key={k} className="flex justify-between gap-6 border-b border-line pb-3">
             <dt className="text-ink-soft">{k}</dt>

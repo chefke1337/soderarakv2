@@ -347,6 +347,17 @@ for (const w of [390, 768, 1440]) {
   check("árlista: kulé „Egyszer mosott” + magyarázat", /Egyszer mosott/.test(t) && /egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok/.test(t));
   t = (await page.locator("main").innerText()).replace(/ /g, " ");
   check("árlista: nincs teljes díjtábla, de van kalkulátor-utalás és engedélytájékoztató", !/díjprofil/.test(t) && /A pontos szállítási díjért használja az árkalkulátort/.test(t) && /behajtási engedély/i.test(t));
+  // Üzemeltető és telefonos elérhetőség (ügyfél, 2026-11-03)
+  const OLD_OPERATOR = /Bau-Kont|27333138|13-09-239483|Törökbálint, hrsz|152\/12|Cégjegyzékszám|07:00[–-]17:00|07:00 – 17:00/;
+  const withOldOp = htmlFiles.filter((f) => OLD_OPERATOR.test(readFileSync(f, "utf8")));
+  check(`nincs régi üzemeltetői adat / 17:00-s elérhetőség (${withOldOp.map((f) => f.slice(OUT.length)).slice(0, 3).join(", ")})`, withOldOp.length === 0);
+  await page.goto(url("/impresszum/"), { waitUntil: "load" });
+  {
+    const it = (await page.locator("main").innerText()).replace(/\s+/g, " ");
+    check("impresszum: új vállalkozói adatok", ["Újhegyi Lajosné E.V.", "1224 Budapest, Báthori utca 9.", "61008203-2-43", "Egyéni vállalkozói nyilvántartási szám", "4868853", "H–P 07:00–16:00", "info@soderarak.hu", "+36 30 852 8909"].every((x) => it.includes(x)));
+  }
+  check("lábléc: telefonos elérhetőség mondat", /Telefonon hétfőtől péntekig 07:00–16:00 között ér el minket\./.test(await page.locator("footer").innerText()));
+  check("lábléc: e-mail link", (await page.locator("footer a[href='mailto:info@soderarak.hu']").count()) > 0);
   // Buda Konténer: önálló ajánló, összetartozást sugalló szöveg nélkül (2026-11-03)
   const AFFIL = /külön üzletág|másik üzletág|üzletágunk|konténeres szolgáltatásunk|saját konténer|közös vállalkozás|Két üzletág|órákon belüli kiszállás|Erre van a Buda Konténer/i;
   const withAffil = htmlFiles.filter((f) => AFFIL.test(readFileSync(f, "utf8")));
