@@ -459,7 +459,7 @@ function ContactCard({ input }: { input: OgCardInput }) {
             <div style={{ display: "flex", fontSize: 58, fontWeight: 800, lineHeight: 1.03, letterSpacing: -2.3 }}>{input.title}</div>
             <div style={{ display: "flex", color: MUTED, fontSize: 19, lineHeight: 1.35 }}>{input.subtitle}</div>
             <div style={{ display: "flex", flexDirection: "column", gap: 7, marginTop: 2 }}>
-              <div style={{ display: "flex", color: "#0f766e", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>NYITVATARTÁS</div>
+              <div style={{ display: "flex", color: "#0f766e", fontSize: 11, fontWeight: 800, letterSpacing: 2 }}>TELEFONOS ELÉRHETŐSÉG</div>
               <div style={{ display: "flex", color: INK, fontSize: 18, fontWeight: 700 }}>{input.hours}</div>
             </div>
           </div>
