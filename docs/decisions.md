@@ -574,3 +574,16 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
 - Ügyfélkérés: a „Bau-Kont Logisztik Kft." név lekerült a láblécről (a
   nyitvatartás feletti sor és a ©-sor: „© <év> Sóderárak."). A jogilag
   szükséges üzemeltetői adatok az Impresszumban maradnak (a láblécből linkelve).
+
+## 2026-11-03 — Buda Konténer: önálló ajánló
+- A főoldali sáv egyszerű reklám lett (jóváhagyott szöveg: „Konténerre is
+  szüksége van?" / „Építkezik vagy felújít? Találjon konténert a hulladék
+  elszállításához." / CTA „Megnézem a Buda Konténert" → https://budakontener.hu,
+  változatlan cél). `<aside>` + kis „Ajánló" címke, a petrol szín megmarad
+  megkülönböztetésnek. Az órákon belüli kiszállás ígérete kikerült.
+- Összetartozást sugalló szövegek törölve: „külön üzletág" (főoldal, GYIK,
+  llms.txt), a Rólunk „Két üzletág, két oldal" doboza, a lábléc kapcsolati
+  oszlopának „Hulladék, konténer" sora, az OG „CÉGÜNK · ÜZLETÁGUNK". A
+  `businessUnit` szöveg „üzletág" helyett: „Sóderárak — ömlesztett építőanyag
+  értékesítése és szállítása" (Impresszum: „Tevékenység"). Sem „két külön cég",
+  sem „partnerünk" nem került be. A kalkulátorban nincs konténeres tétel.

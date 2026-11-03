@@ -501,7 +501,7 @@ function CompanyCard({ input }: { input: OgCardInput }) {
       <div style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
         <div style={{ display: "flex", width: 1076, alignItems: "center", justifyContent: "space-between" }}>
           <BrandMark />
-          <div style={{ display: "flex", color: "#f97316", fontSize: 14, fontWeight: 800, letterSpacing: 2.5 }}>CÉGÜNK · ÜZLETÁGUNK</div>
+          <div style={{ display: "flex", color: "#f97316", fontSize: 14, fontWeight: 800, letterSpacing: 2.5 }}>RÓLUNK</div>
         </div>
         <div style={{ width: 590, display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", color: "#f97316", fontSize: 15, fontWeight: 800, letterSpacing: 2.7 }}>SAJÁT FLOTTA · ÖMLESZTETT ANYAG</div>
@@ -516,7 +516,7 @@ function CompanyCard({ input }: { input: OgCardInput }) {
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#f1e9d8cc", fontSize: 14, fontWeight: 700 }}><div style={{ width: 42, height: 2, backgroundColor: "#f97316" }} />Bau-Kont Logisztik Kft. · Ömlesztett anyag üzletág</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#f1e9d8cc", fontSize: 14, fontWeight: 700 }}><div style={{ width: 42, height: 2, backgroundColor: "#f97316" }} />{company.businessUnit}</div>
       </div>
     </div>
   );

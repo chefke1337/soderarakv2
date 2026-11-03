@@ -48,11 +48,6 @@ export default function Footer() {
             <li>
               <MailLink className="inline-flex min-h-8 items-center hover:text-amber" />
             </li>
-            <li>
-              <a href={company.waste.url} className="inline-flex min-h-8 items-center hover:text-amber">
-                Hulladék, konténer: {company.waste.domain}
-              </a>
-            </li>
           </ul>
         </div>
 

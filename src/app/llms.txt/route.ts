@@ -48,7 +48,7 @@ function build(): string {
   L.push(`- Web: ${SITE}`);
   L.push(`- Telefon: ${company.phone.display} (${company.hours.short})`);
   L.push(`- E-mail: ${company.email}`);
-  L.push(`- Hulladék/konténer (külön üzletág): ${company.waste.url}`);
+  L.push(`- Konténerhez ajánlott oldal: ${company.waste.name} — ${company.waste.url}`);
   L.push("");
 
   L.push("## Árazás természete (FONTOS)");
