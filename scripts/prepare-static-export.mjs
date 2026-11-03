@@ -376,7 +376,7 @@ for (const { file, canonicalUrl, indexable, schemas } of pageSchemas) {
     fail(file, "indexable page is missing the shared LocalBusiness JSON-LD");
   }
   const breadcrumbs = schemas.filter((schema) => schema["@type"] === "BreadcrumbList");
-  if (indexable && stripBasePath(canonicalUrl.pathname.replace(/\/$/, "")) !== "/" && breadcrumbs.length !== 1) {
+  if (indexable && (stripBasePath(canonicalUrl.pathname.replace(/\/$/, "")) || "/") !== "/" && breadcrumbs.length !== 1) {
     fail(file, `expected one BreadcrumbList for indexable route, found ${breadcrumbs.length}`);
   }
   for (const breadcrumb of breadcrumbs) {
