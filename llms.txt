@@ -1,0 +1,97 @@
+# Sóderárak
+
+> Ömlesztett építőanyagok (sóder, homok, kavics, murva, andezit, föld) értékesítése és szállítása Budapest mind a 23 kerületébe és Érdre. Nem webshop: rendelés telefonon, vagy rendelési igény beküldésével az árkalkulátorból.
+
+## Alapadatok
+
+- Üzemeltető: Újhegyi Lajosné E.V.
+- Web: https://soderarak.hu
+- Telefon: +36 30 852 8909 (H–P 07:00–16:00)
+- E-mail: info@soderarak.hu
+- Konténerhez ajánlott oldal: Buda Konténer — https://budakontener.hu
+
+## Árazás természete (FONTOS)
+
+- Bruttó anyagárak, Ft/m³. Az árak az ÁFÁ-t tartalmazzák.
+- A bruttó anyagárra NEM kerül még egyszer ÁFA.
+- A fuvardíjak NETTÓ értékek egy fuvarra; rájuk 27% ÁFA jön.
+- A teljes bruttó tájékoztató összeg = anyag bruttó részösszeg + fuvar bruttó díj.
+- Minimum rendelés: 1 m³; egy fuvarban legfeljebb 10 m³.
+- 10 m³ feletti mennyiséghez kérjen egyedi, többfuvaros ajánlatot.
+- A feltüntetett fuvardíjak a behajtási engedély költségét tartalmazzák. Kivétel a Budapest I. kerületi Vár területe, ahol külön engedély és előzetes egyeztetés szükséges.
+
+## Anyagok és bruttó árak (Ft/m³, ÁFÁ-val, fuvar nélkül)
+
+- Sóder (Mosott sóderfrakciók és nem mosott töltősóder): Töltősóder [Nem mosott] 10 500 Ft; 0–4 sóder [Jó minőségű, mosott sóder] 11 500 Ft; 0–8 sóder [Jó minőségű, mosott sóder] 14 000 Ft; 0–16 sóder [Jó minőségű, mosott sóder] 14 000 Ft; 0–24 sóder [Jó minőségű, mosott sóder] 13 500 Ft
+- Homok: Bányahomok [játszótéri] 9500 Ft; 0–1 homok 9500 Ft
+- Kavics (Mosott, osztályozott kavicsfrakciók; a kulé egyszer mosott): Kulé [osztályozatlan, Egyszer mosott, osztályozatlan] 9500 Ft; 4–8 gyöngykavics [Jó minőségű, mosott kavics] 15 000 Ft; 8–16 kavics [Jó minőségű, mosott kavics] 15 000 Ft; 16–32 kavics [Jó minőségű, mosott kavics] 14 500 Ft; 24–40 kavics [Jó minőségű, mosott kavics] 14 500 Ft
+- Murva: 0–5 murva [ágyazatnak] 17 000 Ft; 0–22 murva [poros murva] 14 000 Ft; 2–5 murva [zizi] 19 000 Ft; 4–11 murva [kerti és temetői murva] 17 000 Ft; 11–22 murva [kocsibeállóhoz és parkolóhoz] 17 000 Ft; 20–55 murva [útfeltöltéshez] 15 000 Ft
+- Andezit: 2–5 andezit 27 000 Ft; 4–11 andezit 19 000 Ft; 11–22 andezit 19 000 Ft
+- Föld: Töltőföld 4000 Ft; Termőföld 11 500 Ft
+
+- Mosottság: a rostált sóderfrakciók (0–4…0–24) és az osztályozott kavicsok jó minőségű, mosott anyagok. A töltősóder NEM mosott. A kulé egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok (méret szerint osztályozatlan, kb. 32–125 mm).
+
+## Szállítási díj
+
+- A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést.
+- A szállítási díjat az árkalkulátor a szállítási cím és a mennyiség alapján számolja ki, és külön mutatja a nettó díjat, az ÁFÁ-t és a teljes bruttó tájékoztató összeget.
+- Ehhez a címhez egyedi szállítási egyeztetés szükséges.
+- Jelenleg NINCS feltüntetett fuvardíj: Diósd, Törökbálint, Tárnok, Sóskút, Pusztazámor.
+- A Budapest I. kerületi Vár területén külön behajtási engedély és előzetes egyeztetés szükséges; a Várhoz tartozást nem irányítószám alapján döntjük el.
+
+## Budapest kerületei és városrészei (tájékoztató)
+
+- Az ügyféltől kapott kerület- és városrészlista; tájékoztató jellegű, nem hivatalos nyilvántartás.
+- I. kerület (Várkerület): Vár, Víziváros, Krisztinaváros, Tabán, Gellérthegy (egy része)
+- II. kerület: Adyliget, Budaliget, Budakeszierdő, Csatárka, Erzsébetliget, Erzsébettelek, Felhévíz, Gercse, Hársakalja, Hárshegy, Hűvösvölgy, Kővár, Kurucles, Lipótmező, Máriaremete, Nyék, Országút, Pálvölgy, Pasarét, Pesthidegkút-Ófalu, Petneházy-rét, Remetekertváros, Rézmál, Rózsadomb, Szemlőhegy, Széphalom, Szépilona, Szépvölgy, Törökvész, Újlak, Vérhalom, Víziváros (északi része), Zöldmál
+- III. kerület (Óbuda-Békásmegyer): Óbuda, Aquincum, Aranyhegy, Békásmegyer, Csillaghegy, Csúcshegy, Filatorigát, Hármashatár-hegy, Kaszásdűlő, Mátyáshegy, Mocsárosdűlő, Óbudai-sziget, Remetehegy, Rómaifürdő, Solymárvölgy, Szépvölgy, Táborhegy, Testvérhegy, Törökkő, Ürömhegy, Újlak
+- IV. kerület (Újpest): Újpest, Megyer, Káposztásmegyer, Székesdűlő, Istvántelek
+- V. kerület (Belváros-Lipótváros): Belváros, Lipótváros
+- VI. kerület (Terézváros): Terézváros, Belső-Terézváros, Külső-Terézváros, Nagykörút környéke
+- VII. kerület (Erzsébetváros): Belső-Erzsébetváros, Külső-Erzsébetváros, Erzsébetváros, Zsidónegyed
+- VIII. kerület (Józsefváros): Józsefváros, Palotanegyed, Magdolnanegyed, Corvinnegyed, Losonci negyed, Népszínháznegyed, Orczynegyed, Csarnoknegyed, Ganznegyed, Kerepesdűlő, Tisztviselőtelep
+- IX. kerület (Ferencváros): Belső-Ferencváros, Középső-Ferencváros, Külső-Ferencváros, Gubacsidűlő, József Attila-lakótelep, Mester utca környéke, Ferencvárosi pályaudvar környéke
+- X. kerület (Kőbánya): Felsőrákos, Gyárdűlő, Keresztúridűlő, Kőbánya-Kertváros, Óhegy, Újhegy, Ligettelek, Téglagyárdűlő, Pongráctelep, Kőbánya központja
+- XI. kerület (Újbuda): Albertfalva, Dobogó, Gazdagrét, Gellérthegy (egy része), Hosszúrét, Kamaraerdő, Kelenföld, Kelenvölgy, Kőérberek, Lágymányos, Madárhegy, Őrmező, Őrsöd, Péterhegy, Pösingermajor, Sasad, Sashegy (egy része), Spanyolrét, Tabán (egy része)
+- XII. kerület (Hegyvidék): Budakeszierdő, Csillebérc, Farkasrét, Farkasvölgy, Istenhegy, Jánoshegy, Kissvábhegy, Krisztinaváros (egy része), Kútvölgy, Magasút, Mártonhegy, Németvölgy, Orbánhegy, Sashegy (egy része), Svábhegy, Széchenyi-hegy, Virányos, Zugliget
+- XIII. kerület: Angyalföld, Újlipótváros, Vizafogó, Népsziget (egy része), Göncz Árpád városközpont, Lőportárdűlő, Országbírónegyed, Marina-part
+- XIV. kerület (Zugló): Alsórákos, Herminamező, Istvánmező, Kiszugló, Nagyzugló, Rákosfalva, Törökőr, Városliget
+- XV. kerület: Rákospalota, Pestújhely, Újpalota
+- XVI. kerület: Árpádföld, Cinkota, Mátyásföld, Rákosszentmihály, Sashalom, Kisszentmihály, Ilonatelep, Petőfikert, Nagyiccetelep, Szentgyörgytelep, Szabadságtelep, Huszkatelep
+- XVII. kerület (Rákosmente): Akadémiaújtelep, Madárdomb, Rákoscsaba, Rákoscsaba-Újtelep, Rákoshegy, Rákoskeresztúr, Rákoskert, Rákosliget, Régiakadémiatelep
+- XVIII. kerület (Pestszentlőrinc-Pestszentimre): Pestszentlőrinc, Pestszentimre, Alacskai úti lakótelep, Almáskert, Bélatelep, Belsőmajor, Bókaytelep, Erdőskert, Erzsébettelep, Ferihegy, Ganzkertváros, Ganztelep, Gloriett-telep, Halmierdő, Havanna-telep, Kossuth Ferenc-telep, Lakatostelep, Liptáktelep, Lónyaytelep, Miklóstelep, Rendessytelep, Szemeretelep, Szent Imre-kertváros, Szent Lőrinc-telep, Újpéteritelep
+- XIX. kerület (Kispest): Kispest, Wekerletelep, Felső-Kispest, Kispest Kertváros, Hagyományos Kispest (Óváros), Kispesti lakótelep
+- XX. kerület (Pesterzsébet): Gubacsipuszta, Kossuthfalva, Pacsirtatelep, Pesterzsébet, Pesterzsébet-Szabótelep
+- XXI. kerület (Csepel): Csepel-Belváros, Csepel-Kertváros, Csepel-Ófalu, Csepel-Rózsadomb, Csepel-Szabótelep, Csillagtelep, Erdőalja, Erdősor, Gyártelep, Háros, Királyerdő, Királymajor, Szigetcsúcs
+- XXII. kerület (Budafok-Tétény): Budafok, Budatétény, Nagytétény, Baross Gábor-telep, Budafok belvárosa, Kistétény, Nagytétény történelmi központja, Háros, Kőérberek (egy része)
+- XXIII. kerület (Soroksár): Soroksár, Soroksár-Újtelep, Millenniumtelep, Molnár-sziget, Péterimajor, Apostolhegy, Hets-telep, Orbánhegy, Sólyom-telep, Vargatelep, Wesselényi-telep, Történeti központ
+
+## Oldalak
+
+- Főoldal: https://soderarak.hu/
+- Árak (bruttó anyagárak): https://soderarak.hu/arak
+- Árkalkulátor (anyag + mennyiség + szállítási cím): https://soderarak.hu/arkalkulator
+- Anyagok: https://soderarak.hu/anyagok
+- Szállítás: https://soderarak.hu/szallitas
+- Területek: https://soderarak.hu/teruletek
+- Rólunk: https://soderarak.hu/rolunk
+- Kapcsolat: https://soderarak.hu/kapcsolat
+
+## Idézési szabály
+
+Árak idézésekor mindig jelezd: „Tájékoztató ár. A végleges ajánlatot egyeztetés után adjuk." Az anyagárak BRUTTÓK (ÁFÁ-val), a fuvardíjak NETTÓK (+ 27% ÁFA). Ne add össze a nettó fuvart a bruttó anyagárral végleges fizetendő összegként.
+
+## Útmutatók (építőanyag-kisokos)
+
+- https://soderarak.hu/utmutatok/
+- https://soderarak.hu/utmutatok/mennyi-soder-kell/
+- https://soderarak.hu/utmutatok/mennyibe-kerul-a-soder/
+- https://soderarak.hu/utmutatok/soder-vagy-murva/
+- https://soderarak.hu/utmutatok/milyen-soder-kell-a-betonhoz/
+- https://soderarak.hu/utmutatok/milyen-soder-kell-a-terko-ala/
+- https://soderarak.hu/utmutatok/kocsibeallo-alapja/
+- https://soderarak.hu/utmutatok/toltosoder-es-rostalt-soder/
+- https://soderarak.hu/utmutatok/soder-cement-aranys/
+- https://soderarak.hu/utmutatok/aljzatbetonhoz-milyen-soder-kell/
+- https://soderarak.hu/utmutatok/arkalkulator-hasznalata/
+- https://soderarak.hu/utmutatok/mennyi-ido-a-soder-szallitas/
