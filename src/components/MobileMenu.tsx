@@ -110,7 +110,7 @@ export default function MobileMenu() {
               Hívás: {company.phone.display}
             </a>
             <p className="mt-2 text-center text-xs text-ink-soft">
-              {company.hours.days}, {company.hours.time}
+              {company.hours.sentence}
             </p>
           </li>
         </ul>

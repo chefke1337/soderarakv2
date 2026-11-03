@@ -418,7 +418,7 @@ export default function HomePage() {
             </PhoneLink>
             <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
               <div>
-                <dt className="text-on-dark-muted">Nyitvatartás</dt>
+                <dt className="text-on-dark-muted">Telefonos elérhetőség</dt>
                 <dd className="mt-1 font-semibold">
                   {company.hours.days}
                   <br />

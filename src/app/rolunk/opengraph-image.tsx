@@ -16,7 +16,7 @@ export default function OgImage() {
       { value: "Mosott", label: "sóderfrakciók és kavics" },
       { value: "Saját", label: "flotta Budafokról" },
       { value: `${budapestDistricts.length} + Érd`, label: "kiszolgált kerület" },
-      { value: company.hours.short, label: "ügyfélfogadás" },
+      { value: company.hours.short, label: "telefonos elérhetőség" },
     ],
   });
 }

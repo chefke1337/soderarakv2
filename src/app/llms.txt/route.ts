@@ -35,7 +35,7 @@ const SITE = "https://soderarak.hu";
 function build(): string {
   const L: string[] = [];
 
-  L.push(`# Sóderárak — ${company.name}`);
+  L.push(`# Sóderárak`);
   L.push("");
   L.push(
     `> Ömlesztett építőanyagok (sóder, homok, kavics, murva, andezit, föld) értékesítése és szállítása Budapest mind a ${budapestDistricts.length} kerületébe és Érdre. Nem webshop: rendelés telefonon, vagy rendelési igény beküldésével az árkalkulátorból.`,
@@ -44,7 +44,7 @@ function build(): string {
 
   L.push("## Alapadatok");
   L.push("");
-  L.push(`- Cég: ${company.name} — ${company.businessUnit}`);
+  L.push(`- Üzemeltető: ${company.name}`);
   L.push(`- Web: ${SITE}`);
   L.push(`- Telefon: ${company.phone.display} (${company.hours.short})`);
   L.push(`- E-mail: ${company.email}`);

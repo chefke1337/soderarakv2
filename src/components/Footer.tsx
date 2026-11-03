@@ -24,7 +24,7 @@ export default function Footer() {
           </Link>
           <p className="mt-4 text-sm text-on-dark-muted">{company.businessUnit}</p>
           <p className="mt-4 text-sm leading-relaxed text-on-dark-muted">
-            {company.hours.days}, {company.hours.time}
+            {company.hours.sentence}
           </p>
         </div>
 
