@@ -569,3 +569,8 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
   JS-csomagban továbbra is benne vannak (a kalkulátor böngészőben számol) —
   valódi bizalmassághoz szerveroldali kalkuláció kellene; ehhez nem nyúltunk
   jóváhagyás nélkül.
+
+## 2026-11-03 — Lábléc
+- Ügyfélkérés: a „Bau-Kont Logisztik Kft." név lekerült a láblécről (a
+  nyitvatartás feletti sor és a ©-sor: „© <év> Sóderárak."). A jogilag
+  szükséges üzemeltetői adatok az Impresszumban maradnak (a láblécből linkelve).
