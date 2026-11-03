@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  company,
   materialGroups,
   ROLUNK,
   NOT_WASHED_TOLTOSODER,
@@ -138,22 +137,6 @@ export default function RolunkPage() {
             </Link>
           </p>
 
-          {/* ── Két üzletág, két oldal ── */}
-          <div className="rounded-[var(--radius-lg)] border border-petrol/30 bg-surface p-5 md:p-6">
-            <h2 className="font-display text-heading-sm font-bold">Két üzletág, két oldal</h2>
-            <p className="mt-2 text-sm leading-relaxed text-text-muted">
-              Ezen az oldalon ömlesztett építőanyagot rendelhet: sódert, homokot,
-              kavicsot, murvát, andezitet és földet. A hulladékszállítás külön
-              üzletág —{" "}
-              <a
-                href={company.waste.url}
-                className="font-semibold text-petrol-deep underline underline-offset-2"
-              >
-                {company.waste.domain}
-              </a>
-              .
-            </p>
-          </div>
         </aside>
       </div>
     </Section>

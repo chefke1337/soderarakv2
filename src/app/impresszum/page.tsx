@@ -22,7 +22,7 @@ export default function ImpresszumPage() {
       <dl className="max-w-xl space-y-4 text-sm">
         {[
           ["Üzemeltető", company.name],
-          ["Üzletág", company.businessUnit],
+          ["Tevékenység", company.businessUnit],
           ["Cégjegyzékszám", company.legal.registrationNumber],
           ["Adószám", company.legal.taxNumber],
           ["Cégállapot", company.legal.status],

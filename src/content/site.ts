@@ -48,7 +48,7 @@ export const IS_PREVIEW = process.env.NEXT_PUBLIC_PREVIEW !== "false";
 
 export const company = {
   name: "Bau-Kont Logisztik Kft.",
-  businessUnit: "Sóderárak — ömlesztett anyag üzletág",
+  businessUnit: "Sóderárak — ömlesztett építőanyag értékesítése és szállítása",
   site: {
     name: "Sóderárak",
     domain: "soderarak.hu",
@@ -83,13 +83,21 @@ export const company = {
       closes: "17:00",
     },
   },
-  /** Testvéroldal — szigorúan szétválasztva a sóder üzletágtól. */
+  /**
+   * Buda Konténer — egyszerű, önálló AJÁNLÓ (ügyfél, 2026-11-03). Nem a
+   * Sóderárak szolgáltatása: ne írj mellé „üzletágunk", „saját konténereink",
+   * „partnerünk" vagy hasonló összetartozást állító szöveget, és ne kerüljön
+   * konténeres tétel a kalkulátorba. Ellenőrizetlen kiszállítási időt se ígérj.
+   */
   waste: {
     name: "Buda Konténer",
     domain: "budakontener.hu",
     url: "https://budakontener.hu",
+    kicker: "Konténerre is szüksége van?",
+    title: "Építkezik vagy felújít? Találjon konténert a hulladék elszállításához.",
     pitch:
-      "Építési törmelék, sitt, vegyes és zöldhulladék konténer — 4, 5, 7 és 10 m³-es méretekben, gyakran órákon belüli kiszállással.",
+      "Építési törmelékhez, sitthez vagy zöldhulladékhoz keres konténert? Tekintse meg a Buda Konténer kínálatát, és egyeztesse közvetlenül a rendelés részleteit.",
+    cta: "Megnézem a Buda Konténert",
   },
   capabilities: [
     "Saját flotta: billencs és konténeres teherautók",
@@ -415,8 +423,8 @@ export const FAQ = [
     a: "Alapozáshoz és betonhoz sódert (0–8, 0–16, 0–24), falazáshoz finomabb 0–4-et vagy homokot, kocsibeállóhoz murvát vagy kulét, kertdekorációhoz kavicsot és kerti murvát, nagy terhelésű felülethez andezitet, feltöltéshez töltőföldet szoktunk ajánlani. Ha bizonytalan, hívjon minket — segítünk kiválasztani.",
   },
   {
-    q: "Hol kérhetek hulladékkonténert?",
-    a: "A hulladék és konténer szállítás önálló üzletág: a Buda Konténer (budakontener.hu) oldalon rendelhető sitt, vegyes és zöldhulladék konténer. A sóder és az építőanyag-szállítás itt, a Sóderárak oldalon külön történik.",
+    q: "Rendelhetek itt hulladékkonténert is?",
+    a: "Ezen az oldalon ömlesztett építőanyagot rendelhet: sódert, homokot, kavicsot, murvát, andezitet és földet. Építési törmelékhez, sitthez vagy zöldhulladékhoz keres konténert? Tekintse meg a Buda Konténer kínálatát (budakontener.hu), és egyeztesse közvetlenül a rendelés részleteit.",
   },
   {
     q: "Mennyibe kerül 8 m³ sóder kiszállítással?",

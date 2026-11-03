@@ -347,6 +347,19 @@ for (const w of [390, 768, 1440]) {
   check("árlista: kulé „Egyszer mosott” + magyarázat", /Egyszer mosott/.test(t) && /egyszeri mosáson átesett, de nem olyan tiszta, mint az osztályozott kavicsok/.test(t));
   t = (await page.locator("main").innerText()).replace(/ /g, " ");
   check("árlista: nincs teljes díjtábla, de van kalkulátor-utalás és engedélytájékoztató", !/díjprofil/.test(t) && /A pontos szállítási díjért használja az árkalkulátort/.test(t) && /behajtási engedély/i.test(t));
+  // Buda Konténer: önálló ajánló, összetartozást sugalló szöveg nélkül (2026-11-03)
+  const AFFIL = /külön üzletág|másik üzletág|üzletágunk|konténeres szolgáltatásunk|saját konténer|közös vállalkozás|Két üzletág|órákon belüli kiszállás|Erre van a Buda Konténer/i;
+  const withAffil = htmlFiles.filter((f) => AFFIL.test(readFileSync(f, "utf8")));
+  check(`nincs összetartozást sugalló konténer-szöveg (${withAffil.map((f) => f.slice(OUT.length)).slice(0, 3).join(", ")})`, withAffil.length === 0);
+  await page.goto(url("/"), { waitUntil: "load" });
+  {
+    const ad = page.locator("aside[aria-labelledby='hulladek-cim']");
+    const at = await ad.innerText();
+    check("ajánló: új jelölés, cím és leírás", at.includes("Konténerre is szüksége van?") && at.includes("Építkezik vagy felújít? Találjon konténert a hulladék elszállításához.") && at.includes("Tekintse meg a Buda Konténer kínálatát, és egyeztesse közvetlenül a rendelés részleteit."));
+    const cta = ad.getByRole("link", { name: /Megnézem a Buda Konténert/ });
+    check("ajánló: a CTA a meglévő címre mutat", (await cta.getAttribute("href")) === "https://budakontener.hu");
+    check("lábléc: nincs konténeres kapcsolati sor", !/budakontener/i.test(await page.locator("footer").innerHTML()));
+  }
   await page.goto(url("/rolunk/"), { waitUntil: "load" });
   t = await page.locator("main").innerText();
   check("Rólunk: nincs „Minden általunk forgalmazott anyag” általánosítás", !/Minden általunk forgalmazott anyag/.test(t) && /töltősóder/.test(t));

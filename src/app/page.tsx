@@ -305,33 +305,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── Buda Konténer — testvér üzletág (zöld: funkcionális megkülönböztetés) ─── */}
-      <section aria-labelledby="hulladek-cim" className="border-y border-border bg-surface">
+      {/* ─── Ajánló: Buda Konténer (önálló reklám, nem a Sóderárak szolgáltatása;
+             a petrol szín szándékosan különbözteti meg a saját kínálattól) ─── */}
+      <aside aria-labelledby="hulladek-cim" className="border-y border-border bg-surface">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 md:flex-row md:items-center md:justify-between md:gap-10 md:px-6">
           <div className="flex gap-4">
             <span
               aria-hidden="true"
-              className="mt-1.5 hidden h-10 w-1 shrink-0 rounded-full bg-petrol sm:block"
+              className="mt-1.5 hidden h-12 w-1 shrink-0 rounded-full bg-petrol sm:block"
             />
             <div>
-              <h2 id="hulladek-cim" className="font-display text-heading-sm font-bold">
-                Építési törmelék, sitt, zöldhulladék? Erre van a Buda Konténer.
+              <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-petrol-deep">
+                <span className="rounded-sm border border-petrol/40 px-1.5 py-0.5 text-xs font-bold tracking-wide uppercase">
+                  Ajánló
+                </span>
+                {company.waste.kicker}
+              </p>
+              <h2 id="hulladek-cim" className="mt-1.5 font-display text-heading-sm font-bold text-balance">
+                {company.waste.title}
               </h2>
               <p className="mt-1.5 max-w-[72ch] text-sm leading-relaxed text-ink-soft">
-                {company.waste.pitch} A hulladékszállítás{" "}
-                <strong className="font-semibold text-ink">külön üzletág</strong> — itt, a
-                Sóderárak oldalon csak ömlesztett építőanyagot rendelhet.
+                {company.waste.pitch}
               </p>
             </div>
           </div>
           <a
             href={company.waste.url}
+            rel="noopener"
             className="btn shrink-0 border-[1.5px] border-petrol text-petrol-deep hover:bg-petrol hover:text-surface"
           >
-            {company.waste.domain}
+            {company.waste.cta}
+            <span aria-hidden="true">↗</span>
+            <span className="sr-only"> (budakontener.hu)</span>
           </a>
         </div>
-      </section>
+      </aside>
 
       {/* ─── GYIK + útmutatók ─── */}
       <Section

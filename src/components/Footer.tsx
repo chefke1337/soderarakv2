@@ -24,8 +24,6 @@ export default function Footer() {
           </Link>
           <p className="mt-4 text-sm text-on-dark-muted">{company.businessUnit}</p>
           <p className="mt-4 text-sm leading-relaxed text-on-dark-muted">
-            {company.name}
-            <br />
             {company.hours.days}, {company.hours.time}
           </p>
         </div>
@@ -49,11 +47,6 @@ export default function Footer() {
           <ul className="mt-2 space-y-1 text-sm">
             <li>
               <MailLink className="inline-flex min-h-8 items-center hover:text-amber" />
-            </li>
-            <li>
-              <a href={company.waste.url} className="inline-flex min-h-8 items-center hover:text-amber">
-                Hulladék, konténer: {company.waste.domain}
-              </a>
             </li>
           </ul>
         </div>
@@ -80,7 +73,7 @@ export default function Footer() {
       <div className="border-t border-paper/15 pb-[calc(5.25rem+env(safe-area-inset-bottom))] sm:pb-0">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-5 text-xs leading-relaxed text-on-dark-muted md:flex-row md:items-center md:justify-between md:px-6">
           <p>
-            © {new Date().getFullYear()} {company.name.replace(/\.$/, "")}. Minden jog fenntartva.
+            © {new Date().getFullYear()} {company.site.name}. Minden jog fenntartva.
           </p>
           <p className="md:max-w-[60ch] md:text-right">
             Az anyagárak tájékoztató jellegűek, bruttó árak (az ÁFÁ-t tartalmazzák); a fuvar díja
