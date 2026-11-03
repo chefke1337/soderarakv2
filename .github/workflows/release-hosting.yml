@@ -1,0 +1,53 @@
+name: V3 hosting package (zip release)
+
+# Letölthető statikus csomag saját tárhelyre: a V3 export a domain GYÖKERÉBE
+# (basePath nélkül), https://soderarak.hu kanonikus címmel, ZIP-be csomagolva,
+# GitHub Release-ként. Nem publikál GitHub Pagesre, nem érinti a v3 ágat.
+# A noindex a layoutból jön, ezért a csomag is noindex marad.
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    env:
+      GH_PAGES_BASE_PATH: ""
+      NEXT_PUBLIC_SITE_URL: https://soderarak.hu
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - name: Build static export (domain root)
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          shell: bash
+          command: set -o pipefail; (npx next build && node scripts/prepare-static-export.mjs) 2>&1 | tail -n 40
+      - name: Zip
+        run: |
+          cd out
+          zip -qr ../soderarak-v3-tarhely.zip .
+          cd ..
+          ls -la soderarak-v3-tarhely.zip
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="tarhely-$(date -u +%Y%m%d-%H%M)-${GITHUB_SHA::7}"
+          gh release create "$TAG" soderarak-v3-tarhely.zip \
+            --target "$GITHUB_SHA" \
+            --title "Sóder Árak V3 — tárhely-csomag ($TAG)" \
+            --notes "Statikus export a domain gyökerébe (https://soderarak.hu). Csomagold ki, és a ZIP TARTALMÁT (index.html, _next/ stb.) töltsd fel a tárhely webgyökerébe (pl. public_html). noindex beállítás: bekapcsolva."
