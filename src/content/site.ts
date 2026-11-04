@@ -47,7 +47,8 @@ const SITE_URL = (
 export const IS_PREVIEW = process.env.NEXT_PUBLIC_PREVIEW !== "false";
 
 export const company = {
-  name: "Bau-Kont Logisztik Kft.",
+  /** Üzemeltető (egyéni vállalkozó) — ügyféladat, 2026-11-03, a megadott formában. */
+  name: "Újhegyi Lajosné E.V.",
   businessUnit: "Sóderárak — ömlesztett építőanyag értékesítése és szállítása",
   site: {
     name: "Sóderárak",
@@ -59,28 +60,31 @@ export const company = {
     display: "+36 30 852 8909",
   },
   email: "info@soderarak.hu",
-  /** Céges cím (2026-10-11-i ügyféladat) — kizárólag cégadatként (pl. impresszum,
-   * strukturált adat), nem telephelyként vagy depóként megjelenítve. */
+  /** Székhely (ügyféladat, 2026-11-03) — kizárólag üzemeltetői adatként
+   * (impresszum, adatkezelő, strukturált adat). NEM telephely, depó vagy
+   * átvételi pont: ne kerüljön térképre, és ne kínálj itt személyes átvételt. */
   address: {
-    street: "hrsz. 152/12.",
-    postalCode: "2045",
-    city: "Törökbálint",
-    full: "2045 Törökbálint, hrsz. 152/12., Magyarország",
+    street: "Báthori utca 9.",
+    postalCode: "1224",
+    city: "Budapest",
+    full: "1224 Budapest, Báthori utca 9.",
   },
-  /** Cégjegyzék-adatok (2026-10-11-i ügyféladat) — csak impresszumhoz. */
+  /** Egyéni vállalkozói adatok (ügyféladat, 2026-11-03) — nincs cégjegyzékszám. */
   legal: {
-    status: "Aktív",
-    taxNumber: "27333138-2-13",
-    registrationNumber: "13-09-239483",
+    taxNumber: "61008203-2-43",
+    evRegistrationNumber: "4868853",
   },
+  /** TELEFONOS elérhetőség (ügyfél, 2026-11-03) — nem nyitvatartás, nem
+   * ügyfélfogadás, és nem korlátozza a kiszállítás egyeztetett időpontját. */
   hours: {
     days: "Hétfő – péntek",
-    time: "07:00 – 17:00",
-    short: "H–P 07:00–17:00",
+    time: "07:00 – 16:00",
+    short: "H–P 07:00–16:00",
+    sentence: "Telefonon hétfőtől péntekig 07:00–16:00 között ér el minket.",
     schema: {
       dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
       opens: "07:00",
-      closes: "17:00",
+      closes: "16:00",
     },
   },
   /**

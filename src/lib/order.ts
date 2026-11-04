@@ -105,6 +105,9 @@ export const orderRequestSchema = z.object({
   castleAnswer: castleAnswerSchema.optional().default(""),
   note: z.string().trim().max(2000).optional().default(""),
 
+  /** Rejtett „csapda" mező (spam ellen): embernek üresen kell maradnia. */
+  website: z.string().max(200).optional().default(""),
+
   /* ── Metaadat ── */
   pricingVersion: z.string().trim().max(40),
   /** A kliensen megjelenített teljes bruttó összeg — CSAK eltérés-jelzésre. */

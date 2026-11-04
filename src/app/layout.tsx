@@ -87,7 +87,8 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "@id": `${company.site.url}/#business`,
-  name: `${company.site.name} — ${company.name}`,
+  name: company.site.name,
+  legalName: company.name,
   telephone: company.phone.display,
   email: company.email,
   url: `${company.site.url}/`,
@@ -99,12 +100,18 @@ const jsonLd = {
     addressLocality: company.address.city,
     addressCountry: "HU",
   },
-  openingHoursSpecification: [
-    {
+  // Telefonos elérhetőség — ContactPoint, nem üzlethelyiségi nyitvatartás.
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer service",
+    telephone: company.phone.display,
+    email: company.email,
+    availableLanguage: "hu",
+    hoursAvailable: {
       "@type": "OpeningHoursSpecification",
       ...company.hours.schema,
     },
-  ],
+  },
   areaServed: serviceAreas.map((a) => ({ "@type": "Place", name: a.name })),
 };
 
