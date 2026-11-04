@@ -14,7 +14,7 @@
  * Futtatás: node scripts/hosting-e2e.mjs
  */
 import { spawn } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { chromium } from "playwright";
@@ -82,7 +82,11 @@ const browser = await chromium.launch({ headless: true });
   const sink = mkdtempSync(join(tmpdir(), "e2e-mail-"));
   const mailFile = join(sink, "uzenet.eml");
   const port = 18810;
-  const proc = await serve(port, `sh -c 'sleep 1; cat > ${mailFile}'`);
+  // A csonk szkriptfájl: az ini-értékben a „;" megjegyzést nyitna.
+  const stub = join(sink, "sendmail-csonk.sh");
+  writeFileSync(stub, `#!/bin/sh\nsleep 1\ncat > "${mailFile}"\n`);
+  chmodSync(stub, 0o755);
+  const proc = await serve(port, stub);
   const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
@@ -109,7 +113,8 @@ const browser = await chromium.launch({ headless: true });
 /* ── 2. A küldő hibája ── */
 {
   const port = 18811;
-  const proc = await serve(port, "sh -c 'exit 1'");
+  // Elérhetetlen küldőprogram → a PHP mail() false-t ad (a levelet senki nem vette át).
+  const proc = await serve(port, "/nem-letezo/sendmail");
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   await fillAndSubmit(page, `http://127.0.0.1:${port}`);
   await page.waitForSelector("[data-call-region='order_intent_success'], [data-call-region='order_intent_error']", { timeout: 20000 });
