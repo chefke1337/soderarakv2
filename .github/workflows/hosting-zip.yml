@@ -18,6 +18,8 @@ jobs:
     env:
       GH_PAGES_BASE_PATH: ""
       NEXT_PUBLIC_SITE_URL: https://soderarak.hu
+      # A tárhelyre feltöltött PHP-végpont (server/php/api → out/api).
+      NEXT_PUBLIC_ORDER_API_URL: /api/rendeles.php
       NEXT_TELEMETRY_DISABLED: "1"
     steps:
       - uses: actions/checkout@v4
@@ -28,6 +30,8 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run lint
+      - name: PHP endpoint tests (no real e-mail)
+        run: php -v && npm run test:order-php
       - name: Build static export (root path)
         uses: nick-fields/retry@v3
         with:
@@ -35,6 +39,13 @@ jobs:
           max_attempts: 3
           shell: bash
           command: rm -rf .next out && npx next build && node scripts/prepare-static-export.mjs
+      - name: Add PHP order endpoint to the export
+        run: |
+          mkdir -p out/api
+          cp server/php/api/rendeles.php server/php/api/rendeles-adatok.php out/api/
+      - run: npx playwright install --with-deps chromium
+      - name: End-to-end (browser → PHP → sendmail stub, no real e-mail)
+        run: node scripts/hosting-e2e.mjs
       - name: Zip
         run: |
           cd out
@@ -49,4 +60,4 @@ jobs:
           gh release create "$TAG" soderarak-v3-tarhely.zip \
             --target "$GITHUB_SHA" \
             --title "Sóder Árak V3 — tárhelyre feltölthető csomag ($TAG)" \
-            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. Az oldal noindex (keresőben nem jelenik meg), és rendelési igény beküldési végpont nincs beállítva."
+            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. A rendelési igényt az api/rendeles.php (PHP 8+) küldi az info@soderarak.hu címre — beállítás: server/php/README.md. Az oldal noindex (keresőben nem jelenik meg)."
