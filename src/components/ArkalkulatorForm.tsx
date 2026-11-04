@@ -139,6 +139,7 @@ export default function ArkalkulatorForm() {
   const [preferredDate, setPreferredDate] = useState("");
   const [note, setNote] = useState("");
   const [privacy, setPrivacy] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitAttempts, setSubmitAttempts] = useState(0);
   const [submitting, setSubmitting] = useState(false);
@@ -375,6 +376,7 @@ export default function ArkalkulatorForm() {
     setPreferredDate("");
     setNote("");
     setPrivacy(false);
+    setHoneypot("");
     setTouched({});
     setStepTried({});
     setSubmitAttempts(0);
@@ -441,7 +443,12 @@ export default function ArkalkulatorForm() {
       address: address.trim(),
       preferredDate: preferredDate.trim(),
       castleAnswer,
-      note: note.trim(),
+      // A 10 m³ feletti igényt a levélben is jelezzük (a mennyiség mező 1–10 m³).
+      note: (overLimit
+        ? `[Több mint ${SINGLE_TRIP_MAX_M3} m³ szükséges — többfuvaros egyeztetés kell.]\n${note.trim()}`
+        : note.trim()
+      ).slice(0, 2000),
+      website: honeypot,
       pricingVersion: PRICING_VERSION,
       clientTotalGross: quote.totalGross,
       idempotencyKey: idemKey.current,
@@ -951,6 +958,18 @@ export default function ArkalkulatorForm() {
           </div>
 
           <form onSubmit={handleSubmit} noValidate aria-labelledby="step-5-cim" className="mt-5">
+            {/* Spam-csapda: képernyőn és felolvasóban sem jelenik meg. */}
+            <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+              <label htmlFor={`${uid}-web`}>Weboldal (hagyja üresen)</label>
+              <input
+                id={`${uid}-web`}
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
             <p className="text-sm leading-relaxed text-text-muted">{ORDER_INTENT_NOTICE}</p>
 
             {!ORDER_ENDPOINT_CONFIGURED && (

@@ -324,6 +324,11 @@ export async function handleOrderRequest(
   }
   const value = validated.value;
 
+  // Rejtett csapda-mező kitöltve → nem ember küldte.
+  if (value.website) {
+    return { status: 422, body: { ok: false, message: "Kérjük, ellenőrizze a megjelölt mezőket.", errors: {} } };
+  }
+
   // Dupla beküldés: ugyanazt a kulcsot nem küldjük ki másodszor.
   if (await deps.idempotency.has(value.idempotencyKey)) {
     return {
