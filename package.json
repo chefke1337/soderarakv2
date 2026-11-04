@@ -33,7 +33,9 @@
     "test:areas": "node --experimental-strip-types tests/area-pages.test.mjs",
     "test:quote": "node --experimental-strip-types tests/quote.test.mjs",
     "test:order": "node --experimental-strip-types tests/order.test.mjs",
-    "test:all": "npm run test:pricing && npm run test:freight && npm run test:quote && npm run test:districts && npm run test:areas && npm run test:order",
+    "test:order-php": "node --experimental-strip-types tests/order-php.test.mjs",
+    "order:data": "node --experimental-strip-types scripts/build-order-data.mjs",
+    "test:all": "npm run test:pricing && npm run test:freight && npm run test:quote && npm run test:districts && npm run test:areas && npm run test:order && npm run test:order-php",
     "test:smoke": "node scripts/v3-smoke.mjs",
     "test:regression": "node scripts/v3-regression.mjs",
     "shots": "node scripts/v3-screenshots.mjs"

@@ -601,3 +601,21 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
   A székhely nem telephely: nincs térképpin, nincs személyes átvétel.
 - Jogi felülvizsgálat javasolt: az adatkezelési tájékoztató általános
   (adatkezelő-csere után a tartalmat jogásznak érdemes átnéznie); ÁSZF nincs.
+
+## 2026-11-04 — Rendelési igény: PHP-végpont a tárhelyre
+- Hiba oka: a soderarak.hu-ra feltöltött statikus csomag
+  `NEXT_PUBLIC_ORDER_API_URL` nélkül épült, és nem volt mellette futó
+  beküldési végpont → a kliens (szándékosan) „nincs konfigurálva" állapotot
+  mutatott, nem szimulált sikert.
+- Megoldás: `server/php/api/rendeles.php` (PHP 8+), a tárhely-ZIP `api/`
+  mappájában; a tárhely-build a `/api/rendeles.php` címre küld. A Pages-
+  előnézet (nincs PHP) továbbra is „nincs konfigurálva".
+- Küldés: alapból a tárhely PHP `mail()` függvénye (feladó info@soderarak.hu),
+  vagy SMTP a webgyökér fölötti config-fájlból / SetEnv-ből. SMTP-adatot nem
+  találtunk ki; a repóban csak titok nélküli minta van.
+- Szerveroldali árújraszámolás a generált `rendeles-adatok.php`-ból (PHP-
+  fájl, hogy a díjtábla ne legyen szövegként letölthető); a teszt elbukik, ha
+  elavult. Fix címzett, Reply-To = beküldő, CR/LF-szűrés, Origin-szűrés,
+  rate limit, idempotencia, csapda-mező, 16 KB korlát. Siker csak tényleges
+  átvételkor.
+- 10 m³ feletti igény a megjegyzés elején jelölve kerül a levélbe.
