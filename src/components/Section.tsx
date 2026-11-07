@@ -32,6 +32,7 @@ export default function Section({
   headingLevel = 1,
   layout = "stack",
   reveal = false,
+  align = "start",
   className = "",
 }: {
   id?: string;
@@ -47,6 +48,9 @@ export default function Section({
   layout?: "stack" | "split";
   /** @deprecated görgetéshez kötött megjelenés eltávolítva (megbízhatatlan) */
   reveal?: boolean;
+  /** "center": a fejléc (címke, cím, bevezető) középre igazítva — keskeny,
+   * középre tett tartalomoszlophoz (pl. árkalkulátor), hogy ne csússzon el. */
+  align?: "start" | "center";
   className?: string;
 }) {
   const Title = headingLevel === 1 ? "h1" : "h2";
@@ -55,7 +59,11 @@ export default function Section({
   const dark = tone === "dark" || tone === "accent";
 
   const heading = (
-    <div className={layout === "split" ? "lg:sticky lg:top-28" : undefined}>
+    <div
+      className={
+        layout === "split" ? "lg:sticky lg:top-28" : align === "center" ? "mx-auto max-w-3xl text-center" : undefined
+      }
+    >
       {kicker && (
         <p className={`label-strata ${dark ? "text-amber" : "text-brand-deep"} ${tone === "accent" ? "!text-on-dark" : ""}`}>
           {kicker}
@@ -77,7 +85,7 @@ export default function Section({
       </Title>
       {lead && (
         <p
-          className={`mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed ${
+          className={`mt-4 max-w-[58ch] text-[1.0625rem] leading-relaxed ${align === "center" ? "mx-auto " : ""}${
             tone === "dark" ? "text-on-dark-muted" : tone === "accent" ? "text-on-accent-muted" : "text-text-muted"
           }`}
         >

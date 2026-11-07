@@ -21,7 +21,8 @@ export default function ArkalkulatorPage() {
     <Section
       kicker="Árkalkulátor"
       title="Mennyibe kerül kiszállítva?"
-      lead="Három bemenet: anyag, mennyiség, irányítószám. Az anyagár bruttó (ÁFÁ-val), a fuvardíj nettó — az összesítő mindkettőt külön mutatja, és a végén a teljes bruttó tájékoztató összeget is. A végleges ajánlatot egyeztetés után adjuk."
+      lead="Lépésről lépésre: anyag, mennyiség, szállítási cím. Az anyagár bruttó (ÁFÁ-val), a szállítási díj nettó — az összesítő mindkettőt külön mutatja, és a teljes bruttó tájékoztató összeget is. A végleges ajánlatot egyeztetés után adjuk."
+      align="center"
     >
       <JsonLd
         data={breadcrumbJsonLd([
@@ -30,7 +31,7 @@ export default function ArkalkulatorPage() {
         ])}
       />
       <ArkalkulatorForm />
-      <p className="mt-8 max-w-[76ch] text-xs leading-relaxed text-ink-soft">
+      <p className="mx-auto mt-8 max-w-3xl text-center text-xs leading-relaxed text-ink-soft">
         {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
       </p>
     </Section>
