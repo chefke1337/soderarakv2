@@ -86,7 +86,6 @@ export default function MobileMenu() {
         data-open={open}
         className="menu-panel absolute top-full right-0 z-50 mt-3 w-[min(21rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-lg)] bg-surface shadow-pop ring-1 ring-black/10"
       >
-        <span aria-hidden="true" className="block h-1.5 bg-[linear-gradient(90deg,var(--color-mat-homok)_0_20%,var(--color-mat-soder)_20%_40%,var(--color-mat-kavics)_40%_60%,var(--color-accent)_60%_80%,var(--color-mat-fold)_80%)]" />
         <ul className="px-4 py-1">
           {nav.map((item, i) => (
             <li key={item.href} style={{ "--i": i } as React.CSSProperties}>
