@@ -645,7 +645,7 @@ summary::-webkit-details-marker {
 .heap-rail {
   overscroll-behavior-x: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgb(255 250 241 / 0.35) transparent;
+  scrollbar-color: rgb(36 33 29 / 0.25) transparent;
   -webkit-overflow-scrolling: touch;
 }
 @media (prefers-reduced-motion: no-preference) {
@@ -657,8 +657,9 @@ summary::-webkit-details-marker {
    Visszajelzés felület- és keretváltással, a kupac nem mozdul
    (nem ugrik, nem hullámzik) — csak a fény erősödik rajta kicsit. */
 .heap {
-  background-color: color-mix(in srgb, var(--color-on-dark) 4%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-on-dark) 11%, transparent);
+  /* világos hero (2026-11-07): papír-kártya finom kerettel */
+  background-color: color-mix(in srgb, var(--color-surface) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-text) 12%, transparent);
   transition:
     background-color var(--dur-ui) var(--ease-out-soft),
     border-color var(--dur-ui) var(--ease-out-soft),
@@ -678,15 +679,15 @@ summary::-webkit-details-marker {
   transition: transform var(--dur-fast) var(--ease-out-soft);
 }
 .heap:focus-visible {
-  outline: 2px solid var(--color-amber);
+  outline: 2px solid var(--color-accent);
 }
 .heap:focus-visible,
 .heap:hover {
-  border-color: color-mix(in srgb, var(--color-on-dark) 24%, transparent);
+  border-color: color-mix(in srgb, var(--color-text) 28%, transparent);
 }
 @media (hover: hover) and (pointer: fine) {
   .heap:hover {
-    background-color: color-mix(in srgb, var(--color-on-dark) 8%, transparent);
+    background-color: var(--color-surface);
   }
   .heap:hover .pile-shade {
     opacity: 0.7;

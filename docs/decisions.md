@@ -646,3 +646,9 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
   (`.grain`) és a radiális fényfoltok nélkül.
 - Dupla/tripla hívógomb mobilon: a MobileCallBar elrejtőzik, amíg a hero
   telefon-gombja látszik, és amíg a mobilmenü nyitva van.
+- (16:20) Ügyfél-irány: narancs horizont ki; a hero alját a térkő-rétegrend metszete
+  zárja az ügyfél referenciaképe szerint (beton térkő → ágyazat 2/4 → teherhordó 0/22 →
+  fagyvédő 0/56 → tömörített altalaj egyenes határral → természetes hullámos rétegek).
+  Statikus SVG: `public/hero/terko-retegrend.svg` (generátor: `scripts/build-hero-ground.py`).
+  A térkő feletti hero-háttér világos mészkő→homok átmenet; a hero szövegei, a
+  kupackártyák és a terület-címkék ehhez igazítva sötét szövegre.

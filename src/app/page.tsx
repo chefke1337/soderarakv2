@@ -29,7 +29,7 @@ import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
-import HeroGround from "@/components/HeroGround";
+import { withBasePath } from "@/lib/basepath";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -61,18 +61,18 @@ export default function HomePage() {
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section
         data-call-region="hero"
-        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
+        className="relative isolate overflow-hidden text-ink"
       >
-        {/* Háttér: a felső rész nyugodt, enyhe függőleges átmenet (nem fényfolt);
-            alul geológiai rétegszelvény, amin a kupacsor „áll". */}
+        {/* Háttér: világos mészkő → homok átmenet (nem fényfolt, nem minta);
+            alul a térkő-rétegrend metszete zárja a herót. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#352820_0%,var(--color-surface-dark)_45%)]"
+          className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f8f4ec_0%,#f1e8d9_60%,#eadcc5_100%)]"
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
-              <p className="rise text-sm font-semibold text-amber">
+              <p className="rise text-sm font-semibold text-brand-deep">
                 <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
               </p>
               <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
@@ -80,7 +80,7 @@ export default function HomePage() {
               </h1>
             </div>
             <div className="min-w-0 lg:col-span-5 lg:pb-2">
-              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
+              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-ink-soft">
                 {HERO.lead}
               </p>
               <div className="rise rise-3 hero-areas mt-5">
@@ -98,7 +98,7 @@ export default function HomePage() {
                   <IconPhone size={21} className="btn-icon btn-icon-ring" />
                   {company.phone.display}
                 </PhoneLink>
-                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
+                <CalculatorCta className="btn btn-lg btn-outline whitespace-nowrap">
                   Árkalkulátor indítása
                   <IconArrowRight size={18} className="btn-icon btn-icon-move" />
                 </CalculatorCta>
@@ -110,15 +110,25 @@ export default function HomePage() {
           <div className="mt-9 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
-          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
+          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-ink-soft lg:mt-6">
             {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
           </p>
         </div>
 
-        {/* Talaj: alacsony rétegsáv a tartalom alatt, kihagyással (nem a kártyák mögött) */}
-        <div aria-hidden="true" className="h-12 md:h-16 lg:h-[4.5rem]">
-          <HeroGround className="block h-full w-full" />
-        </div>
+        {/* Talaj: térkő-rétegrend metszete a tartalom alatt, kihagyással
+            (térkő → ágyazat → teherhordó → fagyvédő → tömörített altalaj →
+            természetes talaj). Statikus SVG: scripts/build-hero-ground.py */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
+        <img
+          src={withBasePath("/hero/terko-retegrend.svg")}
+          alt=""
+          aria-hidden="true"
+          width={2400}
+          height={176}
+          loading="lazy"
+          decoding="async"
+          className="block h-24 w-full object-cover object-bottom md:h-28 lg:h-32"
+        />
 
         {/* Ténysor — homok sáv a hero alján.
             A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
