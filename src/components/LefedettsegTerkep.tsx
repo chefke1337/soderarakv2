@@ -382,7 +382,7 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
       <div
         ref={containerRef}
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
-        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-[#e7decd]"
+        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-[#ece4d5]"
         role="region"
         aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A pontos szállítási díjat az árkalkulátor számolja ki."
       />

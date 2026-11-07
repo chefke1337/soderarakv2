@@ -337,7 +337,8 @@ summary::-webkit-details-marker {
    sosem kerülhet a fejléc/menü fölé. */
 .leaflet-container {
   font-family: var(--font-sans);
-  background: var(--color-sand);
+  /* = a saját alaptérkép „nem kiszolgált" kitöltése → az adat széle nem látszik */
+  background: #ece4d5;
   isolation: isolate;
 }
 .leaflet-bar a {
