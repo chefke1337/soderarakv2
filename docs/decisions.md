@@ -653,3 +653,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
   A térkő feletti hero-háttér világos mészkő→homok átmenet; a hero szövegei, a
   kupackártyák és a terület-címkék ehhez igazítva sötét szövegre.
 - (17:18) Ügyfél-irány: a térkövek kikerültek; csak a térkő alatti rétegrend absztrakt metszete marad, fele akkora magasságban (64/72/80 px).
+- (17:24) „Gagyi” visszajelzés után: a talaj-sáv letisztult műszaki metszetrajz lett (pontozott ágyazat, rakott szögletes 0/22 és 0/56 szemek, 45°-os vonalkázású tömörített altalaj, hajszálvonalas réteghatárok), 80 px magas viewBox.

@@ -124,7 +124,7 @@ export default function HomePage() {
           alt=""
           aria-hidden="true"
           width={2400}
-          height={118}
+          height={80}
           loading="lazy"
           decoding="async"
           className="block h-16 w-full object-cover object-top md:h-[4.5rem] lg:h-20"

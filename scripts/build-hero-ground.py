@@ -1,81 +1,131 @@
-"""Hero „talaj": térkő-rétegrend metszet (statikus SVG) → public/hero/terko-retegrend.svg (térkő nélkül)
+"""Hero „talaj": a térkő (viakolor) ALATTI rétegrend absztrakt metszete
+→ public/hero/terko-retegrend.svg
 
-A térkő (viakolor) ALATTI rétegrend absztrahálva, felülről lefelé (az ügyfél
-referenciaképe szerint, a térkő maga nélkül): ágyazat,
-teherhordó réteg, fagyvédő réteg, tömörített altalaj (egyenes határ), alatta a
-természetes, hullámos talajrétegek. Determinisztikus (seed), újrafuttatható.
+Műszaki metszetrajz-logika, letisztítva (ügyfél referenciaképe szerint),
+felülről lefelé:
+  ágyazat (2/4)        — finom, egyenletes pontozás
+  teherhordó (0/22)    — sűrűn rakott, kis szögletes zúzottkő-szemek
+  fagyvédő (0/56)      — nagyobb szögletes szemek, finomabb hézagkitöltéssel
+  tömörített altalaj   — egyenes határ, sűrű 45°-os vonalkázás (döngölt)
+  természetes talaj    — sötétebb, egy halk hullámvonallal
+A szemek mintacsempékben (zökkenőmentes illesztéssel) → kis fájlméret.
+Determinisztikus (seed), újrafuttatható: python3 scripts/build-hero-ground.py
 """
-import math, random  # noqa: E401
-W, H = 2400, 118
+import math
+import random
+
+W, H = 2400, 80
+TW = 360  # mintacsempe szélessége
 R = random.Random(20261107)
-o = []
-def f(x): return f"{x:.1f}".rstrip("0").rstrip(".")
+defs, body = [], []
 
-# rétegek (y, magasság)
-BED_Y, BED_H = 0, 8
-BASE_Y, BASE_H = 8, 26
-FROST_Y, FROST_H = 34, 32
-SOIL_Y, SOIL_H = 66, 22
-NAT_Y = 88
 
-TW = 320  # mintacsempe szélessége — a szemcsék csempézve (kis fájlméret)
-defs = []
-def speckle(y, h, n, cols, kind, size):
-    n = int(n * TW / W)
-    global o
-    keep, o = o, []
-    for _ in range(n):
-        x = R.uniform(0, TW); yy = R.uniform(y + 1, y + h - 1)
-        c = R.choice(cols)
-        if kind == "dot":
-            o.append(f'<circle cx="{f(x)}" cy="{f(yy)}" r="{f(R.uniform(*size))}" fill="{c}"/>')
-        else:  # rövid zúzottkő-szilánk
-            L = R.uniform(*size); a = R.uniform(0, math.pi)
-            dx, dy = math.cos(a) * L / 2, math.sin(a) * L / 2
-            o.append(f'<path d="M{f(x-dx)} {f(yy-dy)}L{f(x+dx)} {f(yy+dy)}" stroke="{c}" stroke-width="{f(R.uniform(0.9,1.6))}" stroke-linecap="round"/>')
-    pid = f"p{len(defs)}"
-    defs.append(f'<pattern id="{pid}" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">' + "".join(o) + "</pattern>")
-    o = keep
-    o.append(f'<rect y="{y}" width="{W}" height="{h}" fill="url(#{pid})"/>')
+def n(x):
+    return f"{x:.2f}".rstrip("0").rstrip(".")
 
-# ágyazat 2/4
-o.append(f'<rect y="{BED_Y}" width="{W}" height="{BED_H}" fill="#c8b48c"/>')
-speckle(BED_Y, BED_H, 1400, ["#a38f68", "#8f7c58", "#e0d0ad"], "dot", (0.5, 0.9))
-# teherhordó 0/22
-o.append(f'<rect y="{BASE_Y}" width="{W}" height="{BASE_H}" fill="#e7d9cf"/>')
-speckle(BASE_Y, BASE_H, 900, ["#7b6a62", "#a08e85", "#5f514b"], "dash", (1.6, 3.6))
-speckle(BASE_Y, BASE_H, 900, ["#b9a69b", "#cdbcb1"], "dot", (0.5, 1.0))
-# fagyvédő 0/56
-o.append(f'<rect y="{FROST_Y}" width="{W}" height="{FROST_H}" fill="#e3d0a8"/>')
-speckle(FROST_Y, FROST_H, 1100, ["#5c4a36", "#7a6449", "#46382a"], "dash", (2.6, 5.4))
-speckle(FROST_Y, FROST_H, 700, ["#c4ad80", "#b49b6c"], "dot", (0.6, 1.2))
-# tömörített altalaj — egyenes felső határ, finom tömörítési vonalak
-o.append(f'<rect y="{SOIL_Y}" width="{W}" height="{SOIL_H}" fill="#7a5f4f"/>')
-for i, yy in enumerate((SOIL_Y + 7, SOIL_Y + 14, SOIL_Y + 21)):
-    x = R.uniform(0, 60)
-    while x < W:
-        L = R.uniform(18, 60)
-        o.append(f'<path d="M{f(x)} {yy}h{f(L)}" stroke="#6a5144" stroke-width="1"/>')
-        x += L + R.uniform(14, 40)
-o.append(f'<path d="M0 {SOIL_Y}H{W}" stroke="#4f3b30" stroke-width="1.2"/>')
 
-# természetes, hullámos rétegek
-def wave(y0, amp, ph, f1, f2):
-    pts = [(x, y0 + amp*math.sin(x/W*math.pi*f1+ph) + amp*0.45*math.sin(x/W*math.pi*f2+ph*1.7)) for x in range(0, W+1, 48)]
-    d = f"M0 {f(pts[0][1])}"
-    for i in range(1, len(pts)):
-        (x0, a), (x1, b) = pts[i-1], pts[i]
-        d += f" Q{x0} {f(a)} {f((x0+x1)/2)} {f((a+b)/2)}"
-    return d + f" T{W} {f(pts[-1][1])}"
-o.append(f'<rect y="{NAT_Y}" width="{W}" height="{H-NAT_Y}" fill="#5e4535"/>')
-for (y0, amp, ph, f1, f2), fill in zip(
-    [(NAT_Y + 10, 4, 0.3, 3.2, 7.9), (NAT_Y + 20, 3.5, 1.4, 3.8, 8.3)],
-    ["#553d2f", "#4b3529"]):
-    d = wave(y0, amp, ph, f1, f2)
-    o.append(f'<path d="{d} L{W} {H} L0 {H}Z" fill="{fill}"/>')
-    o.append(f'<path d="{d}" fill="none" stroke="#7a5f4f" stroke-opacity=".55" stroke-width="1"/>')
+# rétegek: (y, magasság)
+BED = (0, 6)
+BASE = (6, 18)
+FROST = (24, 24)
+SOIL = (48, 18)
+NAT = (66, 14)
 
-svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
-       + "<defs>" + "".join(defs) + "</defs>" + "".join(o) + "</svg>")
+
+def stone(cx, cy, r, sides=(5, 7)):
+    k = R.randint(*sides)
+    a0 = R.uniform(0, math.tau)
+    pts = []
+    for i in range(k):
+        a = a0 + i * math.tau / k + R.uniform(-0.35, 0.35)
+        rr = r * R.uniform(0.7, 1.05)
+        pts.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr * R.uniform(0.75, 1.0)))
+    return "M" + "L".join(f"{n(x)} {n(y)}" for x, y in pts) + "Z"
+
+
+def aggregate(layer, cell, rmin, rmax, fills, stroke, matrix, fines):
+    y0, h = layer
+    els = [f'<rect width="{TW}" height="{H}" fill="{matrix}"/>']
+    # finom hézagkitöltés (pontok)
+    for _ in range(int(TW * h / (cell * cell) * fines)):
+        els.append(f'<circle cx="{n(R.uniform(0, TW))}" cy="{n(R.uniform(y0, y0 + h))}" r="{n(R.uniform(0.25, 0.5))}" fill="{stroke}" fill-opacity=".45"/>')
+    # szemek: jitterelt rács, a csempe szélén átlógók megduplázva (nincs varrat)
+    y = y0 + cell * 0.5
+    row = 0
+    while y < y0 + h:
+        x = (cell * 0.5) * (row % 2)
+        while x < TW:
+            cx, cy = x + R.uniform(-cell * 0.3, cell * 0.3), y + R.uniform(-cell * 0.25, cell * 0.25)
+            r = R.uniform(rmin, rmax)
+            d = stone(cx, cy, r)
+            f = R.choice(fills)
+            for off in (0, -TW, TW):
+                if 0 <= cx + off + r and cx + off - r <= TW:
+                    dd = d if off == 0 else _shift(d, off)
+                    els.append(f'<path d="{dd}" fill="{f}" stroke="{stroke}" stroke-width=".45" stroke-linejoin="round"/>')
+            x += cell
+        y += cell * 0.82
+        row += 1
+    pid = f"g{len(defs)}"
+    defs.append(f'<pattern id="{pid}" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
+    body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#{pid})"/>')
+
+
+def _shift(d, off):
+    out, num = [], ""
+    toks = d.replace("M", " M ").replace("L", " L ").replace("Z", " Z ").split()
+    i = 0
+    res = []
+    while i < len(toks):
+        t = toks[i]
+        if t in ("M", "L"):
+            x, y = float(toks[i + 1]) + off, toks[i + 2]
+            res.append(f"{t}{n(x)} {y}")
+            i += 3
+        else:
+            res.append(t)
+            i += 1
+    return "".join(res)
+
+
+# 1) ágyazat 2/4 — egyenletes finom pontozás
+y0, h = BED
+els = [f'<rect width="{TW}" height="{H}" fill="#d8c7a3"/>']
+for _ in range(int(TW * h * 0.32)):
+    els.append(f'<circle cx="{n(R.uniform(0, TW))}" cy="{n(R.uniform(y0 + .4, y0 + h - .4))}" r="{n(R.uniform(.28, .5))}" fill="{R.choice(["#a8936a", "#8f7b55", "#efe3c8"])}"/>')
+defs.append(f'<pattern id="bed" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
+body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#bed)"/>')
+
+# 2) teherhordó 0/22 — kis szögletes szemek
+aggregate(BASE, 4.6, 1.5, 2.5, ["#d9d2c8", "#cbc3b8", "#e3ddd4", "#bfb6aa"], "#7f746a", "#b7ab9c", 0.3)
+# 3) fagyvédő 0/56 — nagyobb szemek
+aggregate(FROST, 8.2, 2.8, 4.6, ["#d6c6a6", "#c9b796", "#ddd0b5", "#bca886"], "#6f5f48", "#a8977a", 0.25)
+
+# 4) tömörített altalaj — 45°-os sűrű vonalkázás
+y0, h = SOIL
+els = [f'<rect width="{TW}" height="{H}" fill="#7e6352"/>']
+step = 3.6  # a csempeszélesség (360) osztója → nincs varrat
+x = -h
+while x < TW + h:
+    els.append(f'<path d="M{n(x)} {y0 + h}L{n(x + h)} {y0}" stroke="#6a5142" stroke-width=".7"/>')
+    x += step
+defs.append(f'<pattern id="soil" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
+body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#soil)"/>')
+
+# 5) természetes talaj — halk hullám
+y0, h = NAT
+body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="#5d4536"/>')
+pts = [(x, y0 + 7 + 2.2 * math.sin(x / W * math.pi * 5.3) + 1.1 * math.sin(x / W * math.pi * 13.1 + 1.2)) for x in range(0, W + 1, 40)]
+d = f"M0 {n(pts[0][1])}" + "".join(f"L{x} {n(y)}" for x, y in pts[1:])
+body.append(f'<path d="{d}L{W} {H}L0 {H}Z" fill="#513b2e"/>')
+body.append(f'<path d="{d}" fill="none" stroke="#7e6352" stroke-opacity=".6" stroke-width=".8"/>')
+
+# réteghatárok: hajszálvonalak; a tömörített altalaj felett határozottabb egyenes
+for yy, op, sw in ((BASE[0], .35, .6), (FROST[0], .35, .6), (SOIL[0], .7, 1), (NAT[0], .45, .7)):
+    body.append(f'<path d="M0 {yy}H{W}" stroke="#2b2019" stroke-opacity="{op}" stroke-width="{sw}"/>')
+body.append(f'<path d="M0 .4H{W}" stroke="#2b2019" stroke-opacity=".55" stroke-width=".8"/>')
+
+svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" shape-rendering="geometricPrecision">'
+       f'<defs>{"".join(defs)}</defs>{"".join(body)}</svg>')
 open("public/hero/terko-retegrend.svg", "w").write(svg)
 print(len(svg))
