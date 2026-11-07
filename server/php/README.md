@@ -3,7 +3,9 @@
 A soderarak.hu statikus export (HTML/JS), ezért magától nem tud levelet
 küldeni. A rendelési igényt a tárhelyre feltöltött **`/api/rendeles.php`**
 fogadja és továbbítja az **info@soderarak.hu** címre. A címzett a kódban
-rögzített; a böngésző nem írhatja felül.
+rögzített; a böngésző nem írhatja felül. További fix címzett (pl. egy
+másolat-cím) csak szerveroldalon adható meg: `ORDER_EXTRA_RECIPIENTS` a
+webgyökér fölötti config-fájlban — a címet ne írd a repóba.
 
 ## Feltétel
 
