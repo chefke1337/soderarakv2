@@ -9,12 +9,13 @@ import { withBasePath } from "@/lib/basepath";
  * (arány 7:19:25:17:12 — össz. 80 egység).
  * Díszítő elem: aria-hidden, nincs JS/animáció; rögzített magasság
  * (32/36/40 px — ügyfél: fele akkora) → nincs layout shift. Az alja a
- * talajrétegeknél a ténysor színébe fakul (.ground::after). Szélességben „slice" (vágás, nem torzítás).
+ * talajrétegeknél a ténysor színébe fakul (.ground::after); a láblécben
+ * (fadeTo="dark") a sötét lábléc színébe (globális, minden oldalon). Szélességben „slice" (vágás, nem torzítás).
  */
 
-export default function HeroGround() {
+export default function HeroGround({ fadeTo = "sand" }: { fadeTo?: "sand" | "dark" }) {
   return (
-    <div aria-hidden="true" className="ground relative h-8 md:h-9 lg:h-10">
+    <div aria-hidden="true" className={`ground relative h-8 md:h-9 lg:h-10${fadeTo === "dark" ? " ground--dark" : ""}`}>
       {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
       <img
         src={withBasePath("/hero/terko-retegrend.svg")}

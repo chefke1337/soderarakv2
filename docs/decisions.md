@@ -667,3 +667,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
 - (21:36) Ügyfél: a hero teteje túl egyszínű/fakó → két felső sarokban narancs/borostyán sarokfény, lassú CSS-lebegés (reduced-motion: áll). Kifejezett ügyfélkérés (felülírja a „no glow blob” pontot).
 - (21:44) Ügyfél: rétegsáv fele akkora (32/36/40 px), arányok valós vastagság szerint maradnak; a talajrétegek a ténysor színébe fakulnak.
 - (21:54) Ügyfél: vastagabb földrész (altalaj 15 + talaj 16 cm; sáv 80 egység = 80 cm); a hero háttere vissza sötétre (meleg bazalt átmenet), sötét matt üveg csempék, tompított sarokfények, halk horizont-derengés a rétegsáv fölött.
+- (22:10) Ügyfél (globális): a lábléc színes csíkja helyett ugyanaz a rétegrend-sáv (a sötét láblécbe fakul); a szekció-kickerek kis ikonja (.label-strata) a 6 anyag kupac-textúrájával (scripts/build-material-textures.py → --tex-* CSS-változók).
