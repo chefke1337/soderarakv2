@@ -1,14 +1,14 @@
-"""Hero „talaj" — a térkő alatti rétegrend metszete VALÓS SZEMCSEMÉRETTEL
+"""Hero „talaj" — a térkő alatti rétegrend metszete VALÓS RÉTEGVASTAGSÁGGAL ÉS SZEMCSEMÉRETTEL
+(2026-11-07 21:24 ügyfél: térkő és a rajta lévő jelenet nélkül, csak a rétegek)
 → public/hero/terko-retegrend.svg
 
-Lépték (az ügyfél referenciaképének rétegvastagságai alapján):
-  80 egység ≈ 46 cm mélység → 1 egység ≈ 5,7 mm (lg-n 1 egység = 1 CSS px)
-Rétegek felülről (egység / valós vastagság):
-  ágyazat 2/4 közzúzalék   7  ≈ 4 cm   szem: 2–4 mm   → r 0,18–0,35
-  teherhordó 0/22 zúzottkő 19 ≈ 11 cm  szem: 0–22 mm  → r ≤ 1,9 (+ finom rész)
-  fagyvédő 0/56 zúzottkő   25 ≈ 14 cm  szem: 0–56 mm  → r ≤ 4,9 (+ finom rész)
-  tömörített altalaj       17 ≈ 10 cm  tömör, finom morzsa
-  természetes talaj        12          sötétebb, laza morzsa
+Lépték: 80 egység = 65 cm mélység → 1 egység = 8,125 mm (lg-n 1 egység = 1 CSS px).
+Rétegek felülről (jellemző vastagság a referenciakép tartományaiból):
+  ágyazat 2/4 közzúzalék    4 cm  (3–5)    szem 2–4 mm
+  teherhordó 0/22 zúzottkő 20 cm  (10–25)  szem ≤ 22 mm (≈ 2,7 px)
+  fagyvédő 0/56 zúzottkő   25 cm  (15–30)  szem ≤ 56 mm (≈ 6,9 px)
+  tömörített altalaj       10 cm           tömör, finom morzsa
+  természetes talaj         6 cm           sötétebb, laza morzsa
 Szemeloszlás: folytonos szemeloszlás közelítése (sok kicsi, kevés nagy —
 r^-2,5 hatványeloszlás), átfedés-szűréssel rakva; szögletes zúzottkő-forma,
 fény balra fent, saját kis vetett árnyék. Csempézett, varratmentes. Determinisztikus.
@@ -17,10 +17,19 @@ Futtatás: python3 scripts/build-hero-ground.py
 import math
 import random
 
-W, H, TW = 2400, 80, 300
+W, H, TW = 2400, 80, 200
+# Lépték: 80 egység = 650 mm → 1 egység = 8,125 mm (lg-n 1 egység = 1 CSS px)
+MM = 1 / 8.125
 R = random.Random(20261107)
 defs, body = [], []
-BED, BASE, FROST, SOIL, NAT = (0, 7), (7, 19), (26, 25), (51, 17), (68, 12)
+# Jellemző (közép) rétegvastagságok térkőburkolat alatt (ügyfél referenciaképe:
+# ágyazat 3–5 cm, teherhordó 10–25 cm, fagyvédő 15–30 cm):
+#   ágyazat 40 mm · teherhordó 200 mm · fagyvédő 250 mm · altalaj 100 mm · talaj 60 mm
+_t = [40, 200, 250, 100, 60]
+_y = [0]
+for v in _t:
+    _y.append(_y[-1] + v * MM)
+BED, BASE, FROST, SOIL, NAT = [(round(_y[i], 2), round(_t[i] * MM, 2)) for i in range(5)]
 
 
 def n(x):
@@ -54,7 +63,7 @@ def sample_r(rmin, rmax, k=2.5):
 
 
 def stone(cx, cy, r):
-    k = R.randint(5, 7)
+    k = 5 if r < 1 else R.randint(5, 7)
     a0 = R.uniform(0, math.tau)
     sq = R.uniform(0.6, 0.9)
     return [(cx + math.cos(a0 + i * math.tau / k + R.uniform(-.3, .3)) * r * R.uniform(.75, 1.05),
@@ -113,11 +122,11 @@ def crumbs(pid, lay, base, cols, count, rmin, rmax):
 
 
 # ágyazat 2/4: egyenletes, apró szemek (r 0,18–0,35), sűrűn
-crumbs("bed", BED, "#cdb68c", ["#e9dcc0", "#a8916a", "#f3ead7", "#b9a37c", "#8f7955"], 900, .18, .35)
+crumbs("bed", BED, "#cdb68c", ["#e9dcc0", "#a8916a", "#f3ead7", "#b9a37c", "#8f7955"], 900, 2 * MM / 2 + .05, 4 * MM / 2 + .05)  # 2–4 mm
 # teherhordó 0/22 — hűvös, világos zúzottkő
-layer("base", BASE, "#b4aa9c", 0, ["#8f8578", "#d9d3ca", "#a39a8d"], .35, 1.9, 4000, [f"c{i}" for i in range(4)], .62)
+layer("base", BASE, "#b4aa9c", 0, ["#8f8578", "#d9d3ca", "#a39a8d"], 7 * MM / 2, 22 * MM / 2, 9000, [f"c{i}" for i in range(4)], .6)  # 0/22: rajzolt szem 7–22 mm (a finomabb rész zaj-textúra)
 # fagyvédő 0/56 — meleg bézs zúzottkő, nagyobb szemek
-layer("frost", FROST, "#b9a37f", 0, ["#8c7556", "#d8c7a6", "#a28a66"], .4, 4.9, 3000, [f"w{i}" for i in range(4)], .6)
+layer("frost", FROST, "#b9a37f", 0, ["#8c7556", "#d8c7a6", "#a28a66"], 5 * MM / 2, 56 * MM / 2, 6000, [f"w{i}" for i in range(4)], .6)  # 0/56: látható szem 5–56 mm
 # tömörített altalaj — tömör, finom morzsa
 crumbs("soil", SOIL, "#7d604e", ["#6a4f3f", "#8d705c", "#5d4436", "#96796a"], 500, .14, .38)
 # természetes talaj — sötétebb, lazább, nagyobb rögök
