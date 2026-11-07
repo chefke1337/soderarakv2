@@ -1,0 +1,19 @@
+name: Térkép-alapadat (OSM, egyszeri) — nem élesít
+on:
+  push:
+    branches: ["tools/terkep-adat"]
+permissions:
+  contents: read
+jobs:
+  adat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: pip install shapely==2.0.6
+      - run: cd tools && python3 terkep_adat.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: terkep-alap
+          path: tools/terkep-alap.geojson
