@@ -18,9 +18,9 @@ export default function NavLinks() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`relative flex min-h-11 items-center px-2.5 text-[0.9375rem] font-medium transition-colors xl:px-3 ${
-                active ? "text-ink" : "text-ink-soft hover:text-ink"
-              } after:absolute after:inset-x-2.5 after:bottom-1.5 after:h-[2px] after:rounded-full after:transition-colors xl:after:inset-x-3 ${
-                active ? "after:bg-brand-dark" : "after:bg-transparent hover:after:bg-line-strong"
+                active ? "font-semibold text-ink" : "text-ink hover:text-brand-deep"
+              } after:absolute after:inset-x-2.5 after:bottom-1.5 after:h-[2px] after:transition-colors xl:after:inset-x-3 ${
+                active ? "after:bg-brand-dark" : "after:bg-transparent hover:after:bg-ink/25"
               }`}
             >
               {item.label}

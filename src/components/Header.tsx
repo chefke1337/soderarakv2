@@ -5,8 +5,10 @@ import NavLinks from "@/components/NavLinks";
 import MobileMenu from "@/components/MobileMenu";
 
 /**
- * V2 fejléc — egyetlen sáv (a korábbi fekete topbar + fejléc + gradiens vonal
- * helyett). A „SÓDER / ÁRAK" lockup változatlan színnel, szoros egységként.
+ * Fejléc — „Anyag és szerkezet": tömör mészkő-törtfehér sáv, határozott alsó
+ * vonallal (nincs áttetszőség, blur, lebegő kártya). Három zóna: logó |
+ * navigáció | kapcsolat; a kapcsolat-zónát vékony függőleges vonal választja
+ * le. A „SÓDER / ÁRAK" lockup változatlan.
  */
 export default function Header() {
   return (
@@ -17,7 +19,7 @@ export default function Header() {
       >
         Ugrás a tartalomra
       </a>
-      <header className="header-bar sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
+      <header className="header-bar sticky top-0 z-50 border-b border-ink/20 bg-limestone">
         <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6">
           <Link
             href="/"
@@ -37,15 +39,18 @@ export default function Header() {
             <NavLinks />
           </nav>
 
-          <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
-            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft 2xl:block">
+          <div
+            data-call-region="header_nav"
+            className="hidden items-center gap-4 self-stretch border-l border-ink/15 pl-5 lg:flex xl:pl-6"
+          >
+            <p className="hidden text-xs leading-tight whitespace-nowrap text-ink-soft xl:block">
               Hívható
               <br />
-              <span className="num font-medium text-ink">{company.hours.short}</span>
+              <span className="num font-semibold text-ink">{company.hours.short}</span>
             </p>
             <a
               href={`tel:${company.phone.raw}`}
-              className="num btn btn-primary min-h-11 whitespace-nowrap"
+              className="num btn btn-ink min-h-11 whitespace-nowrap"
             >
               <IconPhone size={17} />
               {company.phone.display}

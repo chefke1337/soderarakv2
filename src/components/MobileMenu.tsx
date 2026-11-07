@@ -61,7 +61,15 @@ export default function MobileMenu() {
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative">
+    // A panel a (sticky, ezért pozicionált) <header>-hez igazodik: teljes
+    // szélességű lap a fejléc alsó vonala alatt, nem lebegő kártya.
+    <div
+      ref={rootRef}
+      onBlur={(e) => {
+        // Tabbal a menüből kilépve zárjon (ne maradjon nyitva fókusz nélkül).
+        if (open && !e.currentTarget.contains(e.relatedTarget as Node | null)) setOpen(false);
+      }}
+    >
       <button
         ref={btnRef}
         type="button"
@@ -84,20 +92,19 @@ export default function MobileMenu() {
         aria-label="Mobil navigáció"
         data-call-region="header_mobile_menu"
         data-open={open}
-        className="menu-panel absolute top-full right-0 z-50 mt-3 w-[min(21rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-lg)] bg-surface shadow-pop ring-1 ring-black/10"
+        className="menu-panel absolute inset-x-0 top-full z-50 max-h-[calc(100dvh-4.25rem)] overflow-y-auto border-b border-ink/25 bg-limestone shadow-[0_18px_30px_-24px_rgb(36_33_29/0.5)]"
       >
-        <span aria-hidden="true" className="block h-1.5 bg-[linear-gradient(90deg,var(--color-mat-homok)_0_20%,var(--color-mat-soder)_20%_40%,var(--color-mat-kavics)_40%_60%,var(--color-accent)_60%_80%,var(--color-mat-fold)_80%)]" />
-        <ul className="px-4 py-1">
+        <ul className="mx-auto max-w-6xl px-4 py-1 md:px-6">
           {nav.map((item, i) => (
             <li key={item.href} style={{ "--i": i } as React.CSSProperties}>
               <a
                 href={withBasePath(`${item.href}/`)}
                 tabIndex={open ? 0 : -1}
                 onClick={() => setOpen(false)}
-                className="flex min-h-12 items-center justify-between border-b border-line/70 py-3 text-base font-medium hover:text-brand-deep"
+                className="flex min-h-12 items-center justify-between border-b border-ink/15 py-3 text-base font-medium hover:text-brand-deep"
               >
                 {item.label}
-                <span aria-hidden="true" className="text-ink-faint">›</span>
+                <span aria-hidden="true" className="text-ink-faint">→</span>
               </a>
             </li>
           ))}
