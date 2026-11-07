@@ -840,20 +840,26 @@ html:has([data-call-region="header_mobile_menu"][data-open="true"]) [data-call-r
 .hero-glow::after {
   content: "";
   position: absolute;
-  width: min(62rem, 90vw);
+  width: 30rem;
   aspect-ratio: 1;
   border-radius: 50%;
   filter: blur(8px);
 }
 .hero-glow::before {
-  left: max(-26rem, -38vw);
-  top: -24rem;
+  left: -14rem;
+  top: -15rem;
   background: radial-gradient(closest-side, rgb(249 115 22 / 0.42), rgb(249 115 22 / 0.16) 45%, rgb(249 115 22 / 0) 72%);
 }
 .hero-glow::after {
-  right: max(-28rem, -40vw);
-  top: -26rem;
+  right: -15rem;
+  top: -14rem;
   background: radial-gradient(closest-side, rgb(214 162 74 / 0.5), rgb(177 84 58 / 0.18) 48%, rgb(177 84 58 / 0) 72%);
+}
+@media (min-width: 1024px) {
+  .hero-glow::before,
+  .hero-glow::after { width: 62rem; }
+  .hero-glow::before { left: -26rem; top: -24rem; }
+  .hero-glow::after { right: -28rem; top: -26rem; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .hero-glow::before { animation: glow-drift-a 22s ease-in-out infinite alternate; }
