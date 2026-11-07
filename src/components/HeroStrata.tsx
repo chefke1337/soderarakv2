@@ -29,13 +29,13 @@ export default function HeroStrata({ className = "" }: { className?: string }) {
     // szerepelnek, ezért képernyőolvasónak nem ismételjük meg őket.
     <div aria-hidden="true" className={`hero-strata ${className}`}>
       <ol
-        className="grid h-full border-y border-ink/70"
+        className="grid h-full border-y border-ink/70 lg:absolute lg:inset-0"
         style={{ gridTemplateRows: layers.map((g) => `${LAYER[g.slug] ?? 4}fr`).join(" ") }}
       >
         {layers.map((g, i) => (
           <li
             key={g.slug}
-            className={`grid min-h-0 grid-cols-[minmax(0,1fr)_6.5rem] sm:grid-cols-[minmax(0,1fr)_8rem] ${
+            className={`grid min-h-0 grid-cols-[minmax(0,1fr)_6.5rem] xl:grid-cols-[minmax(0,1fr)_6rem] ${
               i > 0 ? "border-t border-ink/25" : ""
             }`}
           >
