@@ -69,7 +69,6 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#352820_0%,var(--color-surface-dark)_45%)]"
         />
-        <HeroGround className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-[46%] w-full md:h-[48%] lg:h-[50%]" />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
@@ -108,12 +107,16 @@ export default function HomePage() {
           </div>
 
           {/* Mintasor: hat anyaghalom teljes szélességben */}
-          <div className="mt-9 md:mt-12 lg:mt-14">
+          <div className="relative mt-12 pt-7 md:mt-14 md:pt-9 lg:mt-16">
+            {/* teljes szélességű „talaj" a kupacsor mögött, a szekció aljáig */}
+            <div aria-hidden="true" className="pointer-events-none absolute top-0 -bottom-10 left-1/2 -z-10 w-screen -translate-x-1/2 md:-bottom-12">
+              <HeroGround className="block h-full w-full" />
+            </div>
             <MaterialHeaps />
+            <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
+              {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
+            </p>
           </div>
-          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
-            {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
-          </p>
         </div>
 
         {/* Ténysor — homok sáv a hero alján.
