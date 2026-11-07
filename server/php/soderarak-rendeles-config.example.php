@@ -26,6 +26,10 @@ return [
     // 'ORDER_SMTP_USER' => '',
     // 'ORDER_SMTP_PASS' => '',
 
+    // Opcionális: további FIX címzett(ek) a rendelési igényhez, vesszővel
+    // (legfeljebb 3). Az info@soderarak.hu mindig címzett marad.
+    // 'ORDER_EXTRA_RECIPIENTS' => 'masolat@pelda.hu',
+
     // Opcionális: további engedélyezett beküldési forrás(ok), vesszővel
     // (pl. 'https://www.soderarak.hu'). A saját domain mindig engedélyezett.
     // 'ORDER_ALLOWED_ORIGINS' => '',

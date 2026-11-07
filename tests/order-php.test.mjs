@@ -247,16 +247,33 @@ section("Küldőszolgáltatás hibája");
   s4.stop();
 }
 
+/* ───────────── 7b. További fix címzett (szerveroldali konfig) ───────────── */
+section("További címzett: csak konfigból, validálva");
+{
+  const s6 = await startServer({
+    ORDER_TRANSPORT: "file",
+    ORDER_RATE_LIMIT: "100",
+    ORDER_EXTRA_RECIPIENTS: "masolat@example.com, nem-email, info@soderarak.hu,\r\nBcc: x@evil.test",
+  });
+  const r = await post(s6, base({ idempotencyKey: "extra-0000001", recipients: ["tamado@evil.test"], to: "tamado@evil.test" }));
+  eq("200 válasz", r.status, 200);
+  const m = mailsIn(s6).find((t) => t.includes("extra-0000001")) ?? "";
+  check("To: info@soderarak.hu + a konfigurált másolat", /^To: info@soderarak\.hu, masolat@example\.com\r?$/m.test(m));
+  check("érvénytelen / duplikált / injektált konfigérték kiszűrve", !/nem-email|evil\.test/.test(m.split(/\r?\n\r?\n/)[0]));
+  check("a kliens nem adhat hozzá címzettet", !m.includes("tamado@evil.test"));
+  s6.stop();
+}
+
 /* ───────────── 8. Az éles mail() út, helyi „sendmail" csonkkal ───────────── */
 section("PHP mail() — éles kódút, valódi küldés nélkül");
 {
   const sink = mkdtempSync(join(tmpdir(), "rendeles-sendmail-"));
   const out = join(sink, "uzenet.eml");
-  const s5 = await startServer({}, ["-d", `sendmail_path=sh -c 'cat > ${out}'`]);
+  const s5 = await startServer({ ORDER_EXTRA_RECIPIENTS: "masolat@example.com" }, ["-d", `sendmail_path=sh -c 'cat > ${out}'`]);
   const r = await post(s5, base({ name: "Árvíztűrő Tükörfúrógép" }));
   eq("mail() átvette → 200", r.status, 200);
   const raw = readFileSync(out, "utf8");
-  check("To: info@soderarak.hu", /^To: info@soderarak\.hu/m.test(raw));
+  check("To: info@soderarak.hu és a másolat címzett (mail())", /^To: info@soderarak\.hu, masolat@example\.com/m.test(raw));
   check("Subject UTF-8 kódolva", /^Subject: =\?UTF-8\?B\?/m.test(raw));
   check("Reply-To fejléc", /^Reply-To: teszt@example\.com/m.test(raw));
   check("UTF-8 base64 törzs", /Content-Transfer-Encoding: base64/.test(raw));

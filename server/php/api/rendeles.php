@@ -7,8 +7,8 @@
  *  - szerveroldalon validál (a kliens validációja csak kényelmi),
  *  - a központi árakból ÚJRASZÁMOL (rendeles-adatok.php, generált),
  *  - korlátozza a beküldések számát, kiszűri a dupla beküldést,
- *  - a levelet a FIX címzettnek küldi (info@soderarak.hu — a kliens nem
- *    írhatja felül), a beküldő e-mail-címe Reply-To.
+ *  - a levelet a FIX címzettnek küldi (info@soderarak.hu + a szerveroldali
+ *    ORDER_EXTRA_RECIPIENTS — a kliens nem írhatja felül), a beküldő Reply-To.
  *
  * Sikert CSAK akkor jelez, ha a levelet a küldő (PHP mail() / SMTP-szerver)
  * ténylegesen ÁTVETTE. Ez nem azonos a postafiókba érkezéssel.
@@ -77,6 +77,8 @@ function load_config(): array
         'test_dir'        => $pick('ORDER_TEST_DIR'),
         'state_dir'       => $pick('ORDER_STATE_DIR'),
         'rate_limit'      => max(1, (int) $pick('ORDER_RATE_LIMIT', RATE_LIMIT_DEFAULT)),
+        // További FIX címzett(ek), vesszővel — csak szerveroldali konfigból, a kliens nem adhat meg.
+        'extra_recipients' => (string) $pick('ORDER_EXTRA_RECIPIENTS', ''),
     ];
 }
 
@@ -427,6 +429,16 @@ $from = clean_line($cfg['from'], 254);
 $fromName = clean_line($cfg['from_name'], 80);
 if (!valid_email($from)) $from = RECIPIENT;
 
+// Címzettek: info@soderarak.hu mindig + a konfigurált további címek (max. 3, validálva).
+$recipients = [RECIPIENT];
+foreach (explode(',', $cfg['extra_recipients']) as $extra) {
+    $extra = clean_line($extra, 254);
+    if ($extra !== '' && valid_email($extra) && !in_array(strtolower($extra), array_map('strtolower', $recipients), true) && count($recipients) < 4) {
+        $recipients[] = $extra;
+    }
+}
+$toHeader = implode(', ', $recipients);
+
 $domain = substr(strrchr($from, '@') ?: '@soderarak.hu', 1);
 $headers = [
     'From' => mime_header($fromName) . " <{$from}>",
@@ -441,7 +453,7 @@ $encodedBody = chunk_split(base64_encode($text), 76, "\r\n");
 
 /* ───────────────────────────── Küldés ───────────────────────────── */
 
-function smtp_send(array $cfg, string $from, string $to, string $subject, array $headers, string $body): bool
+function smtp_send(array $cfg, string $from, array $to, string $subject, array $headers, string $body): bool
 {
     $host = (string) $cfg['smtp_host'];
     $port = (int) $cfg['smtp_port'];
@@ -477,9 +489,11 @@ function smtp_send(array $cfg, string $from, string $to, string $subject, array 
         if (!$cmd(base64_encode((string) $cfg['smtp_pass']), [235])) { fclose($fp); return false; }
     }
     if (!$cmd("MAIL FROM:<{$from}>", [250])) { fclose($fp); return false; }
-    if (!$cmd("RCPT TO:<{$to}>", [250, 251])) { fclose($fp); return false; }
+    foreach ($to as $rcpt) {
+        if (!$cmd("RCPT TO:<{$rcpt}>", [250, 251])) { fclose($fp); return false; }
+    }
     if (!$cmd('DATA', [354])) { fclose($fp); return false; }
-    $msg = "To: {$to}\r\nSubject: " . mime_header($subject) . "\r\n";
+    $msg = "To: " . implode(', ', $to) . "\r\nSubject: " . mime_header($subject) . "\r\n";
     foreach ($headers as $k => $v) $msg .= "{$k}: {$v}\r\n";
     $msg .= "\r\n" . preg_replace('/^\./m', '..', $body);
     fwrite($fp, $msg . "\r\n.\r\n");
@@ -493,12 +507,12 @@ $accepted = false;
 try {
     switch ($cfg['transport']) {
         case 'smtp':
-            $accepted = smtp_send($cfg, $from, RECIPIENT, $subject, $headers, $encodedBody);
+            $accepted = smtp_send($cfg, $from, $recipients, $subject, $headers, $encodedBody);
             break;
         case 'file': // CSAK automata teszthez: ORDER_TEST_DIR-be ír, nem küld.
             $dir = (string) $cfg['test_dir'];
             if ($dir !== '' && is_dir($dir)) {
-                $raw = "To: " . RECIPIENT . "\r\nSubject: {$subject}\r\n";
+                $raw = "To: {$toHeader}\r\nSubject: {$subject}\r\n";
                 foreach ($headers as $k => $v) $raw .= "{$k}: {$v}\r\n";
                 $accepted = file_put_contents($dir . '/' . $idem . '.eml', $raw . "\r\n" . $text) !== false;
             }
@@ -509,7 +523,7 @@ try {
         default:
             $hdr = '';
             foreach ($headers as $k => $v) $hdr .= "{$k}: {$v}\r\n";
-            $accepted = function_exists('mail') && mail(RECIPIENT, mime_header($subject), $encodedBody, rtrim($hdr), '-f' . $from);
+            $accepted = function_exists('mail') && mail($toHeader, mime_header($subject), $encodedBody, rtrim($hdr), '-f' . $from);
     }
 } catch (Throwable $e) {
     $accepted = false;
