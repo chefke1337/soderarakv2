@@ -127,7 +127,7 @@ export default function HomePage() {
           height={176}
           loading="lazy"
           decoding="async"
-          className="block h-24 w-full object-cover object-bottom md:h-28 lg:h-32"
+          className="block h-32 w-full object-cover object-bottom md:h-36 lg:h-40"
         />
 
         {/* Ténysor — homok sáv a hero alján.
