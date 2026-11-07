@@ -30,7 +30,7 @@ export default function MobileMenu() {
     let timer = 0;
     const id = requestAnimationFrame(function tryFocus() {
       const first = panelRef.current?.querySelector<HTMLElement>("a");
-      first?.focus();
+      first?.focus({ preventScroll: true }); // ne ugorjon az oldal a menü nyitásakor
       if (first && document.activeElement !== first && tries++ < 12) {
         timer = window.setTimeout(tryFocus, 25);
       }
