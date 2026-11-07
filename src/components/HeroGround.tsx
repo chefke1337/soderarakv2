@@ -14,11 +14,11 @@ import { withBasePath } from "@/lib/basepath";
  * Díszítő elem: aria-hidden, nincs JS, nincs animáció, nincs layout shift.
  */
 const LAYERS = [
-  { key: "agyazat", fr: 7, w: 110, h: 12 },
-  { key: "teherhordo", fr: 19, w: 170, h: 24 },
-  { key: "fagyvedo", fr: 25, w: 230, h: 30 },
-  { key: "altalaj", fr: 17, w: 200, h: 22 },
-  { key: "termeszetes", fr: 12, w: 260, h: 18 },
+  { key: "agyazat", fr: 7, w: 960, h: 12 },
+  { key: "teherhordo", fr: 19, w: 960, h: 24 },
+  { key: "fagyvedo", fr: 25, w: 960, h: 30 },
+  { key: "altalaj", fr: 17, w: 960, h: 22 },
+  { key: "termeszetes", fr: 12, w: 960, h: 18 },
 ] as const;
 
 export default function HeroGround() {
