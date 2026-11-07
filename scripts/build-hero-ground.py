@@ -17,7 +17,7 @@ Futtatás: python3 scripts/build-hero-ground.py
 import math
 import random
 
-W, H, TW = 2400, 80, 200
+W, H, TW = 6000, 80, 200  # széles: fél magasságon (40 px) is kitölti a 2560 px-es kijelzőt vágás nélkül
 # Lépték: 80 egység = 650 mm → 1 egység = 8,125 mm (lg-n 1 egység = 1 CSS px)
 MM = 1 / 8.125
 R = random.Random(20261107)

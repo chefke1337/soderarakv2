@@ -665,3 +665,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
 - (20:42) „Jobb elrendezés, fizika, grafika”: jelenet újrarendezve munkafront-logika szerint (megbontott raklap → homokkupac 1 m³/34° rézsű, lapáttal → teljes raklap → seprű a raklapélnek dőlve); egységes 0,8 egység/cm lépték, kontaktárnyékok jobbra (fény balról), beton- és homokszemcse-textúra, fa-erezet.
 - (21:24) Ügyfél: a térkő és minden felette lévő elem lekerült; csak a rétegek maradnak, valós vastagsággal (ágyazat 4, teherhordó 20, fagyvédő 25, altalaj 10, talaj 6 cm; 80 px = 65 cm) és frakció szerinti szemcsemérettel (0/22 ≤ 2,7 px, 0/56 ≤ 6,9 px).
 - (21:36) Ügyfél: a hero teteje túl egyszínű/fakó → két felső sarokban narancs/borostyán sarokfény, lassú CSS-lebegés (reduced-motion: áll). Kifejezett ügyfélkérés (felülírja a „no glow blob” pontot).
+- (21:44) Ügyfél: rétegsáv fele akkora (32/36/40 px), arányok valós vastagság szerint maradnak; a talajrétegek a ténysor színébe fakulnak.

@@ -8,17 +8,18 @@ import { withBasePath } from "@/lib/basepath";
  * 0/22 · fagyvédő 0/56 · tömörített altalaj · természetes talaj
  * (arány 7:19:25:17:12 — össz. 80 egység).
  * Díszítő elem: aria-hidden, nincs JS/animáció; rögzített magasság
- * (64/72/80 px) → nincs layout shift. Szélességben „slice" (vágás, nem torzítás).
+ * (32/36/40 px — ügyfél: fele akkora) → nincs layout shift. Az alja a
+ * talajrétegeknél a ténysor színébe fakul (.ground::after). Szélességben „slice" (vágás, nem torzítás).
  */
 
 export default function HeroGround() {
   return (
-    <div aria-hidden="true" className="ground h-16 md:h-[4.5rem] lg:h-20">
+    <div aria-hidden="true" className="ground relative h-8 md:h-9 lg:h-10">
       {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
       <img
         src={withBasePath("/hero/terko-retegrend.svg")}
         alt=""
-        width={2400}
+        width={6000}
         height={80}
         loading="lazy"
         decoding="async"
