@@ -845,11 +845,11 @@ html:has([data-call-region="header_mobile_menu"][data-open="true"]) [data-call-r
 .paving::before {
   content: "";
   position: absolute;
-  left: -6px;
+  left: -3px;
   bottom: 0;
-  width: 6px;
-  height: calc(100% + 5px);
-  border-radius: 2px 2px 0 0;
+  width: 3px;
+  height: calc(100% + 2.5px);
+  border-radius: 1px 1px 0 0;
   background: linear-gradient(180deg, #b4b5b7, #85868a);
   box-shadow: inset 1px 0 0 rgb(255 255 255 / 0.35);
 }

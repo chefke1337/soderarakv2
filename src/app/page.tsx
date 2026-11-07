@@ -119,8 +119,11 @@ export default function HomePage() {
         {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
             a tartalom alatt, kihagyással (lásd HeroGround). */}
         {/* Építkezés-jelenet (oldalnézet): jobbról a szélesség 65%-án lerakott
-            térkő, rajta teljes és megbontott raklap, homokkupac, odatámasztott
-            seprű — díszítő grafika (scripts/build-hero-scene.py) */}
+            térkő, rajta teljes és megbontott raklap, homokkupac lapáttal,
+            odatámasztott seprű — díszítő grafika (scripts/build-hero-scene.py).
+            A térkősor magassága = a jelenet léptékében egy 6 cm-es térkő
+            (jelenet-magasság / 124 × 4,8), így a raklapon lévő és a lerakott
+            elemek egyforma méretűek. */}
         <div aria-hidden="true">
           <div className="mx-auto flex max-w-6xl justify-end px-4 md:px-6">
             {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
@@ -128,14 +131,14 @@ export default function HomePage() {
               src={withBasePath("/hero/epitkezes.svg")}
               alt=""
               width={440}
-              height={122}
+              height={124}
               loading="lazy"
               decoding="async"
-              className="block h-16 w-auto translate-y-px md:h-20 lg:h-24"
+              className="block h-16 w-auto translate-y-px md:h-24 lg:h-[7.5rem]"
             />
           </div>
           <div
-            className="paving ml-[35%] h-[11px] md:h-[13px] lg:h-[14px]"
+            className="paving ml-[35%] h-[2.5px] md:h-[3.7px] lg:h-[4.65px]"
             style={{ backgroundImage: `url(${withBasePath("/hero/terko-sor.svg")})` }}
           />
         </div>
