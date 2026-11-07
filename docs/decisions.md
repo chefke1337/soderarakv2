@@ -637,3 +637,12 @@ Branch: `redesign/anyag-es-szerkezet` (nem élesít; előnézet: `preview/redesi
 - `MaterialHeaps` / `HeapRail` törölve (nem maradt hivatkozás).
 Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kettő nem adható
 össze közvetlenül; ezt a szöveg jelzi, de ügyféldöntés, hogy a fuvart is bruttóban mutassuk-e.
+
+### 2026-11-07 — Visszaállítás (ügyfél-utasítás)
+„A felső szegmenst tedd vissza a régire, csak a hátteret kértem módosítani."
+- Fejléc, mobilmenü, hero és az anyagsor (MaterialHeaps) a 0527c92 szerinti
+  állapotra visszaállítva; a HeroStrata/MaterialCatalog kikerült.
+- Egyetlen megtartott változás: a hero háttere egyszínű, a pöttyözött minta
+  (`.grain`) és a radiális fényfoltok nélkül.
+- Dupla/tripla hívógomb mobilon: a MobileCallBar elrejtőzik, amíg a hero
+  telefon-gombja látszik, és amíg a mobilmenü nyitva van.

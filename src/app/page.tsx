@@ -2,11 +2,13 @@ import Link from "next/link";
 import {
   budapestDistricts,
   company,
+  DISCLOSURE_FREIGHT,
+  DISCLOSURE_GROSS,
+  DISCLOSURE_PRICE,
   FAQ,
   FREIGHT_VAT_RATE,
   guides,
   HERO,
-  materialGroups,
   MIERT_HIVJON,
   MIN_ORDER_M3,
   PERMIT_NOTICE,
@@ -18,6 +20,7 @@ import {
   CalculatorCta,
   IconArrowRight,
   IconCheck,
+  IconMapPinned,
   IconPhone,
   MailLink,
   PhoneLink,
@@ -25,24 +28,23 @@ import {
 import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
-import HeroStrata from "@/components/HeroStrata";
-import MaterialCatalog from "@/components/MaterialCatalog";
+import MaterialHeaps from "@/components/MaterialHeaps";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
-  // Információs sor — minden érték az adatmodellből (site.ts).
-  const info = [
-    { term: "Szállítás", value: `Budapest ${budapestDistricts.length} kerülete és Érd` },
-    { term: "Telefonon", value: company.hours.short },
-    { term: "Egy fuvarban", value: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³` },
+  // Ténysor — minden érték az adatmodellből vagy a V1/V2 meglévő állításaiból.
+  const facts = [
+    { value: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³`, label: "egy fuvarban, saját teherautóval" },
+    { value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
+    {
+      value: `${budapestDistricts.length} kerület + Érd`,
+      label: "minden kerületbe szállítunk",
+    },
+    { value: "Bruttó árak", label: "az anyagárak az ÁFÁ-t tartalmazzák" },
   ];
-  const materialNames = materialGroups
-    .map((g, i) => (i === 0 ? g.name : g.name.toLowerCase()))
-    .join(", ")
-    .replace(/, ([^,]+)$/, " és $1");
 
   const featuredGuides = [
     "mennyi-soder-kell",
@@ -54,52 +56,83 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ─── Hero: „Anyag és szerkezet" ─── */}
-      {/* Sorrend: mit (H1 + anyagok) → hová/mikor (információs sor) → hogyan
-          (telefon elsődleges, kalkulátor másodlagos). Világos ásványi alap,
-          jobbra a valódi anyagfotókból rakott rétegszelvény.
-          data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
-      <section data-call-region="hero" className="border-b border-ink/15 bg-mineral text-ink">
-        <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-9 pb-10 md:px-6 md:pt-14 md:pb-14 lg:grid-cols-12 lg:gap-12 lg:pt-16 lg:pb-16">
-          <div className="min-w-0 lg:col-span-7 xl:col-span-8 xl:pr-6">
-            <h1 className="rise-solid max-w-[16ch] font-display text-[2.375rem] leading-[1.02] font-bold tracking-display text-balance sm:max-w-[18ch] sm:text-[3.25rem] lg:max-w-none lg:text-[3.5rem] xl:text-[4rem]">
-              {HERO.title}
-            </h1>
-            <p className="rise rise-3 mt-5 max-w-[46ch] text-lg leading-relaxed text-ink md:text-xl">
-              {materialNames} — kiszállítva, saját teherautóval.
-            </p>
-
-            <dl className="rise rise-3 mt-7 grid border-y border-ink/20 text-sm sm:grid-cols-3">
-              {info.map((f, i) => (
-                <div
-                  key={f.term}
-                  className={`py-3 sm:py-4 ${i > 0 ? "border-t border-ink/15 sm:border-t-0 sm:border-l sm:pl-4" : ""} ${i < info.length - 1 ? "sm:pr-4" : ""}`}
-                >
-                  <dt className="text-xs font-medium tracking-wide text-ink-soft uppercase">{f.term}</dt>
-                  <dd className="num mt-1 font-semibold text-ink">{f.value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <p className="rise rise-4 mt-6 max-w-[52ch] leading-relaxed text-ink-soft">{HERO.lead}</p>
-            <div className="rise rise-4 mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
-                <IconPhone size={20} className="btn-icon btn-icon-ring" />
-                {company.phone.display}
-              </PhoneLink>
-              <CalculatorCta className="btn btn-lg btn-outline whitespace-nowrap">
-                Árkalkulátor indítása
-                <IconArrowRight size={18} className="btn-icon btn-icon-move" />
-              </CalculatorCta>
+      {/* ─── Hero: üzenet + anyag-rétegrend ─── */}
+      {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
+      <section
+        data-call-region="hero"
+        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
+      >
+        {/* Háttér: egyszínű — a pöttyözött minta és a fényfoltok kikerültek (2026-11-07). */}
+        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
+            <div className="min-w-0 lg:col-span-7">
+              <p className="rise label-strata text-amber">
+                <span className="whitespace-nowrap">{company.hours.short}</span>
+              </p>
+              <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
+                {HERO.title}
+              </h1>
+            </div>
+            <div className="min-w-0 lg:col-span-5 lg:pb-2">
+              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
+                {HERO.lead}
+              </p>
+              <div className="rise rise-3 hero-areas mt-5">
+                <span className="hero-area-pill">
+                  <IconMapPinned size={13} />
+                  Budapest mind a {budapestDistricts.length} kerülete
+                </span>
+                <span className="hero-area-pill">
+                  <IconMapPinned size={13} />
+                  Érd
+                </span>
+              </div>
+              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:max-w-[24rem] lg:flex-col">
+                <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
+                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
+                  {company.phone.display}
+                </PhoneLink>
+                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
+                  Árkalkulátor indítása
+                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
+                </CalculatorCta>
+              </div>
             </div>
           </div>
 
-          <HeroStrata className="min-w-0 lg:col-span-5 xl:col-span-4" />
+          {/* Mintasor: hat anyaghalom teljes szélességben */}
+          <div className="mt-9 md:mt-12 lg:mt-14">
+            <MaterialHeaps />
+          </div>
+          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
+            {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
+          </p>
+        </div>
+
+        {/* Ténysor — homok sáv a hero alján.
+            A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
+            a <dl> > <div> > <div> > dt/dd beágyazás WCAG 1.3.1 sértés lenne. */}
+        <div className="bg-surface-muted text-text">
+          <dl className="mx-auto grid max-w-6xl grid-cols-2 px-4 md:grid-cols-4 md:px-6">
+            {facts.map((f, i) => (
+              <div
+                key={f.value}
+                className={`fact-cell py-4 pr-4 md:py-6 ${i % 2 === 1 ? "pl-4 md:pl-5" : ""} ${
+                  i >= 2 ? "border-t border-border-strong/60 md:border-t-0" : ""
+                } ${i === 2 ? "md:pl-5" : ""}`}
+              >
+                <dt className="sr-only">{f.label}</dt>
+                <dd>
+                  <span className="num block font-display text-heading-sm font-bold md:text-heading-md">
+                    {f.value}
+                  </span>
+                  <span className="mt-1 block text-sm leading-snug text-text-muted">{f.label}</span>
+                </dd>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
-
-      {/* ─── Anyagok és induló árak — katalógus ─── */}
-      <MaterialCatalog />
 
       {/* ─── Anyagok + bruttó árlista — egy blokk ─── */}
       <Section

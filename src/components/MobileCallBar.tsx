@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { company } from "@/content/site";
 
@@ -7,14 +8,38 @@ import { company } from "@/content/site";
  * Mobilon mindig látható, kizárólag hívás-gombos alsó sáv.
  * V2: forgó fényszegély nélkül — a sáv maga a figyelemfelhívás.
  * A /kapcsolat oldalon rejtve (ott a lap saját hívás-gombja áll).
+ *
+ * Ne legyen dupla hívógomb: amíg a hero saját telefon-gombja látszik a
+ * képernyőn, a sáv elrejtőzik (IntersectionObserver); nyitott mobilmenü
+ * alatt pedig CSS rejti (a menüben saját hívógomb van).
  */
 export default function MobileCallBar() {
   const pathname = usePathname() ?? "/";
+  const [heroCtaVisible, setHeroCtaVisible] = useState(false);
+
+  useEffect(() => {
+    const cta = document.querySelector('[data-call-region="hero"] a[href^="tel:"]');
+    if (!cta || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setHeroCtaVisible(e.isIntersecting), {
+      // a sáv magasságával (≈ 4.5rem) feljebb tolt alsó határ: ha a gomb a sáv
+      // alá csúszna, a sáv már megjelenik
+      rootMargin: "0px 0px -72px 0px",
+    });
+    io.observe(cta);
+    return () => {
+      io.disconnect();
+      setHeroCtaVisible(false); // útvonalváltáskor a sáv újra látszik
+    };
+  }, [pathname]);
+
   if (pathname.replace(/\/+$/, "") === "/kapcsolat") return null;
 
   return (
     <div
       data-call-region="mobile_call_bar"
+      data-hidden={heroCtaVisible}
+      aria-hidden={heroCtaVisible || undefined}
+      inert={heroCtaVisible || undefined}
       className="fixed inset-x-0 bottom-0 z-50 border-t border-line-strong bg-paper/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm sm:hidden"
     >
       <a
