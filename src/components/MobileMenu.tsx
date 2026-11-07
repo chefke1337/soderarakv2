@@ -46,7 +46,7 @@ export default function MobileMenu() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setOpen(false);
-        btnRef.current?.focus();
+        btnRef.current?.focus({ preventScroll: true });
       }
     };
     const onDown = (e: PointerEvent) => {
