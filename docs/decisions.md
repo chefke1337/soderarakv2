@@ -619,3 +619,21 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
   rate limit, idempotencia, csapda-mező, 16 KB korlát. Siker csak tényleges
   átvételkor.
 - 10 m³ feletti igény a megjegyzés elején jelölve kerül a levélbe.
+
+## 2026-11-07 — Redesign: „Anyag és szerkezet" (fejléc, hero, anyagkatalógus)
+Branch: `redesign/anyag-es-szerkezet` (nem élesít; előnézet: `preview/redesign` → `preview-out`).
+- Fejléc: tömör `--color-limestone` sáv, `border-ink/20` alsó vonal, kapcsolat-zóna
+  függőleges vonallal leválasztva, szén (`.btn-ink`) telefongomb. Áttetszőség/blur ki.
+- Véletlenszerű többszínű csík: a hero-kickerből és a mobilmenüből eltávolítva; a
+  rétegrend-motívum a valódi anyagfotókból rakott hero-szelvénybe költözött.
+- Mobilmenü: teljes szélességű lap a fejléc alatt; Tab-kilépésre is zár.
+- Hero: `--color-mineral` alap, pötty/fényfolt nélkül; H1 változatlan; információs
+  sor (`dl`) badge-ek helyett; telefon elsődleges, kalkulátor másodlagos (`btn-outline`).
+  A korábbi ténysáv megszűnt: elemei az információs sorba / ármagyarázatba kerültek.
+- Andezit: nincs ellenőrzött fotó → a hero-szelvényben nem szerepel, a katalógusban
+  jelölt szemcse-illusztráció („illusztráció").
+- Anyagkatalógus (`MaterialCatalog`): mobil lista → sm 2 hasáb → lg 3×2, hajszálvonalak,
+  körbe tett nyilak nélkül; ármagyarázat a DISCLOSURE_* konstansokból.
+- `MaterialHeaps` / `HeapRail` törölve (nem maradt hivatkozás).
+Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kettő nem adható
+össze közvetlenül; ezt a szöveg jelzi, de ügyféldöntés, hogy a fuvart is bruttóban mutassuk-e.
