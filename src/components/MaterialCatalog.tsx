@@ -37,26 +37,6 @@ export default function MaterialCatalog() {
             Anyagok és induló árak
           </h2>
         </div>
-        <div className="lg:col-span-4 lg:col-start-1 lg:row-start-2">
-          <dl className=" divide-y divide-ink/15 border-y border-ink/15 text-sm leading-relaxed">
-            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
-              <dt className="font-semibold text-ink">Anyagár</dt>
-              <dd className="text-ink-soft">{DISCLOSURE_GROSS}</dd>
-            </div>
-            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
-              <dt className="font-semibold text-ink">Szállítás</dt>
-              <dd className="text-ink-soft">{DISCLOSURE_FREIGHT}</dd>
-            </div>
-            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
-              <dt className="font-semibold text-ink">Végleges ár</dt>
-              <dd className="text-ink-soft">{DISCLOSURE_PRICE}</dd>
-            </div>
-          </dl>
-          <CalculatorCta className="link mt-4 inline-flex min-h-11 items-center text-sm text-brand-deep">
-            Anyag + szállítás együtt: árkalkulátor
-          </CalculatorCta>
-        </div>
-
         <ul className="grid content-start sm:grid-cols-2 sm:gap-x-8 lg:col-span-8 lg:col-start-5 lg:row-span-2 lg:row-start-1 lg:grid-cols-3 lg:gap-x-6">
           {materialGroups.map((g) => {
             const min = minPrice(g.items);
@@ -113,6 +93,26 @@ export default function MaterialCatalog() {
             );
           })}
         </ul>
+        <div className="lg:col-span-4 lg:col-start-1 lg:row-start-2">
+          <dl className="divide-y divide-ink/15 border-y border-ink/15 text-sm leading-relaxed">
+            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
+              <dt className="font-semibold text-ink">Anyagár</dt>
+              <dd className="text-ink-soft">{DISCLOSURE_GROSS}</dd>
+            </div>
+            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
+              <dt className="font-semibold text-ink">Szállítás</dt>
+              <dd className="text-ink-soft">{DISCLOSURE_FREIGHT}</dd>
+            </div>
+            <div className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-3 py-3">
+              <dt className="font-semibold text-ink">Végleges ár</dt>
+              <dd className="text-ink-soft">{DISCLOSURE_PRICE}</dd>
+            </div>
+          </dl>
+          <CalculatorCta className="link mt-4 inline-flex min-h-11 items-center text-sm text-brand-deep">
+            Anyag + szállítás együtt: árkalkulátor
+          </CalculatorCta>
+        </div>
+
       </div>
     </section>
   );

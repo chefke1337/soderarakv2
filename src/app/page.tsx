@@ -62,7 +62,7 @@ export default function HomePage() {
       <section data-call-region="hero" className="border-b border-ink/15 bg-mineral text-ink">
         <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-9 pb-10 md:px-6 md:pt-14 md:pb-14 lg:grid-cols-12 lg:gap-12 lg:pt-16 lg:pb-16">
           <div className="min-w-0 lg:col-span-7 xl:col-span-8 xl:pr-6">
-            <h1 className="rise-solid max-w-[16ch] font-display text-[2.375rem] leading-[1.02] font-bold tracking-display text-balance sm:max-w-[18ch] sm:text-[3.25rem] lg:text-[3.75rem] xl:text-[4.25rem]">
+            <h1 className="rise-solid max-w-[16ch] font-display text-[2.375rem] leading-[1.02] font-bold tracking-display text-balance sm:max-w-[18ch] sm:text-[3.25rem] lg:max-w-none lg:text-[3.5rem] xl:text-[4rem]">
               {HERO.title}
             </h1>
             <p className="rise rise-3 mt-5 max-w-[46ch] text-lg leading-relaxed text-ink md:text-xl">
