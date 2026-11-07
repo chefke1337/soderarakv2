@@ -69,6 +69,10 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f0e1c0_0%,#e9d5ab_55%,#e2cb9b_100%)]"
         />
+        {/* Sarokfények (ügyfél-kérés, 2026-11-07): égett narancs + borostyán
+            fény a két felső sarokban, lassú, alig érzékelhető lebegéssel
+            (CSS, reduced-motion esetén áll) — nincs JS. */}
+        <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">

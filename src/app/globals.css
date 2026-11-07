@@ -834,3 +834,36 @@ html:has([data-call-region="header_mobile_menu"][data-open="true"]) [data-call-r
   opacity: 0.32;
   pointer-events: none;
 }
+
+/* Hero sarokfények — égett narancs (bal felső) és borostyán/terrakotta (jobb felső) */
+.hero-glow::before,
+.hero-glow::after {
+  content: "";
+  position: absolute;
+  width: min(62rem, 90vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  filter: blur(8px);
+}
+.hero-glow::before {
+  left: max(-26rem, -38vw);
+  top: -24rem;
+  background: radial-gradient(closest-side, rgb(249 115 22 / 0.42), rgb(249 115 22 / 0.16) 45%, rgb(249 115 22 / 0) 72%);
+}
+.hero-glow::after {
+  right: max(-28rem, -40vw);
+  top: -26rem;
+  background: radial-gradient(closest-side, rgb(214 162 74 / 0.5), rgb(177 84 58 / 0.18) 48%, rgb(177 84 58 / 0) 72%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-glow::before { animation: glow-drift-a 22s ease-in-out infinite alternate; }
+  .hero-glow::after { animation: glow-drift-b 26s ease-in-out infinite alternate; }
+}
+@keyframes glow-drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(4rem, 2.5rem, 0) scale(1.08); }
+}
+@keyframes glow-drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1.04); }
+  to { transform: translate3d(-3.5rem, 3rem, 0) scale(0.96); }
+}
