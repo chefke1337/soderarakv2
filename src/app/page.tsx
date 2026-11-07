@@ -107,16 +107,17 @@ export default function HomePage() {
           </div>
 
           {/* Mintasor: hat anyaghalom teljes szélességben */}
-          <div className="relative mt-12 pt-7 md:mt-14 md:pt-9 lg:mt-16">
-            {/* teljes szélességű „talaj" a kupacsor mögött, a szekció aljáig */}
-            <div aria-hidden="true" className="pointer-events-none absolute top-0 -bottom-10 left-1/2 -z-10 w-screen -translate-x-1/2 md:-bottom-12">
-              <HeroGround className="block h-full w-full" />
-            </div>
+          <div className="mt-9 md:mt-12 lg:mt-14">
             <MaterialHeaps />
-            <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
-              {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
-            </p>
           </div>
+          <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
+            {DISCLOSURE_GROSS} {DISCLOSURE_FREIGHT} {DISCLOSURE_PRICE}
+          </p>
+        </div>
+
+        {/* Talaj: alacsony rétegsáv a tartalom alatt, kihagyással (nem a kártyák mögött) */}
+        <div aria-hidden="true" className="h-12 md:h-16 lg:h-[4.5rem]">
+          <HeroGround className="block h-full w-full" />
         </div>
 
         {/* Ténysor — homok sáv a hero alján.
