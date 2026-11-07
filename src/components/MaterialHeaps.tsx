@@ -22,8 +22,8 @@ import HeapRail from "@/components/HeapRail";
 export default function MaterialHeaps() {
   return (
     <div>
-      <div className="mb-3 flex items-baseline justify-between gap-4 text-sm text-ink-soft">
-        <h2 className="font-display text-base font-bold text-ink">
+      <div className="mb-3 flex items-baseline justify-between gap-4 text-sm text-on-dark-muted">
+        <h2 className="font-display text-base font-bold text-on-dark">
           Anyagok és induló árak
         </h2>
         <span className="num">bruttó Ft/m³-től</span>
@@ -62,21 +62,21 @@ export default function MaterialHeaps() {
                 />
                 {/* név + nyíl egy sorban, alatta az ár teljes szélességben */}
                 <span className="mt-1 flex items-center justify-between gap-2">
-                  <span className="min-w-0 font-display text-[1.0625rem] leading-tight font-bold text-ink lg:text-lg">
+                  <span className="min-w-0 font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">
                     {g.name}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/35 text-ink transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
                   >
                     <IconArrowRight size={15} className="heap-arrow" />
                   </span>
                 </span>
-                <span className="num mt-0.5 block text-sm leading-snug font-semibold text-ink">
+                <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
                   {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                 </span>
                 {groupWashed(g) && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-brand-deep">
+                  <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
                     <IconDroplets size={11} />
                     {groupWashed(g)!.scope === "group" ? "mosott" : "mosott frakciók"}
                   </span>
@@ -87,18 +87,18 @@ export default function MaterialHeaps() {
         })}
       </HeapRail>
 
-      <p className="num mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink-soft lg:mt-4 lg:gap-x-6">
+      <p className="num mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-on-dark-muted lg:mt-4 lg:gap-x-6">
         <span>
           Anyagár:{" "}
-          <strong className="font-semibold text-ink">bruttó, ÁFÁ-val</strong>
+          <strong className="font-semibold text-on-dark">bruttó, ÁFÁ-val</strong>
         </span>
         <span>
           Szállítási díj:{" "}
-          <strong className="font-semibold text-ink">az árkalkulátorban</strong>
+          <strong className="font-semibold text-on-dark">az árkalkulátorban</strong>
         </span>
         <span>
           Egy fuvarban:{" "}
-          <strong className="font-semibold text-ink">
+          <strong className="font-semibold text-on-dark">
             {MIN_ORDER_M3}–{SINGLE_TRIP_MAX_M3} m³
           </strong>
         </span>

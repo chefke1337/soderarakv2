@@ -2,13 +2,13 @@
 (2026-11-07 21:24 ügyfél: térkő és a rajta lévő jelenet nélkül, csak a rétegek)
 → public/hero/terko-retegrend.svg
 
-Lépték: 80 egység = 65 cm mélység → 1 egység = 8,125 mm (lg-n 1 egység = 1 CSS px).
+Lépték: 80 egység = 80 cm mélység → 1 egység = 10 mm.
 Rétegek felülről (jellemző vastagság a referenciakép tartományaiból):
   ágyazat 2/4 közzúzalék    4 cm  (3–5)    szem 2–4 mm
-  teherhordó 0/22 zúzottkő 20 cm  (10–25)  szem ≤ 22 mm (≈ 2,7 px)
-  fagyvédő 0/56 zúzottkő   25 cm  (15–30)  szem ≤ 56 mm (≈ 6,9 px)
-  tömörített altalaj       10 cm           tömör, finom morzsa
-  természetes talaj         6 cm           sötétebb, laza morzsa
+  teherhordó 0/22 zúzottkő 20 cm  (10–25)  szem ≤ 22 mm
+  fagyvédő 0/56 zúzottkő   25 cm  (15–30)  szem ≤ 56 mm
+  tömörített altalaj       15 cm           tömör, finom morzsa
+  természetes talaj        16 cm           sötétebb, laza morzsa (alja fakul)
 Szemeloszlás: folytonos szemeloszlás közelítése (sok kicsi, kevés nagy —
 r^-2,5 hatványeloszlás), átfedés-szűréssel rakva; szögletes zúzottkő-forma,
 fény balra fent, saját kis vetett árnyék. Csempézett, varratmentes. Determinisztikus.
@@ -18,14 +18,14 @@ import math
 import random
 
 W, H, TW = 6000, 80, 200  # széles: fél magasságon (40 px) is kitölti a 2560 px-es kijelzőt vágás nélkül
-# Lépték: 80 egység = 650 mm → 1 egység = 8,125 mm (lg-n 1 egység = 1 CSS px)
-MM = 1 / 8.125
+# Lépték: 80 egység = 800 mm → 1 egység = 10 mm
+MM = 1 / 10
 R = random.Random(20261107)
 defs, body = [], []
 # Jellemző (közép) rétegvastagságok térkőburkolat alatt (ügyfél referenciaképe:
 # ágyazat 3–5 cm, teherhordó 10–25 cm, fagyvédő 15–30 cm):
 #   ágyazat 40 mm · teherhordó 200 mm · fagyvédő 250 mm · altalaj 100 mm · talaj 60 mm
-_t = [40, 200, 250, 100, 60]
+_t = [40, 200, 250, 150, 160]   # ügyfél: vastagabb földrész (altalaj 15 + talaj 16 cm)
 _y = [0]
 for v in _t:
     _y.append(_y[-1] + v * MM)

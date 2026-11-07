@@ -666,3 +666,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
 - (21:24) Ügyfél: a térkő és minden felette lévő elem lekerült; csak a rétegek maradnak, valós vastagsággal (ágyazat 4, teherhordó 20, fagyvédő 25, altalaj 10, talaj 6 cm; 80 px = 65 cm) és frakció szerinti szemcsemérettel (0/22 ≤ 2,7 px, 0/56 ≤ 6,9 px).
 - (21:36) Ügyfél: a hero teteje túl egyszínű/fakó → két felső sarokban narancs/borostyán sarokfény, lassú CSS-lebegés (reduced-motion: áll). Kifejezett ügyfélkérés (felülírja a „no glow blob” pontot).
 - (21:44) Ügyfél: rétegsáv fele akkora (32/36/40 px), arányok valós vastagság szerint maradnak; a talajrétegek a ténysor színébe fakulnak.
+- (21:54) Ügyfél: vastagabb földrész (altalaj 15 + talaj 16 cm; sáv 80 egység = 80 cm); a hero háttere vissza sötétre (meleg bazalt átmenet), sötét matt üveg csempék, tompított sarokfények, halk horizont-derengés a rétegsáv fölött.
