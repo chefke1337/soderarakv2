@@ -122,19 +122,21 @@ export default function HomePage() {
             térkő, rajta teljes és megbontott raklap, homokkupac lapáttal,
             odatámasztott seprű — díszítő grafika (scripts/build-hero-scene.py).
             A térkősor magassága = a jelenet léptékében egy 6 cm-es térkő
-            (jelenet-magasság / 124 × 4,8), így a raklapon lévő és a lerakott
+            (jelenet-magasság / 100 × 4,8), így a raklapon lévő és a lerakott
             elemek egyforma méretűek. */}
         <div aria-hidden="true">
-          <div className="mx-auto flex max-w-6xl justify-end px-4 md:px-6">
+          {/* a jelenet a lerakott (jobb oldali 65%) rész fölött, jobbra igazítva;
+              keskeny kijelzőn balról vágódik, nem kicsinyedik (a lépték marad) */}
+          <div className="ml-[35%] flex justify-end overflow-hidden pr-4 md:pr-6 lg:pr-[max(1.5rem,calc((100vw-72rem)/2+1.5rem))]">
             {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
             <img
               src={withBasePath("/hero/epitkezes.svg")}
               alt=""
-              width={440}
-              height={124}
+              width={493}
+              height={100}
               loading="lazy"
               decoding="async"
-              className="block h-16 w-auto translate-y-px md:h-24 lg:h-[7.5rem]"
+              className="block h-[3.225rem] w-auto max-w-none translate-y-px md:h-[4.84rem] lg:h-[6.05rem]"
             />
           </div>
           <div
