@@ -129,9 +129,9 @@ export default function HomePage() {
             decoding="async"
             className="block h-16 w-full object-cover object-top md:h-[4.5rem] lg:h-20"
           />
-          {/* Rétegfeliratok (md+): éles HTML-szöveg, műszaki rajz-szerű
+          {/* Rétegfeliratok (lg+; tableten túl szűk a sáv): éles HTML-szöveg, műszaki rajz-szerű
               címkékkel; a függőleges helyük a rétegek közepe (SVG: 80 egység). */}
-          <div className="pointer-events-none absolute inset-0 hidden md:block">
+          <div className="pointer-events-none absolute inset-0 hidden lg:block">
             <div className="relative mx-auto h-full max-w-6xl px-6">
               <span className="strata-label strata-label--above bottom-full mb-1.5">Ágyazat 2/4</span>
               <span className="strata-label top-[20.6%] -translate-y-1/2">Teherhordó réteg 0/22</span>
