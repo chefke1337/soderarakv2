@@ -657,3 +657,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
 - (17:30) „Tudsz jobbat”: a metszet renderelt hatású lett (árnyalt, vetett árnyékos szemek, zaj-textúra, vágási mélységárnyék), md+ méreten műszaki rajz-szerű rétegfeliratokkal (HTML).
 - (17:40) „Életszerűbb, mi ez a csíkos föld”: a rajzolt SVG helyett a rétegek a katalógus valódi anyagfotóiból készült, varratmentes csempék (public/hero/talaj-*.webp, scripts/build-hero-ground.py); ágyazat=sóder, teherhordó=murva, fagyvédő=kavics, altalaj/természetes=föld fotó. Vonalkázás megszűnt.
 - (19:01) Ügyfél: „nem jó irány, maradj az absztraktnál, legyen grafika, kreatívan”: fotók ki; lapos „terrazzo + raszter” grafikus metszet (SVG), tömörített altalaj = lefelé ritkuló pontraszter (nem vonalkázás).
+- (19:08) Ügyfél: a rétegfeliratok lekerültek; a sáv tisztán grafika. Alap: soderarak.hu élő verziója (hosting/v3 e804f92 = v3 0527c92 + hosting-workflow).
