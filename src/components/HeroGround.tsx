@@ -1,44 +1,29 @@
 import { withBasePath } from "@/lib/basepath";
 
 /**
- * Hero „talaj": a térkő (viakolor) ALATTI rétegrend metszete, VALÓDI
- * anyagfotókból (a katalógus meglévő fotói, scripts/build-hero-ground.py
- * készíti belőlük a varratmentes csempéket — public/hero/talaj-*.webp).
- *
- * Felülről lefelé, az ügyfél referenciaképe szerint:
- *   ágyazat 2/4 · teherhordó réteg 0/22 · fagyvédő réteg 0/56 ·
- *   tömörített altalaj (egyenes, határozott határ) · természetes talaj
- *
- * Arányok rögzítettek (7:19:25:17:12 — össz. 80), a sáv magassága
- * 64/72/80 px; a feliratok (lg+) a rétegek közepéhez igazodnak.
- * Díszítő elem: aria-hidden, nincs JS, nincs animáció, nincs layout shift.
+ * Hero „talaj": a térkő (viakolor) ALATTI rétegrend absztrakt, grafikus
+ * metszete — lapos „terrazzo + raszter" stílus, nem fotó- vagy rajzhű.
+ * Forrás: public/hero/terko-retegrend.svg (generátor:
+ * scripts/build-hero-ground.py). Felülről lefelé: ágyazat 2/4 · teherhordó
+ * 0/22 · fagyvédő 0/56 · tömörített altalaj · természetes talaj
+ * (arány 7:19:25:17:12 — össz. 80 egység).
+ * Díszítő elem: aria-hidden, nincs JS/animáció; rögzített magasság
+ * (64/72/80 px) → nincs layout shift. Szélességben „slice" (vágás, nem torzítás).
  */
-const LAYERS = [
-  { key: "agyazat", fr: 7, w: 960, h: 12 },
-  { key: "teherhordo", fr: 19, w: 960, h: 24 },
-  { key: "fagyvedo", fr: 25, w: 960, h: 30 },
-  { key: "altalaj", fr: 17, w: 960, h: 22 },
-  { key: "termeszetes", fr: 12, w: 960, h: 18 },
-] as const;
 
 export default function HeroGround() {
   return (
     <div aria-hidden="true" className="ground relative h-16 md:h-[4.5rem] lg:h-20">
-      <div
-        className="grid h-full"
-        style={{ gridTemplateRows: LAYERS.map((l) => `${l.fr}fr`).join(" ") }}
-      >
-        {LAYERS.map((l) => (
-          <div
-            key={l.key}
-            className={`ground-layer ground-layer--${l.key}`}
-            style={{
-              backgroundImage: `url(${withBasePath(`/hero/talaj-${l.key}.webp`)})`,
-              backgroundSize: `${l.w}px ${l.h}px`,
-            }}
-          />
-        ))}
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
+      <img
+        src={withBasePath("/hero/terko-retegrend.svg")}
+        alt=""
+        width={2400}
+        height={80}
+        loading="lazy"
+        decoding="async"
+        className="block h-full w-full object-cover object-left"
+      />
       {/* Rétegfeliratok (lg+; tableten túl szűk a sáv) */}
       <div className="pointer-events-none absolute inset-0 z-[2] hidden lg:block">
         <div className="relative mx-auto h-full max-w-6xl px-6">
