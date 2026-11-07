@@ -1,131 +1,149 @@
-"""Hero „talaj": a térkő (viakolor) ALATTI rétegrend absztrakt metszete
+"""Hero „talaj": a térkő (viakolor) ALATTI rétegrend metszete
 → public/hero/terko-retegrend.svg
 
-Műszaki metszetrajz-logika, letisztítva (ügyfél referenciaképe szerint),
-felülről lefelé:
-  ágyazat (2/4)        — finom, egyenletes pontozás
-  teherhordó (0/22)    — sűrűn rakott, kis szögletes zúzottkő-szemek
-  fagyvédő (0/56)      — nagyobb szögletes szemek, finomabb hézagkitöltéssel
-  tömörített altalaj   — egyenes határ, sűrű 45°-os vonalkázás (döngölt)
-  természetes talaj    — sötétebb, egy halk hullámvonallal
-A szemek mintacsempékben (zökkenőmentes illesztéssel) → kis fájlméret.
-Determinisztikus (seed), újrafuttatható: python3 scripts/build-hero-ground.py
+Felülről lefelé (ügyfél referenciaképe szerint):
+  ágyazat 2/4 · teherhordó réteg 0/22 · fagyvédő réteg 0/56 ·
+  tömörített altalaj (egyenes határ) · természetes talaj
+Megjelenés: „renderelt" metszet — árnyalt, rakott szögletes szemek
+(fény-árnyék, vetett árnyék), finom zaj-textúra a mátrixban (feTurbulence),
+rétegenkénti függőleges tónusátmenet, a vágási él alatt mélységárnyék.
+A szemek csempézett mintában, varratmentes illesztéssel → kis fájl.
+Determinisztikus: python3 scripts/build-hero-ground.py
+A feliratok NEM itt vannak, hanem HTML-ben (page.tsx), hogy élesek maradjanak.
 """
 import math
 import random
 
 W, H = 2400, 80
-TW = 360  # mintacsempe szélessége
+TW = 360
 R = random.Random(20261107)
 defs, body = [], []
+
+BED = (0, 7)
+BASE = (7, 19)
+FROST = (26, 25)
+SOIL = (51, 17)
+NAT = (68, 12)
 
 
 def n(x):
     return f"{x:.2f}".rstrip("0").rstrip(".")
 
 
-# rétegek: (y, magasság)
-BED = (0, 6)
-BASE = (6, 18)
-FROST = (24, 24)
-SOIL = (48, 18)
-NAT = (66, 14)
+def lingrad(gid, stops, x2="0", y2="1"):
+    s = "".join(f'<stop offset="{o}" stop-color="{c}"{f" stop-opacity={chr(34)}{a}{chr(34)}" if a is not None else ""}/>' for o, c, a in stops)
+    defs.append(f'<linearGradient id="{gid}" x1="0" y1="0" x2="{x2}" y2="{y2}">{s}</linearGradient>')
 
 
-def stone(cx, cy, r, sides=(5, 7)):
-    k = R.randint(*sides)
+# kő-árnyalatok: fény balra fent, árnyék jobbra lent
+STONE_LIGHT = [("#ece7df", "#c9c1b5"), ("#e2dbd0", "#bdb3a5"), ("#d8d0c4", "#b0a596"), ("#f1ede6", "#d0c8bc")]
+STONE_WARM = [("#e8dcc2", "#bfa984"), ("#ddcfb1", "#b29b74"), ("#efe5cf", "#c9b590"), ("#d3c2a0", "#a89069")]
+for i, (a, b) in enumerate(STONE_LIGHT):
+    lingrad(f"sl{i}", [(0, a, None), (1, b, None)], "1", "1")
+for i, (a, b) in enumerate(STONE_WARM):
+    lingrad(f"sw{i}", [(0, a, None), (1, b, None)], "1", "1")
+
+# zaj-textúra (mátrix szemcsézet)
+defs.append('<filter id="grain" x="0" y="0" width="100%" height="100%">'
+            '<feTurbulence type="fractalNoise" baseFrequency="1.15" numOctaves="2" seed="7" stitchTiles="stitch"/>'
+            '<feColorMatrix values="0 0 0 0 .18  0 0 0 0 .14  0 0 0 0 .1  0 0 0 1.1 -.42"/></filter>')
+
+
+def stone_pts(cx, cy, r):
+    k = R.randint(5, 7)
     a0 = R.uniform(0, math.tau)
+    sq = R.uniform(0.62, 0.92)
     pts = []
     for i in range(k):
-        a = a0 + i * math.tau / k + R.uniform(-0.35, 0.35)
-        rr = r * R.uniform(0.7, 1.05)
-        pts.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr * R.uniform(0.75, 1.0)))
-    return "M" + "L".join(f"{n(x)} {n(y)}" for x, y in pts) + "Z"
+        a = a0 + i * math.tau / k + R.uniform(-0.3, 0.3)
+        rr = r * R.uniform(0.72, 1.04)
+        pts.append((cx + math.cos(a) * rr, cy + math.sin(a) * rr * sq))
+    return pts
 
 
-def aggregate(layer, cell, rmin, rmax, fills, stroke, matrix, fines):
+def path(pts, dx=0.0, dy=0.0):
+    return "M" + "L".join(f"{n(x + dx)} {n(y + dy)}" for x, y in pts) + "Z"
+
+
+def aggregate(pid, layer, cell, rmin, rmax, grads, matrix_top, matrix_bot, edge):
     y0, h = layer
-    els = [f'<rect width="{TW}" height="{H}" fill="{matrix}"/>']
-    # finom hézagkitöltés (pontok)
-    for _ in range(int(TW * h / (cell * cell) * fines)):
-        els.append(f'<circle cx="{n(R.uniform(0, TW))}" cy="{n(R.uniform(y0, y0 + h))}" r="{n(R.uniform(0.25, 0.5))}" fill="{stroke}" fill-opacity=".45"/>')
-    # szemek: jitterelt rács, a csempe szélén átlógók megduplázva (nincs varrat)
-    y = y0 + cell * 0.5
-    row = 0
-    while y < y0 + h:
+    lingrad(f"{pid}m", [(0, matrix_top, None), (1, matrix_bot, None)])
+    els = [f'<rect y="{y0}" width="{TW}" height="{h}" fill="url(#{pid}m)"/>',
+           f'<rect y="{y0}" width="{TW}" height="{h}" filter="url(#grain)" opacity=".55"/>']
+    stones = []
+    y, row = y0 + cell * 0.45, 0
+    while y < y0 + h + rmax * 0.4:
         x = (cell * 0.5) * (row % 2)
         while x < TW:
-            cx, cy = x + R.uniform(-cell * 0.3, cell * 0.3), y + R.uniform(-cell * 0.25, cell * 0.25)
-            r = R.uniform(rmin, rmax)
-            d = stone(cx, cy, r)
-            f = R.choice(fills)
-            for off in (0, -TW, TW):
-                if 0 <= cx + off + r and cx + off - r <= TW:
-                    dd = d if off == 0 else _shift(d, off)
-                    els.append(f'<path d="{dd}" fill="{f}" stroke="{stroke}" stroke-width=".45" stroke-linejoin="round"/>')
+            cx = x + R.uniform(-cell * 0.28, cell * 0.28)
+            cy = y + R.uniform(-cell * 0.22, cell * 0.22)
+            stones.append((cx, cy, R.uniform(rmin, rmax), R.choice(grads)))
             x += cell
-        y += cell * 0.82
+        y += cell * 0.78
         row += 1
-    pid = f"g{len(defs)}"
-    defs.append(f'<pattern id="{pid}" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
+    shadows, faces = [], []
+    for cx, cy, r, g in stones:
+        pts = stone_pts(cx, cy, r)
+        for off in (0, -TW, TW):
+            if cx + off + r < 0 or cx + off - r > TW:
+                continue
+            shadows.append(f'<path d="{path(pts, off + r * .18, r * .22)}"/>')
+            faces.append(f'<path d="{path(pts, off)}" fill="url(#{g})"/>')
+    els.append(f'<g fill="#2b2019" fill-opacity=".28">{"".join(shadows)}</g>')
+    els.append(f'<g stroke="{edge}" stroke-opacity=".55" stroke-width=".4" stroke-linejoin="round">{"".join(faces)}</g>')
+    defs.append(f'<clipPath id="{pid}c"><rect y="{y0}" width="{TW}" height="{h}"/></clipPath>')
+    defs.append(f'<pattern id="{pid}" width="{TW}" height="{H}" patternUnits="userSpaceOnUse"><g clip-path="url(#{pid}c)">{"".join(els)}</g></pattern>')
     body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#{pid})"/>')
 
 
-def _shift(d, off):
-    out, num = [], ""
-    toks = d.replace("M", " M ").replace("L", " L ").replace("Z", " Z ").split()
-    i = 0
-    res = []
-    while i < len(toks):
-        t = toks[i]
-        if t in ("M", "L"):
-            x, y = float(toks[i + 1]) + off, toks[i + 2]
-            res.append(f"{t}{n(x)} {y}")
-            i += 3
-        else:
-            res.append(t)
-            i += 1
-    return "".join(res)
-
-
-# 1) ágyazat 2/4 — egyenletes finom pontozás
+# 1) ágyazat 2/4 — finom, sűrű szemcse
 y0, h = BED
-els = [f'<rect width="{TW}" height="{H}" fill="#d8c7a3"/>']
-for _ in range(int(TW * h * 0.32)):
-    els.append(f'<circle cx="{n(R.uniform(0, TW))}" cy="{n(R.uniform(y0 + .4, y0 + h - .4))}" r="{n(R.uniform(.28, .5))}" fill="{R.choice(["#a8936a", "#8f7b55", "#efe3c8"])}"/>')
+lingrad("bedg", [(0, "#e3d4b2", None), (1, "#cdbb93", None)])
+els = [f'<rect y="{y0}" width="{TW}" height="{h}" fill="url(#bedg)"/>',
+       f'<rect y="{y0}" width="{TW}" height="{h}" filter="url(#grain)" opacity=".7"/>']
+for _ in range(int(TW * h * 0.22)):
+    c = R.choice(["#9c8760", "#b39f77", "#f3ead6"])
+    els.append(f'<circle cx="{n(R.uniform(0, TW))}" cy="{n(R.uniform(y0 + .5, y0 + h - .5))}" r="{n(R.uniform(.3, .6))}" fill="{c}"/>')
 defs.append(f'<pattern id="bed" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
 body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#bed)"/>')
 
-# 2) teherhordó 0/22 — kis szögletes szemek
-aggregate(BASE, 4.6, 1.5, 2.5, ["#d9d2c8", "#cbc3b8", "#e3ddd4", "#bfb6aa"], "#7f746a", "#b7ab9c", 0.3)
-# 3) fagyvédő 0/56 — nagyobb szemek
-aggregate(FROST, 8.2, 2.8, 4.6, ["#d6c6a6", "#c9b796", "#ddd0b5", "#bca886"], "#6f5f48", "#a8977a", 0.25)
+# 2) teherhordó 0/22 — kisebb, világos szürke zúzottkő
+aggregate("base", BASE, 4.4, 1.6, 2.6, [f"sl{i}" for i in range(4)], "#b9b0a3", "#a3988a", "#6f655b")
+# 3) fagyvédő 0/56 — nagyobb, meleg tónusú szemek
+aggregate("frost", FROST, 7.6, 2.9, 4.8, [f"sw{i}" for i in range(4)], "#a8987c", "#94826a", "#5e4f3c")
 
-# 4) tömörített altalaj — 45°-os sűrű vonalkázás
+# 4) tömörített altalaj — finom 45°-os vonalkázás + zaj
 y0, h = SOIL
-els = [f'<rect width="{TW}" height="{H}" fill="#7e6352"/>']
+lingrad("soilg", [(0, "#86695a", None), (1, "#72584a", None)])
+els = [f'<rect y="{y0}" width="{TW}" height="{h}" fill="url(#soilg)"/>',
+       f'<rect y="{y0}" width="{TW}" height="{h}" filter="url(#grain)" opacity=".6"/>']
 step = 3.6  # a csempeszélesség (360) osztója → nincs varrat
 x = -h
+hatch = []
 while x < TW + h:
-    els.append(f'<path d="M{n(x)} {y0 + h}L{n(x + h)} {y0}" stroke="#6a5142" stroke-width=".7"/>')
+    hatch.append(f"M{n(x)} {y0 + h}L{n(x + h)} {y0}")
     x += step
-defs.append(f'<pattern id="soil" width="{TW}" height="{H}" patternUnits="userSpaceOnUse">{"".join(els)}</pattern>')
+els.append(f'<path d="{"".join(hatch)}" stroke="#5a4438" stroke-opacity=".55" stroke-width=".55"/>')
+defs.append(f'<clipPath id="soilc"><rect y="{y0}" width="{TW}" height="{h}"/></clipPath>')
+defs.append(f'<pattern id="soil" width="{TW}" height="{H}" patternUnits="userSpaceOnUse"><g clip-path="url(#soilc)">{"".join(els)}</g></pattern>')
 body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#soil)"/>')
 
-# 5) természetes talaj — halk hullám
+# 5) természetes talaj — sötétülő átmenet, egy halk hullám
 y0, h = NAT
-body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="#5d4536"/>')
-pts = [(x, y0 + 7 + 2.2 * math.sin(x / W * math.pi * 5.3) + 1.1 * math.sin(x / W * math.pi * 13.1 + 1.2)) for x in range(0, W + 1, 40)]
+lingrad("natg", [(0, "#5f4739", None), (1, "#3f2f26", None)])
+body.append(f'<rect y="{y0}" width="{W}" height="{h}" fill="url(#natg)"/>')
+pts = [(x, y0 + 6 + 1.8 * math.sin(x / W * math.pi * 5.3) + .9 * math.sin(x / W * math.pi * 13.1 + 1.2)) for x in range(0, W + 1, 40)]
 d = f"M0 {n(pts[0][1])}" + "".join(f"L{x} {n(y)}" for x, y in pts[1:])
-body.append(f'<path d="{d}L{W} {H}L0 {H}Z" fill="#513b2e"/>')
-body.append(f'<path d="{d}" fill="none" stroke="#7e6352" stroke-opacity=".6" stroke-width=".8"/>')
+body.append(f'<path d="{d}" fill="none" stroke="#86695a" stroke-opacity=".45" stroke-width=".7"/>')
 
-# réteghatárok: hajszálvonalak; a tömörített altalaj felett határozottabb egyenes
-for yy, op, sw in ((BASE[0], .35, .6), (FROST[0], .35, .6), (SOIL[0], .7, 1), (NAT[0], .45, .7)):
+# mélységárnyék a vágási él alatt + réteghatárok
+lingrad("cut", [(0, "#2b2019", .32), (1, "#2b2019", 0)])
+body.append(f'<rect y="0" width="{W}" height="9" fill="url(#cut)"/>')
+for yy, op, sw in ((BASE[0], .3, .5), (FROST[0], .32, .5), (SOIL[0], .75, .9), (NAT[0], .4, .6)):
     body.append(f'<path d="M0 {yy}H{W}" stroke="#2b2019" stroke-opacity="{op}" stroke-width="{sw}"/>')
-body.append(f'<path d="M0 .4H{W}" stroke="#2b2019" stroke-opacity=".55" stroke-width=".8"/>')
+body.append(f'<path d="M0 .45H{W}" stroke="#2b2019" stroke-opacity=".6" stroke-width=".9"/>')
 
-svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" shape-rendering="geometricPrecision">'
+svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
        f'<defs>{"".join(defs)}</defs>{"".join(body)}</svg>')
 open("public/hero/terko-retegrend.svg", "w").write(svg)
 print(len(svg))
