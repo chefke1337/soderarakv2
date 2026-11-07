@@ -38,9 +38,18 @@ export const MAX_ORDER_VOLUME = SINGLE_TRIP_MAX_M3;
  * A kanonikus/OG/sitemap URL-ek a publikálási célhoz igazodnak.
  * A V3 fejlesztői előnézet nem publikus — a layout noindexet állít rá.
  * (Az üzleti domain — soderarak.hu — változatlanul a `domain` mezőben marad.)
+ *
+ * Env nélküli (bare `npm run build`, helyi fejlesztés) futásnál a `next.config.ts`
+ * `GH_PAGES_BASE_PATH` fallbackje is üres (gyökér) — ezért ennek a fallbacknek
+ * is gyökér-URL-nek kell lennie, különben a statikus export validátora minden
+ * abszolút (OG/canonical) URL-t rossz útvonalúnak lát (alrelatív vs. gyökér
+ * elérési út). A GH Pages preview buildek (`deploy-v3-pages.yml` stb.) a saját
+ * `/soderarakv3` alútjukat MINDIG a NEXT_PUBLIC_SITE_URL-lel együtt állítják be,
+ * ezért ez a fallback valójában csak bare buildnél érvényesül.
  */
+const BUSINESS_DOMAIN = "soderarak.hu";
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://chefke1337.github.io/soderarakv3"
+  process.env.NEXT_PUBLIC_SITE_URL ?? `https://${BUSINESS_DOMAIN}`
 ).replace(/\/+$/, "");
 
 /** true: ez egy nem publikus V3 előnézeti build → noindex. */
@@ -52,7 +61,7 @@ export const company = {
   businessUnit: "Sóderárak — ömlesztett építőanyag értékesítése és szállítása",
   site: {
     name: "Sóderárak",
-    domain: "soderarak.hu",
+    domain: BUSINESS_DOMAIN,
     url: SITE_URL,
   },
   phone: {
