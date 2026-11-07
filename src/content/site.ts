@@ -229,7 +229,21 @@ export const DISTRICT_MAP_CENTERS: Record<number, [number, number]> = {
  * 2026-11-01: „Budafokot egyszer jelöld, a XXII-t vedd le"). A XXII. kerületi
  * aloldal megmarad, csak külön térképjelölése nincs.
  */
-export const MAP_HIDDEN_AREA_SLUGS = ["budapest-22-kerulet"];
+// Ügyfél, 2026-11-07: „a térképen csak a budapesti kerületek és Érd legyen" →
+// a városrészek (Albertfalva, Budatétény, Nagytétény) és az egyedi
+// egyeztetéses települések (Diósd, Törökbálint, Tárnok, Sóskút, Pusztazámor)
+// NEM kapnak térképjelölést. Az aloldalaik megmaradnak (/teruletek/...).
+export const MAP_HIDDEN_AREA_SLUGS = [
+  "budapest-22-kerulet",
+  "albertfalva",
+  "budateteny",
+  "nagyteteny",
+  "diosd",
+  "torokbalint",
+  "tarnok",
+  "soskut",
+  "pusztazamor",
+];
 export const MAP_DISTRICT_REPRESENTATIVE: Record<string, number> = { budafok: 22 };
 export const mapServiceAreas = () => serviceAreas.filter((a) => !MAP_HIDDEN_AREA_SLUGS.includes(a.slug));
 
