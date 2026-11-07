@@ -881,6 +881,6 @@ html:has([data-call-region="header_mobile_menu"][data-open="true"]) [data-call-r
   position: absolute;
   inset: auto 0 0;
   height: 25%;
-  background: linear-gradient(180deg, rgb(234 217 187 / 0), var(--color-surface-muted));
+  background: linear-gradient(180deg, rgb(234 217 187 / 0) 0%, rgb(234 217 187 / 0) 30%, rgb(234 217 187 / 0.6) 70%, var(--color-surface-muted) 100%);
   pointer-events: none;
 }
