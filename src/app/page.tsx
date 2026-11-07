@@ -115,8 +115,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Talaj: térkő-rétegrend metszete a tartalom alatt, kihagyással
-            (térkő → ágyazat → teherhordó → fagyvédő → tömörített altalaj →
+        {/* Talaj: a térkő alatti rétegrend absztrakt metszete a tartalom alatt,
+            kihagyással (ágyazat → teherhordó → fagyvédő → tömörített altalaj →
             természetes talaj). Statikus SVG: scripts/build-hero-ground.py */}
         {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
         <img
@@ -124,10 +124,10 @@ export default function HomePage() {
           alt=""
           aria-hidden="true"
           width={2400}
-          height={176}
+          height={118}
           loading="lazy"
           decoding="async"
-          className="block h-32 w-full object-cover object-bottom md:h-36 lg:h-40"
+          className="block h-16 w-full object-cover object-top md:h-[4.5rem] lg:h-20"
         />
 
         {/* Ténysor — homok sáv a hero alján.

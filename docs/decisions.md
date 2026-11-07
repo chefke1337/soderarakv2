@@ -652,3 +652,4 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
   Statikus SVG: `public/hero/terko-retegrend.svg` (generátor: `scripts/build-hero-ground.py`).
   A térkő feletti hero-háttér világos mészkő→homok átmenet; a hero szövegei, a
   kupackártyák és a terület-címkék ehhez igazítva sötét szövegre.
+- (17:18) Ügyfél-irány: a térkövek kikerültek; csak a térkő alatti rétegrend absztrakt metszete marad, fele akkora magasságban (64/72/80 px).

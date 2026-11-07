@@ -1,22 +1,22 @@
-"""Hero „talaj": térkő-rétegrend metszet (statikus SVG) → public/hero/terko-retegrend.svg
+"""Hero „talaj": térkő-rétegrend metszet (statikus SVG) → public/hero/terko-retegrend.svg (térkő nélkül)
 
-Felülről lefelé (az ügyfél referenciaképe szerint): beton térkő, ágyazat,
+A térkő (viakolor) ALATTI rétegrend absztrahálva, felülről lefelé (az ügyfél
+referenciaképe szerint, a térkő maga nélkül): ágyazat,
 teherhordó réteg, fagyvédő réteg, tömörített altalaj (egyenes határ), alatta a
 természetes, hullámos talajrétegek. Determinisztikus (seed), újrafuttatható.
 """
 import math, random  # noqa: E401
-W, H = 2400, 176
+W, H = 2400, 118
 R = random.Random(20261107)
 o = []
 def f(x): return f"{x:.1f}".rstrip("0").rstrip(".")
 
 # rétegek (y, magasság)
-PAVE_Y, PAVE_H = 0, 20
-BED_Y, BED_H = 20, 8
-BASE_Y, BASE_H = 28, 30
-FROST_Y, FROST_H = 58, 38
-SOIL_Y, SOIL_H = 96, 26
-NAT_Y = 122
+BED_Y, BED_H = 0, 8
+BASE_Y, BASE_H = 8, 26
+FROST_Y, FROST_H = 34, 32
+SOIL_Y, SOIL_H = 66, 22
+NAT_Y = 88
 
 TW = 320  # mintacsempe szélessége — a szemcsék csempézve (kis fájlméret)
 defs = []
@@ -69,20 +69,11 @@ def wave(y0, amp, ph, f1, f2):
     return d + f" T{W} {f(pts[-1][1])}"
 o.append(f'<rect y="{NAT_Y}" width="{W}" height="{H-NAT_Y}" fill="#5e4535"/>')
 for (y0, amp, ph, f1, f2), fill in zip(
-    [(NAT_Y + 14, 5, 0.3, 3.2, 7.9), (NAT_Y + 30, 5, 1.4, 3.8, 8.3), (NAT_Y + 44, 4, 2.6, 4.6, 9.2)],
-    ["#553d2f", "#4b3529", "#412e24"]):
+    [(NAT_Y + 10, 4, 0.3, 3.2, 7.9), (NAT_Y + 20, 3.5, 1.4, 3.8, 8.3)],
+    ["#553d2f", "#4b3529"]):
     d = wave(y0, amp, ph, f1, f2)
     o.append(f'<path d="{d} L{W} {H} L0 {H}Z" fill="{fill}"/>')
     o.append(f'<path d="{d}" fill="none" stroke="#7a5f4f" stroke-opacity=".55" stroke-width="1"/>')
-
-# beton térkő — lekerekített sarkú kövek fugával
-x = -R.uniform(0, 40)
-while x < W:
-    w = 104
-    tone = R.choice(["#8e9093", "#94969a", "#888a8e", "#9a9c9f"])
-    o.append(f'<rect x="{f(x+2)}" y="{PAVE_Y+1}" width="{w-4}" height="{PAVE_H-1}" rx="4" fill="{tone}"/>')
-    o.append(f'<path d="M{f(x+6)} {PAVE_Y+2.2}h{w-12}" stroke="#b7b9bc" stroke-width="1.2" stroke-linecap="round"/>')
-    x += w
 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
        + "<defs>" + "".join(defs) + "</defs>" + "".join(o) + "</svg>")
