@@ -3,7 +3,7 @@ on:
   push:
     branches: ["tools/terkep-adat"]
 permissions:
-  contents: read
+  contents: write
 jobs:
   adat:
     runs-on: ubuntu-latest
@@ -15,7 +15,14 @@ jobs:
         with: { python-version: "3.12" }
       - run: pip install shapely==2.0.6
       - run: cd tools && python3 terkep_adat.py
-      - uses: actions/upload-artifact@v4
-        with:
-          name: terkep-alap
-          path: tools/terkep-alap.geojson
+      - name: Eredmény egy külön (nem élesítő) ágra
+        run: |
+          cp tools/terkep-alap.geojson /tmp/
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git checkout --orphan tools/terkep-adat-out
+          git rm -rfq .
+          cp /tmp/terkep-alap.geojson .
+          git add terkep-alap.geojson
+          git commit -qm "OSM térkép-alapadat (© OpenStreetMap közreműködők, ODbL)"
+          git push -f origin tools/terkep-adat-out
