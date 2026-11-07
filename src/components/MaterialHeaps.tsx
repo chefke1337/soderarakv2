@@ -45,6 +45,9 @@ export default function MaterialHeaps() {
                 href={`/anyagok/${g.slug}`}
                 className="heap group flex h-full flex-col rounded-[var(--radius-md)] p-2 outline-offset-2 lg:p-3"
               >
+                {/* matt üveg: a kupac elmosott, felnagyított színe „átdereng" a csempén */}
+                {/* eslint-disable-next-line @next/next/no-img-element -- díszítő háttér, ugyanaz a (gyorsítótárazott) SVG */}
+                <img aria-hidden="true" src={withBasePath(`/kupac/${g.tone}.svg`)} alt="" width={PILE_W} height={PILE_H} decoding="async" className="heap-bleed" />
                 {/* a kupac: önálló sziluett a „talajon", kontaktárnyékkal */}
                 {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre
                     generált SVG; next/image itt nem optimalizálna semmit */}
@@ -64,7 +67,7 @@ export default function MaterialHeaps() {
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/45 text-ink ring-1 ring-white/70 transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/35 text-ink transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
                   >
                     <IconArrowRight size={15} className="heap-arrow" />
                   </span>

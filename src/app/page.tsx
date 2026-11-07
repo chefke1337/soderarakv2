@@ -30,6 +30,7 @@ import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
 import HeroGround from "@/components/HeroGround";
+import { withBasePath } from "@/lib/basepath";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -69,7 +70,7 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f0e1c0_0%,#e9d5ab_55%,#e2cb9b_100%)]"
         />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
+        <div className="mx-auto max-w-6xl px-4 pt-10 pb-6 md:px-6 md:pt-16 md:pb-8 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
               <p className="rise text-sm font-semibold text-brand-deep">
@@ -117,6 +118,20 @@ export default function HomePage() {
 
         {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
             a tartalom alatt, kihagyással (lásd HeroGround). */}
+        {/* Építkezés-jelenet a rétegrend tetején (oldalnézet): markoló, raklapon
+            térkő, lerakott elemek — díszítő grafika (scripts/build-hero-scene.py) */}
+        <div aria-hidden="true" className="mx-auto flex max-w-6xl justify-end px-4 md:px-6">
+          {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
+          <img
+            src={withBasePath("/hero/epitkezes.svg")}
+            alt=""
+            width={600}
+            height={122}
+            loading="lazy"
+            decoding="async"
+            className="block h-16 w-auto translate-y-px md:h-20 lg:h-24"
+          />
+        </div>
         <HeroGround />
 
         {/* Ténysor — homok sáv a hero alján.
