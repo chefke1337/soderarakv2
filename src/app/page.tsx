@@ -63,11 +63,11 @@ export default function HomePage() {
         data-call-region="hero"
         className="relative isolate overflow-hidden text-ink"
       >
-        {/* Háttér: világos mészkő → homok átmenet (nem fényfolt, nem minta);
+        {/* Háttér: meleg bézs → homoksárga átmenet (nem fényfolt, nem minta);
             alul a térkő-rétegrend metszete zárja a herót. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f8f4ec_0%,#f1e8d9_60%,#eadcc5_100%)]"
+          className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#f0e1c0_0%,#e9d5ab_55%,#e2cb9b_100%)]"
         />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
