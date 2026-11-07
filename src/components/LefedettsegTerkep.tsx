@@ -17,6 +17,7 @@ import { districtMapPoints, mapServiceAreas, MAP_DISTRICT_REPRESENTATIVE, romanD
  * Megőrzött szabályok: nincs telephely-/depópin, nincs személyes átvétel,
  * a térkép nem fed a headerre (`isolation: isolate` a konténeren),
  * OSM-attribúció a helyén, érintőképernyőn az egyujjas húzás az oldalé.
+ * Alaptérkép: saját rajz (nincs csempe, nincs idegen településnév).
  */
 
 /** Van-e a területhez jóváhagyott, irányítószám-alapú tarifa? */
@@ -106,12 +107,36 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
           zoomSnap: 0.25,
         });
 
-        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> közreműködők',
-          maxZoom: 18,
-          detectRetina: true,
-        }).addTo(map);
+        // SAJÁT RAJZOLT ALAPTÉRKÉP (ügyfél, 2026-11-07): csempék helyett az OSM
+        // közigazgatási határaiból, a Dunából és a főutakból egyszer előállított,
+        // egyszerűsített adat (public/terkep/alap.json — scripts/terkep-adat.py).
+        // Nincs rajta egyetlen településnév sem: feliratot csak a mi kiszolgált
+        // területeink jelölései kapnak.
+        map.attributionControl.addAttribution(
+          'Alaptérkép: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> közreműködők',
+        );
+        try {
+          const res = await fetch(`${BASE}/terkep/alap.json`);
+          if (res.ok && !cancelled) {
+            const data = (await res.json()) as Parameters<typeof L.geoJSON>[0];
+            L.geoJSON(data, {
+              interactive: false,
+              style: (f) => {
+                const k = f?.properties?.k as string;
+                const served = f?.properties?.s === 1;
+                if (k === "water") return { stroke: false, fillColor: "#b7d0db", fillOpacity: 1 };
+                if (k === "road") return { color: "#d8bf96", weight: 1.3, opacity: 0.9, fill: false };
+                if (k === "district")
+                  return { color: "#d29a6a", weight: 0.8, opacity: 0.9, fillColor: "#f6dcc0", fillOpacity: 0.95 };
+                return served
+                  ? { color: "#d29a6a", weight: 0.9, opacity: 0.9, fillColor: "#f6dcc0", fillOpacity: 0.95 }
+                  : { color: "#d9cdb8", weight: 0.7, opacity: 1, fillColor: "#ece4d5", fillOpacity: 1 };
+              },
+            }).addTo(map);
+          }
+        } catch {
+          /* alaptérkép nélkül is működik: a jelölések és feliratok megjelennek */
+        }
 
         L.control.scale({ imperial: false }).addTo(map);
 
@@ -354,12 +379,10 @@ export default function LefedettsegTerkep({ height = 420 }: { height?: number })
 
   return (
     <div>
-      {/* OSM csempék előcsatlakoztatása — a térkép gyorsabban épül */}
-      <link rel="preconnect" href="https://tile.openstreetmap.org" crossOrigin="anonymous" />
       <div
         ref={containerRef}
         style={{ "--map-h": `${height}px` } as React.CSSProperties}
-        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-sand"
+        className="h-[min(var(--map-h),72vw)] w-full overflow-hidden rounded-sm border border-line-strong bg-[#e7decd]"
         role="region"
         aria-label="Áttekintő lefedettségi térkép a kiszolgált területekről. A pontos szállítási díjat az árkalkulátor számolja ki."
       />
