@@ -670,3 +670,135 @@ Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kett
 - (22:10) Ügyfél (globális): a lábléc színes csíkja helyett ugyanaz a rétegrend-sáv (a sötét láblécbe fakul); a szekció-kickerek kis ikonja (.label-strata) a 6 anyag kupac-textúrájával (scripts/build-material-textures.py → --tex-* CSS-változók).
 - (22:10) Ügyfél: a térképen ne legyen név olyan településnél, ahová nem szállítunk; választás: „saját rajzolt térkép”. Az OSM-csempék helyett saját alaptérkép: OSM közigazgatási határok (23 kerület + környező települések), Duna, autópályák/főutak — egyszer letöltve CI-ben (tools/terkep-adat ág, scripts/terkep-adat.py), egyszerűsítve → public/terkep/alap.json (~104 KB, gzip ~23 KB). Rajta nincs felirat; csak a mi jelöléseink kapnak nevet. Kiszolgált (23 kerület + Érd, Diósd, Törökbálint, Tárnok, Sóskút, Pusztazámor) meleg kitöltés, többi semleges. OSM-attribúció marad (ODbL).
 - (22:55) Ügyfél: a térképen csak a 23 kerület és Érd (Budafok a XXII. képviselője marad, 2026-11-01-i kérés szerint); városrészek és egyedi egyeztetéses települések jelölése le, az alaptérképen sem kiemeltek. Aloldalaik megmaradnak.
+
+## 2026-11-07 — Teljes audit, új session (munkaág: `v3-audit`, 917e141 → f59e363)
+
+**Kiindulás:** a `docs/v3-audit-and-fixes.md` (2026-11-01) egy korábbi, teljes
+auditot már dokumentált, de a 2026-11-02 — 2026-11-07 közötti hullámok
+(ötlépéses kalkulátor-átírás, nyilvános díjtábla eltávolítása, üzemeltető
+Kft.-ről E.V.-re váltása, PHP rendelési végpont, hero/fejléc/térkép-redesign)
+ennél újabbak — ez a session ezeket vette alapul, nem ismételte meg a
+2026-11-01-i tételeket feltétel nélkül, hanem újra lefuttatta a valódi
+kapukat és kifejezetten a kalkulátor↔tudástár összhangot kereste.
+
+**Munkaterület-eltérés (fontos, a felhasználónak jelezve a végső összegzésben
+is):** a helyi git remote `chefke1337/soderarakv2.git` — NEM `soderarakv3`,
+ahogy a feladat feltételezte a GitHub Pages URL-ből. A `v3-audit` csak
+távolról létezett (`origin/v3-audit`), a helyi `v3` ág 917e141-től eltérő,
+divergált állapotban volt (1 saját commit, amit a push-olt `v3-audit`/`v3`
+nem tartalmazott) — ezért ÚJ helyi `v3-audit` ág jött létre `origin/v3-audit`
+alapján (917e141), a meglévő helyi `v3` ág érintetlen maradt.
+
+**Élő GH Pages előnézet ≠ ez az ág:** `origin/gh-pages` (a tényleges
+https://chefke1337.github.io/soderarakv3/ tartalma) az a9afc4c commitnál áll
+— ez megelőzi a teljes 2026-11-01-i auditot ÉS az azt követő összes
+hullámot. A live preview tehát NEM reprezentálja az aktuális ág állapotát;
+a vizuális ellenőrzés ezért saját, friss helyi buildből (`npm run build` +
+`npm run shots`), nem az élő URL-ről történt.
+
+**Talált és javított hibák (mind lokális, visszafordítható, build/teszt
+igazolja):**
+
+1. **P0 — bare `npm run build` megbízhatóan elhasalt** (`9474953` + `0f7264f`).
+   A `src/content/site.ts` `SITE_URL` fallback egy GH Pages alútvonalas URL
+   volt (előbb `.../soderarakv2`, a 2d0908f cherry-pick után `.../soderarakv3`),
+   miközben a `GH_PAGES_BASE_PATH` (next.config.ts) alapértelmezése üres —
+   ez az összhanghiány a 404-oldal og:image URL-jét alútvonalasnak láttatta
+   a validátorral szemben, ami minden env nélküli buildnél elhasalt
+   (`scripts/prepare-static-export.mjs: unexpected social image URL`).
+   Javítás: a fallback gyökér-URL (`https://soderarak.hu`, a meglévő
+   `company.site.domain`), összhangban a basePath alapértelmezett üres
+   értékével. A CI-munkafolyamatok (deploy-v3-pages.yml, deploy-v2-pages.yml,
+   preview-build.yml) explicit env-ekkel futnak, ezért a fallback-öket nem
+   érinti — ellenőrizve: CI-változókkal futtatott build (GH_PAGES_BASE_PATH=
+   /soderarakv3) változatlanul OK, noindex/canonical/sitemap helyes, OG-hash
+   egyezik. **Ez a hiba korábban rejtve maradt**, mert a 2026-10-31-i
+   újraellenőrzés dokumentáltan CI-változókkal futtatta a buildet, sosem
+   mezítelenül.
+2. **P2 — `npm run cta:map` (a CLAUDE.md szerinti „valódi böngészős audit”
+   egyike) megbízhatóan elhasalt** (`f59e363`), két okból: (a) az örökölt
+   `/anyagok/bazalt/` meta-refresh oldalon a Playwright `page.evaluate`
+   végrehajtási kontextusa megszűnt navigáció közben — az a11y-export.mjs
+   és mobile-layout-audit.mjs már kezeli ezt a mintát, a cta-position-map.mjs
+   nem; most ugyanazt a szűrést kapta. (b) a kimeneti `daekon/runs/` mappa
+   (gitignore-olt) nem létezett egy friss worktree-ben, és a szkript
+   `mkdirSync` nélkül írt bele → `ENOENT` a futás legvégén. Mindkettő
+   lokális, nem viselkedésváltoztató javítás; a szkript most végigfut a
+   teljes route-halmazon (desktop+mobil) és ír jelentést.
+
+**Újrafuttatott valódi kapuk (ebben a sessionben, nem csak idézve):**
+`tsc --noEmit` OK; `next lint` 2 örökölt figyelmeztetés (nem hiba,
+`ArkalkulatorForm.tsx` useEffect-dependency, `Section.tsx` unused var —
+mindkettő már a 2026-11-01-i audit előtt is megvolt, nem új); `npm run
+test:all` (pricing 181, freight 3635, quote 440, districts 117, area-pages
+83, order 136 — mind 0 FAIL; order-php kihagyva, **ebben a környezetben
+nincs PHP-futtató**, ezt nem lehetett ellenőrizni); `npm run build` (bare ÉS
+CI-változós is) OK; `npm run test:a11y` 63/63 route PASS (axe WCAG A/AA);
+`npm run test:mobile` 63/63 route PASS (360px); `npm run test:regression`
+139 OK / 0 FAIL / **0 WARN** (a korábban dokumentált időszakos React #418
+hidratációs hiba ebben a futásban nem jelentkezett — ettől még nyitott
+tételnek számít, egy tiszta futás nem cáfolja az intermittens jelenséget);
+`npm run test:smoke` 74/74 OK (helyi mock-rendelési szerverrel indítva —
+enélkül 3 teszt FAIL-t és egy timeoutot adott, ami környezeti hiányra, NEM
+alkalmazáshibára vezethető vissza); `npm run cta:map` lefut a javítás után;
+`LH_ALL=1 DAEKON_FULL_AUDIT=1 npm run perf:lighthouse` lásd lent.
+
+**Lighthouse-mérés (laborérték, egyetlen futás, nem valós CWV) — összevetve
+a 2026-11-01-i bázissal:**
+
+| Route | Perf (most) | Perf (11-01) | CLS (most) | CLS (11-01) |
+|---|---|---|---|---|
+| / | 84 | 86 | 0,054 | 0,001 |
+| /arkalkulator/ | 91 | 96 | 0,000 | 0,115 |
+| /arak/ | 89 | 89 | 0 | 0 |
+| /teruletek/ | 92 | 93 | 0,001 | 0 |
+| /teruletek/budapest-14-kerulet/ | 93 | 93 | 0 | 0 |
+| /utmutatok/ | 93 | 94 | 0 | 0 |
+| /anyagok/soder/ | 92 | 92 | 0 | 0 |
+| /teruletek/erd/ | 94 | 93 | 0 | 0 |
+
+A/B és BP: mindenhol A11y 100, Best Practices 100, SEO csak az `is-crawlable`
+(szándékos noindex) miatt bukik (66–69) — ez a preview-döntés következménye,
+nem hiba. A főoldal 86→84 és a kalkulátor 96→91 pontszám-csökkenés időben
+egybeesik a 2026-11-02-i (ötlépéses kalkulátor-átírás) és 2026-11-07-i
+(hero/fejléc/térkép-redesign, lábléc rétegsáv, kicker-ikonok) hullámokkal;
+a kalkulátor CLS-e viszont 0,115→0,000-ra JAVULT ugyanekkor. Egyik szám sem
+esik rossz (<0,1 CLS, Lighthouse 90 fölötti sávban a legtöbb route)
+tartományba, de a főoldal 84-es értéke a dokumentált 90-es célérték alatt
+van — ez lab-mérés, nem valós felhasználói Core Web Vitals, de követésre
+érdemes a következő tartalmi/vizuális változtatásnál.
+
+**Kalkulátor↔tudástár kereszt-ellenőrzés eredménye:** a kalkulátor
+ténylegesen egy explicit 5-lépéses űrlap (`STEP_LABELS`: Anyag, Mennyiség,
+Cím, Összesítés, Adatok — `src/components/ArkalkulatorForm.tsx`). Az
+„Árkalkulátor használata lépésről lépésre” útmutató (`utmutatok/
+arkalkulator-hasznalata`) ezt „A kalkulátor három dolgot kér: az anyagot, a
+mennyiséget és a szállítási címet” mondattal vezeti be, majd — bár nem
+számozza — ténylegesen helyesen írja le a 4. (összesítés) és 5. (adatok,
+„Megrendelem” gomb) lépést is a következő bekezdésekben. **Nincs tartalmi
+tévedés**, de a nyitó mondat pontatlanul sugallja, hogy a folyamat 3 lépéses
+— ügyfélnek nem jóváhagyásra váró, de szerkesztőségi finomításra érdemes
+(P2/P3, nem javítottam önkényesen szöveget üzleti tartalmi kérdésben).
+Minden más ellenőrzött kalkulátor-vonatkozású állítás (nincs nyilvános
+díjtábla, „pontos szállítási díjért használja az árkalkulátort”, a „beküldés
+nincs konfigurálva” üzenet, bruttó anyag/nettó fuvar szétválasztása, 10 m³
+feletti egyedi ajánlat, I. kerületi Vár-egyeztetés, andezit „stilizált
+illusztráció” jelölése a hiányzó valódi fotó helyett) a kódban ténylegesen
+implementált viselkedéssel egyezik — build-kimenetből és `test:regression`/
+`test:smoke` asszerciókból igazolva, nem feltételezve.
+
+**Biztonság:** nincs titok/kulcs a forrásban vagy a build-kimenetben (minta-
+és false-positive-ellenőrzéssel); a PHP rendelési végpont SMTP-jelszava
+kizárólag env/konfig-fájlból olvasódik, a repóban csak kitöltetlen minta van
+(`server/php/soderarak-rendeles-config.example.php`, explicit „TITKOT NE
+TÁROLJ A REPÓBAN” figyelmeztetéssel).
+
+**Nyitva maradt (üzleti döntést igényel, nem javítottam egyoldalúan):**
+- A 2026-11-01-i audit BLOCKED/nyitott tételei közül: a főoldal Performance
+  90 alatt marad (most 84, cél 90); a H-1 hidratációs hiba továbbra sem
+  reprodukálva/cáfolva ebben a futásban; indexelés élesítésének jóváhagyása.
+- Az „Árkalkulátor használata lépésről lépésre” nyitó mondatának pontosítása
+  (3 dolog → 5 lépés) — tartalmi szerkesztés, nem kódhiba.
+- A PHP-végpont (`test:order-php`) ebben a környezetben nem futtatható (nincs
+  PHP) — a 2026-11-04-i implementáció nem lett újra igazolva, csak a forrás
+  átolvasva.
