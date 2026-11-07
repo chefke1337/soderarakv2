@@ -29,7 +29,7 @@ import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
-import { withBasePath } from "@/lib/basepath";
+import HeroGround from "@/components/HeroGround";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -115,31 +115,9 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Talaj: a térkő alatti rétegrend absztrakt metszete a tartalom alatt,
-            kihagyással (ágyazat → teherhordó → fagyvédő → tömörített altalaj →
-            természetes talaj). Statikus SVG: scripts/build-hero-ground.py */}
-        <div aria-hidden="true" className="relative">
-          {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
-          <img
-            src={withBasePath("/hero/terko-retegrend.svg")}
-            alt=""
-            width={2400}
-            height={80}
-            loading="lazy"
-            decoding="async"
-            className="block h-16 w-full object-cover object-top md:h-[4.5rem] lg:h-20"
-          />
-          {/* Rétegfeliratok (lg+; tableten túl szűk a sáv): éles HTML-szöveg, műszaki rajz-szerű
-              címkékkel; a függőleges helyük a rétegek közepe (SVG: 80 egység). */}
-          <div className="pointer-events-none absolute inset-0 hidden lg:block">
-            <div className="relative mx-auto h-full max-w-6xl px-6">
-              <span className="strata-label strata-label--above bottom-full mb-1.5">Ágyazat 2/4</span>
-              <span className="strata-label top-[20.6%] -translate-y-1/2">Teherhordó réteg 0/22</span>
-              <span className="strata-label top-[48%] -translate-y-1/2">Fagyvédő réteg 0/56</span>
-              <span className="strata-label top-[74%] -translate-y-1/2">Tömörített altalaj</span>
-            </div>
-          </div>
-        </div>
+        {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
+            a tartalom alatt, kihagyással (lásd HeroGround). */}
+        <HeroGround />
 
         {/* Ténysor — homok sáv a hero alján.
             A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
