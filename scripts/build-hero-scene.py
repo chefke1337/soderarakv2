@@ -1,97 +1,114 @@
-"""Hero építkezés-jelenet (oldalnézet) a rétegrend-sáv TETEJÉRE
-→ public/hero/epitkezes.svg
+"""Hero építkezés-jelenet (oldalnézet) a lerakott térkő TETEJÉRE
+→ public/hero/epitkezes.svg   (jelenet, talpvonal y = 120 = a térkő teteje)
+→ public/hero/terko-sor.svg   (lerakott térkősor oldalnézetben, csempe)
 
-Generikus, márkajelzés nélküli grafika: lánctalpas markoló (kanállal az
-ágyazatba nyúlva), raklapon rakott térkő, mellette pár lerakott térkőelem.
-Talpvonal: y = 120 (a sáv felső éle). Lapos, puha árnyalású stílus.
+Ügyfél-irány (2026-11-07 20:21): markoló nincs; a térkő jobbról a szélesség
+65%-án lerakva; rajta egy teljes és egy megbontott, majdnem elfogyott raklap
+térkő, egy kupac homok és egy odatámasztott seprű. Generikus, márkajel nélkül.
+Lépték: a térkő 20×8 cm-es elem → 35×14 egység (≈ 5,7 mm/egység, mint a rétegsáv).
 Futtatás: python3 scripts/build-hero-scene.py
 """
-W, H = 600, 122
-G = 120  # talpvonal
+import math
+import random
 
-parts = []
-add = parts.append
+R = random.Random(7)
 
-defs = """
-<linearGradient id="yb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0b43c"/><stop offset="1" stop-color="#d6921f"/></linearGradient>
-<linearGradient id="yd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d99a26"/><stop offset="1" stop-color="#b87a14"/></linearGradient>
-<linearGradient id="gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fb6bf"/><stop offset="1" stop-color="#5f7680"/></linearGradient>
-<linearGradient id="pv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3a4a6"/><stop offset="1" stop-color="#7f8083"/></linearGradient>
-<linearGradient id="pv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#999a9d"/><stop offset="1" stop-color="#76777a"/></linearGradient>
-<linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c48e55"/><stop offset="1" stop-color="#9a6a37"/></linearGradient>
-<radialGradient id="sh"><stop offset="0" stop-color="#2b2019" stop-opacity=".35"/><stop offset="1" stop-color="#2b2019" stop-opacity="0"/></radialGradient>
-"""
+# ── térkősor-csempe (oldalnézet): 1 elem + fuga ───────────────────────────
+PW, PH = 35, 14
+tile = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {PW} {PH}" width="{PW}" height="{PH}" preserveAspectRatio="none">'
+        '<defs><linearGradient id="p" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6a7a9"/><stop offset="1" stop-color="#7c7d80"/></linearGradient></defs>'
+        f'<rect width="{PW}" height="{PH}" fill="#cdb68c"/>'               # fugahomok
+        f'<rect x=".6" y=".4" width="{PW-1.2}" height="{PH-.4}" rx="1.6" fill="url(#p)"/>'
+        f'<rect x="1.6" y=".9" width="{PW-3.2}" height="1.1" rx=".5" fill="#c9cacc" opacity=".8"/>'
+        f'<rect x=".6" y="{PH-2.2}" width="{PW-1.2}" height="1.8" fill="#5f6063" opacity=".35"/>'
+        '</svg>')
+open("public/hero/terko-sor.svg", "w").write(tile)
 
-# ── talajárnyékok
-for cx, rx in ((190, 92), (385, 62), (520, 52)):
-    add(f'<ellipse cx="{cx}" cy="{G}" rx="{rx}" ry="3.2" fill="url(#sh)"/>')
+# ── jelenet ────────────────────────────────────────────────────────────────
+W, H, G = 440, 122, 120
+defs = (
+    '<linearGradient id="pv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3a4a6"/><stop offset="1" stop-color="#7f8083"/></linearGradient>'
+    '<linearGradient id="pv2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#999a9d"/><stop offset="1" stop-color="#76777a"/></linearGradient>'
+    '<linearGradient id="wd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c48e55"/><stop offset="1" stop-color="#9a6a37"/></linearGradient>'
+    '<linearGradient id="hd" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b98551"/><stop offset="1" stop-color="#8f5f2e"/></linearGradient>'
+    '<linearGradient id="sand" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ead08e"/><stop offset=".55" stop-color="#dcb767"/><stop offset="1" stop-color="#b8924a"/></linearGradient>'
+    '<radialGradient id="sh"><stop offset="0" stop-color="#2b2019" stop-opacity=".32"/><stop offset="1" stop-color="#2b2019" stop-opacity="0"/></radialGradient>'
+)
+P = []
+add = P.append
 
-# ── MARKOLÓ (balra néz, a kanál a talajban)
-ex = 110
-# lánctalp
-add(f'<rect x="{ex+40}" y="{G-18}" width="150" height="18" rx="9" fill="#2f2b28"/>')
-add(f'<rect x="{ex+44}" y="{G-15}" width="142" height="12" rx="6" fill="#45403b"/>')
-for i in range(6):
-    add(f'<circle cx="{ex+56+i*25.2}" cy="{G-9}" r="4.2" fill="#5b554f"/><circle cx="{ex+56+i*25.2}" cy="{G-9}" r="1.6" fill="#2f2b28"/>')
-# forgózsámoly
-add(f'<rect x="{ex+70}" y="{G-24}" width="96" height="7" rx="2" fill="#3a3531"/>')
-# felsőkocsi + ellensúly
-add(f'<path d="M{ex+66} {G-24} V{G-50} Q{ex+66} {G-54} {ex+70} {G-54} H{ex+190} Q{ex+198} {G-54} {ex+198} {G-44} V{G-30} Q{ex+198} {G-24} {ex+190} {G-24} Z" fill="url(#yb)"/>')
-add(f'<rect x="{ex+176}" y="{G-54}" width="22" height="30" rx="5" fill="url(#yd)"/>')
-add(f'<rect x="{ex+120}" y="{G-46}" width="44" height="3" rx="1.5" fill="#b87a14" opacity=".7"/>')
-add(f'<rect x="{ex+120}" y="{G-40}" width="44" height="3" rx="1.5" fill="#b87a14" opacity=".7"/>')
-# kipufogó
-add(f'<rect x="{ex+158}" y="{G-62}" width="3.5" height="9" rx="1" fill="#3a3531"/>')
-# fülke
-add(f'<path d="M{ex+70} {G-54} V{G-92} Q{ex+70} {G-98} {ex+76} {G-98} H{ex+104} Q{ex+112} {G-98} {ex+114} {G-90} L{ex+118} {G-54} Z" fill="url(#yb)"/>')
-add(f'<path d="M{ex+76} {G-58} V{G-90} Q{ex+76} {G-93} {ex+79} {G-93} H{ex+102} Q{ex+107} {G-93} {ex+108} {G-88} L{ex+111} {G-58} Z" fill="url(#gl)"/>')
-add(f'<path d="M{ex+80} {G-90} L{ex+92} {G-90} L{ex+84} {G-62} L{ex+80} {G-62} Z" fill="#fff" opacity=".18"/>')
-# gém (fülke elől → csukló), kar (csukló → kanál)
-bx, by = ex + 64, G - 44          # gémtő
-jx, jy = ex - 6, G - 104          # gém-kar csukló
-kx, ky = ex - 52, G - 30          # kar vége (kanálcsukló)
-add(f'<path d="M{bx} {by-6} Q{ex+30} {G-112} {jx-4} {jy-5} L{jx+6} {jy+6} Q{ex+34} {G-96} {bx+2} {by+8} Z" fill="url(#yb)"/>')
-add(f'<path d="M{jx-4} {jy-3} L{jx+5} {jy+4} L{kx+5} {ky+3} L{kx-4} {ky-2} Z" fill="url(#yd)"/>')
-# hidraulika-hengerek
-add(f'<path d="M{ex+70} {G-34} L{ex+22} {G-88}" stroke="#4a4540" stroke-width="3.2" stroke-linecap="round"/>')
-add(f'<path d="M{jx+2} {jy-6} L{kx+14} {ky-26}" stroke="#4a4540" stroke-width="2.6" stroke-linecap="round"/>')
-for x, y in ((jx+1, jy+1), (bx+1, by+1), (kx, ky)):
-    add(f'<circle cx="{x}" cy="{y}" r="3.2" fill="#3a3531"/><circle cx="{x}" cy="{y}" r="1.2" fill="#8c8580"/>')
-# kanál (a talajba nyúlva, fogakkal)
-add(f'<path d="M{kx-2} {ky-6} Q{kx+16} {ky+2} {kx+12} {ky+20} L{kx-6} {G+1} L{kx-14} {G-1} Q{kx-18} {ky+6} {kx-2} {ky-6} Z" fill="#3f3a35"/>')
-for i in range(3):
-    add(f'<path d="M{kx-13+i*3.2} {G-1} l1.4 3 l1.4 -3 Z" fill="#2f2b28"/>')
-# kanálban kiemelt anyag
-add(f'<path d="M{kx-10} {ky+3} Q{kx} {ky-3} {kx+9} {ky+6} Q{kx+2} {ky+10} {kx-8} {ky+9} Z" fill="#b9a37f"/>')
 
-# ── RAKLAP RAKOTT TÉRKŐVEL
-px, pw = 340, 92
-# raklap: fedőlapok, tuskók, talpdeszka
-add(f'<rect x="{px}" y="{G-11}" width="{pw}" height="3.5" rx=".6" fill="url(#wd)"/>')
-for bxp in (px + 2, px + pw / 2 - 6, px + pw - 14):
-    add(f'<rect x="{bxp}" y="{G-7.5}" width="12" height="5.5" fill="#8d5e31"/>')
-add(f'<rect x="{px}" y="{G-2.2}" width="{pw}" height="2.2" fill="#a47240"/>')
-# térkősorok (5 sor), fugákkal, eltolva
-rows, rh = 6, 7.2
-for r in range(rows):
-    y = G - 11 - (r + 1) * rh
-    add(f'<rect x="{px+2}" y="{y}" width="{pw-4}" height="{rh-0.6}" rx="1.2" fill="url(#{"pv" if r % 2 else "pv2"})"/>')
-    add(f'<rect x="{px+3}" y="{y+.5}" width="{pw-6}" height=".9" rx=".4" fill="#c3c4c6" opacity=".7"/>')
-    off = 0 if r % 2 else 11
-    x = px + 2 + 22 + off
-    while x < px + pw - 6:
-        add(f'<rect x="{x:.1f}" y="{y}" width=".9" height="{rh-0.6}" fill="#5f6063"/>')
-        x += 22
-# pántok
+def pallet(x, w):
+    add(f'<rect x="{x}" y="{G-11}" width="{w}" height="3.5" rx=".6" fill="url(#wd)"/>')
+    for bx in (x + 2, x + w / 2 - 6, x + w - 14):
+        add(f'<rect x="{bx:.1f}" y="{G-7.5}" width="12" height="5.5" fill="#8d5e31"/>')
+    add(f'<rect x="{x}" y="{G-2.2}" width="{w}" height="2.2" fill="#a47240"/>')
+
+
+def course(x, w, y, rh, k, joints_from=None, joints_to=None):
+    add(f'<rect x="{x}" y="{y:.1f}" width="{w}" height="{rh-.6:.1f}" rx="1.2" fill="url(#{"pv" if k % 2 else "pv2"})"/>')
+    add(f'<rect x="{x+1}" y="{y+.5:.1f}" width="{w-2}" height=".9" rx=".4" fill="#c3c4c6" opacity=".7"/>')
+    off = 0 if k % 2 else 11
+    j = x + 22 + off
+    while j < x + w - 4:
+        add(f'<rect x="{j:.1f}" y="{y:.1f}" width=".9" height="{rh-.6:.1f}" fill="#5f6063"/>')
+        j += 22
+
+
+# talajárnyékok
+for cx, rx in ((92, 62), (222, 58), (360, 72), (30, 16)):
+    add(f'<ellipse cx="{cx}" cy="{G}" rx="{rx}" ry="3" fill="url(#sh)"/>')
+
+# 1) TELJES raklap (x 44–140): 7 sor, pántolva, fóliasarok
+px, pw, rh = 44, 96, 7.2
+pallet(px, pw)
+for r in range(7):
+    course(px + 2, pw - 4, G - 11 - (r + 1) * rh, rh, r)
+top = G - 11 - 7 * rh
 for sx in (px + 18, px + pw - 20):
-    add(f'<rect x="{sx}" y="{G-11-rows*rh-0.6}" width="1.6" height="{rows*rh+1.2}" fill="#2f4a6b" opacity=".85"/>')
+    add(f'<rect x="{sx}" y="{top-.6:.1f}" width="1.6" height="{7*rh+1.2:.1f}" fill="#2f4a6b" opacity=".85"/>')
+add(f'<path d="M{px+2} {top:.1f} h{pw-4} v6 Q{px+pw/2} {top+3:.1f} {px+2} {top+6:.1f} Z" fill="#ffffff" opacity=".18"/>')  # zsugorfólia-fény
 
-# ── LERAKOTT TÉRKŐELEMEK
-for x, y, w, h in ((470, G-7, 21, 7), (493, G-7, 21, 7), (516, G-7, 21, 7), (481, G-14, 21, 7), (548, G-7, 21, 7)):
-    add(f'<rect x="{x}" y="{y}" width="{w}" height="{h-.5}" rx="1.4" fill="url(#pv)"/>')
-    add(f'<rect x="{x+1}" y="{y+.5}" width="{w-2}" height=".9" rx=".4" fill="#c3c4c6" opacity=".7"/>')
+# 2) SEPRŰ a teljes raklapnak támasztva (bal oldalán)
+hx0, hy0, hx1, hy1 = 14, G - 6, 46, top + 8
+add(f'<path d="M{hx0} {hy0} L{hx1} {hy1:.1f}" stroke="url(#hd)" stroke-width="2.4" stroke-linecap="round"/>')
+ang = math.degrees(math.atan2(hy1 - hy0, hx1 - hx0))
+add(f'<g transform="translate({hx0} {hy0}) rotate({ang + 90:.1f})">'
+    '<rect x="-12" y="-2.2" width="24" height="4" rx="1.2" fill="#3a3531"/>'      # seprűfej (fa/műanyag)
+    '<path d="M-11.5 1.8 H11.5 L12.5 8.5 H-12.5 Z" fill="#5b4a37"/>'              # sűrű sörte
+    + "".join(f'<path d="M{-11 + i*1.15:.2f} 2 V8.3" stroke="#3f3226" stroke-width=".35" opacity=".7"/>' for i in range(20))
+    + "</g>")
+
+# 3) MEGBONTOTT, majdnem elfogyott raklap (x 176–272): 1 hiányos sor + kiszedett elem
+qx, qw = 176, 96
+pallet(qx, qw)
+y1 = G - 11 - rh
+for i, bx in enumerate((qx + 2, qx + 24)):
+    add(f'<rect x="{bx}" y="{y1:.1f}" width="21.2" height="{rh-.6:.1f}" rx="1.2" fill="url(#pv)"/>')
+    add(f'<rect x="{bx+1}" y="{y1+.5:.1f}" width="19.2" height=".9" rx=".4" fill="#c3c4c6" opacity=".7"/>')
+# egy elem ferdén a sor tetején
+add(f'<g transform="translate({qx+30} {y1-3:.1f}) rotate(-9)"><rect width="21" height="6.6" rx="1.2" fill="url(#pv2)"/>'
+    '<rect x="1" y=".5" width="19" height=".9" rx=".4" fill="#c3c4c6" opacity=".7"/></g>')
+# elvágott pánt a raklap mellett
+add(f'<path d="M{qx+qw-6} {G-11} q6 -8 1 -14 q-4 -5 3 -9" fill="none" stroke="#2f4a6b" stroke-width="1.3" stroke-linecap="round" opacity=".85"/>')
+
+# 4) HOMOKKUPAC (x 300–425)
+sx0, sx1, sh = 298, 426, 34
+pts = []
+for i in range(0, 41):
+    t = i / 40
+    x = sx0 + (sx1 - sx0) * t
+    u = abs(t - 0.47) / (0.53 if t > 0.47 else 0.47)
+    y = G - sh * (1 - min(1, u) ** 1.9) ** 1.35
+    pts.append((x, y))
+d = f"M{sx0} {G}" + "".join(f"L{x:.1f} {y:.1f}" for x, y in pts) + f"L{sx1} {G}Z"
+add(f'<path d="{d}" fill="url(#sand)"/>')
+add(f'<clipPath id="sc"><path d="{d}"/></clipPath>')
+grains = "".join(f'<circle cx="{R.uniform(sx0, sx1):.1f}" cy="{R.uniform(G-sh, G):.1f}" r="{R.uniform(.25,.55):.2f}" fill="{R.choice(["#b88a3a", "#f1dca6", "#c99f4c"])}"/>' for _ in range(260))
+add(f'<g clip-path="url(#sc)">{grains}</g>')
+add(f'<path d="{d}" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="1.2" clip-path="url(#sc)"/>')
 
 svg = (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}">'
-       f'<defs>{defs}</defs>{"".join(parts)}</svg>')
-open("public/hero/epitkezes.svg", "w").write(svg.replace("\n", ""))
-print(len(svg))
+       f'<defs>{defs}</defs>{"".join(P)}</svg>')
+open("public/hero/epitkezes.svg", "w").write(svg)
+print(len(svg), len(tile))

@@ -118,18 +118,25 @@ export default function HomePage() {
 
         {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
             a tartalom alatt, kihagyással (lásd HeroGround). */}
-        {/* Építkezés-jelenet a rétegrend tetején (oldalnézet): markoló, raklapon
-            térkő, lerakott elemek — díszítő grafika (scripts/build-hero-scene.py) */}
-        <div aria-hidden="true" className="mx-auto flex max-w-6xl justify-end px-4 md:px-6">
-          {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
-          <img
-            src={withBasePath("/hero/epitkezes.svg")}
-            alt=""
-            width={600}
-            height={122}
-            loading="lazy"
-            decoding="async"
-            className="block h-16 w-auto translate-y-px md:h-20 lg:h-24"
+        {/* Építkezés-jelenet (oldalnézet): jobbról a szélesség 65%-án lerakott
+            térkő, rajta teljes és megbontott raklap, homokkupac, odatámasztott
+            seprű — díszítő grafika (scripts/build-hero-scene.py) */}
+        <div aria-hidden="true">
+          <div className="mx-auto flex max-w-6xl justify-end px-4 md:px-6">
+            {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre generált SVG */}
+            <img
+              src={withBasePath("/hero/epitkezes.svg")}
+              alt=""
+              width={440}
+              height={122}
+              loading="lazy"
+              decoding="async"
+              className="block h-16 w-auto translate-y-px md:h-20 lg:h-24"
+            />
+          </div>
+          <div
+            className="paving ml-[35%] h-[11px] md:h-[13px] lg:h-[14px]"
+            style={{ backgroundImage: `url(${withBasePath("/hero/terko-sor.svg")})` }}
           />
         </div>
         <HeroGround />
