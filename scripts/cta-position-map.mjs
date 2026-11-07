@@ -17,7 +17,7 @@
  * Futtatás: node scripts/cta-position-map.mjs   (build után)
  */
 import { createServer } from "node:http";
-import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { extname, join, relative, resolve, sep } from "node:path";
 import { chromium } from "playwright";
 
@@ -62,6 +62,15 @@ const routes = walkHtml(OUT).map((file) => {
     ? `/${rel.slice(0, -"index.html".length)}`
     : `/${rel.slice(0, -".html".length)}`;
   return { route, file };
+}).filter(({ file, route }) => {
+  // Átirányító oldalak (meta refresh — pl. az örökölt /anyagok/bazalt/) nem
+  // mérhetők: a lap azonnal elnavigál, és a futási kontextus megszűnik
+  // (ugyanaz a szűrés, mint a11y-export.mjs / mobile-layout-audit.mjs).
+  if (/<meta[^>]+http-equiv="refresh"/i.test(readFileSync(file, "utf8"))) {
+    console.log(`cta-map: ⤳ ${route} kihagyva (átirányító oldal)`);
+    return false;
+  }
+  return true;
 });
 
 const server = createServer((req, res) => {
@@ -176,7 +185,9 @@ server.close();
 
 // 404.html-t a szerver-fallback eltakarta: a routes-lista 404 bejegyzése ugyanúgy mért, jó.
 // Az artifact a gitignore-olt runs/ alá megy — NEM az out/BA, mert az deploy-csomagba kerülne.
-const outPath = join("daekon", "runs", "cta-map-latest.json");
+const outDir = join("daekon", "runs");
+mkdirSync(outDir, { recursive: true });
+const outPath = join(outDir, "cta-map-latest.json");
 writeFileSync(outPath, JSON.stringify({ measuredAt: new Date().toISOString(), map }, null, 1));
 
 // Stdout: kompakt tábla percent-sávokra kerekítve (25/50/75/90/100 a legkisebb élő sáv)
