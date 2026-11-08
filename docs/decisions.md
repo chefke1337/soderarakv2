@@ -872,3 +872,18 @@ kicsit feldobva. A `v3-lower.css` hatókörös rendszere megmaradt (ugyanazok a
 - Fejléc+hero 390/768/1440 px-en pixelre azonos, szekciómagasságok azonosak.
 Visszaállítás: ez a módosítás külön commit (a sötét változat az előző
 commit); `git revert` bármelyikre külön is működik.
+
+### 2026-11-08 12:22 — módosítás: „élénkebb, ne fakó" (az irány marad)
+
+Ügyfél: a világos sóder irány jó, de fakó — élénkebb színek, feldobva.
+Ugyanaz a `.lx` rendszer, telítettebb értékekkel:
+- tónusok: `lx-s1` #f3e2c2 · `lx-s2` #ebd2a6 (aranyos sóder) · `lx-s3` #f9eedb;
+  kártya #fffaf0; vonalak #dcc297 / #b8975f;
+- sarokfények: narancs 0,26 + minden szekcióban második, amber fény
+  (0,20; a lefedettségnél 0,36); mobilon arányosan halványabb;
+- élénk narancs részletek: rendelés-numerálok (#e8590c, a záró #f97316),
+  anyagkártya-ikon (#fed7aa), GYIK-ikonok alapból narancs tónusúak,
+  nyitva/hoverre telt narancs; az antracit panelben narancs belső fény;
+- kontraszt: törzsszöveg ≥ 10,9:1, muted ≥ 5,3:1, ink-faint a hatókörben
+  #5d5347-re sötétítve (≥ 4,5:1 a legmélyebb sóderen is), link ≥ 5:1.
+- Fejléc+hero pixelre azonos, szekciómagasságok változatlanok (3 szélesség).
