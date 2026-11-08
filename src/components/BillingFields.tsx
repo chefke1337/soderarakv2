@@ -133,7 +133,11 @@ export default function BillingFields({
                 <span className="min-w-0">
                   <span className="block font-semibold">{o.title}</span>
                   <span className="block text-xs leading-snug text-on-dark-muted">{o.desc}</span>
-                  {active && <span className="billing-choice-state">Kiválasztva</span>}
+                  {active && (
+                    <span aria-hidden="true" className="billing-choice-state">
+                      Kiválasztva
+                    </span>
+                  )}
                 </span>
               </label>
             );
@@ -206,7 +210,8 @@ export default function BillingFields({
                     A számlázási cím megegyezik a szállítási címmel — átmásolom
                   </button>
                   <p className="mt-0.5 text-xs text-on-dark-muted">
-                    Egyszeri másolás: <span className="num">{deliveryLabel}</span>. Név és adószám nem változik.
+                    Egyszeri másolás innen: <span className="num">{deliveryLabel}</span> —{" "}
+                    {type === "business" ? "a cégnév és az adószám nem változik." : "a számlázási név nem változik."}
                   </p>
                 </>
               ) : null}
