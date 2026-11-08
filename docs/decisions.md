@@ -1112,3 +1112,9 @@ keret. Felül halk narancs derengés, szintén elhalványulva.
 most az oszlop ALATT fut, a két alsó sarokban lekerekedve indul felfelé, és
 ~1,75 rem után elhalványul (korábban felül, ~3 rem szárral); felül nincs
 semmi. Halk narancs derengés alulról.
+
+### 2026-11-08 17:16 — a hívás-oszlop díszítése eltávolítva
+
+Ügyfél: „vedd le, nem kell a webre ez az elem". A hero jobb oszlopa mögötti
+panel / ív (`.hero-cta-col`) teljesen törölve; az oszlop az eredeti,
+díszítés nélküli állapotában marad.

@@ -91,29 +91,6 @@
   background: #f97316;
 }
 
-/* Új elem: a hívás-oszlop mögötti panel (csak széles nézetben) */
-@media (min-width: 1024px) {
-  .hero-cta-col {
-    position: relative;
-  }
-  /* 17:01 / 17:13 ügyfél: nem teljes keret — ív ALUL, rövid oldalszárakkal.
-     Vékony narancs alsó vonal, a két alsó sarokban lekerekedve indul FELFELÉ,
-     és ~1,5 rem után elhalványul; felül nincs keret és kitöltés. */
-  .hero-cta-col::before {
-    content: "";
-    position: absolute;
-    z-index: -1;
-    inset: -2rem -1.5rem -1.75rem -1.75rem;
-    border: 1.5px solid #f97316;
-    border-top: 0;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-    background: linear-gradient(0deg, rgb(249 115 22 / 0.07) 0%, transparent 4rem);
-    -webkit-mask-image: linear-gradient(0deg, #000 0, #000 0.625rem, transparent 1.75rem);
-    mask-image: linear-gradient(0deg, #000 0, #000 0.625rem, transparent 1.75rem);
-    pointer-events: none;
-  }
-}
-
 /* Ténysor: a hero alatti sóder tónushoz igazítva */
 .hero-x .ground::after {
   background: linear-gradient(

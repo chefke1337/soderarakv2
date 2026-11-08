@@ -84,7 +84,7 @@ export default function HomePage() {
                 {HERO.title}
               </h1>
             </div>
-            <div className="hero-cta-col min-w-0 lg:col-span-5 lg:pb-2">
+            <div className="min-w-0 lg:col-span-5 lg:pb-2">
               <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
                 {HERO.lead}
               </p>
