@@ -1105,3 +1105,10 @@ a két sarokkal lehet valami". A panel kitöltése és teljes kerete megszűnt;
 helyette vékony (1,5 px) narancs felső vonal, amely a két felső sarokban
 lekerekedve indul lefelé, és ~3 rem után elhalványul (maszk); alul nincs
 keret. Felül halk narancs derengés, szintén elhalványulva.
+
+### 2026-11-08 17:13 — a hívás-oszlop íve alulra került
+
+Ügyfél: az ív inkább alul legyen, rövidebb oldalszárakkal. A narancs vonal
+most az oszlop ALATT fut, a két alsó sarokban lekerekedve indul felfelé, és
+~1,75 rem után elhalványul (korábban felül, ~3 rem szárral); felül nincs
+semmi. Halk narancs derengés alulról.
