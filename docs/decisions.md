@@ -980,3 +980,12 @@ textúra NÉLKÜL:
   ritkított borostyán, narancs jelölővel; linkek hoverre aláhúzás; az alsó
   jogi sáv kissé mélyebb.
 - Szekciómagasságok változatlanok (főoldal 390/768/1440 px).
+
+### 2026-11-08 13:23 — ügyfél-finomítások
+
+- A ténysor narancs jelölővonalai eltávolítva.
+- „Miért mi" ↔ GYIK tónuscsere: a „Miért mi" a mélyebb, aranyos sóder
+  (`lx-s2`, #ebd2a6), a GYIK a világosabb (`lx-s1`, #f3e2c2) — a sávok
+  felváltva sötétebb/világosabb tónusúak. (`lx-s1` ezért a
+  `--color-surface-muted`-et is beállítja, mert a GYIK `tone="muted"`.)
+- A lábléc felső borostyán derengése eltávolítva.

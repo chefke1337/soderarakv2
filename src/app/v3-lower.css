@@ -59,6 +59,7 @@
 /* Tónuslépcső */
 .lx-s1 {
   --color-page: var(--lx-base);
+  --color-surface-muted: var(--lx-base);
 }
 .lx-s2 {
   --color-page: var(--lx-alt);

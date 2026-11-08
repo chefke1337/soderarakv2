@@ -8,8 +8,9 @@
      világos mészkő fejléc  →  mély grafit hero, EGYETLEN irányított meleg
      fény a jobb felső sarokból a hívás-oszlop mögé (a fókusz oda esik),
      bal oldalon nyugodt, sötét mező a címnek  →  a kupacsor alatt halk
-     narancs „padlófény"  →  sóder ténysor narancs jelölőkkel  →  …  →
-     sötét lábléc, felül egyetlen borostyán derengéssel.
+     narancs „padlófény"  →  sóder ténysor  →  …  →  sötét lábléc
+     (13:23 ügyfél: a ténysor narancs jelölői és a lábléc borostyán
+     derengése eltávolítva).
    Új elem: a hero jobb oszlopa mögött egy keret nélküli, sötét „panel"
    (csak lg+), felső narancs éllel — a hívás és a kalkulátor egy egységet
    alkot, mint a hero alatti antracit panel.
@@ -109,7 +110,7 @@
   }
 }
 
-/* Ténysor: a hero alatti sóder tónushoz igazítva, narancs jelölőkkel */
+/* Ténysor: a hero alatti sóder tónushoz igazítva */
 .hero-x .ground::after {
   background: linear-gradient(
     180deg,
@@ -124,29 +125,8 @@
   --color-border-strong: #b8975f;
   --color-text-muted: #574e42;
 }
-.facts-x .fact-cell::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  width: 1.5rem;
-  height: 3px;
-  border-radius: 0 0 2px 2px;
-  background: #ea580c;
-}
 
 /* ───────────────────────────── Lábléc ───────────────────────────── */
-.ftr {
-  position: relative;
-  isolation: isolate;
-}
-.ftr::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(60% 45% at 50% 0%, rgb(214 162 74 / 0.1), transparent 70%);
-}
 .ftr h2 {
   color: #e3a640;
   font-weight: 700;
