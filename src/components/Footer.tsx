@@ -7,7 +7,7 @@ const FOOTER_GUIDES = 6;
 
 export default function Footer() {
   return (
-    <footer data-call-region="footer" className="on-dark bg-surface-dark text-on-dark">
+    <footer data-call-region="footer" className="ftr on-dark bg-surface-dark text-on-dark">
       {/* Rétegrend: ugyanaz a térkő alatti rétegmetszet, mint a hero alján
           (ügyfél, 2026-11-07) — a talaj a sötét láblécbe fakul */}
       <HeroGround fadeTo="dark" />

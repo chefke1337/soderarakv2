@@ -1,0 +1,158 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SÓDERÁRAK V3 — „keret" csiszolás: fejléc, főoldali hero, lábléc
+   (ügyfél, 2026-11-08 12:45: „csiszoljuk a footert és a felső részt picit;
+   az elrendezés, a kártyák, a nagyságrendi színek maradjanak, legyen a
+   háttér és a design jobb").
+
+   Elv: SEMMI elrendezés-, méret- vagy tartalomváltozás. Csak felület:
+   finom sóderszem-szemcsézet (ugyanaz a zaj, mint a hero alatti részen),
+   halvány mérnöki rács, rövid narancs jelölővonalak, kifinomultabb
+   hover/fókusz. A dekoráció abszolút pozíciós vagy háttérréteg, így a
+   dobozméretek (és minden szekció magassága) bájtra azonosak maradnak.
+   Osztályok: .hdr (fejléc, minden oldal), .hero-x (főoldali hero),
+   .ftr (lábléc, minden oldal). Globális tokent nem módosít.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* közös zajminta (világos alapra sötét szemek / sötét alapra világos szemek) */
+:root {
+  --noise-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .18 0 0 0 1.6 -1.0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --noise-light: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 .93 0 0 0 0 .82 0 0 0 1.3 -0.88'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ───────────────────────────── Fejléc ───────────────────────────── */
+.hdr {
+  background-color: rgb(249 238 219 / 0.94);
+  background-image: var(--noise-dark);
+  background-size: 220px 220px;
+  border-bottom-color: #dcc297;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.65),
+    0 10px 28px -24px rgb(70 45 20 / 0.55);
+}
+/* navigáció: hoverre narancs aláhúzás-jelzés (az aktív marad égett narancs) */
+.hdr nav a:not([aria-current="page"]):hover::after {
+  background-color: rgb(234 88 12 / 0.45);
+}
+.hdr nav a[aria-current="page"]::after {
+  background-color: #ea580c;
+}
+
+/* ───────────────────────────── Hero (főoldal) ───────────────────────────── */
+/* textúraréteg: világos szemcsézet + a címsor mögött halványuló mérnöki rács
+   + finom szélső vignetta (a felső sarokfények érintetlenek) */
+.hero-tex {
+  background:
+    radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(10 6 4 / 0.32) 100%),
+    var(--noise-light) 0 0 / 220px 220px;
+  opacity: 1;
+}
+.hero-tex::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(255 236 210 / 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 236 210 / 0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+  background-position: center top;
+  -webkit-mask-image: radial-gradient(60% 55% at 25% 30%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(60% 55% at 25% 30%, #000 0%, transparent 100%);
+}
+@media (max-width: 767.98px) {
+  .hero-tex::after {
+    background-size: 40px 40px;
+    -webkit-mask-image: radial-gradient(90% 45% at 30% 22%, #000 0%, transparent 100%);
+    mask-image: radial-gradient(90% 45% at 30% 22%, #000 0%, transparent 100%);
+  }
+}
+/* rövid narancs jelölővonal a „Hívható" sor elé (inline, nem változtat magasságot) */
+.hero-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 2px;
+  margin-right: 0.625rem;
+  vertical-align: 0.3em;
+  border-radius: 2px;
+  background: #f97316;
+}
+
+/* Ténysor: a hero alatti sóder tónuslépcsőhöz igazítva, szemcsézettel;
+   a talajsáv ugyanebbe a tónusba fakul */
+.hero-x .ground::after {
+  background: linear-gradient(
+    180deg,
+    rgb(235 210 166 / 0) 0%,
+    rgb(235 210 166 / 0) 30%,
+    rgb(235 210 166 / 0.6) 70%,
+    #ebd2a6 100%
+  );
+}
+.facts-x {
+  background-color: #ebd2a6;
+  background-image: var(--noise-dark);
+  background-size: 220px 220px;
+  --color-border-strong: #b8975f;
+  --color-text-muted: #574e42;
+}
+/* minden tény fölött rövid narancs jelölővonal (abszolút, statikus vízszintes
+   pozícióval — a cella paddingjéhez igazodik; a magasság nem változik) */
+.facts-x .fact-cell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 1.5rem;
+  height: 3px;
+  border-radius: 0 0 2px 2px;
+  background: #ea580c;
+}
+
+/* ───────────────────────────── Lábléc ───────────────────────────── */
+.ftr {
+  position: relative;
+  isolation: isolate;
+}
+.ftr::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 40% at 50% 0%, rgb(214 162 74 / 0.1), transparent 70%),
+    var(--noise-light) 0 0 / 220px 220px;
+}
+/* oszlopcímek: kis, ritkított, borostyán — rövid narancs jelölővonallal (inline) */
+.ftr h2 {
+  color: #e3a640;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ftr h2::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  height: 2px;
+  margin-right: 0.5rem;
+  vertical-align: 0.3em;
+  background: #f97316;
+}
+/* linkek: hoverre borostyán + aláhúzás (a meglévő hover-szín mellé) */
+.ftr nav a,
+.ftr ul a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition:
+    color var(--dur-fast) var(--ease-out-soft),
+    text-decoration-color var(--dur-fast) var(--ease-out-soft);
+}
+.ftr nav a:hover,
+.ftr ul a:hover {
+  text-decoration-color: rgb(227 166 64 / 0.6);
+}
+/* alsó jogi sáv: kissé mélyebb tónus */
+.ftr > div:last-child {
+  background: rgb(0 0 0 / 0.16);
+}

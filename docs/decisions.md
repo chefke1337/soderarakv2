@@ -959,3 +959,27 @@ lekerültek; minden más marad: élénk sóder tónuslépcső (#f3e2c2 · #ebd2a
 maszkolt mérnöki rács (anyaglista, GYIK), emelt kártyák narancs élekkel,
 antracit „Amit Önnek nyújtunk" panel, narancs numerálok/ikonok/fókusz.
 Fejléc, hero, lábléc, aloldalak érintetlenek.
+
+## 2026-11-08 12:45 — Fejléc, hero és lábléc felületi csiszolása
+
+Ügyfél: „a jobb oldali [hero alatti változat] mehet gitre, aztán csiszoljuk
+a footert és a felső részt picit; az elrendezés, a kártyák, a nagyságrendi
+színek maradjanak, legyen a bg meg a design jobb." A hero alatti változat
+V3-ra publikálva (CI build + 139/0 regresszió után). A fejléc/hero ettől a
+ponttól az ügyfél kérésére módosítható (a korábbi „védett" státusz feloldva).
+
+Új fájl `src/app/v3-frame.css` (.hdr · .hero-x · .ftr), elrendezés-,
+méret- és tartalomváltozás NÉLKÜL (szekciómagasságok a főoldalon, az
+/arak és az /arkalkulator oldalon 390/768/1440 px-en azonosak):
+- Fejléc (minden oldal): világos sóder (#f9eedb, 94%) finom szemcsézettel,
+  #dcc297 alsó vonal, belső fényél + lágy árnyék; a nav hover-jelzése
+  narancs, az aktív aláhúzás #ea580c.
+- Hero: a sötét átmenet és a sarokfények maradnak; új textúraréteg —
+  világos sóderszem-szemcsézet, a címsor mögött halványuló mérnöki rács,
+  finom szélső vignetta; rövid narancs jelölővonal a „Hívható" sor előtt.
+- Ténysor: a hero alatti sóder tónushoz igazítva (#ebd2a6 + szemcsézet),
+  a talajsáv ebbe fakul; minden tény fölött rövid narancs jelölővonal.
+- Lábléc (minden oldal): ugyanaz a sötét alap, felül halk borostyán
+  derengés + világos szemcsézet; oszlopcímek nagybetűs, ritkított
+  borostyán, narancs jelölővonallal; linkek hoverre aláhúzás; az alsó jogi
+  sáv kissé mélyebb tónusú.
