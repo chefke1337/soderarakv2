@@ -929,3 +929,24 @@ igaziak"; legyen valami kreatív a szegmensek között / átfedésben.
 (kavicsperem, ferde rétegcsík) iránya elvetve. A szekciók ismét egyenes,
 tiszta tónusváltással találkoznak; a következő kreatív irányt az ügyfél
 választja ki.
+
+### 2026-11-08 12:35 — ügyfélválasztás: „Óriás tipográfia"
+
+Négy felkínált irányból (anyagminta-szalag, átlógó kupacok, óriás
+tipográfia, átlógó kártyák) az ügyfél az óriás tipográfiát választotta.
+- Szekciónként hatalmas, halvány, körvonalas sorszám (Space Grotesk 700,
+  `clamp(8.5rem, 24vw, 21rem)`, narancs körvonal, enyhe fehér kitöltés;
+  terrakottán krém körvonal) a háttérben, a saját tartalom mögött.
+- Számozás: 01 Anyagok és árak · 02 Árkalkulátor · 03 Hol szállítunk ·
+  04 Miért mi · 05 GYIK. A „Rendelés menete" szándékosan számozatlan (ott
+  a 01–05 lépésszámok tartalmi elemek, nem keverjük). Az ajánló és a záró
+  CTA sem kap számot.
+- Átlógás: a 03 és a 04 a felső szekcióhatáron ~0,26 em-mel belóg az előző
+  sávba (jobbra/balra váltva); a 01 (hero ténysáv fölötte), a 02
+  (overflow-hidden blokk) és a 05 (fölötte a keskeny Buda Konténer-sáv
+  gombja) a saját sávjában marad.
+- Ellenőrizve 390/768/1024/1440/1920 px-en: a numerál más szekció egyetlen
+  szöveg-, link-, gomb- vagy képelemét sem fedi; nincs vízszintes görgetés
+  (`overflow-x: clip`); fejléc+hero pixelre azonos; magasságok változatlanok.
+- Akadálymentesség: generált tartalom üres alternatív szöveggel
+  (`content: var(--n) / ""`), pointer-events: none.
