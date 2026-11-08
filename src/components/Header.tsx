@@ -17,7 +17,7 @@ export default function Header() {
       >
         Ugrás a tartalomra
       </a>
-      <header className="header-bar sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
+      <header className="header-bar hdr sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
         <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6">
           <Link
             href="/"

@@ -959,3 +959,24 @@ lekerültek; minden más marad: élénk sóder tónuslépcső (#f3e2c2 · #ebd2a
 maszkolt mérnöki rács (anyaglista, GYIK), emelt kártyák narancs élekkel,
 antracit „Amit Önnek nyújtunk" panel, narancs numerálok/ikonok/fókusz.
 Fejléc, hero, lábléc, aloldalak érintetlenek.
+
+### 2026-11-08 12:59 — a szemcsézett keret-csiszolás visszavonva, helyette tiszta keret
+
+Ügyfél: a szemcsézett változat „nagyon zavaros"; profi, a színek
+pozicionálására épülő megoldást kért, új elemek megengedettek. A 7627225
+commit `git revert`-tel visszavonva; új `src/app/v3-frame.css` zaj és
+textúra NÉLKÜL:
+- Fejléc: tiszta mészkő (#fbf6ec, 95%), #e2cfae alsó vonal, belső fényél
+  + lágy árnyék; narancs hover-/aktív jelzés a navigációban.
+- Hero: tisztább grafit alap (#211a16 → #17120f); a két lebegő sarokfény
+  helyett EGY irányított, statikus meleg fény a jobb felső sarokból a
+  hívás-oszlop felé, halk narancs padlófény a kupacsor mögött, a cím mögött
+  enyhe sötétítés (nyugodt mező, jobb kontraszt). Animáció nincs.
+- Új elem (csak lg+): sötét, áttetsző panel a hívás-oszlop mögött felső
+  narancs éllel (abszolút ::before — a méretek nem változnak); a mobil
+  elrendezés változatlan.
+- Ténysor: #ebd2a6 (a lenti sóder tónus), narancs jelölővonalak.
+- Lábléc: felül egyetlen halk borostyán derengés; oszlopcímek nagybetűs,
+  ritkított borostyán, narancs jelölővel; linkek hoverre aláhúzás; az alsó
+  jogi sáv kissé mélyebb.
+- Szekciómagasságok változatlanok (főoldal 390/768/1440 px).
