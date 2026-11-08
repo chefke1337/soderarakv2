@@ -475,7 +475,7 @@ export const nav = [
 ] as const;
 
 /** Az oldal utolsó tartalmi frissítése — a sitemap lastmod mezőjét etető érték. */
-export const updated = "2026-10-27";
+export const updated = "2026-11-08";
 
 /** SEO útmutatók — a sorrend a hub és a lábléc listáját is vezérli. */
 export const guides = [
