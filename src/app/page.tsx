@@ -153,7 +153,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="anyagok-arak"
-        className="lx lx-s1 lx-grid lx-glow-tr"
+        className="lx lx-s1 lx-grid lx-seam seam-to-accent"
         kicker="Anyagok és árak"
         title="Minden tétel szemcsemérettel és bruttó árral"
         lead={
@@ -176,7 +176,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="rendeles"
-        className="lx lx-s2 lx-glow-bl lx-glow-soft"
+        className="lx lx-s2 lx-seam seam-to-hi"
         layout="split"
         kicker="Így működik"
         title="Rendelés menete"
@@ -195,7 +195,7 @@ export default function HomePage() {
         headingLevel={2}
         id="terulet"
         tone="muted"
-        className="lx lx-s3 lx-glow-tl lx-glow-pair"
+        className="lx lx-s3 lx-seam seam-to-base"
         kicker="Hol szállítunk"
         title="Budapest és Érd — minden kerületbe szállítunk"
         lead="A térkép a lefedettséget mutatja. A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."
@@ -265,7 +265,7 @@ export default function HomePage() {
       </Section>
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg ─── */}
-      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="lx lx-s1 lx-glow-br bg-page text-text">
+      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="lx lx-s1 lx-seam seam-to-surface bg-page text-text">
         <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:gap-y-8 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
@@ -360,7 +360,7 @@ export default function HomePage() {
         headingLevel={2}
         id="gyik"
         tone="muted"
-        className="lx lx-s2 lx-grid lx-glow-tr lx-glow-soft"
+        className="lx lx-s2 lx-grid lx-seam lx-seam--dark seam-to-dark"
         layout="split"
         kicker="Gyakori kérdések"
         title="Bruttó ár, fuvar, mennyiség"
@@ -403,7 +403,7 @@ export default function HomePage() {
       <section
         data-call-region="zaro_cta"
         aria-labelledby="zaro-cim"
-        className="lx-cta-close on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
+        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
       >
         <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-12 md:gap-10 md:px-6 md:py-24">

@@ -14,7 +14,7 @@ export default function CalculatorEntry() {
   return (
     <section
       aria-labelledby="kalk-belepo-cim"
-      className="lx-cta-accent on-accent relative isolate overflow-hidden bg-surface-accent text-on-dark"
+      className="lx-cta-accent lx-seam seam-to-alt on-accent relative isolate overflow-hidden bg-surface-accent text-on-dark"
     >
       <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-40 mix-blend-multiply" />
       <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:gap-10 md:px-6 md:py-20 lg:grid-cols-12 lg:gap-14">

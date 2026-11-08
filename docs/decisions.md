@@ -887,3 +887,21 @@ Ugyanaz a `.lx` rendszer, telítettebb értékekkel:
 - kontraszt: törzsszöveg ≥ 10,9:1, muted ≥ 5,3:1, ink-faint a hatókörben
   #5d5347-re sötétítve (≥ 4,5:1 a legmélyebb sóderen is), link ≥ 5:1.
 - Fejléc+hero pixelre azonos, szekciómagasságok változatlanok (3 szélesség).
+
+### 2026-11-08 12:25 — módosítás: sarokfények helyett „kavicsperem" a szekciók között
+
+Ügyfél: az élénk sóder változat tetszik, de a narancs sarokfények „nem az
+igaziak"; legyen valami kreatív a szegmensek között / átfedésben.
+- A narancs/amber sarokfények és a sarokjelek eltávolítva (a kalkulátor-
+  és a záró blokkból is). Helyettük egyenletes, átlós világosodás.
+- Új szekcióhatár-motívum: minden váltásnál a KÖVETKEZŐ szekció színéből
+  kirajzolt kavicssor „kupacolódik fel" az előző sáv aljára (átfedés a két
+  szegmens között), néhány szórt szemmel, semleges árnyékívvel és
+  csillanással — így ugyanaz a minta terrakotta, sóder, krém és sötét
+  átmenetként is működik. Maszk + árnyalás: két inline SVG
+  (`scripts/build-seam-pebbles.py` generálja, determinisztikus; ~12,7 KB
+  CSS-ben, gzip után jóval kevesebb). Szekciónként eltolt minta.
+- A perem a szekció saját alsó paddingjében ül (28 px desktop / 22 px
+  mobil < 48 px padding): tartalmat nem takar, magasság nem változik, a
+  hero/fejléc fölé nem kerül (az anyaglista TETEJÉN nincs perem).
+- A mérnöki rács a tartalommezőre került (`.lx-grid > .mx-auto::before`).
