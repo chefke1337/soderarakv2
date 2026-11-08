@@ -1135,3 +1135,10 @@ díszítés nélküli állapotában marad.
   hogy a kontraszt mindenhol ≥ 4,5:1 maradjon).
 - Tisztán grafikus narancs elemek (`.bg-accent`: ikonkörök, csomópontok,
   sávok): a számszín, #ea580c.
+
+### 2026-11-08 18:16 — a narancs visszafogva
+
+Ügyfél: „túl élénk lett, ne legyen ennyire rikító". Gombok/hívógombok
+#cf4a0e → #c4470f (fehér felirat 4,93:1); kalkulátorblokk #cf4a0e →
+#b8461a (5,34:1); grafikus narancs elemek #ea580c → #d9622a. Mind
+élénkebb az eredeti #c2410c / #a8401a-nál, de kevésbé harsány.

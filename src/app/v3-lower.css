@@ -233,7 +233,8 @@
 /* 17:21 ügyfél: élénkebb narancs blokk. #cf4a0e = a legélénkebb árnyalat,
    amelyen a FEHÉR szöveg még ≥ 4,5:1 (WCAG AA) — ügyfél-választás. */
 .lx-cta-accent {
-  background-color: #cf4a0e;
+  /* 18:16 ügyfél: „túl élénk" → melegebb, visszafogottabb narancs-terrakotta */
+  background-color: #b8461a;
   --color-on-dark: #ffffff;
   --color-on-accent-muted: #ffffff;
 }

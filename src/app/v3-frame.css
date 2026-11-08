@@ -174,7 +174,8 @@
    „számszínt" (#ea580c) kapják — ott nincs szövegkontraszt-követelmény. */
 .btn-primary,
 .bg-brand-dark {
-  background-color: #cf4a0e;
+  /* 18:16 ügyfél: „túl élénk, rikító" → visszafogva #cf4a0e-ről */
+  background-color: #c4470f;
   color: #ffffff;
 }
 .btn-primary:hover,
@@ -182,5 +183,5 @@
   background-color: #a8380a;
 }
 .bg-accent {
-  background-color: #ea580c;
+  background-color: #d9622a;
 }
