@@ -153,6 +153,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="anyagok-arak"
+        className="lx lx-s1 lx-grid lx-glow-tr"
         kicker="Anyagok és árak"
         title="Minden tétel szemcsemérettel és bruttó árral"
         lead={
@@ -175,6 +176,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="rendeles"
+        className="lx lx-s2 lx-glow-bl lx-glow-soft"
         layout="split"
         kicker="Így működik"
         title="Rendelés menete"
@@ -193,13 +195,14 @@ export default function HomePage() {
         headingLevel={2}
         id="terulet"
         tone="muted"
+        className="lx lx-s3 lx-glow-tl lx-glow-pair"
         kicker="Hol szállítunk"
         title="Budapest és Érd — minden kerületbe szállítunk"
         lead="A térkép a lefedettséget mutatja. A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."
       >
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="min-w-0 lg:col-span-6">
-            <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
+            <div className="lx-map-frame rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
               <LefedettsegTerkepLazy height={420} legend={false} />
             </div>
             <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
@@ -262,7 +265,7 @@ export default function HomePage() {
       </Section>
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg ─── */}
-      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
+      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="lx lx-s1 lx-glow-br bg-page text-text">
         <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:gap-y-8 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
@@ -293,7 +296,7 @@ export default function HomePage() {
           </div>
 
           <div className="min-w-0 lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pt-14">
-            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
+            <div className="lx-panel on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
               <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
               <ul className="mt-4">
                 {MIERT_HIVJON.list.map((item) => (
@@ -357,6 +360,7 @@ export default function HomePage() {
         headingLevel={2}
         id="gyik"
         tone="muted"
+        className="lx lx-s2 lx-grid lx-glow-tr lx-glow-soft"
         layout="split"
         kicker="Gyakori kérdések"
         title="Bruttó ár, fuvar, mennyiség"
@@ -399,7 +403,7 @@ export default function HomePage() {
       <section
         data-call-region="zaro_cta"
         aria-labelledby="zaro-cim"
-        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
+        className="lx-cta-close on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
       >
         <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-20" />
         <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 md:grid-cols-12 md:gap-10 md:px-6 md:py-24">

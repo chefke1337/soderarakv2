@@ -804,3 +804,51 @@ TÁROLJ A REPÓBAN” figyelmeztetéssel).
   átolvasva.
 - (2026-11-08) Ügyfél: a kupacok textúrája „csíkos, rácsos” volt (pixel alatti szemek + kis csempe → moiré). Javítás: nagyított, jól látható szemek (≈1–3 px), 48×24-es csempe, közeli tónusok, feTurbulence felületi zaj; az anyagok egymáshoz viszonyított szemcsemérete megmarad.
 - (2026-11-08) Ügyfél: a csempék háttere maradjon a régi → a .heap-bleed a korábbi kupac-grafika rögzített 200×72-es raszteréből készül (public/kupac-hatter/*.webp, ~1,5 KB/db), független az új kupac-textúrától.
+
+## 2026-11-08 — Hero alatti „grafit" vizuális frissítés (ügyfél-brief, visszaállítható)
+
+**Cél:** a főoldal hero alatti részének egységes, sötét, anyag-központú
+építőipari karaktere — tartalmi, sorrendi, útvonal-, SEO- és
+kalkulátor-logikai változás NÉLKÜL.
+
+**Védett, érintetlen elemek** (pixelre azonosak 390/768/1440 px-en,
+képernyőkép-összevetéssel igazolva): fejléc + navigáció (`Header`,
+`NavLinks`, `MobileMenu`), a teljes hero szekció (`[data-call-region=hero]`:
+sötét háttér, `.hero-glow` sarokfények, `.hero-horizon`, `MaterialHeaps`
+csempék, `HeroGround` talajsáv, ténysor), a mobil hívósáv és a lábléc
+(`Footer`, aloldalakkal közös). Globális `@theme` token NEM változott.
+
+**Megvalósítás:** új fájl `src/app/v3-lower.css` (globals.css importálja),
+amely kizárólag a `.lx` osztályú szekciókon belül hat: ott a meglévő
+szín-tokeneket (és aliasaikat) sötét grafit értékekre definiálja újra, így a
+meglévő markup magától átszíneződik. A főoldalon (`page.tsx`) és a
+`CalculatorEntry`-ben csak osztálynevek kerültek hozzá; szöveg, sorrend,
+struktúra nem változott. Más oldal nem kapja meg a `.lx` osztályt.
+
+**Rendszer:**
+- Tónuslépcső: `lx-s1` #1d1814 (anyagok, „Miért mi") · `lx-s2` #231d18
+  (rendelés, GYIK) · `lx-s3` #28211c (lefedettség, enyhén kiemelt); a
+  terrakotta kalkulátorblokk és a sötétbarna záró CTA marad a két hangsúlyos
+  blokk (saját alapszínnel, finom sarokfénnyel). A Buda Konténer ajánló
+  szándékosan világos sáv marad (petrol megkülönböztetés, CLAUDE.md).
+- Statikus, alacsony intenzitású narancs sarokfény szekciónként más sarokban;
+  mobilon kisebb és halványabb. Halvány, maszkolt mérnöki rács csak az
+  anyaglistán és a GYIK-on.
+- Sarokjelek (rajzlap-illesztőjel) a tartalomtartó két sarkán.
+- Kártyák: emelt grafit, 1 px vonal; kiemelt nem kattintható panel (térkép,
+  „Amit Önnek nyújtunk") felső narancs éllel; interaktív anyagkártya
+  hoverre/nyitáskor oldalsó narancs él + keret/háttér-váltás, emelés nélkül
+  (a kép hover-nagyítása a hatókörben kikapcsolva).
+- Fókusz: #fb923c (≥ 5,9:1 minden sötét felületen). Szövegkontraszt:
+  krém 11,6–15:1, muted 7,4–9,6:1, faint ≥ 5,7:1.
+- A keretek box-shadow-val készültek, nem borderrel: minden szekció
+  magassága és tördelése bájtra azonos maradt (3 szélességen mérve).
+- A térkép belsejében (`.leaflet-container`) az eredeti világos tokenek
+  vannak visszaállítva, hogy a feliratok olvashatók maradjanak.
+- Nincs új JS, csomag, kép, animáció; az átmenetek a meglévő motion
+  tokeneket használják és a globális reduced-motion szabály alá esnek.
+
+**Visszaállítás:** a változás egyetlen commit; a korábbi állapotot a
+`pre-grafit-2026-11-08` helyi tag jelöli (7b79ba2). Visszavonás:
+`git revert <commit>` — vagy elég a négy `lx`-osztály eltávolítása /
+a `v3-lower.css` import törlése.

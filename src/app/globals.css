@@ -5,6 +5,8 @@
 @import "leaflet/dist/leaflet.css";
 /* V3 komponens-réteg (lásd a fájl fejlécét) */
 @import "./v3-components.css";
+/* Főoldal, hero alatti „grafit" réteg — csak `.lx` hatókörben hat (lásd a fájl fejlécét) */
+@import "./v3-lower.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)
