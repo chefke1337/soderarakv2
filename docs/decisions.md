@@ -1088,3 +1088,12 @@ a kalkuláció változatlanságát a végösszeg-egyezés teszteli (165 150 Ft).
 2. Üzleti döntés: maradjon-e opcionális a blokk (jelenleg igen).
 3. A tárhelyes PHP-végpont frissítése csak a következő jóváhagyott
    tárhely-telepítéssel élesedik.
+
+### 2026-11-08 16:45 — GYIK háttér és fejléc-szín (ügyfél, éles oldal mintájára)
+
+- GYIK (`.lx-faq`): sima, egyszínű #ead9bb (az éles soderarak.hu GYIK-
+  hátterével azonos), szemcsézet és átlós fény nélkül; csak az alsó 20%-on
+  mélyül aranyosabbra (#e4c48e). A mérnöki rács marad.
+- Fejléc (globális, minden oldal): az éles oldal homokszínéhez (#f4ead8)
+  igazítva, egy árnyalattal élénkebben: rgb(246 231 203 / 0.96), alsó
+  vonal #dcc297.

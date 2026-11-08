@@ -20,8 +20,9 @@
 
 /* ───────────────────────────── Fejléc ───────────────────────────── */
 .hdr {
-  background-color: rgb(251 246 236 / 0.95);
-  border-bottom-color: #e2cfae;
+  /* 16:45 ügyfél: az éles oldal homokszíne (#f4ead8), egy árnyalattal élénkebben */
+  background-color: rgb(246 231 203 / 0.96);
+  border-bottom-color: #dcc297;
   box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 12px 30px -26px rgb(60 38 18 / 0.6);
 }
 .hdr nav a:not([aria-current="page"]):hover::after {

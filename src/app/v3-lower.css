@@ -70,6 +70,17 @@
   --color-surface-muted: var(--lx-hi);
 }
 
+/* GYIK (16:45 ügyfél): sima, egyszínű homok (mint az éles oldalon, #ead9bb),
+   szemcsézet és átlós fény nélkül; csak az alsó 20%-on mélyül aranyosabbra.
+   A mérnöki rács megmarad (.lx-grid). */
+.lx-faq {
+  --color-page: #ead9bb;
+  --color-surface-muted: #ead9bb;
+}
+.lx.lx-faq::before {
+  background: linear-gradient(180deg, transparent 0%, transparent 80%, #e4c48e 100%);
+}
+
 /* ── Háttérréteg: lágy fény-átmenet + finom, szabálytalan sóderszem-szemcsézet ──
    (12:25 ügyfél: a narancs sarokfények „nem az igaziak" → eltávolítva;
    helyettük egyenletes, átlós világosodás, sarki „forró folt" nélkül.)

@@ -360,7 +360,7 @@ export default function HomePage() {
         headingLevel={2}
         id="gyik"
         tone="muted"
-        className="lx lx-s1 lx-grid"
+        className="lx lx-faq lx-grid"
         layout="split"
         kicker="Gyakori kérdések"
         title="Bruttó ár, fuvar, mennyiség"
