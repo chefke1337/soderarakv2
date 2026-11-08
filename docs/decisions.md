@@ -1097,3 +1097,11 @@ a kalkuláció változatlanságát a végösszeg-egyezés teszteli (165 150 Ft).
 - Fejléc (globális, minden oldal): az éles oldal homokszínéhez (#f4ead8)
   igazítva, egy árnyalattal élénkebben: rgb(246 231 203 / 0.96), alsó
   vonal #dcc297.
+
+### 2026-11-08 17:01 — hívás-oszlop: teljes keret helyett felső sarokív
+
+Ügyfél: a hero jobb oszlopa ne legyen teljesen bekeretezve, „csak a tetején
+a két sarokkal lehet valami". A panel kitöltése és teljes kerete megszűnt;
+helyette vékony (1,5 px) narancs felső vonal, amely a két felső sarokban
+lekerekedve indul lefelé, és ~3 rem után elhalványul (maszk); alul nincs
+keret. Felül halk narancs derengés, szintén elhalványulva.
