@@ -989,3 +989,102 @@ textúra NÉLKÜL:
   felváltva sötétebb/világosabb tónusúak. (`lx-s1` ezért a
   `--color-surface-muted`-et is beállítja, mert a GYIK `tone="muted"`.)
 - A lábléc felső borostyán derengése eltávolítva.
+
+## 2026-11-08 — Számlázási adatok az ajánlatkérésben (opcionális blokk)
+
+**Kérés:** az ajánlatkérő (árkalkulátor 5. lépés) egészüljön ki
+magánszemély / cég–egyéni vállalkozó választóval és számlázási adatokkal.
+Fejléc, hero, kalkuláció (képletek, árak, üzleti logika) változatlan; az
+ajánlatkérés nem vált fizetős megrendeléssé, és az adatok megadása nem
+indít számlakiállítást.
+
+**Vizsgálat (meglévő folyamat):** az ajánlatkérés az `ArkalkulatorForm`
+5. lépésében küldődik (`submitOrderRequest`, JSON POST). Két, azonos
+viselkedésű feldolgozó van: TS-handler (`src/server/order-handler.ts`,
+Worker/mock) és a tárhelyes PHP-végpont (`server/php/api/rendeles.php`).
+A szállítási cím strukturált: irányítószám + Budapest/Érd (+ kerület) +
+„utca, házszám" szövegmező. Számlázási adatmodell eddig nem volt.
+
+**Források és következtetések (hivatalos NAV-forrás):**
+- NAV: *Ajánlás számlázó programok fejlesztői számára* v1.0 (2021-03-01),
+  Ajánlás-12 és -20
+  (https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FSzamlazo_Fejlesztoi_Ajanlas_v1.0):
+  - nem áfaalany természetes személy vevő: a számlán a **neve és címe**
+    kötelező; **adószáma nincs**; adóazonosító jele van (10 jegy, 8-as
+    kezdet), de „ezt nem kell a számlán szerepeltetni"; az online
+    adatszolgáltatásban róla a jelzésen kívül tilos bármilyen adatot küldeni;
+  - belföldi áfaalany vevő: **név, cím és magyar adószám** a számlán; a
+    törzsszám 8 számjegy.
+- Az Áfa tv. szövegét (169. §) a hivatalos jogszabálytárak (njt.hu,
+  net.jogtar.hu) robots-tiltás miatt nem tudtam közvetlenül lekérni — a
+  fenti NAV-dokumentumra támaszkodom; a 11 jegyű adószám 8-1-2 tagolása
+  (törzsszám–áfakód–területi kód) másodlagos forrásból ismert, ezért CSAK
+  formai ellenőrzésre használjuk.
+- Következtetés: a vevőadatok a **számla kiállításához** kellenek, nem az
+  előzetes ajánlathoz. Jogszabály NEM írja elő, hogy már az ajánlatkérésnél
+  megadják őket → a blokk **opcionális** (üzleti döntés; dokumentált üzleti
+  követelmény a kötelezővé tételre nincs a projektben).
+  Ajánlathoz szükséges továbbra is: név, e-mail, telefon, szállítási cím
+  (a meglévő kötelezőség változatlan).
+
+**Felület:** az 5. lépésben, a kapcsolattartó mezői után, az adatkezelési
+jelölőnégyzet előtt: sötét antracit kártya felső narancs éllel,
+„Számlázási adatok" + „Nem kötelező" jelölés + rövid magyarázat (magázó
+hangnem). Valódi rádiócsoport (fieldset/legend), két kártya; a kiválasztott
+állapotot pipa-ikon, „Kiválasztva" felirat és keret is jelzi.
+- Magánszemély: számlázási név, ország, irányítószám, település, közterület
+  és házszám; épület/lépcsőház/emelet/ajtó kinyitható, opcionális sorban.
+  Adóazonosító jelet, igazolványszámot, születési adatot NEM kérünk.
+  „A kapcsolattartó nevének átvétele" gomb csak üres számlázási névnél.
+- Cég / egyéni vállalkozó: cégnév / számlázási név (cégforma nem kötelező),
+  adószám, ország, irányítószám, település, közterület és házszám, további
+  címadat (opcionális). Cégjegyzékszám, bankszámlaszám, közösségi adószám
+  NINCS. NAV-ellenőrzés nincs — a felület kimondja, hogy a formátum nem
+  igazolja az érvényességet.
+- Kapcsolattartó (név, e-mail, telefon) a meglévő helyén marad, nem kérjük
+  kétszer.
+- Címmásolás: „A számlázási cím megegyezik a szállítási címmel — átmásolom"
+  — EGYSZERI másolás (nem összekapcsolás), csak irányítószám, település
+  (Budapest/Érd), utca-házszám és ország; név/adószám/további címadat nem
+  változik; kitöltött eltérő mezőt csak megerősítés után ír felül.
+- A nem releváns mezők nincsenek a DOM-ban (nem fókuszálhatók, nem
+  validálódnak). Vevőtípus-váltáskor a másik típus adatai a memóriában
+  megmaradnak, de a beküldésbe NEM kerülnek (magánszemélynél adószám soha).
+- Részleges blokk: a beküldéskor konkrét hiánylista („A számlázási adatok
+  hiányosak: …") + a blokk törlésének lehetősége; üres blokk (csak
+  vevőtípus és alapértelmezett ország) = „nincs megadva", nem hiba.
+
+**Adatmodell** (`src/lib/order.ts` → `billingSchema`, a PHP ugyanezt
+ellenőrzi):
+`billing?: { customerType: "private"|"business", name, taxNumber (csak
+business; normalizálva 12345678-1-12), address: { country, postalCode,
+city, streetAddress, additionalAddress } }`. Magyar cím: 4 jegyű
+irányítószám; magyar cégnél adószám-formátum `\d{8}-?[1-5]-?\d{2}`;
+külföldi országnál 3–20 karakteres adóazonosító. A szerver a
+magánszemélynél küldött adószámot eldobja.
+
+**E-mail** (TS és PHP egyezően, sima szöveg, minden mező egysoros
+szűréssel): blokkok sorrendje — Vevő típusa · Számlázási adatok ·
+Kapcsolattartó · Szállítási adatok · Behajtás · Kalkuláció és kért anyag ·
+Árösszesítő. Számlázási adatok nélkül: „Nem adott meg számlázási adatot —
+számlázás előtt egyeztetni kell." Az adószám mellett: „formailag
+ellenőrizve, NAV-nál nem".
+
+**Adatvédelem:** számlázási adat nem kerül analitikai eseménybe
+(`trackQuoteRequest` változatlan), böngészős tárba (csak React-állapot —
+űrlaphiba esetén megmarad, oldalelhagyáskor eltűnik), URL-be vagy logba.
+
+**Tesztek:** `test:order` (+30 számlázási eset), új `test:billing` (26),
+`test:order-php` (+22, valódi `php -S`, levél fájlba, nincs valódi küldés);
+a kalkuláció változatlanságát a végösszeg-egyezés teszteli (165 150 Ft).
+
+**JÓVÁHAGYANDÓ (tulajdonos / adatvédelem):**
+1. Az adatkezelési tájékoztató (`/adatvedelem`) jelenleg NEM említi a
+   számlázási adatokat (vevő típusa, számlázási név, számlázási cím,
+   adószám). Kiegészítés kell; a jogalapot (pl. szerződés előkészítése /
+   jogi kötelezettség a számlázásnál) és a megőrzési időt (a számviteli
+   bizonylatmegőrzés szerinti idő vs. meg nem valósult ajánlatnál rövidebb)
+   az adatkezelőnek kell eldöntenie — nem írtam bele kitalált szöveget.
+2. Üzleti döntés: maradjon-e opcionális a blokk (jelenleg igen).
+3. A tárhelyes PHP-végpont frissítése csak a következő jóváhagyott
+   tárhely-telepítéssel élesedik.

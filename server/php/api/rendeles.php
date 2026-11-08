@@ -300,6 +300,68 @@ if (!preg_match('/^[A-Za-z0-9._:-]{8,80}$/', $idem)) $errors['idempotencyKey'] =
 
 if (($in['privacyAccepted'] ?? null) !== true) $errors['privacyAccepted'] = 'Az adatkezelési tájékoztató elfogadása szükséges.';
 
+/* Számlázási adatok — OPCIONÁLIS blokk (lásd src/lib/order.ts billingSchema).
+   Ha a blokk szerepel, legyen teljes; magánszemélynél adószám nem kerül tovább.
+   Az adószám csak FORMAILAG ellenőrzött (nem NAV-lekérdezés). */
+$billing = null;
+$billingRaw = $in['billing'] ?? null;
+if ($billingRaw !== null) {
+    if (!is_array($billingRaw)) {
+        $errors['billing'] = 'Érvénytelen számlázási adat.';
+    } else {
+        $bs = static fn ($arr, string $k): string => is_array($arr) && is_string($arr[$k] ?? null) ? trim($arr[$k]) : '';
+        $addr = is_array($billingRaw['address'] ?? null) ? $billingRaw['address'] : [];
+        $ctype = $bs($billingRaw, 'customerType');
+        $bName = $bs($billingRaw, 'name');
+        $bTax = preg_replace('/\s+/u', '', $bs($billingRaw, 'taxNumber')) ?? '';
+        $bCountry = $bs($addr, 'country');
+        $bPostal = $bs($addr, 'postalCode');
+        $bCity = $bs($addr, 'city');
+        $bStreet = $bs($addr, 'streetAddress');
+        $bExtra = $bs($addr, 'additionalAddress');
+        $isHu = in_array(mb_strtolower($bCountry, 'UTF-8'), ['magyarország', 'magyarorszag', 'hungary', 'hu'], true);
+
+        if (!in_array($ctype, ['private', 'business'], true)) $errors['billing.customerType'] = 'Kérjük, válassza ki a vevő típusát.';
+        if (mb_strlen($bName) < 2 || mb_strlen($bName) > 160) $errors['billing.name'] = 'Kérjük, adja meg a számlázási nevet.';
+        if (mb_strlen($bCountry) < 2 || mb_strlen($bCountry) > 60) $errors['billing.address.country'] = 'Kérjük, adja meg az országot.';
+        if (mb_strlen($bPostal) < 3 || mb_strlen($bPostal) > 10) {
+            $errors['billing.address.postalCode'] = 'Kérjük, adja meg az irányítószámot.';
+        } elseif ($isHu && !preg_match('/^\d{4}$/', $bPostal)) {
+            $errors['billing.address.postalCode'] = 'A magyar irányítószám négy számjegy.';
+        }
+        if (mb_strlen($bCity) < 2 || mb_strlen($bCity) > 80) $errors['billing.address.city'] = 'Kérjük, adja meg a települést.';
+        if (mb_strlen($bStreet) < 3 || mb_strlen($bStreet) > 160) $errors['billing.address.streetAddress'] = 'Kérjük, adja meg a közterületet és a házszámot.';
+        if (mb_strlen($bExtra) > 120) $errors['billing.address.additionalAddress'] = 'A további címadat legfeljebb 120 karakter lehet.';
+
+        $taxOut = '';
+        if ($ctype === 'business') {
+            if ($bTax === '') {
+                $errors['billing.taxNumber'] = 'Kérjük, adja meg az adószámot.';
+            } elseif ($isHu) {
+                if (preg_match('/^(\d{8})-?([1-5])-?(\d{2})$/', $bTax, $m)) {
+                    $taxOut = "{$m[1]}-{$m[2]}-{$m[3]}";
+                } else {
+                    $errors['billing.taxNumber'] = 'Az adószám formátuma: 12345678-1-12 (11 számjegy).';
+                }
+            } elseif (preg_match('/^[A-Za-z0-9][A-Za-z0-9.\-\/]{2,19}$/', $bTax)) {
+                $taxOut = $bTax;
+            } else {
+                $errors['billing.taxNumber'] = 'Kérjük, ellenőrizze az adóazonosítót.';
+            }
+        }
+        $billing = [
+            'type' => $ctype,
+            'name' => $bName,
+            'tax' => $taxOut, // magánszemélynél mindig üres
+            'country' => $bCountry,
+            'postal' => $bPostal,
+            'city' => $bCity,
+            'street' => $bStreet,
+            'extra' => $bExtra,
+        ];
+    }
+}
+
 $clientTotal = $in['clientTotalGross'] ?? null;
 if ($clientTotal !== null && (!is_int($clientTotal) || $clientTotal < 0)) $clientTotal = null;
 
@@ -361,18 +423,31 @@ if ($isTest) {
 $L[] = '';
 $L[] = $data['texts']['orderIntent'];
 $L[] = '';
-$L[] = '── Megrendelő ──';
+$L[] = '── Vevő típusa ──';
+if ($billing === null) {
+    $L[] = 'Nem adta meg (a számlázási adatok nélkül kért ajánlatot).';
+    $L[] = '';
+    $L[] = '── Számlázási adatok ──';
+    $L[] = 'Nem adott meg számlázási adatot — számlázás előtt egyeztetni kell.';
+} else {
+    $L[] = $billing['type'] === 'business' ? 'Cég / egyéni vállalkozó' : 'Magánszemély';
+    $L[] = '';
+    $L[] = '── Számlázási adatok ──';
+    $L[] = ($billing['type'] === 'business' ? 'Cégnév / számlázási név: ' : 'Számlázási név: ') . clean_line($billing['name'], 160);
+    if ($billing['type'] === 'business') $L[] = 'Adószám: ' . clean_line($billing['tax'], 20) . ' (formailag ellenőrizve, NAV-nál nem)';
+    $L[] = 'Ország: ' . clean_line($billing['country'], 60);
+    $L[] = 'Irányítószám: ' . clean_line($billing['postal'], 10);
+    $L[] = 'Település: ' . clean_line($billing['city'], 80);
+    $L[] = 'Közterület, házszám: ' . clean_line($billing['street'], 160);
+    if ($billing['extra'] !== '') $L[] = 'További címadat: ' . clean_line($billing['extra'], 120);
+}
+$L[] = '';
+$L[] = '── Kapcsolattartó ──';
 $L[] = 'Név: ' . clean_line($name, 120);
 $L[] = 'E-mail: ' . clean_line($email, 254);
 $L[] = 'Telefon: ' . clean_line($phone, 40);
 $L[] = '';
-$L[] = '── Anyag és mennyiség ──';
-$L[] = 'Anyag és termékváltozat: ' . $material['name'];
-if ($material['wash']) $L[] = 'Mosottság: ' . $material['wash'];
-if ($material['unclassified']) $L[] = 'Minőségjelölés: osztályozatlan termék';
-$L[] = "Mennyiség: {$m3} m³";
-$L[] = '';
-$L[] = '── Szállítási cím ──';
+$L[] = '── Szállítási adatok ──';
 $L[] = 'Település: ' . $municipality['name'];
 $L[] = 'Kerület: ' . ($district ? $roman($district) : '—');
 $L[] = 'Irányítószám: ' . $postal;
@@ -390,6 +465,12 @@ if ($district === $data['castleDistrictId']) {
 } else {
     $L[] = $data['texts']['permit'];
 }
+$L[] = '';
+$L[] = '── Kalkuláció és kért anyag ──';
+$L[] = 'Anyag és termékváltozat: ' . $material['name'];
+if ($material['wash']) $L[] = 'Mosottság: ' . $material['wash'];
+if ($material['unclassified']) $L[] = 'Minőségjelölés: osztályozatlan termék';
+$L[] = "Mennyiség: {$m3} m³";
 $L[] = '';
 $L[] = '── Árösszesítő (szerveroldalon újraszámolva) ──';
 $L[] = $unit === null ? 'Anyag bruttó egységár: egyeztetés után' : 'Anyag bruttó egységár: ' . ft((int) $unit) . '/m³';

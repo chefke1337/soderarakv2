@@ -282,4 +282,76 @@ section("PHP mail() — éles kódút, valódi küldés nélkül");
   s5.stop();
 }
 
+section("Számlázási adatok (opcionális blokk)");
+{
+  const srvB = await startServer({ ORDER_TRANSPORT: "file", ORDER_RATE_LIMIT: "100" });
+  const byKey = (k) => readFileSync(join(srvB.mails, `${k}.eml`), "utf8");
+  // 1) blokk nélkül
+  const k0 = "bill-none-php-0001";
+  const r0 = await post(srvB, base({ idempotencyKey: k0 }));
+  eq("számlázás nélkül: 200", r0.status, 200);
+  check("számlázás nélkül: a levél jelzi a hiányt", byKey(k0).includes("Nem adott meg számlázási adatot"));
+  // 2) magánszemély — a kliens által becsempészett adószám nem kerül a levélbe
+  const k1 = "bill-priv-php-0001";
+  const r1 = await post(srvB, base({
+    idempotencyKey: k1,
+    billing: { customerType: "private", name: "Árvíztűrő Tükörfúrógép", taxNumber: "12345678-2-42",
+      address: { country: "Magyarország", postalCode: "1221", city: "Budapest", streetAddress: "Nagytétényi út 123.", additionalAddress: "B lph. 4/12" } },
+  }));
+  eq("magánszemély: 200", r1.status, 200);
+  const m1 = byKey(k1);
+  check("magánszemély: Vevő típusa", /── Vevő típusa ──\r?\nMagánszemély/.test(m1));
+  check("magánszemély: számlázási név", m1.includes("Számlázási név: Árvíztűrő Tükörfúrógép"));
+  check("magánszemély: NINCS adószám a levélben", !m1.includes("Adószám") && !m1.includes("12345678"));
+  check("magánszemély: további címadat", m1.includes("További címadat: B lph. 4/12"));
+  check("a szállítási cím külön blokk", /── Szállítási adatok ──[\s\S]*Teszt utca 1\./.test(m1));
+  // 3) cég
+  const k2 = "bill-biz-php-0001";
+  const r2 = await post(srvB, base({
+    idempotencyKey: k2,
+    billing: { customerType: "business", name: "Példa Építő Kft.", taxNumber: "12345678242",
+      address: { country: "Magyarország", postalCode: "2030", city: "Érd", streetAddress: "Fő utca 1.", additionalAddress: "" } },
+  }));
+  eq("cég: 200", r2.status, 200);
+  const m2 = byKey(k2);
+  check("cég: Cég / egyéni vállalkozó", m2.includes("Cég / egyéni vállalkozó"));
+  check("cég: normalizált adószám + formai jelzés", m2.includes("Adószám: 12345678-2-42 (formailag ellenőrizve, NAV-nál nem)"));
+  check("cég: blokkok sorrendje", /Vevő típusa[\s\S]*Számlázási adatok[\s\S]*Kapcsolattartó[\s\S]*Szállítási adatok[\s\S]*Kalkuláció és kért anyag[\s\S]*Árösszesítő/.test(m2));
+  eq("cég: a végösszeg változatlan", r2.json.serverTotalGross, 165150);
+  // 4) hibás / részleges
+  const r3 = await post(srvB, base({ idempotencyKey: "bill-bad-php-0001",
+    billing: { customerType: "business", name: "Példa Kft.", taxNumber: "1234",
+      address: { country: "Magyarország", postalCode: "", city: "Érd", streetAddress: "", additionalAddress: "" } } }));
+  eq("hibás blokk: 422", r3.status, 422);
+  check("hibás blokk: konkrét mezőhibák", Boolean(r3.json.errors?.["billing.taxNumber"]) && Boolean(r3.json.errors?.["billing.address.postalCode"]) && Boolean(r3.json.errors?.["billing.address.streetAddress"]));
+  check("hibás blokk: a többi mezőre nincs hiba", !r3.json.errors?.["billing.name"] && !r3.json.errors?.name);
+  // 5) injection
+  const k4 = "bill-inj-php-0001";
+  await post(srvB, base({ idempotencyKey: k4,
+    billing: { customerType: "business", name: "Rossz Kft.\r\nBcc: x@example.com", taxNumber: "12345678-2-42",
+      address: { country: "Magyarország", postalCode: "1221", city: "Budapest", streetAddress: "Fő u. 1.", additionalAddress: "" } } }));
+  const m4 = byKey(k4);
+  check("injection: nincs Bcc fejléc", !/^Bcc:/mi.test(m4));
+  check("injection: a név egy sorban", m4.includes("Cégnév / számlázási név: Rossz Kft. Bcc: x@example.com"));
+  srvB.stop();
+}
+
+section("Számlázási adatok: szerverhiba, majd ismételt beküldés");
+{
+  const billing = { customerType: "business", name: "Ismétlő Bt.", taxNumber: "87654321-1-13",
+    address: { country: "Magyarország", postalCode: "1011", city: "Budapest", streetAddress: "Fő utca 2.", additionalAddress: "" } };
+  const key = "bill-retry-php-0001";
+  const failing = await startServer({ ORDER_TRANSPORT: "fail", ORDER_RATE_LIMIT: "100" });
+  const r1 = await post(failing, base({ idempotencyKey: key, billing }));
+  eq("küldőhiba: 502", r1.status, 502);
+  check("küldőhiba: nincs hamis siker", r1.json.ok === false);
+  failing.stop();
+  const ok = await startServer({ ORDER_TRANSPORT: "file", ORDER_RATE_LIMIT: "100" });
+  const r2 = await post(ok, base({ idempotencyKey: key, billing }));
+  eq("ismételt beküldés ugyanazzal a kulccsal: 200", r2.status, 200);
+  const m = readFileSync(join(ok.mails, `${key}.eml`), "utf8");
+  check("ismételt beküldés: a számlázási adatok a levélben", m.includes("Cégnév / számlázási név: Ismétlő Bt.") && m.includes("Adószám: 87654321-1-13"));
+  ok.stop();
+}
+
 finish("order-php");
