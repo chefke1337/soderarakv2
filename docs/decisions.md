@@ -1142,3 +1142,114 @@ díszítés nélküli állapotában marad.
 #cf4a0e → #c4470f (fehér felirat 4,93:1); kalkulátorblokk #cf4a0e →
 #b8461a (5,34:1); grafikus narancs elemek #ea580c → #d9622a. Mind
 élénkebb az eredeti #c2410c / #a8401a-nál, de kevésbé harsány.
+
+## 2026-11-08 (folytatás) — Teljes audit/javítás/újratesztelés, `v3-audit` ág
+
+**Kiindulás és verzióazonosítás (nem feltételezett, ellenőrzött):**
+- A publikált V3 (`https://chefke1337.github.io/soderarakv3/`) egy
+  **különálló repóból** (`chefke1337/soderarakv3`, `gh-pages` ág, ekkor
+  `c046de6`) épül, NEM ennek a repónak (`chefke1337/soderarakv2`) a saját
+  `gh-pages`-éből (az a V2-é). A deploy-commit üzenete igazolta a forrást:
+  `Deploy 798fd707… chefke1337/soderarakv2@798fd707…` — a build **2026-11-08
+  17:27:14 UTC-kor**, a vizsgálat kezdete előtt ~1 perccel futott le a `v3`
+  ág akkori csúcsáról.
+- A munkaterület (`v3-audit`, korábbi HEAD `b58b037`) ekkor 23 committal
+  **lemaradva** állt a tényleges publikációs forráshoz (`v3`@`798fd70`)
+  képest: `origin/v3-audit` 3, `origin/v3` további 20 commitot kapott
+  (hero/fejléc/lábléc csiszolás, számlázási blokk, narancs-szín finomítás)
+  — ez aktív, folyamatban lévő munka volt, nem elágazás/konfliktus
+  (`v3-audit` igazoltan egyenes ági őse `v3`-nak, `git merge-base
+  --is-ancestor` igazolta). Felhasználói jóváhagyással **fast-forward**:
+  `v3-audit` → `origin/v3` (`798fd70`), tisztán, ütközés nélkül.
+- Production (`https://soderarak.hu/`) ugyanezt a V3-kódbázist szolgálja ki
+  (azonos HTML-szerkezet, `noindex, follow`); ez **nem új felfedezés**, a
+  2026-11-01/07-i naplóban már rögzített, szándékos, élesítési jóváhagyásra
+  váró állapot (`robots: { index: false }`, `src/app/layout.tsx:65`,
+  env-független) — nem nyúltam hozzá.
+
+**Újrafuttatott valódi kapuk, a friss (`798fd70`) állapoton:**
+`tsc --noEmit` tiszta; `next lint` a korábbról ismert 2 figyelmeztetés
+(`ArkalkulatorForm.tsx` exhaustive-deps, `Section.tsx` unused var) — nincs
+új; `next build` (bare) + `prepare-static-export.mjs` + `og-hash.mjs` mind
+tiszta (64 HTML, 64 saját OG-kép, 59 sitemap URL, 62 OG-kártya hash egyezik
+a bázissal); `npm run test:all` **4647 OK, 0 FAIL** (pricing 181, freight
+3635, quote 440, districts 117, area-pages 83, order 166, billing-form 26 —
+az utóbbi kettő a számlázási blokkal bővült és nőtt a 11-07-i 136/0-ról;
+`order-php` ebben a környezetben PHP hiányában kihagyva, nem igazolt);
+`npm run test:a11y` 63/63 route PASS; `npm run test:mobile` 63/63 route PASS
+(360 px); `npm run test:smoke` 74/74 OK, 0 kliensoldali konzolhiba (helyi
+mock-rendelési szerver már futott — másik folyamat/session használta a
+8788-as portot, ez jelezte, hogy párhuzamos munka zajlik); `npm run
+test:regression` 139 OK / 0 FAIL / **0 WARN** (a H-1 #418 hidratációs hiba
+ismét nem jelentkezett — továbbra sem cáfolt, nyitott); `npm run cta:map`
+hiba nélkül lefutott mind a 20 route-on, asztali + mobil nézetben.
+
+**Lighthouse (`LH_ALL=1 DAEKON_FULL_AUDIT=1`, lab-mérés, egyetlen futás):**
+
+| Route | Performance | A11y | Best Practices | SEO |
+|---|---|---|---|---|
+| / | 84 | 100 | 100 | 69 (csak is-crawlable) |
+| /arkalkulator/ | 90 | 100 | 100 | 66 |
+| /arak/ | 87 | 100 | 100 | 66 |
+| /teruletek/ | 90 | 100 | 100 | 66 |
+| /teruletek/budapest-14-kerulet/ | 93 | 100 | 100 | 66 |
+| /utmutatok/ | 91 | 100 | 100 | 66 |
+| /anyagok/soder/ | 90 | 100 | 100 | 69 |
+| /teruletek/erd/ | 93 | 100 | 100 | 66 |
+
+A főoldal 84-es Performance-a a 2026-11-01/07-i mérésekkel összevethető
+tartományban van (nem regresszió az új 20 commit miatt) — a CLAUDE.md-ben
+dokumentált, korábban A/B-tesztelt „mért helyi maximum" továbbra is áll
+(font-preload, blokkoló CSS átrendezés, `font-display: optional` mind
+mérten rosszabb volt), ezért **nem próbálkoztam újabb spekulatív
+teljesítmény-beavatkozással** új mérési nyom nélkül — ez nyitott P2 tétel,
+nem ezúttal javított hiba. A11y és Best Practices mindenhol 100; a SEO
+pontszám kizárólag a szándékos noindex (`is-crawlable`) miatt bukik.
+
+**Biztonság:** nincs titok a forrásban (`SMTP`/`API_KEY`/`SECRET` minta és
+false-positive szűrés után, csak env-olvasás és teszt-fixture-ök); `.env`,
+`.env.local`, `.env*.local` gitignore-olt, csak `.env.example` van verzió
+alatt; az új számlázási blokk (PHP `rendeles.php` + TS `order.ts`/
+`order-handler.ts`) mindkét oldalon formailag validál (zod / preg_match),
+az adószám-ellenőrzés explicit **nem NAV-hitelesítés**-ként van feltüntetve,
+magánszemélynél az adószám sosem kerül tovább; az egysoros mezők CRLF/NUL-
+szűrése (fejléc-injekció elleni védelem) mindkét implementációban tesztelt
+és zöld.
+
+**Talált és javított hibák (biztonságos, üzleti szabályt nem érintő
+tartalmi pontosítás — commit `39faf07`):**
+1. **P2 — kalkulátor lépésszám félrevezető leírása.** Az „Árkalkulátor
+   használata lépésről lépésre" útmutató nyitó mondata („három dolgot kér")
+   a tényleges, kódban implementált 5 lépéses űrlapot (`STEP_LABELS`:
+   Anyag, Mennyiség, Cím, Összesítés, Adatok) 3 lépésnek sugallta — ezt már
+   a 2026-11-07-i audit is nyitott tételként jelölte, de nem javította.
+   Mivel a helyes üzleti működés a kódból egyértelműen megállapítható (nem
+   eldönthetetlen üzleti kérdés), a nyitó mondatot pontosítottam; a
+   bekezdés további, korábban is helyes tartalmát nem érintettem.
+2. **P2 — elavult sitemap `lastmod`.** `src/content/site.ts` `updated`
+   konstans 2026-10-27-en állt, miközben a tartalom (hero, fejléc/lábléc,
+   kalkulátor, számlázási blokk) ezóta érdemben változott — 2026-11-08-ra
+   frissítve. Build + export QA + OG-regresszió + regresszióteszt (139/139)
+   újrafuttatva a javítás után, mind zöld.
+
+**Nyitva maradt / ebben a sessionben NEM ellenőrzött (őszintén jelölve,
+nem állítva PASS-nak):**
+- Indexelés élesítési jóváhagyása — üzleti döntés, nem technikai hiba.
+- `test:order-php` — nincs PHP-futtató ebben a környezetben, a PHP-végpont
+  2026-11-08-i számlázási bővítése csak forrásból lett átolvasva, nem
+  futtatva.
+- H-1 (#418 hidratációs hiba) — sem reprodukálva, sem cáfolva.
+- Valódi cross-browser (iOS Safari, Android Chrome fizikai eszközön),
+  Search Console/analitika-hozzáférés, élő AI-kereső-lekérdezések,
+  platform-specifikus linkmegosztási előnézet-teszt (Facebook/WhatsApp/
+  LinkedIn debugger), versenytárs-kutatás, llms.txt tartalmi mélyvizsgálat,
+  DNS/levelezés — ebben a sessionben nem történt (részben eszközkorlát,
+  részben a feladat explicit korlátai miatt).
+- A `v3-audit` ág ezzel a sessionnel 20 (FF) + 1 (tartalmi javítás) commit-
+  tal áll **origin/v3-audit előtt, nem pusholva** — publikálásról nem
+  történt döntés.
+
+**Élesítési minősítés (a vizsgált körben):** FELTÉTELEKKEL ÉLESÍTHETŐ —
+minden lefuttatott automata kapu zöld, nincs talált biztonsági/adatvesztési
+hiba, de az indexelési jóváhagyás hiánya és a fent felsorolt nem tesztelt
+területek miatt teljes körű ÉLESÍTÉSRE ELŐKÉSZÍTETT minősítés nem adható.
