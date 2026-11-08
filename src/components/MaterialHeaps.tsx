@@ -46,8 +46,9 @@ export default function MaterialHeaps() {
                 className="heap group flex h-full flex-col rounded-[var(--radius-md)] p-2 outline-offset-2 lg:p-3"
               >
                 {/* matt üveg: a kupac elmosott, felnagyított színe „átdereng" a csempén */}
-                {/* eslint-disable-next-line @next/next/no-img-element -- díszítő háttér, ugyanaz a (gyorsítótárazott) SVG */}
-                <img aria-hidden="true" src={withBasePath(`/kupac/${g.tone}.svg`)} alt="" width={PILE_W} height={PILE_H} decoding="async" className="heap-bleed" />
+                {/* eslint-disable-next-line @next/next/no-img-element -- díszítő háttér: a korábbi kupac-grafika
+                    rögzített kis raszterképe (ügyfél, 2026-11-08: „a háttér maradjon ami volt") */}
+                <img aria-hidden="true" src={withBasePath(`/kupac-hatter/${g.tone}.webp`)} alt="" width={PILE_W} height={PILE_H} decoding="async" className="heap-bleed" />
                 {/* a kupac: önálló sziluett a „talajon", kontaktárnyékkal */}
                 {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre
                     generált SVG; next/image itt nem optimalizálna semmit */}

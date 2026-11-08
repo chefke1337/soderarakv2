@@ -802,3 +802,5 @@ TÁROLJ A REPÓBAN” figyelmeztetéssel).
 - A PHP-végpont (`test:order-php`) ebben a környezetben nem futtatható (nincs
   PHP) — a 2026-11-04-i implementáció nem lett újra igazolva, csak a forrás
   átolvasva.
+- (2026-11-08) Ügyfél: a kupacok textúrája „csíkos, rácsos” volt (pixel alatti szemek + kis csempe → moiré). Javítás: nagyított, jól látható szemek (≈1–3 px), 48×24-es csempe, közeli tónusok, feTurbulence felületi zaj; az anyagok egymáshoz viszonyított szemcsemérete megmarad.
+- (2026-11-08) Ügyfél: a csempék háttere maradjon a régi → a .heap-bleed a korábbi kupac-grafika rögzített 200×72-es raszteréből készül (public/kupac-hatter/*.webp, ~1,5 KB/db), független az új kupac-textúrától.
