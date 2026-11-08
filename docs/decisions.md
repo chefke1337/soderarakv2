@@ -1253,3 +1253,60 @@ nem állítva PASS-nak):**
 minden lefuttatott automata kapu zöld, nincs talált biztonsági/adatvesztési
 hiba, de az indexelési jóváhagyás hiánya és a fent felsorolt nem tesztelt
 területek miatt teljes körű ÉLESÍTÉSRE ELŐKÉSZÍTETT minősítés nem adható.
+
+### 2026-11-08 (folytatás 2) — függőség-audit, H-1 reprodukálva, vizuális/strukturált adat ellenőrzés
+
+**Függőség-biztonság (commit `dc4cd8a`):** `npm audit` 1 kritikus (Next.js
+Image Optimization API RCE + Server Actions DoS — GHSA-2464-fhr4-w9xw,
+GHSA-p3m5-59mp-jv5r) és 2 magas (zod memóriakimerítés GHSA-mrhx-c7xc-m3w5;
+postcss XSS/path traversal, négy CVE) sérülékenységet talált. Az éles
+architektúra (`output: "export"`, statikus hosting + PHP backend) nem
+futtat Next-szervert, így az Image Optimization API és a Server Actions
+vektor ott nem elérhető — ez csökkenti, de nem nullázza a kockázatot (a zod
+séma ténylegesen fut a mock-rendelési szerveren és a tesztkörnyezetben).
+Biztonságos, a meglévő semver-tartományon belüli patch-bump: `next`
+^15.4.5→^15.5.29, `zod` ^4.6.5→^4.6.7 (nem major, nem breaking). Frissítés
+után a teljes kapu-készlet újra lefuttatva és zöld (lásd fent). **Szándékosan
+NEM javítva** (dokumentált, függőben hagyott döntés): a next@15-ben
+bundle-ölt postcss (csak next@16 major javítaná — valódi breaking change,
+külön jóváhagyást igényel); a lighthouse/puppeteer-core lánc beágyazott
+zod-ja (kizárólag saját dev-eszközként fut, sosem kerül élesbe); a
+`@typescript-eslint` lánc `minimatch`-je (szintén csak dev/lint-eszköz).
+
+**H-1 (#418 hidratációs hiba) — ezúttal reprodukálva, nem csak feltételezve.**
+A `npm run test:regression` újrafuttatásakor (a függőségfrissítés utáni
+friss exporton) **2× ténylegesen jelentkezett** a hiba (1× 360px, 1× 1440px,
+a 20 route-os seprés közben, nem egy konkrét route-hoz köthetően —
+`regression: 139 OK, 0 FAIL, 2 WARN (H-1 #418)`). A szkript ezt tudottan
+időszakos, nem blokkoló figyelmeztetésként kezeli (WARN, nem FAIL), de ez
+az első igazolt előfordulás a 2026-11-01 óta vezetett naplóban — korábban
+minden session „nem reprodukálva/nem cáfolva" státuszban zárta. **Továbbra
+is nyitott, vizsgálatot igénylő tétel**, most már megerősített
+gyakorisággal (kb. 1/20 route-seprés nagyságrend ennél a futásnál).
+
+**Strukturált adat (JSON-LD) átvizsgálva, oldaltípusonként:**
+`LocalBusiness` + `ContactPoint` (globális, `layout.tsx`, valós cím/telefon/
+nyitvatartás — nincs kitalált adat, nincs `aggregateRating`); `Service` +
+`areaServed` (terület-aloldalak); `BreadcrumbList` (útmutató, anyag,
+kapcsolat oldalak); `FAQPage` (anyag oldalak, a ténylegesen megjelenő
+FAQ-szövegből generálva). Nincs `Article`/`HowTo` típus az útmutató
+oldalakon — ez **nem hiba**, a breadcrumb+FAQ lefedettség érvényes és
+elegendő; `Article` hozzáadása opcionális, P3 fejlesztési ötlet, nem
+javítottam be kéretlenül.
+
+**Vizuális/reszponzív ellenőrzés:** a Claude in Chrome böngésző-bővítmény
+ebben a környezetben **nem elérhető** (nincs kapcsolódva) — valódi
+böngészős vizuális QA helyett a projekt saját Playwright-szkriptjét
+futtattam (`node scripts/v3-screenshots.mjs`): 48 képernyőkép, 6 töréspont
+(360/390/430/768/1024/1440 px) × 8 kulcsroute, **egyetlen mért szélességen
+sincs vízszintes túlcsordulás**. Kézi átnézés (főoldal, kalkulátor):
+egy elsődleges CTA látható szekciónként, nincs lila gradiens / üvegesítés /
+üres hero / lebegő kártya a design-tiltólistáról, az 5 lépéses kalkulátor-
+folyamat vizuálisan egyezik a kóddal. Ez asztali Chromium-renderelés, **nem
+valódi iOS Safari / Android Chrome fizikai eszköz** — az a tétel továbbra
+is nem tesztelt.
+
+**Nyitva maradt, ezzel a körrel bővítve:** H-1 most már megerősítve
+(lásd fent, nem csak feltételezve); next@16 major (postcss javítás) —
+üzleti/karbantartási döntés, külön munkamenetet igényel; valódi
+cross-browser/fizikai eszköz teszt továbbra sincs.
