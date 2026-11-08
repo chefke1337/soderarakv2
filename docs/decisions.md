@@ -922,3 +922,10 @@ igaziak"; legyen valami kreatív a szegmensek között / átfedésben.
 - A kavicsperem-generátor (`scripts/build-seam-pebbles.py`) törölve.
 - Perem ≤ 84 px desktop / ≈ 43 px mobil, a 96/48 px alsó paddingen belül;
   fejléc+hero pixelre azonos, szekciómagasságok változatlanok.
+
+### 2026-11-08 12:35 — a „metszet" szekcióhatár eltávolítva
+
+Ügyfél: „ebből a fajtából nem kell több" — a díszített szekcióhatár-csíkok
+(kavicsperem, ferde rétegcsík) iránya elvetve. A szekciók ismét egyenes,
+tiszta tónusváltással találkoznak; a következő kreatív irányt az ügyfél
+választja ki.

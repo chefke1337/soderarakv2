@@ -17,8 +17,6 @@
      · nagyon finom, szabálytalan „sóderszem" szemcsézet az alapfelületen
        (inline SVG-zaj, ~0,5 KB, nincs képfájl), halvány mérnöki rács a
        műszaki tartalom mögött;
-     · szekcióhatárokon „metszet": ferde vágás a következő szekció
-       színével + a vágás mentén futó rétegrend-csík (12:30);
      · sarokfények és sarokjelek NINCSENEK (12:25 ügyfél-visszajelzés);
      · fehéres, emelt kártyák 1 px vonallal; narancs él felül a kiemelt
        panelen, oldalt az interaktív kártyán hover/nyitáskor; nincs emelés.
@@ -105,72 +103,6 @@
   -webkit-mask-image: radial-gradient(80% 60% at 50% 0%, #000 0%, transparent 100%);
   mask-image: radial-gradient(80% 60% at 50% 0%, #000 0%, transparent 100%);
 }
-
-/* ── Szekcióhatár: „metszet" ──
-   (12:30 ügyfél: a kavicsperem „gyenge" → komolyabb, építészeti megoldás.)
-   Minden váltásnál ferde vágás: a KÖVETKEZŐ szekció színe enyhe szögben
-   „emelkedik" be az előző sáv aljára, és a vágás mentén a hero-talajsáv
-   rétegrendjét idéző vékony rétegcsík fut (narancs jelölővonal · homok ·
-   sóder · kavics · andezit), mint egy műszaki metszetrajzon. A vágás iránya
-   szekcióról szekcióra vált (balra/jobbra emelkedik).
-   Felépítés (egy ::after, egyetlen gradiens, kép nélkül): a doboz H + 2T
-   magas, a vágóvonal a doboz KÖZEPÉN megy át H/W meredekséggel (szög:
-   atan2(H, 100vw)), így a csík mindkét végén teljes vastagságú marad —
-   a vonal fölött a rétegcsík (T), alatta a következő szekció színe.
-   A perem a szekció saját alsó paddingjében ül (desktop 84 px < 96 px,
-   mobil ≈ 43 px < 48 px): tartalmat nem takar, magasság nem változik, nem
-   lóg ki, a hero felé nem kerül. atan2 nélküli böngészőben a gradiens
-   érvénytelen → egyszerűen nincs perem (a korábbi egyenes határ marad). */
-.lx-seam {
-  --u: 1px;                         /* csíkegység */
-  --seam-h: 48px;                   /* a ferde vágás emelkedése */
-  --seam-t: calc(18 * var(--u));    /* rétegcsík vastagsága */
-  --seam-a: atan2(var(--seam-h), 100vw);
-  --seam-angle: calc(180deg - var(--seam-a)); /* jobbra emelkedik */
-}
-.seam-left {
-  --seam-angle: calc(180deg + var(--seam-a)); /* balra emelkedik */
-}
-.lx-seam::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: calc(var(--seam-h) + 2 * var(--seam-t));
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    var(--seam-angle),
-    transparent calc(50% - var(--seam-t)),
-    #ea580c calc(50% - var(--seam-t) + 0.6px),
-    #ea580c calc(50% - var(--seam-t) + 2 * var(--u)),
-    transparent calc(50% - var(--seam-t) + 2 * var(--u) + 0.6px),
-    transparent calc(50% - var(--seam-t) + 5 * var(--u)),
-    #dcb767 calc(50% - var(--seam-t) + 5 * var(--u) + 0.6px),
-    #dcb767 calc(50% - var(--seam-t) + 8 * var(--u)),
-    #b89a6e calc(50% - var(--seam-t) + 8 * var(--u) + 0.6px),
-    #b89a6e calc(50% - var(--seam-t) + 12 * var(--u)),
-    #9c968c calc(50% - var(--seam-t) + 12 * var(--u) + 0.6px),
-    #9c968c calc(50% - var(--seam-t) + 15.5 * var(--u)),
-    #6b625a calc(50% - var(--seam-t) + 15.5 * var(--u) + 0.6px),
-    #6b625a 50%,
-    var(--seam) calc(50% + 0.6px)
-  );
-}
-@media (max-width: 767.98px) {
-  .lx-seam {
-    --u: 0.7px;
-    --seam-h: 18px;
-  }
-}
-/* következő szekció színe + a vágás iránya (váltakozik) */
-.seam-to-accent { --seam: #a8401a; }
-.seam-to-alt { --seam: #ebd2a6; }
-.seam-to-hi { --seam: #f9eedb; }
-.seam-to-base { --seam: #f3e2c2; }
-.seam-to-surface { --seam: #fffaf1; }
-.seam-to-dark { --seam: #2b2019; }
 
 /* Kisképernyőn a minták visszafogottabbak */
 @media (max-width: 767.98px) {
