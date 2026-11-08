@@ -61,7 +61,7 @@ export default function HomePage() {
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section
         data-call-region="hero"
-        className="hero-x on-dark relative isolate overflow-hidden text-on-dark"
+        className="on-dark relative isolate overflow-hidden text-on-dark"
       >
         {/* Háttér (ügyfél, 2026-11-07 21:54): vissza sötétre — meleg bazalt
             függőleges átmenet; a rétegsáv fölött halk „horizont" derengés. */}
@@ -69,8 +69,6 @@ export default function HomePage() {
           aria-hidden="true"
           className="absolute inset-0 -z-20 bg-[linear-gradient(180deg,#2b211b_0%,#221a15_55%,#1d1612_100%)]"
         />
-        {/* Felületi textúra (2026-11-08): szemcsézet + halvány rács + vignetta */}
-        <div aria-hidden="true" className="hero-tex pointer-events-none absolute inset-0 -z-10" />
         <div aria-hidden="true" className="hero-horizon pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64" />
         {/* Sarokfények (ügyfél-kérés, 2026-11-07): égett narancs + borostyán
             fény a két felső sarokban, lassú, alig érzékelhető lebegéssel
@@ -79,7 +77,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
-              <p className="hero-kicker rise text-sm font-semibold text-amber">
+              <p className="rise text-sm font-semibold text-amber">
                 <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
               </p>
               <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
@@ -129,7 +127,7 @@ export default function HomePage() {
         {/* Ténysor — homok sáv a hero alján.
             A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
             a <dl> > <div> > <div> > dt/dd beágyazás WCAG 1.3.1 sértés lenne. */}
-        <div className="facts-x bg-surface-muted text-text">
+        <div className="bg-surface-muted text-text">
           <dl className="mx-auto grid max-w-6xl grid-cols-2 px-4 md:grid-cols-4 md:px-6">
             {facts.map((f, i) => (
               <div

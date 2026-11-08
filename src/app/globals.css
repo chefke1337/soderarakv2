@@ -7,8 +7,6 @@
 @import "./v3-components.css";
 /* Főoldal, hero alatti „grafit" réteg — csak `.lx` hatókörben hat (lásd a fájl fejlécét) */
 @import "./v3-lower.css";
-/* Fejléc / főoldali hero / lábléc felületi csiszolás (.hdr, .hero-x, .ftr) */
-@import "./v3-frame.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)
