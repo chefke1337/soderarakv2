@@ -905,3 +905,20 @@ igaziak"; legyen valami kreatív a szegmensek között / átfedésben.
   mobil < 48 px padding): tartalmat nem takar, magasság nem változik, a
   hero/fejléc fölé nem kerül (az anyaglista TETEJÉN nincs perem).
 - A mérnöki rács a tartalommezőre került (`.lx-grid > .mx-auto::before`).
+
+### 2026-11-08 12:30 — módosítás: kavicsperem helyett „metszet" szekcióhatár
+
+Ügyfél: a kavicsperem „nagyon gyenge" — legyen kreatívabb, komolyabb.
+- Új határ: ferde vágás (desktop 48 px, mobil 18 px emelkedés a teljes
+  szélességen), a következő szekció színével, és a vágás mentén futó
+  rétegcsík a hero-talajsáv rétegrendjére utalva: narancs jelölővonal ·
+  homok · sóder · kavics · andezit (anyagszín-tokenek). Az irány
+  szekciónként vált (balra/jobbra emelkedik), mint egy műszaki metszet.
+- Egyetlen CSS-gradiens, kép/SVG nélkül; a szög `atan2(H, 100vw)`, a
+  vágóvonal a perem-doboz közepén megy át, így a csík mindkét végén teljes
+  vastagságú. atan2 nélküli böngészőben a perem egyszerűen elmarad.
+- A szekciók és a kalkulátorblokk tetejéről a világosító átmenet lekerült,
+  hogy a perem színe varrat nélkül folytatódjon a következő sávban.
+- A kavicsperem-generátor (`scripts/build-seam-pebbles.py`) törölve.
+- Perem ≤ 84 px desktop / ≈ 43 px mobil, a 96/48 px alsó paddingen belül;
+  fejléc+hero pixelre azonos, szekciómagasságok változatlanok.

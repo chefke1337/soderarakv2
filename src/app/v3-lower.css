@@ -17,8 +17,8 @@
      · nagyon finom, szabálytalan „sóderszem" szemcsézet az alapfelületen
        (inline SVG-zaj, ~0,5 KB, nincs képfájl), halvány mérnöki rács a
        műszaki tartalom mögött;
-     · szekcióhatárokon „kavicsperem": a következő szekció színéből
-       kirajzolt kavicssor, amely átfedésben ül a két sáv között (12:25);
+     · szekcióhatárokon „metszet": ferde vágás a következő szekció
+       színével + a vágás mentén futó rétegrend-csík (12:30);
      · sarokfények és sarokjelek NINCSENEK (12:25 ügyfél-visszajelzés);
      · fehéres, emelt kártyák 1 px vonallal; narancs él felül a kiemelt
        panelen, oldalt az interaktív kártyán hover/nyitáskor; nincs emelés.
@@ -82,7 +82,8 @@
   z-index: -1;
   pointer-events: none;
   background:
-    linear-gradient(165deg, rgb(255 255 255 / 0.32) 0%, transparent 38%, transparent 70%, rgb(214 150 60 / 0.12) 100%),
+    /* (a szekció teteje tiszta tónus: ott csatlakozik az előző sáv ferde pereme) */
+    linear-gradient(180deg, transparent 0%, transparent 15%, rgb(255 255 255 / 0.22) 45%, transparent 70%, rgb(214 150 60 / 0.12) 100%),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .18 0 0 0 1.6 -1.0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 220px 220px;
 }
 
@@ -105,16 +106,30 @@
   mask-image: radial-gradient(80% 60% at 50% 0%, #000 0%, transparent 100%);
 }
 
-/* ── Szekcióhatár: „kavicsperem" ──
-   A szekció ALJÁN a KÖVETKEZŐ szekció színéből kirajzolt, egymásba csúszó
-   kavicssor (mintha a következő anyagréteg kupacolódna fel), néhány szórt
-   szemmel. A szekció saját alsó paddingjében ül (≥ 48 px > 28 px), ezért
-   tartalmat nem takar, magasságot nem változtat, nem lóg ki. Színe:
-   --seam (osztályonként), fényes kavicstetőkkel. A szekciók eltérő
-   vízszintes eltolással kapják a mintát, hogy ne ismétlődjön egymás alatt. */
+/* ── Szekcióhatár: „metszet" ──
+   (12:30 ügyfél: a kavicsperem „gyenge" → komolyabb, építészeti megoldás.)
+   Minden váltásnál ferde vágás: a KÖVETKEZŐ szekció színe enyhe szögben
+   „emelkedik" be az előző sáv aljára, és a vágás mentén a hero-talajsáv
+   rétegrendjét idéző vékony rétegcsík fut (narancs jelölővonal · homok ·
+   sóder · kavics · andezit), mint egy műszaki metszetrajzon. A vágás iránya
+   szekcióról szekcióra vált (balra/jobbra emelkedik).
+   Felépítés (egy ::after, egyetlen gradiens, kép nélkül): a doboz H + 2T
+   magas, a vágóvonal a doboz KÖZEPÉN megy át H/W meredekséggel (szög:
+   atan2(H, 100vw)), így a csík mindkét végén teljes vastagságú marad —
+   a vonal fölött a rétegcsík (T), alatta a következő szekció színe.
+   A perem a szekció saját alsó paddingjében ül (desktop 84 px < 96 px,
+   mobil ≈ 43 px < 48 px): tartalmat nem takar, magasság nem változik, nem
+   lóg ki, a hero felé nem kerül. atan2 nélküli böngészőben a gradiens
+   érvénytelen → egyszerűen nincs perem (a korábbi egyenes határ marad). */
 .lx-seam {
-  --lx-seam-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='28' viewBox='0 0 320 28'%3E%3Crect y='25' width='320' height='3'/%3E%3Cellipse cx='10.1' cy='20.7' rx='16.9' ry='9.5' transform='rotate(-6 10.1 20.7)'/%3E%3Cellipse cx='330.1' cy='20.7' rx='16.9' ry='9.5' transform='rotate(-6 330.1 20.7)'/%3E%3Cellipse cx='30.0' cy='20.8' rx='12.5' ry='7.7' transform='rotate(10 30.0 20.8)'/%3E%3Cellipse cx='45.1' cy='22.1' rx='8.1' ry='4.4' transform='rotate(8 45.1 22.1)'/%3E%3Cellipse cx='58.4' cy='21.5' rx='9.6' ry='5.2' transform='rotate(11 58.4 21.5)'/%3E%3Cellipse cx='72.3' cy='21.7' rx='12.7' ry='6.3' transform='rotate(4 72.3 21.7)'/%3E%3Cellipse cx='90.0' cy='22.0' rx='8.8' ry='5.7' transform='rotate(5 90.0 22.0)'/%3E%3Cellipse cx='104.5' cy='19.9' rx='13.9' ry='9.1' transform='rotate(6 104.5 19.9)'/%3E%3Cellipse cx='118.2' cy='21.0' rx='12.6' ry='6.9' transform='rotate(9 118.2 21.0)'/%3E%3Cellipse cx='137.0' cy='21.2' rx='14.9' ry='8.0' transform='rotate(11 137.0 21.2)'/%3E%3Cellipse cx='148.6' cy='22.4' rx='7.1' ry='4.9' transform='rotate(-11 148.6 22.4)'/%3E%3Cellipse cx='162.8' cy='22.8' rx='13.4' ry='6.2' transform='rotate(7 162.8 22.8)'/%3E%3Cellipse cx='181.6' cy='17.5' rx='15.0' ry='10.2' transform='rotate(-0 181.6 17.5)'/%3E%3Cellipse cx='203.7' cy='21.3' rx='12.3' ry='6.7' transform='rotate(11 203.7 21.3)'/%3E%3Cellipse cx='220.4' cy='19.3' rx='12.5' ry='8.7' transform='rotate(9 220.4 19.3)'/%3E%3Cellipse cx='239.5' cy='22.6' rx='11.6' ry='5.4' transform='rotate(-6 239.5 22.6)'/%3E%3Cellipse cx='253.4' cy='22.3' rx='11.6' ry='6.1' transform='rotate(8 253.4 22.3)'/%3E%3Cellipse cx='271.1' cy='20.9' rx='14.1' ry='9.0' transform='rotate(-2 271.1 20.9)'/%3E%3Cellipse cx='290.8' cy='22.6' rx='14.1' ry='6.6' transform='rotate(3 290.8 22.6)'/%3E%3Cellipse cx='304.6' cy='22.1' rx='10.3' ry='5.1' transform='rotate(6 304.6 22.1)'/%3E%3Cellipse cx='0.4' cy='22.0' rx='9.4' ry='4.7' transform='rotate(-11 0.4 22.0)'/%3E%3Cellipse cx='320.4' cy='22.0' rx='9.4' ry='4.7' transform='rotate(-11 320.4 22.0)'/%3E%3Cellipse cx='2.2' cy='24.6' rx='3.3' ry='2.3' transform='rotate(-11 2.2 24.6)'/%3E%3Cellipse cx='322.2' cy='24.6' rx='3.3' ry='2.3' transform='rotate(-11 322.2 24.6)'/%3E%3Cellipse cx='7.5' cy='23.8' rx='7.5' ry='5.3' transform='rotate(-6 7.5 23.8)'/%3E%3Cellipse cx='327.5' cy='23.8' rx='7.5' ry='5.3' transform='rotate(-6 327.5 23.8)'/%3E%3Cellipse cx='17.4' cy='23.9' rx='4.4' ry='3.5' transform='rotate(-10 17.4 23.9)'/%3E%3Cellipse cx='25.0' cy='25.2' rx='3.5' ry='2.3' transform='rotate(4 25.0 25.2)'/%3E%3Cellipse cx='30.9' cy='23.5' rx='6.6' ry='5.0' transform='rotate(7 30.9 23.5)'/%3E%3Cellipse cx='41.3' cy='25.1' rx='5.3' ry='2.7' transform='rotate(4 41.3 25.1)'/%3E%3Cellipse cx='51.5' cy='24.9' rx='4.4' ry='2.3' transform='rotate(3 51.5 24.9)'/%3E%3Cellipse cx='59.8' cy='23.8' rx='6.2' ry='3.8' transform='rotate(-3 59.8 23.8)'/%3E%3Cellipse cx='71.6' cy='25.2' rx='4.7' ry='2.9' transform='rotate(-2 71.6 25.2)'/%3E%3Cellipse cx='79.8' cy='23.9' rx='4.9' ry='3.6' transform='rotate(-5 79.8 23.9)'/%3E%3Cellipse cx='86.7' cy='25.5' rx='3.2' ry='2.2' transform='rotate(-16 86.7 25.5)'/%3E%3Cellipse cx='91.7' cy='23.8' rx='8.0' ry='5.6' transform='rotate(-15 91.7 23.8)'/%3E%3Cellipse cx='102.6' cy='24.2' rx='6.7' ry='4.4' transform='rotate(-5 102.6 24.2)'/%3E%3Cellipse cx='116.8' cy='24.0' rx='7.9' ry='4.2' transform='rotate(14 116.8 24.0)'/%3E%3Cellipse cx='129.8' cy='24.6' rx='7.5' ry='3.9' transform='rotate(10 129.8 24.6)'/%3E%3Cellipse cx='142.8' cy='23.9' rx='5.6' ry='3.5' transform='rotate(-13 142.8 23.9)'/%3E%3Cellipse cx='150.9' cy='25.1' rx='3.3' ry='1.8' transform='rotate(5 150.9 25.1)'/%3E%3Cellipse cx='156.4' cy='24.9' rx='7.0' ry='4.3' transform='rotate(-6 156.4 24.9)'/%3E%3Cellipse cx='170.9' cy='25.0' rx='5.7' ry='2.9' transform='rotate(16 170.9 25.0)'/%3E%3Cellipse cx='181.0' cy='25.3' rx='4.5' ry='3.5' transform='rotate(1 181.0 25.3)'/%3E%3Cellipse cx='188.4' cy='25.2' rx='4.2' ry='3.1' transform='rotate(-15 188.4 25.2)'/%3E%3Cellipse cx='196.5' cy='24.4' rx='5.7' ry='4.2' transform='rotate(-6 196.5 24.4)'/%3E%3Cellipse cx='207.3' cy='24.5' rx='5.5' ry='4.1' transform='rotate(-1 207.3 24.5)'/%3E%3Cellipse cx='214.7' cy='23.4' rx='8.0' ry='5.9' transform='rotate(-1 214.7 23.4)'/%3E%3Cellipse cx='226.4' cy='23.6' rx='7.2' ry='4.2' transform='rotate(1 226.4 23.6)'/%3E%3Cellipse cx='238.4' cy='25.2' rx='5.3' ry='3.5' transform='rotate(-18 238.4 25.2)'/%3E%3Cellipse cx='247.7' cy='24.7' rx='4.1' ry='2.5' transform='rotate(-9 247.7 24.7)'/%3E%3Cellipse cx='255.9' cy='25.2' rx='3.6' ry='2.4' transform='rotate(8 255.9 25.2)'/%3E%3Cellipse cx='261.1' cy='24.3' rx='7.2' ry='3.6' transform='rotate(17 261.1 24.3)'/%3E%3Cellipse cx='272.3' cy='24.3' rx='7.1' ry='4.3' transform='rotate(-11 272.3 24.3)'/%3E%3Cellipse cx='284.8' cy='23.9' rx='5.4' ry='4.1' transform='rotate(0 284.8 23.9)'/%3E%3Cellipse cx='294.2' cy='25.4' rx='3.6' ry='2.0' transform='rotate(-14 294.2 25.4)'/%3E%3Cellipse cx='301.1' cy='23.7' rx='6.6' ry='4.9' transform='rotate(-11 301.1 23.7)'/%3E%3Cellipse cx='310.3' cy='25.0' rx='6.2' ry='4.9' transform='rotate(9 310.3 25.0)'/%3E%3Cellipse cx='-1.2' cy='24.7' rx='4.1' ry='2.8' transform='rotate(-13 -1.2 24.7)'/%3E%3Cellipse cx='318.8' cy='24.7' rx='4.1' ry='2.8' transform='rotate(-13 318.8 24.7)'/%3E%3Cellipse cx='252.8' cy='14.5' rx='2.0' ry='1.6' transform='rotate(-25 252.8 14.5)'/%3E%3Cellipse cx='21.4' cy='9.8' rx='1.6' ry='1.4' transform='rotate(27 21.4 9.8)'/%3E%3Cellipse cx='307.8' cy='14.6' rx='1.2' ry='1.0' transform='rotate(-22 307.8 14.6)'/%3E%3Cellipse cx='134.0' cy='17.1' rx='1.9' ry='1.6' transform='rotate(22 134.0 17.1)'/%3E%3Cellipse cx='72.3' cy='13.5' rx='1.5' ry='1.3' transform='rotate(3 72.3 13.5)'/%3E%3Cellipse cx='20.5' cy='15.3' rx='1.1' ry='0.9' transform='rotate(-20 20.5 15.3)'/%3E%3Cellipse cx='236.8' cy='7.3' rx='1.2' ry='1.0' transform='rotate(-8 236.8 7.3)'/%3E%3Cellipse cx='236.5' cy='15.4' rx='1.8' ry='1.5' transform='rotate(8 236.5 15.4)'/%3E%3Cellipse cx='17.3' cy='14.1' rx='1.2' ry='1.0' transform='rotate(28 17.3 14.1)'/%3E%3C/svg%3E");
-  --lx-seam-shade: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='28' viewBox='0 0 320 28'%3E%3Cg fill='none' stroke='rgb(40,25,10)' stroke-opacity='.22' stroke-width='1.2'%3E%3Cpath d='M-6.7 20.7A16.9 9.5 0 0 0 27.0 20.7' transform='rotate(-6 10.1 20.7)'/%3E%3Cpath d='M313.3 20.7A16.9 9.5 0 0 0 347.0 20.7' transform='rotate(-6 330.1 20.7)'/%3E%3Cpath d='M17.5 20.8A12.5 7.7 0 0 0 42.5 20.8' transform='rotate(10 30.0 20.8)'/%3E%3Cpath d='M37.0 22.1A8.1 4.4 0 0 0 53.2 22.1' transform='rotate(8 45.1 22.1)'/%3E%3Cpath d='M48.8 21.5A9.6 5.2 0 0 0 68.1 21.5' transform='rotate(11 58.4 21.5)'/%3E%3Cpath d='M59.7 21.7A12.7 6.3 0 0 0 85.0 21.7' transform='rotate(4 72.3 21.7)'/%3E%3Cpath d='M81.1 22.0A8.8 5.7 0 0 0 98.8 22.0' transform='rotate(5 90.0 22.0)'/%3E%3Cpath d='M90.6 19.9A13.9 9.1 0 0 0 118.3 19.9' transform='rotate(6 104.5 19.9)'/%3E%3Cpath d='M105.6 21.0A12.6 6.9 0 0 0 130.8 21.0' transform='rotate(9 118.2 21.0)'/%3E%3Cpath d='M122.1 21.2A14.9 8.0 0 0 0 151.9 21.2' transform='rotate(11 137.0 21.2)'/%3E%3Cpath d='M141.5 22.4A7.1 4.9 0 0 0 155.7 22.4' transform='rotate(-11 148.6 22.4)'/%3E%3Cpath d='M149.4 22.8A13.4 6.2 0 0 0 176.2 22.8' transform='rotate(7 162.8 22.8)'/%3E%3Cpath d='M166.6 17.5A15.0 10.2 0 0 0 196.6 17.5' transform='rotate(-0 181.6 17.5)'/%3E%3Cpath d='M191.5 21.3A12.3 6.7 0 0 0 216.0 21.3' transform='rotate(11 203.7 21.3)'/%3E%3Cpath d='M208.0 19.3A12.5 8.7 0 0 0 232.9 19.3' transform='rotate(9 220.4 19.3)'/%3E%3Cpath d='M227.8 22.6A11.6 5.4 0 0 0 251.1 22.6' transform='rotate(-6 239.5 22.6)'/%3E%3Cpath d='M241.8 22.3A11.6 6.1 0 0 0 265.0 22.3' transform='rotate(8 253.4 22.3)'/%3E%3Cpath d='M256.9 20.9A14.1 9.0 0 0 0 285.2 20.9' transform='rotate(-2 271.1 20.9)'/%3E%3Cpath d='M276.6 22.6A14.1 6.6 0 0 0 304.9 22.6' transform='rotate(3 290.8 22.6)'/%3E%3Cpath d='M294.4 22.1A10.3 5.1 0 0 0 314.9 22.1' transform='rotate(6 304.6 22.1)'/%3E%3Cpath d='M-8.9 22.0A9.4 4.7 0 0 0 9.8 22.0' transform='rotate(-11 0.4 22.0)'/%3E%3Cpath d='M311.1 22.0A9.4 4.7 0 0 0 329.8 22.0' transform='rotate(-11 320.4 22.0)'/%3E%3Cpath d='M-0.0 23.8A7.5 5.3 0 0 0 15.0 23.8' transform='rotate(-6 7.5 23.8)'/%3E%3Cpath d='M320.0 23.8A7.5 5.3 0 0 0 335.0 23.8' transform='rotate(-6 327.5 23.8)'/%3E%3Cpath d='M24.3 23.5A6.6 5.0 0 0 0 37.5 23.5' transform='rotate(7 30.9 23.5)'/%3E%3Cpath d='M53.6 23.8A6.2 3.8 0 0 0 66.1 23.8' transform='rotate(-3 59.8 23.8)'/%3E%3Cpath d='M83.7 23.8A8.0 5.6 0 0 0 99.6 23.8' transform='rotate(-15 91.7 23.8)'/%3E%3Cpath d='M95.9 24.2A6.7 4.4 0 0 0 109.2 24.2' transform='rotate(-5 102.6 24.2)'/%3E%3Cpath d='M109.0 24.0A7.9 4.2 0 0 0 124.7 24.0' transform='rotate(14 116.8 24.0)'/%3E%3Cpath d='M122.3 24.6A7.5 3.9 0 0 0 137.3 24.6' transform='rotate(10 129.8 24.6)'/%3E%3Cpath d='M149.4 24.9A7.0 4.3 0 0 0 163.5 24.9' transform='rotate(-6 156.4 24.9)'/%3E%3Cpath d='M206.7 23.4A8.0 5.9 0 0 0 222.6 23.4' transform='rotate(-1 214.7 23.4)'/%3E%3Cpath d='M219.2 23.6A7.2 4.2 0 0 0 233.6 23.6' transform='rotate(1 226.4 23.6)'/%3E%3Cpath d='M253.9 24.3A7.2 3.6 0 0 0 268.3 24.3' transform='rotate(17 261.1 24.3)'/%3E%3Cpath d='M265.2 24.3A7.1 4.3 0 0 0 279.4 24.3' transform='rotate(-11 272.3 24.3)'/%3E%3Cpath d='M294.5 23.7A6.6 4.9 0 0 0 307.7 23.7' transform='rotate(-11 301.1 23.7)'/%3E%3Cpath d='M304.1 25.0A6.2 4.9 0 0 0 316.5 25.0' transform='rotate(9 310.3 25.0)'/%3E%3C/g%3E%3Cg fill='rgb(255,255,255)' fill-opacity='.3'%3E%3Cellipse cx='5.1' cy='16.5' rx='6.4' ry='2.1' transform='rotate(-6 10.1 20.7)'/%3E%3Cellipse cx='325.1' cy='16.5' rx='6.4' ry='2.1' transform='rotate(-6 330.1 20.7)'/%3E%3Cellipse cx='26.2' cy='17.4' rx='4.7' ry='1.7' transform='rotate(10 30.0 20.8)'/%3E%3Cellipse cx='42.6' cy='20.2' rx='3.1' ry='1.0' transform='rotate(8 45.1 22.1)'/%3E%3Cellipse cx='55.5' cy='19.2' rx='3.7' ry='1.2' transform='rotate(11 58.4 21.5)'/%3E%3Cellipse cx='68.5' cy='18.8' rx='4.8' ry='1.4' transform='rotate(4 72.3 21.7)'/%3E%3Cellipse cx='87.3' cy='19.4' rx='3.4' ry='1.2' transform='rotate(5 90.0 22.0)'/%3E%3Cellipse cx='100.3' cy='15.8' rx='5.3' ry='2.0' transform='rotate(6 104.5 19.9)'/%3E%3Cellipse cx='114.5' cy='17.9' rx='4.8' ry='1.5' transform='rotate(9 118.2 21.0)'/%3E%3Cellipse cx='132.5' cy='17.6' rx='5.7' ry='1.8' transform='rotate(11 137.0 21.2)'/%3E%3Cellipse cx='146.5' cy='20.2' rx='2.7' ry='1.1' transform='rotate(-11 148.6 22.4)'/%3E%3Cellipse cx='158.8' cy='20.1' rx='5.1' ry='1.4' transform='rotate(7 162.8 22.8)'/%3E%3Cellipse cx='177.1' cy='12.9' rx='5.7' ry='2.3' transform='rotate(-0 181.6 17.5)'/%3E%3Cellipse cx='200.1' cy='18.3' rx='4.7' ry='1.5' transform='rotate(11 203.7 21.3)'/%3E%3Cellipse cx='216.7' cy='15.4' rx='4.7' ry='1.9' transform='rotate(9 220.4 19.3)'/%3E%3Cellipse cx='236.0' cy='20.2' rx='4.4' ry='1.2' transform='rotate(-6 239.5 22.6)'/%3E%3Cellipse cx='249.9' cy='19.6' rx='4.4' ry='1.3' transform='rotate(8 253.4 22.3)'/%3E%3Cellipse cx='266.8' cy='16.9' rx='5.4' ry='2.0' transform='rotate(-2 271.1 20.9)'/%3E%3Cellipse cx='286.5' cy='19.6' rx='5.4' ry='1.5' transform='rotate(3 290.8 22.6)'/%3E%3Cellipse cx='301.5' cy='19.8' rx='3.9' ry='1.1' transform='rotate(6 304.6 22.1)'/%3E%3Cellipse cx='-2.4' cy='19.9' rx='3.6' ry='1.0' transform='rotate(-11 0.4 22.0)'/%3E%3Cellipse cx='317.6' cy='19.9' rx='3.6' ry='1.0' transform='rotate(-11 320.4 22.0)'/%3E%3Cellipse cx='5.2' cy='21.5' rx='2.9' ry='1.2' transform='rotate(-6 7.5 23.8)'/%3E%3Cellipse cx='325.2' cy='21.5' rx='2.9' ry='1.2' transform='rotate(-6 327.5 23.8)'/%3E%3Cellipse cx='29.0' cy='21.2' rx='2.5' ry='1.1' transform='rotate(7 30.9 23.5)'/%3E%3Cellipse cx='58.0' cy='22.1' rx='2.4' ry='0.8' transform='rotate(-3 59.8 23.8)'/%3E%3Cellipse cx='89.3' cy='21.3' rx='3.0' ry='1.2' transform='rotate(-15 91.7 23.8)'/%3E%3Cellipse cx='100.6' cy='22.2' rx='2.5' ry='1.0' transform='rotate(-5 102.6 24.2)'/%3E%3Cellipse cx='114.5' cy='22.1' rx='3.0' ry='0.9' transform='rotate(14 116.8 24.0)'/%3E%3Cellipse cx='127.6' cy='22.8' rx='2.8' ry='0.9' transform='rotate(10 129.8 24.6)'/%3E%3Cellipse cx='154.3' cy='23.0' rx='2.7' ry='0.9' transform='rotate(-6 156.4 24.9)'/%3E%3Cellipse cx='212.3' cy='20.8' rx='3.0' ry='1.3' transform='rotate(-1 214.7 23.4)'/%3E%3Cellipse cx='224.2' cy='21.7' rx='2.7' ry='0.9' transform='rotate(1 226.4 23.6)'/%3E%3Cellipse cx='258.9' cy='22.7' rx='2.7' ry='0.8' transform='rotate(17 261.1 24.3)'/%3E%3Cellipse cx='270.2' cy='22.4' rx='2.7' ry='0.9' transform='rotate(-11 272.3 24.3)'/%3E%3Cellipse cx='299.1' cy='21.5' rx='2.5' ry='1.1' transform='rotate(-11 301.1 23.7)'/%3E%3Cellipse cx='308.4' cy='22.8' rx='2.3' ry='1.1' transform='rotate(9 310.3 25.0)'/%3E%3C/g%3E%3C/svg%3E");
+  --u: 1px;                         /* csíkegység */
+  --seam-h: 48px;                   /* a ferde vágás emelkedése */
+  --seam-t: calc(18 * var(--u));    /* rétegcsík vastagsága */
+  --seam-a: atan2(var(--seam-h), 100vw);
+  --seam-angle: calc(180deg - var(--seam-a)); /* jobbra emelkedik */
+}
+.seam-left {
+  --seam-angle: calc(180deg + var(--seam-a)); /* balra emelkedik */
 }
 .lx-seam::after {
   content: "";
@@ -122,35 +137,40 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: 28px;
+  height: calc(var(--seam-h) + 2 * var(--seam-t));
   z-index: 0;
   pointer-events: none;
-  background:
-    var(--lx-seam-shade) var(--seam-x, 0px) 100% / 320px 28px repeat-x,
-    linear-gradient(to bottom, color-mix(in oklab, var(--seam) 88%, white) 0%, var(--seam) 55%);
-  -webkit-mask: var(--lx-seam-mask) var(--seam-x, 0px) 100% / 320px 28px repeat-x;
-  mask: var(--lx-seam-mask) var(--seam-x, 0px) 100% / 320px 28px repeat-x;
-}
-.lx-seam--dark::after {
-  background:
-    var(--lx-seam-shade) var(--seam-x, 0px) 100% / 320px 28px repeat-x,
-    linear-gradient(to bottom, #4a3a2e 0%, var(--seam) 60%);
+  background: linear-gradient(
+    var(--seam-angle),
+    transparent calc(50% - var(--seam-t)),
+    #ea580c calc(50% - var(--seam-t) + 0.6px),
+    #ea580c calc(50% - var(--seam-t) + 2 * var(--u)),
+    transparent calc(50% - var(--seam-t) + 2 * var(--u) + 0.6px),
+    transparent calc(50% - var(--seam-t) + 5 * var(--u)),
+    #dcb767 calc(50% - var(--seam-t) + 5 * var(--u) + 0.6px),
+    #dcb767 calc(50% - var(--seam-t) + 8 * var(--u)),
+    #b89a6e calc(50% - var(--seam-t) + 8 * var(--u) + 0.6px),
+    #b89a6e calc(50% - var(--seam-t) + 12 * var(--u)),
+    #9c968c calc(50% - var(--seam-t) + 12 * var(--u) + 0.6px),
+    #9c968c calc(50% - var(--seam-t) + 15.5 * var(--u)),
+    #6b625a calc(50% - var(--seam-t) + 15.5 * var(--u) + 0.6px),
+    #6b625a 50%,
+    var(--seam) calc(50% + 0.6px)
+  );
 }
 @media (max-width: 767.98px) {
-  .lx-seam::after {
-    height: 22px;
-    -webkit-mask-size: 252px 22px;
-    mask-size: 252px 22px;
-    background-size: 252px 22px, auto;
+  .lx-seam {
+    --u: 0.7px;
+    --seam-h: 18px;
   }
 }
-/* következő szekció színe + eltolás */
-.seam-to-accent { --seam: #a8401a; --seam-x: 0px; }
-.seam-to-alt { --seam: #ebd2a6; --seam-x: -110px; }
-.seam-to-hi { --seam: #f9eedb; --seam-x: -45px; }
-.seam-to-base { --seam: #f3e2c2; --seam-x: -200px; }
-.seam-to-surface { --seam: #fffaf1; --seam-x: -150px; }
-.seam-to-dark { --seam: #2b2019; --seam-x: -70px; }
+/* következő szekció színe + a vágás iránya (váltakozik) */
+.seam-to-accent { --seam: #a8401a; }
+.seam-to-alt { --seam: #ebd2a6; }
+.seam-to-hi { --seam: #f9eedb; }
+.seam-to-base { --seam: #f3e2c2; }
+.seam-to-surface { --seam: #fffaf1; }
+.seam-to-dark { --seam: #2b2019; }
 
 /* Kisképernyőn a minták visszafogottabbak */
 @media (max-width: 767.98px) {
@@ -263,7 +283,7 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(170deg, rgb(255 200 140 / 0.1) 0%, transparent 40%, rgb(60 20 5 / 0.18) 100%);
+  background: linear-gradient(180deg, transparent 0%, transparent 20%, rgb(255 200 140 / 0.08) 45%, transparent 65%, rgb(60 20 5 / 0.18) 100%);
 }
 
 /* A térkép belseje világos alaptérkép: ott az eredeti tokenek kellenek */
