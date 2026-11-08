@@ -852,3 +852,23 @@ struktúra nem változott. Más oldal nem kapja meg a `.lx` osztályt.
 `pre-grafit-2026-11-08` helyi tag jelöli (7b79ba2). Visszavonás:
 `git revert <commit>` — vagy elég a négy `lx`-osztály eltávolítása /
 a `v3-lower.css` import törlése.
+
+### 2026-11-08 12:13 — módosítás: „túl barna" → világos sóder/bézs
+
+Ügyfél: a sötét grafit változat „túl barna", legyen bézs/sóder, világosabb,
+kicsit feldobva. A `v3-lower.css` hatókörös rendszere megmaradt (ugyanazok a
+`.lx` osztályok, ugyanaz a motívumrendszer), csak a tónusok lettek világosak:
+- `lx-s1` #efe5d3 világos sóder (anyagok, „Miért mi") · `lx-s2` #e6d8bf mélyebb
+  sóder (rendelés, GYIK) · `lx-s3` #f6efe2 legvilágosabb, kiemelt (lefedettség);
+  kártyák #fdf9f1. A szövegszín-tokenek a globális, világos felületre szánt
+  értékek maradtak (nincs szövegszín-felülírás).
+- „Feldobás": erősebb narancs + amber sarokfény-pár szekciónként más
+  sarokban; finom, szabálytalan sóderszem-szemcsézet (inline SVG
+  feTurbulence, nincs képfájl — szabályos pöttyrács kipróbálva, elvetve,
+  mert „pöttyözött háttér"-nek hatott); narancs sarokjelek; narancs élek.
+- Az „Amit Önnek nyújtunk" panel az egyetlen sötét kártya maradt, de
+  semleges antracit (#262320), nem barna, felső narancs éllel.
+- A terrakotta kalkulátorblokk és a sötét záró CTA változatlan alapszínű.
+- Fejléc+hero 390/768/1440 px-en pixelre azonos, szekciómagasságok azonosak.
+Visszaállítás: ez a módosítás külön commit (a sötét változat az előző
+commit); `git revert` bármelyikre külön is működik.

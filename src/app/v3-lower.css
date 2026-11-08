@@ -1,78 +1,59 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   SÓDERÁRAK V3 — „Grafit" réteg a főoldal hero ALATTI szakaszaihoz
-   (ügyfél-brief, 2026-11-08; docs/decisions.md).
+   SÓDERÁRAK V3 — „Sóder" réteg a főoldal hero ALATTI szakaszaihoz
+   (ügyfél-brief, 2026-11-08; 12:13-as ügyfél-visszajelzés: a sötét grafit
+   „túl barna" → világos bézs/sóder tónusok, kicsit feldobva).
 
    HATÓKÖR: kizárólag `.lx`-osztályú szekciókon belül hat. A fejléc, a hero
    (sötét háttér, sarokfények, kupacok, talajsáv, ténysor), a lábléc és az
-   aloldalak NEM kapják meg ezt az osztályt, így ezekre a fájl semmilyen
-   hatással nincs. Globális @theme tokent NEM módosít: a meglévő tokeneket
-   csak a `.lx` hatókörön belül definiálja újra (a Tailwind-utility-k
-   `var(--color-…)`-ot olvasnak, így a meglévő markup magától átszíneződik).
+   aloldalak NEM kapják meg ezt az osztályt. Globális @theme tokent NEM
+   módosít: a felületi tokeneket csak a `.lx` hatókörön belül definiálja újra
+   (a Tailwind-utility-k `var(--color-…)`-ot olvasnak).
 
    Motívumrendszer (következetes, visszafogott):
-     · grafit–antracit tónuslépcső (lx-s1 alap · lx-s2 csendes váltás ·
-       lx-s3 enyhén kiemelt) + a meglévő terrakotta kalkulátorblokk és a
+     · világos sóder/bézs tónuslépcső (lx-s1 alap · lx-s2 mélyebb sóder ·
+       lx-s3 legvilágosabb, kiemelt) + a terrakotta kalkulátorblokk és a
        sötét záró CTA mint hangsúlyos blokkok;
-     · halvány, maszkolt mérnöki rács csak ott, ahol „műszaki" a tartalom
-       (anyaglista, GYIK);
-     · lokális, alacsony intenzitású, STATIKUS narancs sarokfény —
-       szekciónként más sarokban, mobilon kisebb és halványabb;
+     · nagyon finom, szabálytalan „sóderszem" szemcsézet az alapfelületen
+       (inline SVG-zaj, ~0,5 KB, nincs képfájl), halvány mérnöki rács a
+       műszaki tartalom mögött;
+     · lokális, STATIKUS narancs/amber sarokfény — szekciónként más sarokban,
+       mobilon kisebb;
      · szekciónként két finom sarokjel (rajzlap-illesztőjel);
-     · emelt kártyák: 1 px vonal, közös rádiusz, diszkrét narancs él
-       (felül a kiemelt panelen, oldalt az interaktív kártyán hover/nyitáskor);
-     · narancs fókuszkeret (#fb923c, sötéten ≥ 7:1).
-   Nincs pulzálás, mozgó fény, parallax, emelkedő hover; az átmenetek
-   rövidek, és a globális prefers-reduced-motion szabály kikapcsolja őket.
+     · fehéres, emelt kártyák 1 px vonallal; narancs él felül a kiemelt
+       panelen, oldalt az interaktív kártyán hover/nyitáskor; nincs emelés.
+   Nincs pulzálás, mozgó fény, parallax; az átmenetek rövidek, és a globális
+   prefers-reduced-motion szabály alá esnek.
    ═══════════════════════════════════════════════════════════════════════ */
 
 .lx {
   /* ── Saját, szűk tokenkészlet ── */
-  --lx-base: #1d1814;
-  --lx-alt: #231d18;
-  --lx-hi: #28211c;
-  --lx-raise: #2c2520;
-  --lx-raise-2: #352d27;
-  --lx-line: #43392f;
-  --lx-line-strong: #64574a;
-  --lx-text: #f4ede2;
-  --lx-muted: #c9bead;
-  --lx-faint: #b3a796;
-  --lx-orange: #fb923c;
+  --lx-base: #efe5d3;        /* világos sóder */
+  --lx-alt: #e6d8bf;         /* mélyebb sóder */
+  --lx-hi: #f6efe2;          /* legvilágosabb, kiemelt sáv */
+  --lx-raise: #fdf9f1;       /* kártya */
+  --lx-raise-2: #fffcf6;     /* kártya hover */
+  --lx-line: #d9c7a8;
+  --lx-line-strong: #b49c76;
   --lx-edge: #f97316;
-  --lx-glow: rgb(249 115 22 / 0.13);
-  --lx-glow-amber: rgb(214 162 74 / 0.1);
-  --lx-grid: rgb(255 236 210 / 0.045);
+  --lx-glow: rgb(249 115 22 / 0.16);
+  --lx-glow-amber: rgb(214 162 74 / 0.22);
+  --lx-grid: rgb(120 92 52 / 0.075);
 
-  /* ── A meglévő tokenek újradefiniálása CSAK ezen a hatókörön belül ──
-     (az aliasokat is: a :root-on már feloldott értékként öröklődnének) */
+  /* ── Felületi tokenek újradefiniálása CSAK ezen a hatókörön belül ──
+     (a szövegszínek a globális, világos felületre szánt értékek maradnak) */
   --color-page: var(--lx-base);
   --color-sand: var(--lx-base);
   --color-surface: var(--lx-raise);
   --color-paper: var(--lx-raise);
   --color-surface-muted: var(--lx-hi);
-  --color-sand-deep: #54493f;
-  --color-text: var(--lx-text);
-  --color-ink: var(--lx-text);
-  --color-text-muted: var(--lx-muted);
-  --color-ink-soft: var(--lx-muted);
-  --color-ink-faint: var(--lx-faint);
   --color-border: var(--lx-line);
   --color-line: var(--lx-line);
   --color-border-strong: var(--lx-line-strong);
   --color-line-strong: var(--lx-line-strong);
-  --color-accent-deep: var(--lx-orange);
-  --color-brand-deep: var(--lx-orange);
-  --color-brand-soft: #3b2619;
-  --color-clay: #e5682b;
-  --color-focus: var(--lx-orange);
-  /* „mosott" jelölés sötéten: sötét petrol alap, világos petrol felirat */
-  --color-petrol-soft: #134e4a;
-  --color-petrol-deep: #99f6e4;
 
   position: relative;
   isolation: isolate;
   background-color: var(--color-page);
-  color: var(--color-text);
 }
 
 /* Tónuslépcső */
@@ -88,7 +69,7 @@
   --color-surface-muted: var(--lx-hi);
 }
 
-/* ── Háttérréteg: sarokfény + (opcionális) mérnöki rács ──
+/* ── Háttérréteg: sarokfény(ek) + finom, szabálytalan sóderszem-szemcsézet ──
    Egyetlen ::before, a tartalom mögött; nem kattintható, nem lóg ki. */
 .lx::before {
   content: "";
@@ -98,24 +79,25 @@
   pointer-events: none;
   background:
     radial-gradient(
-      var(--lx-glow-size, 34rem) circle at var(--lx-glow-at, 100% 0%),
+      var(--lx-glow-size, 36rem) circle at var(--lx-glow-at, 100% 0%),
       var(--lx-glow),
       transparent 70%
     ),
     radial-gradient(
-      calc(var(--lx-glow-size, 34rem) * 0.8) circle at var(--lx-glow2-at, -10% 110%),
+      calc(var(--lx-glow-size, 36rem) * 0.85) circle at var(--lx-glow2-at, 0% 100%),
       var(--lx-glow2, transparent),
       transparent 70%
-    );
+    ),
+    var(--lx-speck-img, url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .31 0 0 0 0 .18 0 0 0 1.6 -1.0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 220px 220px);
 }
-.lx-glow-tr { --lx-glow-at: 100% 0%; }
-.lx-glow-tl { --lx-glow-at: 0% 0%; }
-.lx-glow-bl { --lx-glow-at: 0% 100%; }
-.lx-glow-br { --lx-glow-at: 100% 100%; }
-.lx-glow-soft { --lx-glow: rgb(249 115 22 / 0.08); }
+.lx-glow-tr { --lx-glow-at: 100% 0%; --lx-glow2-at: 0% 100%; }
+.lx-glow-tl { --lx-glow-at: 0% 0%; --lx-glow2-at: 100% 100%; }
+.lx-glow-bl { --lx-glow-at: 0% 100%; --lx-glow2-at: 100% 0%; }
+.lx-glow-br { --lx-glow-at: 100% 100%; --lx-glow2-at: 0% 0%; }
+.lx-glow-soft { --lx-glow: rgb(249 115 22 / 0.11); }
 .lx-glow-pair { --lx-glow2: var(--lx-glow-amber); }
 
-/* Halvány mérnöki rács: csak a felső-középső mezőben, maszkkal elhalványítva */
+/* Halvány mérnöki rács a felső-középső mezőben, maszkkal elhalványítva */
 .lx-grid::after {
   content: "";
   position: absolute;
@@ -127,8 +109,13 @@
     linear-gradient(to bottom, var(--lx-grid) 1px, transparent 1px);
   background-size: 48px 48px;
   background-position: center top;
-  -webkit-mask-image: radial-gradient(70% 55% at 50% 0%, #000 0%, transparent 100%);
-  mask-image: radial-gradient(70% 55% at 50% 0%, #000 0%, transparent 100%);
+  -webkit-mask-image: radial-gradient(75% 60% at 50% 0%, #000 0%, transparent 100%);
+  mask-image: radial-gradient(75% 60% at 50% 0%, #000 0%, transparent 100%);
+}
+
+/* Szekcióhatár: vékony világos fényél felül (a sávok tisztán válnak el) */
+.lx + .lx {
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
 }
 
 /* Sarokjelek a tartalomtartó két szemközti sarkán (rajzlap-illesztőjel) */
@@ -142,7 +129,6 @@
   width: 0.875rem;
   height: 0.875rem;
   pointer-events: none;
-  border-color: rgb(249 115 22 / 0.55);
   border-style: solid;
   border-width: 0;
 }
@@ -151,13 +137,14 @@
   left: 1rem;
   border-top-width: 2px;
   border-left-width: 2px;
+  border-color: rgb(234 88 12 / 0.75);
 }
 .lx > .mx-auto::after {
   bottom: 1.25rem;
   right: 1rem;
   border-bottom-width: 2px;
   border-right-width: 2px;
-  border-color: rgb(244 237 226 / 0.18);
+  border-color: rgb(120 92 52 / 0.3);
 }
 @media (min-width: 768px) {
   .lx > .mx-auto::before {
@@ -170,117 +157,89 @@
   }
 }
 
-/* Kisképernyőn a fények kisebbek és halványabbak, a rács még visszafogottabb */
+/* Kisképernyőn a fények kisebbek, a minták visszafogottabbak */
 @media (max-width: 767.98px) {
   .lx {
     --lx-glow-size: 20rem;
-    --lx-glow: rgb(249 115 22 / 0.09);
-    --lx-glow-amber: rgb(214 162 74 / 0.07);
-    --lx-grid: rgb(255 236 210 / 0.03);
+    --lx-glow: rgb(249 115 22 / 0.12);
+    --lx-glow-amber: rgb(214 162 74 / 0.16);
+    --lx-grid: rgb(120 92 52 / 0.055);
   }
   .lx-glow-soft {
-    --lx-glow: rgb(249 115 22 / 0.06);
+    --lx-glow: rgb(249 115 22 / 0.09);
   }
-}
-
-/* Fókusz: sötét felületen narancs (a globális brand-dark itt 3:1 alatti) */
-.lx :focus-visible {
-  outline-color: var(--lx-orange);
-}
-
-/* ── Gombok a sötét hatókörben ── */
-.lx .btn-primary:hover {
-  /* a globális hover az accent-deep-re váltana (itt világos narancs) */
-  background: #9a3412;
-}
-.lx .btn-outline {
-  border-color: rgb(244 237 226 / 0.55);
-}
-.lx .btn-outline:hover {
-  background: var(--lx-text);
-  border-color: var(--lx-text);
-  color: var(--lx-base);
-}
-.lx .link {
-  text-decoration-color: rgb(251 146 60 / 0.45);
 }
 
 /* ── Emelt felületek ── */
-.lx .shadow-card,
+.lx .shadow-card {
+  box-shadow: 0 1px 0 rgb(120 92 52 / 0.1), 0 10px 24px -18px rgb(90 64 30 / 0.35);
+}
 .lx .shadow-pop {
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.25), 0 18px 36px -24px rgb(0 0 0 / 0.7);
+  box-shadow: 0 1px 0 rgb(120 92 52 / 0.12), 0 22px 44px -26px rgb(90 64 30 / 0.45);
 }
 
-/* Anyagkártya (interaktív: hover = keret + oldalsó narancs él; nincs emelés) */
+/* Anyagkártya (interaktív: hover = keret + háttér + oldalsó narancs él;
+   nincs emelés, a kép nem mozdul) */
 .lx .mat-card {
   border-color: var(--lx-line);
-  box-shadow: inset 0 0 0 0 var(--lx-edge), 0 1px 0 rgb(0 0 0 / 0.25);
+  box-shadow: inset 0 0 0 0 var(--lx-edge), 0 1px 0 rgb(120 92 52 / 0.1);
   transition:
     border-color var(--dur-fast) var(--ease-out-soft),
     box-shadow var(--dur-fast) var(--ease-out-soft),
     background-color var(--dur-fast) var(--ease-out-soft);
 }
 .lx .mat-card[data-open="true"] {
-  border-color: rgb(249 115 22 / 0.55);
-  box-shadow: inset 3px 0 0 0 var(--lx-edge), 0 18px 36px -24px rgb(0 0 0 / 0.7);
+  border-color: rgb(234 88 12 / 0.55);
+  box-shadow: inset 3px 0 0 0 var(--lx-edge), 0 22px 44px -26px rgb(90 64 30 / 0.45);
 }
 @media (hover: hover) and (pointer: fine) {
   .lx .mat-card:hover {
     border-color: var(--lx-line-strong);
     background-color: var(--lx-raise-2);
-    box-shadow: inset 3px 0 0 0 rgb(249 115 22 / 0.7), 0 1px 0 rgb(0 0 0 / 0.25);
+    box-shadow: inset 3px 0 0 0 rgb(249 115 22 / 0.75), 0 10px 24px -18px rgb(90 64 30 / 0.35);
   }
-  /* a kép ne mozogjon: nyugodtabb, nem „gomb-szerű" hatás */
   .lx .mat-card:hover .mat-grain {
     transform: none;
   }
 }
-.lx .mat-summary:focus-visible {
-  outline-color: var(--lx-orange);
-}
 .lx .mat-card:not([data-open="true"]) .mat-toggle {
-  background-color: rgb(249 115 22 / 0.12);
-  color: var(--lx-orange);
+  background-color: #fde6d2;
+  color: #9a3412;
 }
 
-/* Bruttó-felirat sötéten */
+/* Bruttó-felirat: bal oldali narancs él (árnyékkal — a méret nem változik) */
 .lx .gross-banner {
-  border-color: rgb(249 115 22 / 0.6);
   box-shadow: inset 3px 0 0 0 var(--lx-edge);
-  color: #fdba74;
 }
 
 /* Rendelés menete: a záró lépés numerálja élénk narancs */
 .lx .order-route .text-accent {
-  color: var(--lx-edge);
-}
-.lx .order-route .route-seg {
-  background-color: rgb(249 115 22 / 0.45);
+  color: #ea580c;
 }
 
-/* Térképkeret: kiemelt panel felső narancs éllel */
-/* (keret árnyékkal, nem borderrel: a doboz mérete — és így a tördelés — változatlan) */
+/* Térképkeret: kiemelt panel felső narancs éllel
+   (keret árnyékkal, nem borderrel: a doboz mérete — és a tördelés — változatlan) */
 .lx .lx-map-frame {
   box-shadow:
     inset 0 0 0 1px var(--lx-line),
     inset 0 2px 0 0 var(--lx-edge),
-    0 18px 36px -24px rgb(0 0 0 / 0.7);
+    0 22px 44px -26px rgb(90 64 30 / 0.45);
 }
 
-/* Kiemelt (nem kattintható) panel: emelt grafit, felső narancs él */
+/* Kiemelt (nem kattintható) sötét panel: semleges antracit (nem barna),
+   felső narancs él — az egyetlen sötét kártya a világos szakaszban */
 .lx .lx-panel {
-  background-color: var(--lx-raise);
+  background-color: #262320;
   box-shadow:
-    inset 0 0 0 1px var(--lx-line),
     inset 0 2px 0 0 var(--lx-edge),
-    0 18px 36px -24px rgb(0 0 0 / 0.7);
+    0 22px 44px -26px rgb(40 30 20 / 0.55);
 }
 .lx .lx-panel .bg-amber\/15 {
-  background-color: rgb(249 115 22 / 0.14);
-  color: var(--lx-orange);
+  background-color: rgb(249 115 22 / 0.16);
+  color: #fdba74;
 }
 
-/* GYIK: csendes sorok, hoverre csak szín- és ikonháttér-váltás */
+/* GYIK: csendes sorok, hoverre/nyitva csak ikonháttér- és színváltás */
 .lx details > summary > span[aria-hidden="true"] {
   transition:
     transform var(--dur-ui) var(--ease-out-soft),
@@ -290,15 +249,14 @@
 }
 .lx details > summary:hover > span[aria-hidden="true"],
 .lx details[open] > summary > span[aria-hidden="true"] {
-  background-color: rgb(249 115 22 / 0.14);
-  border-color: rgb(249 115 22 / 0.6);
-  color: var(--lx-orange);
+  background-color: #fde6d2;
+  border-color: rgb(234 88 12 / 0.6);
+  color: #9a3412;
 }
 
 /* ── Hangsúlyos blokkok (saját alapszínük marad) ── */
 
-/* Kalkulátor-belépő (terrakotta): mélyülő tónus + egy sarokfény, a
-   grafit szekciókhoz kötve; a szelvény és a gombok változatlanok. */
+/* Kalkulátor-belépő (terrakotta): világosodó sarokfény + enyhe mélyülés */
 .lx-cta-accent::before {
   content: "";
   position: absolute;
@@ -306,19 +264,19 @@
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(36rem circle at 100% 0%, rgb(255 190 120 / 0.16), transparent 70%),
-    linear-gradient(180deg, transparent 40%, rgb(29 24 20 / 0.28) 100%);
+    radial-gradient(36rem circle at 100% 0%, rgb(255 190 120 / 0.18), transparent 70%),
+    linear-gradient(180deg, transparent 45%, rgb(60 20 5 / 0.18) 100%);
 }
 @media (max-width: 767.98px) {
   .lx-cta-accent::before {
     background:
-      radial-gradient(20rem circle at 100% 0%, rgb(255 190 120 / 0.12), transparent 70%),
-      linear-gradient(180deg, transparent 50%, rgb(29 24 20 / 0.22) 100%);
+      radial-gradient(20rem circle at 100% 0%, rgb(255 190 120 / 0.14), transparent 70%),
+      linear-gradient(180deg, transparent 50%, rgb(60 20 5 / 0.14) 100%);
   }
 }
 
-/* Záró CTA: a lábléccel egy tömb (saját sötétbarna alap), lokális narancs
-   és amber sarokfény + felső narancs illesztőjel a cím fölött. */
+/* Záró CTA: a lábléccel egy tömb (saját sötét alap), lokális narancs és
+   amber sarokfény */
 .lx-cta-close::before {
   content: "";
   position: absolute;
@@ -337,31 +295,15 @@
   }
 }
 
-/* A térkép belseje (Leaflet-feliratok, vezérlők, attribúció) világos
-   alaptérképen ül: ott az eredeti, világos felületre szánt tokenek kellenek. */
+/* A térkép belseje világos alaptérkép: ott az eredeti tokenek kellenek */
 .lx .leaflet-container {
   --color-page: #f4ead8;
   --color-sand: #f4ead8;
   --color-surface: #fffaf1;
   --color-paper: #fffaf1;
   --color-surface-muted: #ead9bb;
-  --color-sand-deep: #ead9bb;
-  --color-text: #24211d;
-  --color-ink: #24211d;
-  --color-text-muted: #5a5145;
-  --color-ink-soft: #5a5145;
-  --color-ink-faint: #6e6457;
   --color-border: #d8c4a0;
   --color-line: #d8c4a0;
   --color-border-strong: #b9a27a;
   --color-line-strong: #b9a27a;
-  --color-accent-deep: #9a3412;
-  --color-brand-deep: #9a3412;
-  --color-brand-soft: #fbe3cf;
-  --color-clay: #b4532f;
-  --color-focus: #c2410c;
-  color: var(--color-text);
-}
-.lx .leaflet-container :focus-visible {
-  outline-color: #c2410c;
 }
