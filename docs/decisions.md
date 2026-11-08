@@ -950,3 +950,12 @@ tipográfia, átlógó kártyák) az ügyfél az óriás tipográfiát választo
   (`overflow-x: clip`); fejléc+hero pixelre azonos; magasságok változatlanok.
 - Akadálymentesség: generált tartalom üres alternatív szöveggel
   (`content: var(--n) / ""`), pointer-events: none.
+
+### 2026-11-08 12:42 — a sorszámok eltávolítva (végleges állapot)
+
+Ügyfél: „így tetszik, de a számok ne legyenek rajta". Az óriás sorszámok
+lekerültek; minden más marad: élénk sóder tónuslépcső (#f3e2c2 · #ebd2a6 ·
+#f9eedb), szabálytalan sóderszem-szemcsézet, egyenletes háttérátmenet,
+maszkolt mérnöki rács (anyaglista, GYIK), emelt kártyák narancs élekkel,
+antracit „Amit Önnek nyújtunk" panel, narancs numerálok/ikonok/fókusz.
+Fejléc, hero, lábléc, aloldalak érintetlenek.
