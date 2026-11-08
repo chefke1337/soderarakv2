@@ -1,16 +1,15 @@
 import Link from "next/link";
 import { company, guides, nav } from "@/content/site";
 import { MailLink, PhoneLink } from "@/lib/ui";
-import HeroGround from "@/components/HeroGround";
 
 const FOOTER_GUIDES = 6;
 
 export default function Footer() {
   return (
     <footer data-call-region="footer" className="ftr on-dark bg-surface-dark text-on-dark">
-      {/* Rétegrend: ugyanaz a térkő alatti rétegmetszet, mint a hero alján
-          (ügyfél, 2026-11-07) — a talaj a sötét láblécbe fakul */}
-      <HeroGround fadeTo="dark" />
+      {/* Narancs dizájncsík (ügyfél, 2026-11-08 17:21; globális) — a korábbi
+          rétegrend-sáv helyett. Dekoratív. */}
+      <div aria-hidden="true" className="footer-stripe" />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-8 sm:grid-cols-2 md:gap-10 md:pt-14 md:pb-10 md:px-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Link href="/" aria-label="Sóderárak — főoldal" className="inline-block rounded-sm">

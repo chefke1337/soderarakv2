@@ -139,3 +139,48 @@
 .ftr > div:last-child {
   background: rgb(0 0 0 / 0.16);
 }
+
+/* Lábléc felső narancs dizájncsíkja (17:21 ügyfél, globális) — a rétegrend-
+   sáv helyett. Fénylő, középen világosodó narancs fősáv, alatta vékony
+   kísérővonal és egy rövidebb, sötétebb „árnyék"-csík; derengés nincs. */
+.footer-stripe {
+  position: relative;
+  height: 1rem;
+  background: #231a14;
+}
+.footer-stripe::before,
+.footer-stripe::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.footer-stripe::before {
+  top: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #c2410c 0%, #ea580c 18%, #f97316 42%, #fb923c 50%, #f97316 58%, #ea580c 82%, #c2410c 100%);
+}
+.footer-stripe::after {
+  top: 9px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgb(249 115 22 / 0.55) 20%, rgb(251 146 60 / 0.75) 50%, rgb(249 115 22 / 0.55) 80%, transparent 100%);
+}
+
+/* ── Élénkebb narancs gombok (17:21 ügyfél, globális) ──
+   A kitöltött narancs gombok és hívógombok #cf4a0e háttérrel és FEHÉR
+   felirattal (4,53:1 — az ügyfél által választott, AA-t még teljesítő
+   árnyalat; a #e8590c-s „számszín" fehér felirattal csak 3,6:1 lenne).
+   A tisztán grafikus narancs elemek (ikonkörök, csomópontok, sávok) a
+   „számszínt" (#ea580c) kapják — ott nincs szövegkontraszt-követelmény. */
+.btn-primary,
+.bg-brand-dark {
+  background-color: #cf4a0e;
+  color: #ffffff;
+}
+.btn-primary:hover,
+.hover\:bg-brand-deep:hover {
+  background-color: #a8380a;
+}
+.bg-accent {
+  background-color: #ea580c;
+}

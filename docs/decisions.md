@@ -1118,3 +1118,20 @@ semmi. Halk narancs derengés alulról.
 Ügyfél: „vedd le, nem kell a webre ez az elem". A hero jobb oszlopa mögötti
 panel / ív (`.hero-cta-col`) teljesen törölve; az oszlop az eredeti,
 díszítés nélküli állapotában marad.
+
+### 2026-11-08 17:21 — lábléc narancs dizájncsík; élénkebb narancs gombok
+
+- Lábléc (globális): a rétegrend-sáv (`HeroGround fadeTo="dark"`) helyett
+  narancs dizájncsík — 5 px-es, középen világosodó narancs fősáv, alatta
+  2 px-es, szélein elhalványuló kísérővonal; derengés nincs (`.footer-stripe`).
+  A hero alján a rétegrend-sáv marad.
+- Narancs gombok / hívógombok (globális: `.btn-primary`, `.bg-brand-dark`):
+  #cf4a0e háttér + fehér felirat (4,53:1). Ügyfél-választás három
+  lehetőségből: az „Így működik" számszíne (#e8590c) fehér felirattal csak
+  3,6:1 lenne (AA alatt), sötét felirattal pedig megváltozott volna a
+  gombok karaktere — az ügyfél a „kicsit élénkebb, fehér felirat"
+  változatot választotta. Hover: #a8380a.
+- Kalkulátor-blokk: #cf4a0e háttér, fehér szöveg (a világosító sáv kivéve,
+  hogy a kontraszt mindenhol ≥ 4,5:1 maradjon).
+- Tisztán grafikus narancs elemek (`.bg-accent`: ikonkörök, csomópontok,
+  sávok): a számszín, #ea580c.

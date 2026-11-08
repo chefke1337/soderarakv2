@@ -227,7 +227,15 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, transparent 0%, transparent 20%, rgb(255 200 140 / 0.08) 45%, transparent 65%, rgb(60 20 5 / 0.18) 100%);
+  /* csak lefelé mélyül (világosító sáv nincs: a fehér szöveg kontrasztja miatt) */
+  background: linear-gradient(180deg, transparent 0%, transparent 45%, rgb(60 20 5 / 0.16) 100%);
+}
+/* 17:21 ügyfél: élénkebb narancs blokk. #cf4a0e = a legélénkebb árnyalat,
+   amelyen a FEHÉR szöveg még ≥ 4,5:1 (WCAG AA) — ügyfél-választás. */
+.lx-cta-accent {
+  background-color: #cf4a0e;
+  --color-on-dark: #ffffff;
+  --color-on-accent-muted: #ffffff;
 }
 
 /* A térkép belseje világos alaptérkép: ott az eredeti tokenek kellenek */
