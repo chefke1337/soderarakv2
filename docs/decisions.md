@@ -1516,3 +1516,62 @@ kulcsszóvolumenre épülő új oldal, versenytárs-doorway/támadó-hangnem
 **Nem történt commit még** — ezzel egy körben a végső auditpassz két
 alügynöke is fut a háttérben; a commitot egyben, a soron következő
 összefoglalóval teszem meg.
+
+### 2026-11-09 20:11 — Végső független auditpassz, A. rész (`senior-reviewer` alügynök) + saját ellenőrzés
+
+A 16. szakasz szerinti, elkülönített alügynökös auditpassz első fele
+befejeződött (28 lépéses korláton elakadt egyszer, `SendMessage`-dzsel
+folytatva). **A jelentést nem fogadtam el vakon** — a négy "release
+blocker" és a legsúlyosabb "must fix" tételt saját kódolvasással
+függetlenül újra-ellenőriztem, mielőtt bármit a projekt dokumentumaiba
+írtam volna.
+
+**Saját ellenőrzéssel megerősített, valódi új felismerések:**
+1. `IS_PREVIEW` (`site.ts:56`) exportálva, de **0 felhasználó** a
+   forrásban — a tényleges `noindex` `layout.tsx:65`-ön hardkódolt,
+   független tőle. Nincs egyetlen kapcsoló az élesítéshez.
+2. Az adatvédelmi tájékoztató (`adatvedelem/page.tsx`) nem sorolja fel a
+   számlázási adatokat (név, adószám, cím), amiket a `BillingFields.tsx`
+   + `order.ts:198` igazoltan gyűjt és küld — valódi, a 2026-11-07/08-i
+   számlázási bővítés óta nyitott GDPR-tájékoztatási rés.
+3. A CI (`deploy-v3-pages.yml`) build-lépése **kihagyja az `og-hash.mjs`**
+   kaput, amit a `package.json` `build` szkriptje és a `CLAUDE.md` is
+   terhelőként (load-bearing) nevez meg — a GitHub Pages demo-deploy
+   soha nem futtatja ezt a regressziós kaput.
+4. A valódi production-deploy útvonalat is megnéztem
+   (`daekon/deploy-checklist.md`, `scripts/package-deploy.mjs`): a
+   checklist "**nincs szerver-kód**"-ot állít, és semmilyen szkript nem
+   kezeli a `rendeles.php` PHP-backend vagy a `NEXT_PUBLIC_ORDER_API_URL`
+   bekötését — ez nem új ellentmondás (a korábbi audit már BLOCKED-ként
+   jelölte az e-mail-küldést), de most elsőként derült ki, hogy **magának
+   az aktiválásnak sincs szkriptelt útja**.
+5. `docs/business-facts.md` saját, e session alatt írt sora hibásan
+   mosta össze a XI. kerület 1112/1118 automata díjprofilját (`freight.ts:
+   161-173`, VAN automata ár) az I. kerületi Vár-kivétellel
+   (`CASTLE_DISTRICT_ID=1`, `freight.ts:85,378-382`, NINCS automata ár) —
+   **azonnal javítva**, lásd a fájl aktuális verzióját.
+6. `docs/v3-audit-and-fixes.md` 3 "PASS" sora elavult adatra hivatkozik
+   (impresszum régi cégnév — a céges adat a 2026-11-01-i audit UTÁN,
+   2026-11-03-án változott; kulé "mosott kavics"-jelölés, valójában
+   `ONCE_WASHED_KULE`; térkép "13 jelölés", gyanúsan alacsony a jelenlegi
+   `serviceAreas`-hoz képest) — dokumentáció-staleness, **nem élő hiba**.
+
+**Nem egyenként újra-ellenőrzött, de a jelentés addigi pontossága miatt
+hitelesnek tekintett tételek** (lásd `docs/independent-audit.md` A. rész
+teljes szövege): 6 használaton kívüli függőség, hardkódolt árak az
+útmutató-oldalon, hiányzó `aria-required` a kalkulátor 3. lépésén,
+versengő CTA-k, glassmorphism-mennyiség, és további ~10 kisebb tétel.
+
+**Új dokumentum:** `docs/independent-audit.md` — a 16. szakasz
+deliverable-je, explicit jelölve, hogy ez **nem külső tanúsítás**
+(a megbízás szövege szerint), csak elkülönített alügynökös ellenőrzés,
+amelyben a saját session utólag ellenőrizte a legsúlyosabb tételeket.
+
+**`docs/backlog.md` bővült:** 2 új P0 (nincs élesítési kapcsoló;
+adatvédelmi hiányosság), 4 új P1 (CI-kapu hiány, hardkódolt árak,
+a11y-rés, függőség-kérdés), 4 új P2 (2× dokumentáció-staleness, GA4-
+megfogalmazás, a nem egyenként ellenőrzött maradék tételek gyűjtősora).
+
+**Még nyitva:** a B. alügynök (valódi QA-kapuk újrafuttatása, build/
+teszt-futtatással) még dolgozik — az `independent-audit.md` B. szakasza
+üres, amíg az nem jelez vissza.
