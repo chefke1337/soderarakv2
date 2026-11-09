@@ -8,7 +8,7 @@
  * (pl. .htaccess `SetEnv`) is megadhatók — a környezeti változó erősebb.
  *
  * Ha semmit nem adsz meg, a végpont a tárhely saját PHP mail() függvényével
- * küld, feladóként az megrendeles@soderarak.hu címmel. Hogy ez a tárhelyen
+ * küld, feladóként az rendeles@soderarak.hu címmel. Hogy ez a tárhelyen
  * működik-e, azt csak egy (jóváhagyott) tesztlevél mutatja meg.
  */
 return [
@@ -16,7 +16,7 @@ return [
     'ORDER_TRANSPORT' => 'mail',
 
     // Feladó: a levelezőszolgáltatónál engedélyezett, hitelesített cím.
-    'ORDER_MAIL_FROM' => 'megrendeles@soderarak.hu',
+    'ORDER_MAIL_FROM' => 'rendeles@soderarak.hu',
     'ORDER_MAIL_FROM_NAME' => 'Sóderárak weboldal',
 
     // Csak SMTP esetén — az értékeket a tárhely/levelezés szolgáltatója adja meg.
@@ -27,7 +27,7 @@ return [
     // 'ORDER_SMTP_PASS' => '',
 
     // Opcionális: további FIX címzett(ek) a rendelési igényhez, vesszővel
-    // (legfeljebb 3). Az megrendeles@soderarak.hu mindig címzett marad.
+    // (legfeljebb 3). Az rendeles@soderarak.hu mindig címzett marad.
     // 'ORDER_EXTRA_RECIPIENTS' => 'masolat@pelda.hu',
 
     // Opcionális: további engedélyezett beküldési forrás(ok), vesszővel

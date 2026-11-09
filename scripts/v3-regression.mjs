@@ -354,10 +354,10 @@ for (const w of [390, 768, 1440]) {
   await page.goto(url("/impresszum/"), { waitUntil: "load" });
   {
     const it = (await page.locator("main").innerText()).replace(/\s+/g, " ");
-    check("impresszum: új vállalkozói adatok", ["Újhegyi Lajosné E.V.", "1224 Budapest, Báthori utca 9.", "61008203-2-43", "Egyéni vállalkozói nyilvántartási szám", "4868853", "H–P 07:00–16:00", "megrendeles@soderarak.hu", "+36 30 852 8909"].every((x) => it.includes(x)));
+    check("impresszum: új vállalkozói adatok", ["Újhegyi Lajosné E.V.", "1224 Budapest, Báthori utca 9.", "61008203-2-43", "Egyéni vállalkozói nyilvántartási szám", "4868853", "H–P 07:00–16:00", "rendeles@soderarak.hu", "+36 30 852 8909"].every((x) => it.includes(x)));
   }
   check("lábléc: telefonos elérhetőség mondat", /Telefonon hétfőtől péntekig 07:00–16:00 között ér el minket\./.test(await page.locator("footer").innerText()));
-  check("lábléc: e-mail link", (await page.locator("footer a[href='mailto:megrendeles@soderarak.hu']").count()) > 0);
+  check("lábléc: e-mail link", (await page.locator("footer a[href='mailto:rendeles@soderarak.hu']").count()) > 0);
   // Buda Konténer: önálló ajánló, összetartozást sugalló szöveg nélkül (2026-11-03)
   const AFFIL = /külön üzletág|másik üzletág|üzletágunk|konténeres szolgáltatásunk|saját konténer|közös vállalkozás|Két üzletág|órákon belüli kiszállás|Erre van a Buda Konténer/i;
   const withAffil = htmlFiles.filter((f) => AFFIL.test(readFileSync(f, "utf8")));

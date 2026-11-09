@@ -100,9 +100,9 @@ const srv = await startServer({ ORDER_TRANSPORT: "file", ORDER_RATE_LIMIT: "100"
   const mails = mailsIn(srv);
   eq("pontosan egy levél készült", mails.length, 1);
   const m = mails[0] ?? "";
-  check("címzett fix: megrendeles@soderarak.hu", /^To: megrendeles@soderarak\.hu\r?$/m.test(m));
+  check("címzett fix: rendeles@soderarak.hu", /^To: rendeles@soderarak\.hu\r?$/m.test(m));
   check("Reply-To a beküldő címe", /^Reply-To: teszt@example\.com\r?$/m.test(m));
-  check("feladó a konfigurált cím (nem a beküldőé)", /^From: .*<megrendeles@soderarak\.hu>\r?$/m.test(m));
+  check("feladó a konfigurált cím (nem a beküldőé)", /^From: .*<rendeles@soderarak\.hu>\r?$/m.test(m));
   check("tesztlevél jelölve a tárgyban", /^Subject: \[TESZT\] Rendelési igény/m.test(m));
   for (const needle of [
     "Név: Teszt Elek",
@@ -253,12 +253,12 @@ section("További címzett: csak konfigból, validálva");
   const s6 = await startServer({
     ORDER_TRANSPORT: "file",
     ORDER_RATE_LIMIT: "100",
-    ORDER_EXTRA_RECIPIENTS: "masolat@example.com, nem-email, megrendeles@soderarak.hu,\r\nBcc: x@evil.test",
+    ORDER_EXTRA_RECIPIENTS: "masolat@example.com, nem-email, rendeles@soderarak.hu,\r\nBcc: x@evil.test",
   });
   const r = await post(s6, base({ idempotencyKey: "extra-0000001", recipients: ["tamado@evil.test"], to: "tamado@evil.test" }));
   eq("200 válasz", r.status, 200);
   const m = mailsIn(s6).find((t) => t.includes("extra-0000001")) ?? "";
-  check("To: megrendeles@soderarak.hu + a konfigurált másolat", /^To: megrendeles@soderarak\.hu, masolat@example\.com\r?$/m.test(m));
+  check("To: rendeles@soderarak.hu + a konfigurált másolat", /^To: rendeles@soderarak\.hu, masolat@example\.com\r?$/m.test(m));
   check("érvénytelen / duplikált / injektált konfigérték kiszűrve", !/nem-email|evil\.test/.test(m.split(/\r?\n\r?\n/)[0]));
   check("a kliens nem adhat hozzá címzettet", !m.includes("tamado@evil.test"));
   s6.stop();
@@ -273,7 +273,7 @@ section("PHP mail() — éles kódút, valódi küldés nélkül");
   const r = await post(s5, base({ name: "Árvíztűrő Tükörfúrógép" }));
   eq("mail() átvette → 200", r.status, 200);
   const raw = readFileSync(out, "utf8");
-  check("To: megrendeles@soderarak.hu és a másolat címzett (mail())", /^To: megrendeles@soderarak\.hu, masolat@example\.com/m.test(raw));
+  check("To: rendeles@soderarak.hu és a másolat címzett (mail())", /^To: rendeles@soderarak\.hu, masolat@example\.com/m.test(raw));
   check("Subject UTF-8 kódolva", /^Subject: =\?UTF-8\?B\?/m.test(raw));
   check("Reply-To fejléc", /^Reply-To: teszt@example\.com/m.test(raw));
   check("UTF-8 base64 törzs", /Content-Transfer-Encoding: base64/.test(raw));
