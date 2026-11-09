@@ -1435,3 +1435,40 @@ kör nyitott tétele, ezzel a körrel sem zárult le).
 **Nem történt commit** — a felhasználó kilépett az automatikus módból a
 2. kör elején; a commitolás előtt megkérdezem, mielőtt bármit
 verzionálnék.
+
+(Utóbb a felhasználó jóváhagyta a commitot — lásd a `7b81ffe` commit a
+`v3-audit` ágon.)
+
+### 2026-11-09 19:56 — Üzleti tényjegyzék és adatbekérő lista (10./19.7. szakasz) — új dokumentum
+
+**Felismert hiány:** a `CLAUDE.md` 10. szakasza önálló "belső üzleti
+tényjegyzéket" kér (állítás | forrás | ellenőrzés | felhasználható oldalak
+| szükséges megerősítés), a 19. szakasz pedig ezt + egy adatbekérő listát
+önálló átadandó anyagként sorolja fel. Korábban ez **szétszórva** élt
+(`v3-audit-and-fixes.md` 7. szakasza "Ügyfélkérdések" alcíme,
+`decisions.md` több bejegyzése, és a mai piackutatás 2 új kérdése) — nem
+volt egy kereshető, önálló fájl.
+
+**`docs/business-facts.md` (új fájl):**
+- 1. szakasz: 15 jelenleg élő, publikált állítás forrással (`site.ts`,
+  `freight.ts`, `catalog.ts` konkrét sor-hivatkozásokkal) és ellenőrzési
+  szinttel (B = forráskódban ellenőrzött, D = ügyféladat, C = automata
+  teszttel is igazolva) — mindegyiknél jelölve, van-e nyitott kérdés.
+  Egy tényt (`info@soderarak.hu` mint általános e-mail) explicit
+  megjelöltem kereszt-ellenőrzésre szorulónak a párhuzamos session
+  rendelési-cím-változása miatt — **ellenőriztem**: `src/server/
+  order-handler.ts:104` ezen az ágon (`v3-audit`) még `DEFAULT_RECIPIENT
+  = "info@soderarak.hu"`, a `rendeles@soderarak.hu` csak az `origin/v3`
+  ágon (`9e64716`) él — a dokumentum ezt a pontos, aktuális állapotot
+  rögzíti, nem feltételezést.
+- 2. szakasz: 10 tételes adatbekérő lista, mindegyik eredettel és azzal,
+  miért fontos — ebből 2 tétel (árgarancia-vállalás, valós ügyfélszám/
+  tesztimónium kérdése) **a mai piackutatásból új**, 8 tétel korábbi
+  auditkörökből összegyűjtött, de addig sosem egy helyen rögzített kérdés
+  (XXIII. kerület irányítószám-lefedettség, 5 nevesített település tarifa
+  nélkül, andezit-fotó, next@16, H-1, Budafok-szövegek jóváhagyása,
+  `v3-audit`↔`origin/v3` szinkron, indexelés).
+
+**Mit NEM tartalmaz:** semmilyen új kitalált adatot — minden sor forrása
+vagy kódban ellenőrzött tény, vagy korábbi, dátumozott ügyféladat, vagy
+a mai piackutatás már naplózott megfigyelése.
