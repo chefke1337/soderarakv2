@@ -60,4 +60,4 @@ jobs:
           gh release create "$TAG" soderarak-v3-tarhely.zip \
             --target "$GITHUB_SHA" \
             --title "Sóder Árak V3 — tárhelyre feltölthető csomag ($TAG)" \
-            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. A rendelési igényt az api/rendeles.php (PHP 8+) küldi a megrendeles@soderarak.hu címre — beállítás: server/php/README.md. Az oldal noindex (keresőben nem jelenik meg)."
+            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. A rendelési igényt az api/rendeles.php (PHP 8+) küldi a rendeles@soderarak.hu címre — beállítás: server/php/README.md. Az oldal noindex (keresőben nem jelenik meg)."
