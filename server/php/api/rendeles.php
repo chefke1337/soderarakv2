@@ -1,13 +1,13 @@
 <?php
 /**
- * SÓDERÁRAK — rendelési igény fogadása (árkalkulátor → megrendeles@soderarak.hu).
+ * SÓDERÁRAK — rendelési igény fogadása (árkalkulátor → rendeles@soderarak.hu).
  *
  * Statikus weboldal mellé, PHP-t futtató tárhelyre készült végpont:
  * /api/rendeles.php. A böngésző JSON-t POST-ol ide; a végpont
  *  - szerveroldalon validál (a kliens validációja csak kényelmi),
  *  - a központi árakból ÚJRASZÁMOL (rendeles-adatok.php, generált),
  *  - korlátozza a beküldések számát, kiszűri a dupla beküldést,
- *  - a levelet a FIX címzettnek küldi (megrendeles@soderarak.hu + a szerveroldali
+ *  - a levelet a FIX címzettnek küldi (rendeles@soderarak.hu + a szerveroldali
  *    ORDER_EXTRA_RECIPIENTS — a kliens nem írhatja felül), a beküldő Reply-To.
  *
  * Sikert CSAK akkor jelez, ha a levelet a küldő (PHP mail() / SMTP-szerver)
@@ -21,7 +21,7 @@
 declare(strict_types=1);
 define('SODERARAK_RENDELES', 1);
 
-const RECIPIENT = 'megrendeles@soderarak.hu';
+const RECIPIENT = 'rendeles@soderarak.hu';
 const MAX_BODY_BYTES = 16384;
 const RATE_LIMIT_DEFAULT = 5;  // beküldés / IP
 const RATE_WINDOW = 600;       // 10 perc
@@ -510,7 +510,7 @@ $from = clean_line($cfg['from'], 254);
 $fromName = clean_line($cfg['from_name'], 80);
 if (!valid_email($from)) $from = RECIPIENT;
 
-// Címzettek: megrendeles@soderarak.hu mindig + a konfigurált további címek (max. 3, validálva).
+// Címzettek: rendeles@soderarak.hu mindig + a konfigurált további címek (max. 3, validálva).
 $recipients = [RECIPIENT];
 foreach (explode(',', $cfg['extra_recipients']) as $extra) {
     $extra = clean_line($extra, 254);
