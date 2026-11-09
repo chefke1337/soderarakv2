@@ -1379,3 +1379,59 @@ Search Console-alapú helyi verseny (nincs hozzáférés); az Ambrus kerületi
 aloldal "doorway"-megfigyelésének második módszerrel történő megerősítése
 mielőtt bármilyen külső dokumentumba kerülne; `v3-audit` ↔ `origin/v3`
 szinkronizálásának döntése.
+
+### 2026-11-09 19:48 — Piackutatás 2. köre: a maradék 8 szereplő, domainklaszterek feltárva
+
+Felhasználói döntés: a piackutatást a maradék 8, csak név szerint
+azonosított organikus szereplőre is mélyítsük (ne térjünk még a
+tartalom/auditpassz fázisra). Mind a 8 domain egyenként lekérve
+(`WebFetch`, 2026-11-09): soderguru.hu, soderkiszallitas.hu,
+soderbirodalom.hu, kavicsszallitas.hu, soderhaz.hu, homokszallitas.hu,
+soder-futar.hu, kovicsfuvar.hu.
+
+**Legfontosabb új felismerés — két domainklaszter, nem független
+versenytársak:**
+- **Klaszter A:** Ambrus Fuvar + Sóder Guru + Homokszállítás.hu —
+  **számjegyre egyező** két telefonszám (`06309902614`, `06309660192`)
+  mindhárom oldalon (külön normalizálva és ellenőrizve, nem csak
+  WebFetch-összefoglalásra hagyatkozva), és szó szerint azonos
+  szolgáltatásiterület-megfogalmazás. A megbízásban névvel megjelölt
+  "Ambrus Fuvar" tehát egy ≥3 domaines kulcsszó-klaszter része, nem
+  egyetlen önálló honlap.
+- **Klaszter B:** Sóder Express + Sóder Futár + Kovics Fuvar — azonos
+  telefonszám (`+36 30 9775118`, normalizálva ellenőrizve) mindhárom
+  oldalon, és a soder-futar.hu / kovicsfuvar.hu is azonos üzemeltetőt
+  ("Kovács Kálmán") nevez meg.
+- Önálló, klaszterhez nem köthető szereplők: Sóder Birodalom (saját
+  márka/kontakt), Sóderház (Timb-Erd Kft., Érd — egyetlen vizsgált
+  szereplő valódi céges háttérrel, feltüntetett tesztimóniállal és
+  számszerű, **versenytárs saját, nem igazolt** ügyfélszám-állítással:
+  "1037 elégedett ügyfél"), Sóder Szállítás (Pap Ádám E.V. — **nincs**
+  online kalkulátora). `kavicsszallitas.hu` klasztertagsága nem
+  egyértelmű (nincs egyértelmű telefonszám-egyezés a lekért tartalomban)
+  — F-szinten jelölve, nem állítva se klasztertagnak, se függetlennek.
+
+**`docs/market-research.md` frissítve** (nem új fájl): új 1.2a/1.2b
+alszakasz a klaszterekről és az önálló szereplőkről (telefonszám-egyezés
+mint bizonyíték, cégjogi azonosítás híján "A" szintű, de "kinek a nevén
+fut a domain" kérdésben explicit jelölve, hogy ez **nem történt meg**);
+a 4. mátrix "Egyéb" gyűjtősora lecserélve 7 önálló, részletes sorra; az
+5. szakasz (döntési anyag) bővült a piacszerkezeti felismeréssel (a 10
+"szereplő" valójában ≤7 üzemeltető) és két új, bizonyított tanulsággal:
+(a) a kavicsszallitas.hu nyílt versenytárs-támadó hangneme
+("tartalomtolvaj") hitelességromboló — a soderarak.hu jelenlegi, higgadt
+hangneme ezzel szemben **bizonyítottan jobb gyakorlat**, megtartandó; (b)
+a fuvardíj-kalkulátor **nem egyedi** a piacon (több szereplőnél is van),
+de az irányítószám-pontos (nem csak kerület-sávos) díjszámítás igen —
+ez a tényleges, publikálható különbség, nem a kalkulátor megléte maga.
+
+**Ami NEM történt meg, és miért:** cégjogi/whois-azonosítás a két
+klaszter üzemeltetőjére — ez túlmutat a piackutatási megbízáson, és a
+felhasználó nem kérte; a kavicsszallitas.hu klasztertagságának
+megerősítése (további lekérés kellene, pl. impresszum-oldal); a
+"doorway"-megfigyelés második módszerrel történő megerősítése (korábbi
+kör nyitott tétele, ezzel a körrel sem zárult le).
+
+**Nem történt commit** — a felhasználó kilépett az automatikus módból a
+2. kör elején; a commitolás előtt megkérdezem, mielőtt bármit
+verzionálnék.
