@@ -12,6 +12,7 @@ import {
   DISCLOSURE_FREIGHT,
   DISCLOSURE_GROSS,
   DISCLOSURE_PRICE,
+  IS_PREVIEW,
   serviceAreas,
 } from "@/content/site";
 import { GSC_VERIFICATION } from "@/lib/analytics";
@@ -59,10 +60,12 @@ export const metadata: Metadata = {
   },
   description: SHARE.description,
   alternates: { canonical: absoluteUrl("/") },
-  // V3 = nem publikus fejlesztői előnézet: ne versenyezzen az éles oldallal.
+  // IS_PREVIEW (site.ts, NEXT_PUBLIC_PREVIEW env) a tényleges forrás — ez a
+  // mező ettől függ, nem hardkódolt literál. Preview build (IS_PREVIEW=true):
+  // ne versenyezzen az éles oldallal a keresőben.
   // (A noindex nem hozzáférés-védelem; a robots.txt szándékosan NEM tilt,
   // különben a keresők nem látnák ezt a meta-jelzést.)
-  robots: { index: false, follow: true },
+  robots: { index: !IS_PREVIEW, follow: true },
   ...(GSC_VERIFICATION
     ? { verification: { google: GSC_VERIFICATION } }
     : {}),

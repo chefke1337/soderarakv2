@@ -9,6 +9,7 @@ import {
   FREIGHT_VAT_RATE,
   FREIGHT_PUBLIC_NOTICE,
   guides,
+  IS_PREVIEW,
   MAX_ORDER_VOLUME,
   MIN_ORDER_VOLUME,
   quoteOnlyAreas,
@@ -39,8 +40,8 @@ export async function generateMetadata({
       description: guide.excerpt,
       path: `/utmutatok/${guide.slug}`,
     }),
-    // V2 preview: noindex, mint a teljes oldalon (lásd layout.tsx)
-    robots: { index: false, follow: true },
+    // A layout.tsx globális IS_PREVIEW-jával egyezően — nem külön hardkódolt literál.
+    robots: { index: !IS_PREVIEW, follow: true },
   };
 }
 
