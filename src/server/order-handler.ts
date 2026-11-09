@@ -62,7 +62,7 @@ export type OrderHandlerDeps = {
   sendEmail: EmailSender;
   rateLimit: RateLimiter;
   idempotency: IdempotencyStore;
-  /** Címzett — alapértelmezés: info@soderarak.hu. */
+  /** Címzett — alapértelmezés: rendeles@soderarak.hu. */
   recipient?: string;
   /** Mock mód: nem megy ki valódi e-mail. A válasz EZT jelzi. */
   mock?: boolean;
@@ -101,7 +101,7 @@ export type HandlerResponse = {
 };
 
 export const MAX_BODY_BYTES = 16 * 1024;
-export const DEFAULT_RECIPIENT = "info@soderarak.hu";
+export const DEFAULT_RECIPIENT = "rendeles@soderarak.hu";
 
 /* ───────────────────────── Alap implementációk ───────────────────────── */
 

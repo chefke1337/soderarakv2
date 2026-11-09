@@ -2,7 +2,7 @@
 
 A soderarak.hu statikus export (HTML/JS), ezért magától nem tud levelet
 küldeni. A rendelési igényt a tárhelyre feltöltött **`/api/rendeles.php`**
-fogadja és továbbítja az **info@soderarak.hu** címre. A címzett a kódban
+fogadja és továbbítja az **rendeles@soderarak.hu** címre. A címzett a kódban
 rögzített; a böngésző nem írhatja felül. További fix címzett (pl. egy
 másolat-cím) csak szerveroldalon adható meg: `ORDER_EXTRA_RECIPIENTS` a
 webgyökér fölötti config-fájlban — a címet ne írd a repóba.
@@ -23,7 +23,7 @@ kalkulátor a `/api/rendeles.php` címre küld.
 Küldési mód:
 
 1. **Alapértelmezés — PHP `mail()`**: a tárhely saját levelezője küld,
-   feladó: `info@soderarak.hu`. Nincs szükség jelszóra. Ha a tárhely
+   feladó: `rendeles@soderarak.hu`. Nincs szükség jelszóra. Ha a tárhely
    letiltja vagy a levél nem érkezik meg, használj SMTP-t.
 2. **SMTP**: a `soderarak-rendeles-config.example.php` mintát
    `soderarak-rendeles-config.php` néven a **webgyökér fölé** másold, és add
@@ -37,7 +37,7 @@ Küldési mód:
 - Éles próba: csak **jóváhagyott** tesztlevéllel. A `X-Soderarak-Teszt: 1`
   fejlécű kérés tárgya `[TESZT]` jelölést kap. A sikerüzenet azt jelenti,
   hogy a küldő **átvette** a levelet — a postafiókba érkezést az
-  info@soderarak.hu fiókban kell megnézni.
+  rendeles@soderarak.hu fiókban kell megnézni.
 
 ## Védelem
 

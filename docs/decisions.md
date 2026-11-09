@@ -1311,6 +1311,28 @@ is nem tesztelt.
 üzleti/karbantartási döntés, külön munkamenetet igényel; valódi
 cross-browser/fizikai eszköz teszt továbbra sincs.
 
+## 2026-11-09 17:04–17:17 — Rendelési cím: rendeles@soderarak.hu (info@ helyett, párhuzamos session, `origin/v3`)
+
+**Megjegyzés (utólag, a mergeléskor beszúrva):** ez a bejegyzés egy
+**párhuzamos Claude Code session** munkája volt, közvetlenül az
+`origin/v3` ágra pusholva (commitok: `d044838`, `9e64716`), **nem** ennek
+az auditsessionnek (`v3-audit`) a munkája. A két ág a mai nap később
+(20:xx) össze lett mergelve — lásd a `v3-audit`↔`origin/v3` szinkron
+bejegyzést a napló végén. Időrendi helye itt van (17:04–17:17), a
+"18:49" bejegyzés már ennek ismeretében íródott.
+
+- Felhasználói kérés: az info@soderarak.hu helyett a rendeles@soderarak.hu
+  legyen a cím — a megjelenített kapcsolati e-mail (`site.ts`), a PHP-végpont
+  fix címzettje és alapértelmezett feladója, a TS-kezelő, a Worker, a tesztek
+  és a dokumentáció egyaránt.
+- Másolat-címzettek: két külső cím kap másolatot, de NEM a repóban: a
+  szerveroldali `ORDER_EXTRA_RECIPIENTS` (webgyökér fölötti config-fájl)
+  tartalmazza őket. A kliens továbbra sem írhatja felül a címzetteket.
+- Éles élesítés: a felhasználó kifejezett kérésére a legfrissebb V3 a
+  soderarak.hu-ra kerül a tárhely-ZIP-pel. A noindex a tárhely-buildben is
+  megmarad (a layoutból jön); kikapcsolásához külön jóváhagyás kell.
+- Pontosítás: a tárhelyen létrehozott postafiók rendeles@soderarak.hu, ezért a felhasználó döntése alapján ez lett a cím (megrendeles@ helyett).
+
 ### 2026-11-09 18:49 — Piackutatás (8. szakasz) első köre; környezeti eltérés rögzítve
 
 **Felismert hiány:** a projekt dokumentumtörténetében (`docs/*.md`) a
@@ -1611,3 +1633,16 @@ tételek forrását).
 **A 16. szakasz szerinti végső független auditpassz ezzel lezárva** —
 mindkét alügynök befejezte, a legmagasabb kockázatú tételeket a saját
 session függetlenül újra-ellenőrizte, nem vette át vakon.
+
+### 2026-11-09 — `v3-audit` ↔ `origin/v3` szinkronizálva (P0-2 lezárva)
+
+A B. rész auditpassz óta nyitva hagyott P0-2 backlog-tétel: a `v3-audit`
+ág (ez a napló) és a párhuzamos session `origin/v3` ágra pusholt két
+e-mail-cím-commitja (`d044838`, `9e64716` — fentebb, 17:04–17:17-nél
+beillesztve) külön ágon éltek, közös ős `798fd70`. `git merge origin/v3`
+tiszta, ütközés nélkül az összes kódfájlon (`src/server/order-handler.ts`,
+`src/content/site.ts`, `server/php/*`, `scripts/*`, tesztek) — a két oldal
+diszjunkt fájlhalmazon dolgozott, egyetlen átfedés ez a napló volt
+(kézzel feloldva, időrendi sorrendbe illesztve, tartalomvesztés nélkül).
+Eredmény: `DEFAULT_RECIPIENT`/`company.email` ezen az ágon is
+**rendeles@soderarak.hu** — a B. részben dokumentált eltérés megszűnt.
