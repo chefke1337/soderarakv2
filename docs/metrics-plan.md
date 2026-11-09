@@ -4,6 +4,45 @@
 > Minden ár/tény a [site configból](../src/content/site.ts) jön; ez a dokumentum csak a mérést írja le.
 > Biztonsági alapszabály: env var nélkül a site mérés nélkül fut — a kód nem tartalmaz azonosítót.
 
+## 0. 30/60/90 napos terv (a `CLAUDE.md`/megbízás 18. szakasza szerint)
+
+**Kiindulás, őszintén rögzítve:** a "30/60/90 nap" itt **NEM naptári nap**
+a mai dátumtól — két, jelenleg még **nyitott tulajdonosi döntéstől**
+függ (lásd `docs/business-facts.md` 2. szakasz, #1 és #2 tétel):
+(a) az indexelés élesítése (`noindex` levétele) és (b) a GA4 property
+tényleges létrehozása + `NEXT_PUBLIC_GA4_ID` build-időben beégetése. E
+két döntés **előtt** a 30/60/90 napos óra nem indulhat el — a GA4 "nincs
+hozzáférés/nincs adat" állapotban van, nem nulla eredmény (a brief
+explicit tiltása: "Hiányzó adat nem nulla"). Ez a terv tehát a **két
+aktiváló esemény utáni** 30/60/90 napot írja le, és jelzi, hogy melyik
+sor adata már most, aktiválás előtt is gyűjthető (szervernaplóból,
+GSC-ből, ha a property korábban létrejön, mint a GA4).
+
+**A mérési lépcső — szándékosan NEM szinonimák** (a 18. szakasz explicit
+kérése):
+
+| Lépcsőfok | Mit jelent | Honnan |
+|---|---|---|
+| Organikus megjelenés | hányszor jelent meg a site egy keresésben (impression) | Search Console → Teljesítmény |
+| Kattintás | hányszor kattintottak rá a találatra | Search Console → Teljesítmény (CTR) |
+| Céloldali látogatás | GA4 session a landolt oldalon | GA4 (csak elfogadás után — consent mode) |
+| Telefonkattintás | `call_click` esemény | GA4, lásd 4–5. szakasz |
+| Sikeres ajánlatkérés | `quote_request` esemény (mailto megnyitás) | GA4 — **ez NEM egyenlő a tényleges megrendeléssel**, csak az űrlap-beküldési szándékkal |
+| Minősített lead | a hívás/ajánlatkérés valódi, kiszolgálható megrendeléssé vált | **Nincs automatizálva** — csak a tulajdonos saját nyilvántartásából jön, ha van ilyen |
+| Bevétel | tényleges teljesített fuvarok árbevétele | **Nincs a GA4-ben** — a tulajdonos saját könyvelése/számlázása, ez a dokumentum ezt nem méri és nem is fogja |
+
+| Időszak (az aktiválástól számítva) | Mit mérünk | Milyen bázishoz | Korlát |
+|---|---|---|---|
+| **Nap 0** (indexelés + GA4 egyszerre él) | Alapállapot rögzítése: GSC "Teljesítmény" export nulla/közeli értékről indul; GA4 `call_click`/`quote_request` első 24 órás DebugView-igazolás (lásd §9 ellenőrzőlista) | Nincs korábbi adat — ez maga a bázis | Az első napokban a GSC indexelési késleltetéssel jár (új URL-ek felvétele napok–hetek); ne várjunk azonnali organikus forgalmat |
+| **30. nap** | GSC: hány URL indexelt / megjelenik-e legalább a márkás keresésre; GA4: `call_click` + `quote_request` heti trend, `olvasasi_route` (§11.2) melyik route-on törik az olvasás | A Nap 0 alapállapothoz, NEM az előző, `noindex` időszak (ott nem volt mérhető organikus adat) | 30 nap kevés a nem márkás kulcsszavak stabil pozíciójához; szezonalitás (pl. tavaszi/őszi kerti munka-szezon) ezen a horizonton még nem szűrhető ki |
+| **60. nap** | Az első CTA-pozíciós finomhangolás eredménye (ha a 30. napon a §11.2/§12 adat alapján módosítás történt) — előtte/utána `call_click` régió szerinti bontás; GSC: nem márkás lekérdezések megjelenése | A 30. napi mérés | Még ez a horizont is rövid egy teljes szezonális ciklushoz; a `noindex`-es korábbi időszakkal való összevetés **nem lehetséges** (nem volt adat) |
+| **90. nap** | Teljes negyedéves kép: organikus megjelenés → kattintás → céloldali látogatás → telefonkattintás → ajánlatkérés tölcsér (§11.5); ha a tulajdonos megadja a minősített lead/bevétel számot, ez az első pont, ahol ezt a tölcsérhez lehet viszonyítani (külön, nem automatizált lépésben) | A 30. és 60. napi mérés együtt, trendként | Egyetlen negyedév nem elég évszakos/szezonális hatás szétválasztására; márkás vs. nem márkás keresési arány csak ekkor válik elemezhetővé érdemben |
+
+**Mit NEM állítunk:** konkrét célszámot (pl. "X% organikus növekedés") —
+hozzáférés és bázisadat hiányában ez kitalált szám lenne. A fenti táblázat
+**mit, honnan, milyen bázishoz, milyen korláttal** mérünk — ahogy a
+megbízás kéri —, nem ígért eredményt.
+
 ## 1. Előkészület (a tulaj teendői)
 
 1. **GA4 property** létrehozása a Google Analyticsben (időzóna: Budapest, valuta: HUF).

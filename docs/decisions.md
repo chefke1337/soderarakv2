@@ -1472,3 +1472,47 @@ volt egy kereshető, önálló fájl.
 **Mit NEM tartalmaz:** semmilyen új kitalált adatot — minden sor forrása
 vagy kódban ellenőrzött tény, vagy korábbi, dátumozott ügyféladat, vagy
 a mai piackutatás már naplózott megfigyelése.
+
+### 2026-11-09 19:59 — 30/60/90 napos mérési terv (18. szakasz) — meglévő `metrics-plan.md` bővítve
+
+**Felismert hiány:** a `docs/metrics-plan.md` (2026-10-03) már részletesen
+leírja a GA4/GSC/call-tracking mechanizmust (események, konverziók,
+riportok, CTA-pozíciós térkép), de a megbízás 18. szakaszának explicit
+kért **30/60/90 napos ütemezése** nem létezett benne — a dokumentum a
+"hogyan mérjünk" kérdést válaszolta meg, a "mikortól, milyen bázishoz,
+milyen korláttal" kérdést nem.
+
+**Hozzáadva (új "0." szakasz, a fájl elejére, nem új fájl — a brief 19.
+szakasza engedi az összevonást):**
+- Explicit rögzítve: a 30/60/90 nap **nem naptári nap mától**, hanem két
+  nyitott tulajdonosi döntéstől (indexelés élesítése + GA4 property
+  létrehozása, `business-facts.md` #1/#2) függő, jelenleg el sem
+  indítható óra — ezt a brief "hiányzó adat nem nulla" tiltása miatt
+  explicit ki kellett mondani, nem elhallgatni.
+- A mérési lépcső (organikus megjelenés → kattintás → céloldali
+  látogatás → telefonkattintás → sikeres ajánlatkérés → minősített lead
+  → bevétel) táblázatban, **szándékosan nem szinonimaként** felsorolva,
+  mindegyiknél jelölve, melyik automatizált (GA4/GSC) és melyik NEM (a
+  "minősített lead" és "bevétel" sor explicit: nincs automatizálva, csak
+  a tulajdonos saját nyilvántartásából jöhet).
+- Nap 0 / 30 / 60 / 90 táblázat: mit mérünk | milyen bázishoz | milyen
+  korláttal — konkrét célszám (pl. "+X% organikus forgalom") **nem**
+  szerepel benne, mert hozzáférés/bázisadat híján ez kitalált szám lenne.
+
+### 2026-11-09 20:00 — Prioritásos backlog (19.6. szakasz) — új dokumentum
+
+**`docs/backlog.md` (új fájl):** minden eddig szétszórva nyitva maradt
+tétel egy helyen, P0–P3 súlyozással (P0 = tulajdonosi döntés/adat-
+konzisztencia-kockázat, P1 = mért hatású hiányosság, P2 = polírozás,
+P3 = opcionális/feltáró). Tartalma a `v3-audit-and-fixes.md`,
+`decisions.md`, `market-research.md`, `business-facts.md` és
+`metrics-plan.md` korábbi, önálló bejegyzéseiből összegyűjtött, nem új
+tétel — kivéve a végén egy explicit "Kifejezetten NEM backlog-tétel"
+szakaszt, amely tudatosan rögzíti, mit NEM teszünk fel ide (kitalált
+kulcsszóvolumenre épülő új oldal, versenytárs-doorway/támadó-hangnem
+átvétele, GA4-azonosító kitalálása) — a megbízás több tiltását egy helyen
+összefogva, hogy later ne kerüljenek vissza javaslatként.
+
+**Nem történt commit még** — ezzel egy körben a végső auditpassz két
+alügynöke is fut a háttérben; a commitot egyben, a soron következő
+összefoglalóval teszem meg.
