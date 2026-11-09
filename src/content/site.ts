@@ -68,7 +68,7 @@ export const company = {
     raw: "+36308528909",
     display: "+36 30 852 8909",
   },
-  email: "info@soderarak.hu",
+  email: "megrendeles@soderarak.hu",
   /** Székhely (ügyféladat, 2026-11-03) — kizárólag üzemeltetői adatként
    * (impresszum, adatkezelő, strukturált adat). NEM telephely, depó vagy
    * átvételi pont: ne kerüljön térképre, és ne kínálj itt személyes átvételt. */

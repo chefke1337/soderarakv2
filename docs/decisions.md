@@ -1142,3 +1142,15 @@ díszítés nélküli állapotában marad.
 #cf4a0e → #c4470f (fehér felirat 4,93:1); kalkulátorblokk #cf4a0e →
 #b8461a (5,34:1); grafikus narancs elemek #ea580c → #d9622a. Mind
 élénkebb az eredeti #c2410c / #a8401a-nál, de kevésbé harsány.
+
+## 2026-11-09 — Rendelési cím: megrendeles@soderarak.hu (info@ helyett)
+- Felhasználói kérés: az info@soderarak.hu helyett a megrendeles@soderarak.hu
+  legyen a cím — a megjelenített kapcsolati e-mail (`site.ts`), a PHP-végpont
+  fix címzettje és alapértelmezett feladója, a TS-kezelő, a Worker, a tesztek
+  és a dokumentáció egyaránt.
+- Másolat-címzettek: két külső cím kap másolatot, de NEM a repóban: a
+  szerveroldali `ORDER_EXTRA_RECIPIENTS` (webgyökér fölötti config-fájl)
+  tartalmazza őket. A kliens továbbra sem írhatja felül a címzetteket.
+- Éles élesítés: a felhasználó kifejezett kérésére a legfrissebb V3 a
+  soderarak.hu-ra kerül a tárhely-ZIP-pel. A noindex a tárhely-buildben is
+  megmarad (a layoutból jön); kikapcsolásához külön jóváhagyás kell.

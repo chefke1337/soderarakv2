@@ -331,7 +331,7 @@ check(
   );
   check("a NUL karakter eltűnt a levélből", !mail.text.includes(NUL));
   check("az ügyfél címe válaszcím (reply-to)", mail.replyTo === "teszt@example.com");
-  eq("a címzett a jóváhagyott cím", mail.to, "info@soderarak.hu");
+  eq("a címzett a jóváhagyott cím", mail.to, "megrendeles@soderarak.hu");
 }
 
 /* ─────────────── 9. Mock mód egyértelmű jelölése ─────────────── */

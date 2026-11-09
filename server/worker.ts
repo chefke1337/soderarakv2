@@ -23,7 +23,7 @@ import {
 } from "../src/server/order-handler.ts";
 
 export type Env = {
-  /** Címzett — alapértelmezés: info@soderarak.hu. */
+  /** Címzett — alapértelmezés: megrendeles@soderarak.hu. */
   ORDER_RECIPIENT?: string;
   /** Engedélyezett origin(ek), vesszővel. Üres = minden elutasítva. */
   ALLOWED_ORIGINS?: string;

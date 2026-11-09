@@ -192,7 +192,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Ajánlatkérés az eredmény mellől",
       p: [
-        "Ha tetszik az összeg, adjon meg egy nevet és egy telefonszámot: a kalkulátor megnyitja az e-mail kliensét, és előre kitöltött ajánlatkérést küld az info@soderarak.hu címre — anyag, mennyiség, helyszín és a tájékoztató ár is benne van. A piszkozat csak az Ön eszközén marad, és bármikor hívhat is minket közvetlenül.",
+        "Ha tetszik az összeg, adjon meg egy nevet és egy telefonszámot: a kalkulátor megnyitja az e-mail kliensét, és előre kitöltött ajánlatkérést küld az megrendeles@soderarak.hu címre — anyag, mennyiség, helyszín és a tájékoztató ár is benne van. A piszkozat csak az Ön eszközén marad, és bármikor hívhat is minket közvetlenül.",
         "Ha az e-mail kliens nem nyílik meg, az összegzés gombbal kimásolhatja az adatokat, és üzenetben elküldheti.",
       ],
       links: [{ href: "/kapcsolat", label: "Kapcsolat — telefon és e-mail" }],
