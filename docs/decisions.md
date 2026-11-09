@@ -1646,3 +1646,123 @@ diszjunkt fájlhalmazon dolgozott, egyetlen átfedés ez a napló volt
 (kézzel feloldva, időrendi sorrendbe illesztve, tartalomvesztés nélkül).
 Eredmény: `DEFAULT_RECIPIENT`/`company.email` ezen az ágon is
 **rendeles@soderarak.hu** — a B. részben dokumentált eltérés megszűnt.
+
+### 2026-11-09 20:36–21:24 — Kiadási csomag javítóköre: valódi indexelési kapcsoló + 2 kapu-szkript hiba
+
+**Kiindulás:** a felhasználó jogosan jelezte, hogy az addig elkészült
+`soderarak-deploy-2026-11-09T19-58-38.zip` NEM alkalmas feltöltésre: még
+kikapcsolt indexeléssel készült, a kötelező `npm run daekon` ellenőrzés
+nem futott le igazoltan, és a kiadás forrás-azonossága (branch/commit/
+dirty állapot) sem volt rögzítve. Explicit felhatalmazást kaptam a
+production indexelési tiltás valódi forrásának megszüntetésére ("A"
+kategóriás, nyilvános oldalakra), kizárólag a helyi forrás/teszt/csomag
+javítására — éles feltöltés, push, merge NEM történt.
+
+**Régi ZIP karanténba helyezve** (nem törölve): `dist/_SUPERSEDED_DO_NOT_UPLOAD/
+soderarak-deploy-2026-11-09T19-58-38.zip`.
+
+**Kiadás alapja (rögzítve, nem feltételezve):** branch `v3-audit`, HEAD
+`312a2c1` (tiszta munkaterület ellenőrizve `git status`-szal), + ezen a
+körön belüli, az alábbi commitokban rögzített módosítások. `origin/v3`
+(`9e64716`) igazoltan a HEAD őse (`git merge-base --is-ancestor`) — a
+korábbi merge óta nem érkezett új commit sem `origin/v3`-ra, sem
+`origin/v3-audit`-ra (friss `git fetch` ellenőrizve).
+
+**1. A valódi indexelési kapcsoló bekötve (`src/app/layout.tsx`,
+`src/app/utmutatok/[slug]/page.tsx`, `src/content/site.ts`):**
+A `.env.example` már dokumentálta a szándékot ("false" esetén
+indexelhető), és `IS_PREVIEW` (`site.ts:56`) ezt a logikát helyesen
+számolta ki — de a `layout.tsx`-ben és a `/utmutatok/[slug]`-ban a
+`robots` mező egy hardkódolt `{ index: false, follow: true }` literál
+volt, NEM `IS_PREVIEW`-ból olvasva (ez volt a korábbi audit P0-3
+tétele: "nincs egyetlen valódi kapcsoló"). Mindkét helyen
+`robots: { index: !IS_PREVIEW, follow: true }`-ra javítva. A GH Pages
+demo-deploy workflow-k (`deploy-v2-pages.yml`, `deploy-v3-pages.yml`,
+`preview-build.yml`) nem állítják a `NEXT_PUBLIC_PREVIEW` env-et, ezért
+alapértelmezetten (`!== "false"` → true) **változatlanul noindex
+marad** — a kategória C (demo/preview) nem sérül. A jogi/elavult oldalak
+(`impresszum`, `adatvedelem`, `anyagok/bazalt`) saját, explicit
+`{ index: false }`-ja érintetlen (kategória B, szándékos kizárás —
+nincs dokumentált bizonyíték arra, hogy ez a preview-kapcsolóval lenne
+összefüggésben, ezért konzervatívan nem nyúltam hozzá; owner-kérdésként
+jelölve). A production kiadáshoz a build `NEXT_PUBLIC_PREVIEW=false`-lal
+futott.
+
+**2. Valódi, a javítás által felfedett hiba a 404-oldal export-
+szkriptjében (`scripts/prepare-static-export.mjs`):** amíg a globális
+robots-mező mindig "noindex, follow" volt, rejtve maradt, hogy a Next
+statikus exportja a `/404` különleges dokumentumhoz **duplán** emeli ki
+a `<head>` metaadatait (robots, og:title, og:description, twitter:title,
+twitter:description — mind 2×, egy valódi `<head>`-en belül). A korábbi,
+nem globális (`/g` nélküli) `.replace()` csak az ELSŐ előfordulást
+javította — amint a robots mező valódivá vált ("index, follow"), ez
+ténylegesen **ütköző tartalmú, duplikált `<meta name="robots">`
+tageket** eredményezett volna a 404 dokumentumon (egyszerre "noindex"
+ÉS "index, follow"). Minden érintett `.replace()` `/g`-vel javítva —
+most mindkét 404-fájlban (`out/404.html`, `out/404/index.html`)
+konzisztensen "noindex", illetve a helyes 404-specifikus cím/leírás áll,
+duplikáció nélküli *tartalom* (a tag maga technikailag duplán marad a
+Next egy ismert exportsajátossága miatt, de többé nem ütköző — ez a
+keretrendszer-szintű kvirk, nem ebben a körben javítandó).
+
+**3. Valódi, a teljes `npm run daekon` első igazolt végigfuttatásakor
+felfedett FAIL (`daekon/agents/qa-regression.mjs`):** a "minden
+hivatkozott OG-kép valós kártyafájl" blokkoló kapu hamis pozitív
+FAIL-t adott — a főoldal szándékosan egy kézzel elhelyezett, egyedi
+nevű megosztási képre hivatkozik (`HOME_SHARE_IMAGE` =
+`soderarak-share-v4.png`, lásd `prepare-static-export.mjs` és
+`src/lib/share.ts`), ami emiatt sosem szerepel a csak
+"opengraph-image.png" nevű fájlokat gyűjtő `ogPngs` tömbben — a korábbi
+kód ez ellen a (szűkebb célú, hash-bázis-lefedettségi) listát
+hasonlította össze tagsági egyezéssel, holott a hivatkozott fájl
+létezése már korábban, `resolveOgFile`-ban `existsSync`-kel igazolva
+volt. A kapu mostantól valódi `existsSync`-et ellenőriz minden
+hivatkozott célra, nem a szűkebb lista tagságát. **Ez a hiba azért nem
+derült ki korábban, mert — amennyire a `docs/decisions.md` korábbi
+bejegyzéseiből megállapítható — a teljes `npm run daekon` parancs maga
+sosem futott le és lett rögzítve korábban; minden korábbi audit csak az
+egyedi almappancsokat (`test:a11y`, `test:mobile`, `build` stb.)
+futtatta külön-külön, amelyek NEM tartalmazzák a `gate-qa-regression`
+kaput.**
+
+**Újrafuttatott, igazolt eredmények (mind friss, ezen a körön):**
+`tsc --noEmit` tiszta; `next lint` ugyanaz a 2, korábbról ismert
+figyelmeztetés (nincs új); `npm run test:all` **4648 OK, 0 FAIL**
+(`test:order-php` BLOCKED — nincs PHP ebben a környezetben); teljes
+`npm run daekon` (`DAEKON_FULL_AUDIT=1 LH_ALL=1
+NEXT_PUBLIC_ORDER_API_URL=http://127.0.0.1:8788/order
+NEXT_PUBLIC_PREVIEW=false`) **verdict: PASS** — mind az 5 blocker kapu
+(`gate-static`, `gate-og`, `gate-a11y`, `gate-mobile`,
+`gate-qa-regression`) és az advisory `gate-perf` is PASS; a
+`humanize-scan` team-executor **NEM FUTOTT** (ismeretlen, ezen a körön
+felfedezett, ettől függetlenül meglévő hiba: `public/llms.txt`-et olvas,
+miközben az `llms.txt` ezen a projekten egy route handlerből
+(`src/app/llms.txt/route.ts`) jön, nem statikus fájlból — advisory,
+nem blokkoló, NEM javítva ebben a körben, kívül esik a kiadási csomag
+hatókörén). Lighthouse (advisory): `/` 83/100, `/arak/` 87/100,
+`/teruletek/` 89/100 — a korábban is dokumentált, mért helyi
+teljesítmény-maximum tartományban, nem új regresszió.
+
+**A kész ZIP-et önállóan, nem csak az `out/` mappát ellenőriztem:**
+`dist/soderarak-deploy-2026-11-09T20-23-15-VERIFIED.zip` (19 192 kB,
+SHA-256 `bf37275bc4056c89f466707132c7b8e1daee1df5e6d47728f95090635b450c48`,
+685 zip-bejegyzés, 569 fájl kibontva) — kibontva egy külön ideiglenes
+mappába, `diff -rq` az eredeti `out/`-tal **0 eltérés** (a csomagolás
+hűséges); mind a 206 `.gz` fájl érvényes gzip és byte-pontosan egyezik
+a kicsomagolt eredetijével; a robots/sitemap/robots.txt ellenőrzés
+megismételve közvetlenül a kicsomagolt tartalmon (ugyanaz az eredmény);
+a kicsomagolt mappát helyben kiszolgálva **valódi böngészős smoke teszt
+(`v3-smoke.mjs`, Playwright) lefutott a kicsomagolt tartalom ellen: 74
+OK, 0 FAIL**, a teljes kalkulátor- és rendelésiigény-folyamatot
+végigjátszva mock backenddel (valódi e-mail nem ment ki).
+
+**Nem állítható, csak élesben ellenőrizhető:** a tényleges Google-
+indexelés (ez csak a technikai indexelhetőséget javítja, nem a
+keresőbeli megjelenést); a PHP `rendeles.php` éles bekötése (a
+statikus export nem futtat Node-szervert, a rendelési űrlap jelenleg
+`NEXT_PUBLIC_ORDER_API_URL` nélkül, dokumentáltan, "nincs beállítva"
+konfigurációs hibát jelez — ez a régóta BLOCKED, nem új tétel); a
+feltöltés utáni valódi HTTP-fejlécek/cache-viselkedés.
+
+**Nem történt:** éles feltöltés, push, merge, release-publikálás —
+a feladat kifejezetten a helyi forrás/teszt/csomag javítására szólt.
