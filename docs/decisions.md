@@ -1310,3 +1310,72 @@ is nem tesztelt.
 (lásd fent, nem csak feltételezve); next@16 major (postcss javítás) —
 üzleti/karbantartási döntés, külön munkamenetet igényel; valódi
 cross-browser/fizikai eszköz teszt továbbra sincs.
+
+### 2026-11-09 18:49 — Piackutatás (8. szakasz) első köre; környezeti eltérés rögzítve
+
+**Felismert hiány:** a projekt dokumentumtörténetében (`docs/*.md`) a
+2026-11-01 óta vezetett auditnaplók technikai SEO-ra, tartalomra,
+teljesítményre, biztonságra és a11y-ra koncentráltak, de **a `CLAUDE.md`
+8. szakaszában kért piac- és versenytárskutatás egyszer sem futott le**
+(`grep -ri ambrus docs/` 0 találat a session elején). Ez volt a session
+induló diagnózisa, és ennek pótlására irányult ez a kör.
+
+**Elvégzett munka — `docs/market-research.md` (új fájl):**
+- Ambrus Fuvar azonosítva és ellenőrizve (NEM feltételezve): `ambrusfuvar.hu`,
+  közvetlen `WebFetch` a főoldalra, az árlistára (`/info/arlista`) és egy
+  kerületi aloldalra (`/soder/soder-szallitas-21`) — teljes árlista (termőföld,
+  sóder, murva, homok, kavics, homokos kavics, bazalt/andezit), NETTÓ árazás,
+  a fuvardíj explicit NEM publikus az árlistán.
+- Két mintakeresés (`WebSearch`, nem geolokalizált, ez a korlát a dokumentumban
+  is jelölve) feltárt 9 további organikus versenytársat ugyanazokra a
+  kereskedelmi keresésekre (soderexpress.hu, soderguru.hu, soderkiszallitas.hu,
+  soderbirodalom.hu, kavicsszallitas.hu, soderhaz.hu, homokszallitas.hu,
+  goltsepker.hu, soder-futar.hu, kovicsfuvar.hu) — ebből Sóder Express külön
+  lekérve ("árgarancia" + aznapi szállítás ígéret, sávos nettó fuvardíj
+  nyilvánosan közzétéve).
+- `soderarak.hu` a mintakeresésekben nem jelent meg — **nem új hiba**, a
+  már dokumentált, szándékos `noindex, follow` első, SERP-szintű, tényleges
+  megfigyelt következménye.
+- Teljes versenytársi mátrix (szereplő | kínálat | terület | ártranszparencia
+  | rendelési folyamat | tartalom | bizonyítékok | mobil | hiányosság |
+  lehetőség | forrás | bizonyosság), keresési szándék–lefedettség térkép
+  (meglévő `/utmutatok` 11 cikke, `/teruletek` 23 kerületi oldala, `/arak`,
+  `/arkalkulator` ellenében), és egy döntési szakasz (8.5) arról, mit NEM
+  kell/szabad tenni ebből (nincs bizonyított igény új oldaltípusra; nincs
+  "doorway"-stílus kerületi tartalom átvétele; a versenytárs feltételezett
+  hibáját — sablonos kerületi aloldalak — csak F-szintű, belső stratégiai
+  jelzésként rögzítettük, kereszt-ellenőrzés és publikálás nélkül).
+
+**Metodológiai korlát, explicit jelölve a dokumentumban:** a `WebFetch` egy
+kisebb modellel összefoglalja a lekért HTML-t (nem szó szerinti nyers
+tartalom), a `WebSearch` nem geolokalizált, bejelentkezés nélküli találati
+lista (nem azonos a tényleges Google-helyezéssel). Ezért semelyik
+versenytárs-megfigyelés nincs "A — élőben ellenőrzött, végleges" szinten
+rögzítve a legtöbb sorban; a mátrix oszloponként jelöli a bizonyosságot.
+
+**Környezeti eltérés, a piackutatás közben észrevéve (nem ehhez a körhöz
+tartozó munka, csak dokumentálva):** az éles oldal (`https://soderarak.hu/`)
+`Last-Modified` fejléce **2026-11-09 16:19:45 UTC** — azaz a session indulása
+előtt kb. 1,5 órával újra deployolódott. A publikációs forrás (`gh-pages`,
+`chefke1337/soderarakv3`) friss commitja (`fe9c073`, 2026-11-09 16:19:57 UTC)
+igazolja: `chefke1337/soderarakv2@9e64716` build. Ez egy **másik, párhuzamos
+Claude Code session** (ugyanaz a felhasználó, `hextech.void@gmail.com`,
+"Claude Opus 5.5" commit-attribúció) valódi kódváltozása volt — a rendelési
+e-mail cím `rendeles@soderarak.hu`-ra (a létrehozott postafiókra) állítása,
+`docs/decisions.md`, `server/php/*`, `src/server/order-handler.ts`,
+`src/content/site.ts` és a kapcsolódó tesztek módosításával, közvetlenül az
+`origin/v3` ágra pusholva. A jelen munkamenet `v3-audit` ága (`798fd70` +
+`7aaef56` + `4d95c2f`, mind pusholva `origin/v3-audit`-ra) **nem konfliktusos**
+ezzel — más fájlokat érint, közös ős (`798fd70`) utáni első valódi
+elágazás —, de a `v3-audit` jelenleg **1 valódi kódcommit-tal lemaradva**
+áll az `origin/v3`-tól. **Nem végeztem mergelést/pusholást** — ez a döntés
+(melyik ág a következő publikációs alap, kell-e összefésülni) a
+tulajdonosra/felhasználóra tartozik, különösen mivel a másik session
+aktívan dolgozhat még.
+
+**Nyitva maradt:** a versenytárskutatás 1.2/1.4-ben felsorolt, nem mélyebben
+ellenőrzött szereplői; valódi geolokalizált SERP-mérés; Google Cégprofil/
+Search Console-alapú helyi verseny (nincs hozzáférés); az Ambrus kerületi
+aloldal "doorway"-megfigyelésének második módszerrel történő megerősítése
+mielőtt bármilyen külső dokumentumba kerülne; `v3-audit` ↔ `origin/v3`
+szinkronizálásának döntése.
