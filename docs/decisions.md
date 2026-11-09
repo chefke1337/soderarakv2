@@ -1572,6 +1572,42 @@ adatvédelmi hiányosság), 4 új P1 (CI-kapu hiány, hardkódolt árak,
 a11y-rés, függőség-kérdés), 4 új P2 (2× dokumentáció-staleness, GA4-
 megfogalmazás, a nem egyenként ellenőrzött maradék tételek gyűjtősora).
 
-**Még nyitva:** a B. alügynök (valódi QA-kapuk újrafuttatása, build/
-teszt-futtatással) még dolgozik — az `independent-audit.md` B. szakasza
-üres, amíg az nem jelez vissza.
+### 2026-11-09 20:14 — Végső független auditpassz, B. rész (`quality-auditor` alügynök) — befejezve
+
+A második alügynök is elakadt egyszer a lépéskorláton (`SendMessage`-
+dzsel folytatva), majd teljes jelentést adott: **minden valódi kapu
+frissen, saját futtatással** — typecheck, lint, build (139/139 statikus
+oldal, export QA, og-hash), 7 egységteszt-csomag (4648 OK, 0 FAIL),
+a11y, mobil, regresszió (4×, mind 0 WARN — H-1 ma nem jelentkezett,
+összefér a dokumentált ~1/20-os gyakorisággal), smoke (mock szerverrel
+74/74), Lighthouse (8 route, 4 kategória) — mind **PASS**;
+`test:order-php` **BLOCKED** (nincs PHP ebben a környezetben).
+Forráskód-ellenőrzés: `DEFAULT_RECIPIENT` és `company.email` **mindkettő
+`info@soderarak.hu`** ezen az ágon — nincs eltérés, a `rendeles@`-csere
+valóban csak az `origin/v3`-on él (megerősíti a P0-2 backlog-tételt).
+
+**Két önálló, új megállapítás ebből a körből (saját session is
+megerősíti, az alügynök módszertana ellenőrizhető/reprodukálható volt):**
+1. `decisions.md` korábbi "4647 OK" összesítése **aritmetikai hiba** —
+   a saját felsorolt részösszegek 4648-ra jönnek ki, és a mai friss
+   futtatás is 4648-at adott. Nem regresszió, csak elírás a naplóban.
+2. `test:a11y`/`test:mobile` **csendben cache-skip**-pel tér vissza
+   változatlan fán `DAEKON_FULL_AUDIT=1` nélkül — a korábbi "63/63 PASS"
+   naplósorokról retrospektíve nem dönthető el, kényszerített futásból
+   jöttek-e. Módszertani hiányosság, jövőbeli auditoknak explicit
+   kényszerítve kell futtatniuk és ezt naplózniuk.
+
+**Nem feloldott ellentmondás, szándékosan:** a `CLAUDE.md` "~95-97
+Lighthouse" állítása a főoldalra nem egyezik semelyik, 2026-11-01 utáni,
+ebben a repóban dokumentált méréssel (83-90 között). A `CLAUDE.md`
+tartalmát **nem módosítottam** — ez a projekt irányadó utasítása, nem
+auditbizonyíték, a frissítése tulajdonosi/karbantartói döntés.
+
+**`docs/independent-audit.md` és `docs/backlog.md` frissítve** a B.
+szakasz teljes táblájával és a 4 új, saját session által is megerősített
+tétellel (2 P2 dokumentációs/módszertani hiba, pontosítva a P0/P1
+tételek forrását).
+
+**A 16. szakasz szerinti végső független auditpassz ezzel lezárva** —
+mindkét alügynök befejezte, a legmagasabb kockázatú tételeket a saját
+session függetlenül újra-ellenőrizte, nem vette át vakon.

@@ -184,6 +184,66 @@ viselkedése.
 
 ## B. QA-kapuk önálló újrafuttatása (`quality-auditor` alügynök)
 
-**Folyamatban — ez a szakasz a második alügynök visszajelzésekor
-kerül kitöltésre.** Nem helyettesíthető az A. szakasz alapján, mert az A.
-alügynök explicit jelezte, hogy nem futtatott valódi build/teszt-lépést.
+Minden kapu **frissen, saját futtatással** (nem a naplózott számok
+elfogadásával), `v3-audit` ágon, 2026-11-09-én.
+
+| # | Kapu | Eredmény | Pontos kimenet |
+|---|---|---|---|
+| 1 | Typecheck (`tsc --noEmit`) | PASS | 0 hiba |
+| 2 | Lint (`next lint`) | PASS (2 korábbról ismert figyelmeztetés, 0 hiba) | `ArkalkulatorForm.tsx:298` exhaustive-deps; `Section.tsx:34` unused var |
+| 3 | Build (`next build` + export QA + og-hash) | PASS | 139/139 statikus oldal, 64 HTML, 64 saját OG-kép, 59 kanonikus/sitemap URL, 62 OG-kártya hash egyezik a bázissal |
+| 4–10 | Unit: pricing/freight/quote/districts/area-pages/order/billing-form | PASS | 181+3635+440+117+83+166+26 = **4648 OK, 0 FAIL** |
+| 11 | `test:order-php` | **BLOCKED** | nincs PHP-futtató ebben a környezetben (`php -v` → not found) |
+| 12 | A11y (axe) | PASS — **de csak kényszerített futtatással** (`DAEKON_FULL_AUDIT=1`) | 63/63 route; az erőltetés nélküli parancs **cache-skip-pel tér vissza** (lásd alább, önálló megállapítás) |
+| 13 | Mobil 360px audit | PASS — ugyanúgy csak kényszerített futtatással | 63/63 route |
+| 14 | Regresszió (H-1 #418 is) | PASS, 4 egymás utáni futás | mind a 4 futás: 139 OK, 0 FAIL, **0 WARN** — H-1 ma nem jelentkezett (ez a dokumentált kb. 1/20-as gyakorisággal összefér, nem cáfolja a korábbi reprodukálást) |
+| 15–16 | Smoke (`v3-smoke.mjs`) | Első próba FAIL (környezeti, nem app-hiba: a mock-rendelési szerver nem futott) → mock szerver elindítva → **PASS, 74/74** | — |
+| 17–18 | Lighthouse (4 kategória, 8 route) | Lefuttatva (nem bináris kapu) | `/`: Perf 84, A11y 100, BP 100, SEO 69 (csak `is-crawlable` bukik); `/arkalkulator/` 91/100/100/66; a teljes tábla egyezik a 2026-11-08-i decisions.md-bejegyzéssel |
+| 19 | CTA-térkép | Lefutott, hibátlan | — |
+| 20–21 | Forráskód-ellenőrzés: `DEFAULT_RECIPIENT` és `company.email` | **Mindkettő `info@soderarak.hu`** | Nincs eltérés a kettő között ezen az ágon — a `rendeles@` csere valóban csak az `origin/v3`@`9e64716`-on él (lásd `decisions.md` 2026-11-09 18:49) |
+
+**Két önálló, a saját session eddigi dokumentumaiban sem rögzített
+megállapítás ebből a körből:**
+
+1. **Aritmetikai hiba a korábbi naplóban.** `docs/decisions.md` (2026-11-08
+   folytatás bejegyzés) **"4647 OK"**-t ír, miközben a saját felsorolt
+   bontása (181+3635+440+117+83+166+26) **4648**-ra jön ki — és a mai,
+   friss futtatás ugyanezeket a részösszegeket adta. **Ez írási hiba a
+   naplóban, nem regresszió** — minden egyes alteszt-szám egyezik.
+2. **Az a11y és mobil kapu "csendben" kihagyja magát változatlan fán.**
+   `npm run test:a11y` / `test:mobile` **cache-skip**-pel tér vissza
+   ("mind a 63 route változatlan — audit kihagyva"), ha nincs
+   `DAEKON_FULL_AUDIT=1` beállítva — valódi auditálás nélkül. A korábbi
+   audit-naplók "63/63 PASS" sorai **nem jelzik**, hogy ez a cache-skip
+   állt-e a háttérben vagy egy tényleges, kényszerített futás — ez egy
+   módszertani hiányosság, amit a jövőbeli auditoknak **explicit
+   `DAEKON_FULL_AUDIT=1`-gyel** kell futtatniuk, és a naplóba is be kell
+   írniuk, hogy kényszerített futás történt.
+
+**Ellentmondás, amit NEM oldok fel magamtól:** a `CLAUDE.md` "Known
+fragile spots" szakasza "~95-97 Lighthouse" mért helyi maximumot állít a
+főoldalra. A mai friss mérés (83-84) és minden, ebben a repóban
+dokumentált 2026-11-01 utáni mérés (84-90 között) **nem támasztja alá**
+ezt a számot — a `v3-audit-and-fixes.md` már korábban jelezte, hogy a
+"~95-97" valószínűleg a hibás Lighthouse-harness (L-1, base-path nélkül
+mérő szkript) korából származik, és "nem tekinthető összevethető
+alapnak". A `CLAUDE.md` szövege (projekt-utasítás, nem auditdokumentum)
+ezt a caveatot **nem tartalmazza** — ezt a `backlog.md`-be P2-ként
+felvettem, de a `CLAUDE.md` tartalmát **nem módosítottam** magamtól,
+mivel az a projekt irányadó utasítása, nem auditbizonyíték.
+
+## Végső olvasat
+
+Ez a két alügynök **nem külső tanúsítás** (a megbízás szövege szerint
+sem nevezhető annak) — de a saját session a legmagasabb kockázatú
+tételeket (A. szakasz 1–8. pont, B. szakasz mindkét önálló megállapítása)
+**függetlenül, saját kódolvasással/futtatással újra-ellenőrizte**, nem
+csak átvette. A teljes, valódi gate-készlet (típus, lint, build, 7
+egységteszt-csomag, a11y, mobil, regresszió, smoke, Lighthouse) **ma,
+frissen, PASS** (1 BLOCKED: `test:order-php`, környezeti okból, nem
+hiba). Nincs regresszió a `798fd70..HEAD` tartományban. A valódi,
+nyitott kockázatok a P0/P1 backlog-tételek (élesítési kapcsoló hiánya,
+adatvédelmi tájékoztató hiányossága, CI-kapu hiány, H-1, és a fent
+felsorolt, még egyenként ellenőrizendő kisebb tételek) — ezek
+**technikai minőségi kérdések, nem "az oldal nem működik" típusú
+hibák.**
