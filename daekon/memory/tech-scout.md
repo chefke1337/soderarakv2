@@ -76,3 +76,5 @@
 - 2026-10-03 19:08 radar: 9 live (5/5 ellenőrzött él), 9 jelölt
 - 2026-10-03 19:59 radar: 9 live (5/5 ellenőrzött él), 9 jelölt
 - 2026-10-03 22:06 radar: 9 live (5/5 ellenőrzött él), 9 jelölt
+- 2026-11-09 20:17 radar: 9 live (4/5 ellenőrzött él), 9 jelölt
+- 2026-11-09 20:22 radar: 9 live (4/5 ellenőrzött él), 9 jelölt

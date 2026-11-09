@@ -79,3 +79,5 @@
 - 2026-10-03 19:08 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
 - 2026-10-03 19:59 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
 - 2026-10-03 22:06 SEO-audit: átlag 95/100, 42 találat (pl. /anyagok/bazalt/: 1 img alt nélkül)
+- 2026-11-09 20:17 SEO-audit: átlag 99/100, 9 találat (pl. /anyagok/andezit/: 5 img alt nélkül)
+- 2026-11-09 20:22 SEO-audit: átlag 99/100, 9 találat (pl. /anyagok/andezit/: 5 img alt nélkül)
