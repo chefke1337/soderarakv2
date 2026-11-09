@@ -202,6 +202,13 @@ elfogadásával), `v3-audit` ágon, 2026-11-09-én.
 | 19 | CTA-térkép | Lefutott, hibátlan | — |
 | 20–21 | Forráskód-ellenőrzés: `DEFAULT_RECIPIENT` és `company.email` | **Mindkettő `info@soderarak.hu`** | Nincs eltérés a kettő között ezen az ágon — a `rendeles@` csere valóban csak az `origin/v3`@`9e64716`-on él (lásd `decisions.md` 2026-11-09 18:49) |
 
+**Utólagos megjegyzés (2026-11-09, a B. szakasz lezárása után):** a 20–21.
+sorban dokumentált eltérés **ezzel a sorral már nem él** — a `v3-audit`
+ág ugyanezen a napon `origin/v3`-tal mergelve (`decisions.md`, commit
+`2164dcc`), mindkét konstans ezen az ágon is `rendeles@soderarak.hu`.
+A sort nem írtam át, hogy a B. szakasz auditpassz pontos, időbélyegzett
+pillanatfelvétele maradjon.
+
 **Két önálló, a saját session eddigi dokumentumaiban sem rögzített
 megállapítás ebből a körből:**
 
