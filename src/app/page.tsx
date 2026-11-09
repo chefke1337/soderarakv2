@@ -29,6 +29,7 @@ import { faqJsonLd, JsonLd } from "@/lib/meta";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
+import HeroGround from "@/components/HeroGround";
 import CalculatorEntry from "@/components/CalculatorEntry";
 import OrderRoute from "@/components/OrderRoute";
 import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/MaterialLedger";
@@ -60,18 +61,24 @@ export default function HomePage() {
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section
         data-call-region="hero"
-        className="on-dark relative isolate overflow-hidden bg-surface-dark text-on-dark"
+        className="hero-x on-dark relative isolate overflow-hidden text-on-dark"
       >
-        <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-40" />
+        {/* Háttér (ügyfél, 2026-11-07 21:54): vissza sötétre — meleg bazalt
+            függőleges átmenet; a rétegsáv fölött halk „horizont" derengés. */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgb(249_115_22_/_0.30),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgb(177_84_58_/_0.35),transparent_50%)]"
+          className="hero-base absolute inset-0 -z-20 bg-[linear-gradient(180deg,#2b211b_0%,#221a15_55%,#1d1612_100%)]"
         />
+        <div aria-hidden="true" className="hero-horizon pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64" />
+        {/* Sarokfények (ügyfél-kérés, 2026-11-07): égett narancs + borostyán
+            fény a két felső sarokban, lassú, alig érzékelhető lebegéssel
+            (CSS, reduced-motion esetén áll) — nincs JS. */}
+        <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
           <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
             <div className="min-w-0 lg:col-span-7">
-              <p className="rise label-strata text-amber">
-                <span className="whitespace-nowrap">{company.hours.short}</span>
+              <p className="hero-kicker rise text-sm font-semibold text-amber">
+                <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
               </p>
               <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
                 {HERO.title}
@@ -113,10 +120,14 @@ export default function HomePage() {
           </p>
         </div>
 
+        {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
+            a tartalom alatt, kihagyással (lásd HeroGround). */}
+        <HeroGround />
+
         {/* Ténysor — homok sáv a hero alján.
             A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
             a <dl> > <div> > <div> > dt/dd beágyazás WCAG 1.3.1 sértés lenne. */}
-        <div className="bg-surface-muted text-text">
+        <div className="facts-x bg-surface-muted text-text">
           <dl className="mx-auto grid max-w-6xl grid-cols-2 px-4 md:grid-cols-4 md:px-6">
             {facts.map((f, i) => (
               <div
@@ -142,6 +153,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="anyagok-arak"
+        className="lx lx-s1 lx-grid"
         kicker="Anyagok és árak"
         title="Minden tétel szemcsemérettel és bruttó árral"
         lead={
@@ -164,6 +176,7 @@ export default function HomePage() {
       <Section
         headingLevel={2}
         id="rendeles"
+        className="lx lx-s2"
         layout="split"
         kicker="Így működik"
         title="Rendelés menete"
@@ -182,13 +195,14 @@ export default function HomePage() {
         headingLevel={2}
         id="terulet"
         tone="muted"
+        className="lx lx-s3"
         kicker="Hol szállítunk"
         title="Budapest és Érd — minden kerületbe szállítunk"
         lead="A térkép a lefedettséget mutatja. A pontos szállítási díjért használja az árkalkulátort, vagy kérjen telefonos egyeztetést."
       >
         <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
           <div className="min-w-0 lg:col-span-6">
-            <div className="rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
+            <div className="lx-map-frame rounded-[var(--radius-lg)] bg-surface p-3 shadow-pop">
               <LefedettsegTerkepLazy height={420} legend={false} />
             </div>
             <p className="mt-3 flex gap-2 text-xs leading-relaxed text-ink-soft">
@@ -251,7 +265,7 @@ export default function HomePage() {
       </Section>
 
       {/* ─── Miért hívjon minket? — jóváhagyott ügyfélszöveg ─── */}
-      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="bg-page text-text">
+      <section id="miert-hivjon" aria-labelledby="miert-hivjon-cim" className="lx lx-s2 bg-page text-text">
         <div className="mx-auto grid max-w-6xl gap-x-14 gap-y-7 px-4 py-12 md:gap-y-8 md:px-6 md:py-24 lg:grid-cols-12">
           <div className="min-w-0 lg:col-span-6">
             <p className="label-strata text-brand-deep">Miért mi</p>
@@ -282,7 +296,7 @@ export default function HomePage() {
           </div>
 
           <div className="min-w-0 lg:col-span-6 lg:col-start-7 lg:row-span-2 lg:row-start-1 lg:pt-14">
-            <div className="on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
+            <div className="lx-panel on-dark rounded-[var(--radius-lg)] bg-surface-dark p-5 text-on-dark shadow-pop md:p-8">
               <h3 className="font-display text-heading-sm font-bold">{MIERT_HIVJON.listTitle}</h3>
               <ul className="mt-4">
                 {MIERT_HIVJON.list.map((item) => (
@@ -346,6 +360,7 @@ export default function HomePage() {
         headingLevel={2}
         id="gyik"
         tone="muted"
+        className="lx lx-faq lx-grid"
         layout="split"
         kicker="Gyakori kérdések"
         title="Bruttó ár, fuvar, mennyiség"

@@ -1,0 +1,187 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SÓDERÁRAK V3 — fejléc, főoldali hero, lábléc: TISZTA keret
+   (ügyfél, 2026-11-08 12:59: a szemcsézett változat „zavaros" → nincs zaj,
+   nincs textúra; a minőséget a színek tudatos elhelyezése adja, új elemek
+   megengedettek; elrendezés, kártyák, színnagyságrend marad.)
+
+   Színelhelyezés (fentről lefelé):
+     világos mészkő fejléc  →  mély grafit hero, EGYETLEN irányított meleg
+     fény a jobb felső sarokból a hívás-oszlop mögé (a fókusz oda esik),
+     bal oldalon nyugodt, sötét mező a címnek  →  a kupacsor alatt halk
+     narancs „padlófény"  →  sóder ténysor  →  …  →  sötét lábléc
+     (13:23 ügyfél: a ténysor narancs jelölői és a lábléc borostyán
+     derengése eltávolítva).
+   Új elem: a hero jobb oszlopa mögött egy keret nélküli, sötét „panel"
+   (csak lg+), felső narancs éllel — a hívás és a kalkulátor egy egységet
+   alkot, mint a hero alatti antracit panel.
+   Minden dekoráció abszolút/háttérréteg: méret és magasság nem változik.
+   Osztályok: .hdr (fejléc), .hero-x (főoldali hero), .ftr (lábléc).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────────── Fejléc ───────────────────────────── */
+.hdr {
+  /* 16:45 ügyfél: az éles oldal homokszíne (#f4ead8), egy árnyalattal élénkebben */
+  background-color: rgb(246 231 203 / 0.96);
+  border-bottom-color: #dcc297;
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.7) inset, 0 12px 30px -26px rgb(60 38 18 / 0.6);
+}
+.hdr nav a:not([aria-current="page"]):hover::after {
+  background-color: rgb(234 88 12 / 0.5);
+}
+.hdr nav a[aria-current="page"]::after {
+  background-color: #ea580c;
+}
+
+/* ───────────────────────────── Hero ───────────────────────────── */
+/* alap: mélyebb, tisztább grafit (a barnás sávosság helyett) */
+.hero-x > .hero-base {
+  background: linear-gradient(180deg, #211a16 0%, #1b1512 58%, #17120f 100%);
+}
+/* a régi két, lebegő sarokfény helyett EGY irányított fény + padlófény */
+.hero-x .hero-glow::before,
+.hero-x .hero-glow::after {
+  animation: none;
+  filter: none;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+.hero-x .hero-glow {
+  height: 100%;
+}
+.hero-x .hero-glow::before {
+  /* fő fény: jobb felső sarokból a hívás-oszlop felé */
+  left: 0;
+  right: auto;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(55% 60% at 88% 0%, rgb(232 150 60 / 0.32) 0%, rgb(194 65 12 / 0.12) 45%, transparent 75%);
+}
+.hero-x .hero-glow::after {
+  /* padlófény: a kupacsor mögött, alulról, halkan */
+  left: 0;
+  right: auto;
+  top: auto;
+  bottom: 0;
+  width: 100%;
+  height: 55%;
+  background: radial-gradient(60% 70% at 50% 100%, rgb(249 115 22 / 0.12) 0%, transparent 70%);
+}
+.hero-x .hero-horizon {
+  opacity: 0.6;
+}
+/* bal oldali nyugodt mező a cím mögött: enyhe sötétítés (nyugalom + kontraszt) */
+.hero-x > .hero-base::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(50% 55% at 18% 35%, rgb(12 8 6 / 0.35) 0%, transparent 75%);
+}
+
+/* rövid narancs jelölővonal a „Hívható" sor előtt (inline, nem változtat magasságot) */
+.hero-kicker::before {
+  content: "";
+  display: inline-block;
+  width: 1.75rem;
+  height: 2px;
+  margin-right: 0.625rem;
+  vertical-align: 0.3em;
+  border-radius: 2px;
+  background: #f97316;
+}
+
+/* Ténysor: a hero alatti sóder tónushoz igazítva */
+.hero-x .ground::after {
+  background: linear-gradient(
+    180deg,
+    rgb(235 210 166 / 0) 0%,
+    rgb(235 210 166 / 0) 30%,
+    rgb(235 210 166 / 0.6) 70%,
+    #ebd2a6 100%
+  );
+}
+.facts-x {
+  background-color: #ebd2a6;
+  --color-border-strong: #b8975f;
+  --color-text-muted: #574e42;
+}
+
+/* ───────────────────────────── Lábléc ───────────────────────────── */
+.ftr h2 {
+  color: #e3a640;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ftr h2::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  height: 2px;
+  margin-right: 0.5rem;
+  vertical-align: 0.3em;
+  background: #f97316;
+}
+.ftr nav a,
+.ftr ul a {
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  transition:
+    color var(--dur-fast) var(--ease-out-soft),
+    text-decoration-color var(--dur-fast) var(--ease-out-soft);
+}
+.ftr nav a:hover,
+.ftr ul a:hover {
+  text-decoration-color: rgb(227 166 64 / 0.6);
+}
+.ftr > div:last-child {
+  background: rgb(0 0 0 / 0.16);
+}
+
+/* Lábléc felső narancs dizájncsíkja (17:21 ügyfél, globális) — a rétegrend-
+   sáv helyett. Fénylő, középen világosodó narancs fősáv, alatta vékony
+   kísérővonal és egy rövidebb, sötétebb „árnyék"-csík; derengés nincs. */
+.footer-stripe {
+  position: relative;
+  height: 1rem;
+  background: #231a14;
+}
+.footer-stripe::before,
+.footer-stripe::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+.footer-stripe::before {
+  top: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #c2410c 0%, #ea580c 18%, #f97316 42%, #fb923c 50%, #f97316 58%, #ea580c 82%, #c2410c 100%);
+}
+.footer-stripe::after {
+  top: 9px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, rgb(249 115 22 / 0.55) 20%, rgb(251 146 60 / 0.75) 50%, rgb(249 115 22 / 0.55) 80%, transparent 100%);
+}
+
+/* ── Élénkebb narancs gombok (17:21 ügyfél, globális) ──
+   A kitöltött narancs gombok és hívógombok #cf4a0e háttérrel és FEHÉR
+   felirattal (4,53:1 — az ügyfél által választott, AA-t még teljesítő
+   árnyalat; a #e8590c-s „számszín" fehér felirattal csak 3,6:1 lenne).
+   A tisztán grafikus narancs elemek (ikonkörök, csomópontok, sávok) a
+   „számszínt" (#ea580c) kapják — ott nincs szövegkontraszt-követelmény. */
+.btn-primary,
+.bg-brand-dark {
+  /* 18:16 ügyfél: „túl élénk, rikító" → visszafogva #cf4a0e-ről */
+  background-color: #c4470f;
+  color: #ffffff;
+}
+.btn-primary:hover,
+.hover\:bg-brand-deep:hover {
+  background-color: #a8380a;
+}
+.bg-accent {
+  background-color: #d9622a;
+}

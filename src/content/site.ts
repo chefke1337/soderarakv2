@@ -38,9 +38,18 @@ export const MAX_ORDER_VOLUME = SINGLE_TRIP_MAX_M3;
  * A kanonikus/OG/sitemap URL-ek a publikálási célhoz igazodnak.
  * A V3 fejlesztői előnézet nem publikus — a layout noindexet állít rá.
  * (Az üzleti domain — soderarak.hu — változatlanul a `domain` mezőben marad.)
+ *
+ * Env nélküli (bare `npm run build`, helyi fejlesztés) futásnál a `next.config.ts`
+ * `GH_PAGES_BASE_PATH` fallbackje is üres (gyökér) — ezért ennek a fallbacknek
+ * is gyökér-URL-nek kell lennie, különben a statikus export validátora minden
+ * abszolút (OG/canonical) URL-t rossz útvonalúnak lát (alrelatív vs. gyökér
+ * elérési út). A GH Pages preview buildek (`deploy-v3-pages.yml` stb.) a saját
+ * `/soderarakv3` alútjukat MINDIG a NEXT_PUBLIC_SITE_URL-lel együtt állítják be,
+ * ezért ez a fallback valójában csak bare buildnél érvényesül.
  */
+const BUSINESS_DOMAIN = "soderarak.hu";
 const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://chefke1337.github.io/soderarakv2"
+  process.env.NEXT_PUBLIC_SITE_URL ?? `https://${BUSINESS_DOMAIN}`
 ).replace(/\/+$/, "");
 
 /** true: ez egy nem publikus V3 előnézeti build → noindex. */
@@ -52,14 +61,14 @@ export const company = {
   businessUnit: "Sóderárak — ömlesztett építőanyag értékesítése és szállítása",
   site: {
     name: "Sóderárak",
-    domain: "soderarak.hu",
+    domain: BUSINESS_DOMAIN,
     url: SITE_URL,
   },
   phone: {
     raw: "+36308528909",
     display: "+36 30 852 8909",
   },
-  email: "info@soderarak.hu",
+  email: "megrendeles@soderarak.hu",
   /** Székhely (ügyféladat, 2026-11-03) — kizárólag üzemeltetői adatként
    * (impresszum, adatkezelő, strukturált adat). NEM telephely, depó vagy
    * átvételi pont: ne kerüljön térképre, és ne kínálj itt személyes átvételt. */
@@ -229,7 +238,21 @@ export const DISTRICT_MAP_CENTERS: Record<number, [number, number]> = {
  * 2026-11-01: „Budafokot egyszer jelöld, a XXII-t vedd le"). A XXII. kerületi
  * aloldal megmarad, csak külön térképjelölése nincs.
  */
-export const MAP_HIDDEN_AREA_SLUGS = ["budapest-22-kerulet"];
+// Ügyfél, 2026-11-07: „a térképen csak a budapesti kerületek és Érd legyen" →
+// a városrészek (Albertfalva, Budatétény, Nagytétény) és az egyedi
+// egyeztetéses települések (Diósd, Törökbálint, Tárnok, Sóskút, Pusztazámor)
+// NEM kapnak térképjelölést. Az aloldalaik megmaradnak (/teruletek/...).
+export const MAP_HIDDEN_AREA_SLUGS = [
+  "budapest-22-kerulet",
+  "albertfalva",
+  "budateteny",
+  "nagyteteny",
+  "diosd",
+  "torokbalint",
+  "tarnok",
+  "soskut",
+  "pusztazamor",
+];
 export const MAP_DISTRICT_REPRESENTATIVE: Record<string, number> = { budafok: 22 };
 export const mapServiceAreas = () => serviceAreas.filter((a) => !MAP_HIDDEN_AREA_SLUGS.includes(a.slug));
 

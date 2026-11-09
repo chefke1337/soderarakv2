@@ -62,7 +62,7 @@ export type OrderHandlerDeps = {
   sendEmail: EmailSender;
   rateLimit: RateLimiter;
   idempotency: IdempotencyStore;
-  /** Címzett — alapértelmezés: info@soderarak.hu. */
+  /** Címzett — alapértelmezés: megrendeles@soderarak.hu. */
   recipient?: string;
   /** Mock mód: nem megy ki valódi e-mail. A válasz EZT jelzi. */
   mock?: boolean;
@@ -101,7 +101,7 @@ export type HandlerResponse = {
 };
 
 export const MAX_BODY_BYTES = 16 * 1024;
-export const DEFAULT_RECIPIENT = "info@soderarak.hu";
+export const DEFAULT_RECIPIENT = "megrendeles@soderarak.hu";
 
 /* ───────────────────────── Alap implementációk ───────────────────────── */
 
@@ -161,6 +161,45 @@ export function createMockSender(sink?: (m: EmailMessage) => void): EmailSender 
 
 /* ─────────────────────────── Levélszöveg ─────────────────────────── */
 
+const CUSTOMER_TYPE_LABEL: Record<NonNullable<OrderRequest["billing"]>["customerType"], string> = {
+  private: "Magánszemély",
+  business: "Cég / egyéni vállalkozó",
+};
+
+/**
+ * Vevő típusa + számlázási adatok blokk. Minden szabad szöveg egysoros
+ * szűrésen megy át (sima szöveges levél: nincs HTML, nincs fejléc-injekció).
+ * Magánszemélynél adószám-sor nincs (a séma is üresre állítja).
+ */
+export function billingEmailLines(billing: OrderRequest["billing"] | null): string[] {
+  const out: string[] = [];
+  out.push("── Vevő típusa ──");
+  if (!billing) {
+    out.push("Nem adta meg (a számlázási adatok nélkül kért ajánlatot).");
+    out.push("");
+    out.push("── Számlázási adatok ──");
+    out.push("Nem adott meg számlázási adatot — számlázás előtt egyeztetni kell.");
+    return out;
+  }
+  out.push(CUSTOMER_TYPE_LABEL[billing.customerType]);
+  out.push("");
+  out.push("── Számlázási adatok ──");
+  out.push(
+    `${billing.customerType === "business" ? "Cégnév / számlázási név" : "Számlázási név"}: ${sanitizeLine(billing.name, 160)}`,
+  );
+  if (billing.customerType === "business") {
+    out.push(`Adószám: ${sanitizeLine(billing.taxNumber, 20)} (formailag ellenőrizve, NAV-nál nem)`);
+  }
+  out.push(`Ország: ${sanitizeLine(billing.address.country, 60)}`);
+  out.push(`Irányítószám: ${sanitizeLine(billing.address.postalCode, 10)}`);
+  out.push(`Település: ${sanitizeLine(billing.address.city, 80)}`);
+  out.push(`Közterület, házszám: ${sanitizeLine(billing.address.streetAddress, 160)}`);
+  if (billing.address.additionalAddress) {
+    out.push(`További címadat: ${sanitizeLine(billing.address.additionalAddress, 120)}`);
+  }
+  return out;
+}
+
 const ft = (n: number) => `${n.toLocaleString("hu-HU")} Ft`;
 
 export function renderOrderEmail(
@@ -187,19 +226,14 @@ export function renderOrderEmail(
   lines.push("");
   lines.push(ORDER_INTENT_NOTICE);
   lines.push("");
-  lines.push("── Megrendelő ──");
+  for (const row of billingEmailLines(value.billing ?? null)) lines.push(row);
+  lines.push("");
+  lines.push("── Kapcsolattartó ──");
   lines.push(`Név: ${sanitizeLine(value.name, 120)}`);
   lines.push(`E-mail: ${sanitizeLine(value.email, 254)}`);
   lines.push(`Telefon: ${sanitizeLine(value.phone, 40)}`);
   lines.push("");
-  lines.push("── Anyag és mennyiség ──");
-  lines.push(`Anyag és termékváltozat: ${sanitizeLine(materialName, 160)}`);
-  const wash = item ? itemWash(item) : null;
-  if (wash) lines.push(`Mosottság: ${sanitizeLine(wash.label, 80)}`);
-  if (item?.unclassified) lines.push("Minőségjelölés: osztályozatlan termék");
-  lines.push(`Mennyiség: ${value.m3} m³`);
-  lines.push("");
-  lines.push("── Szállítási cím ──");
+  lines.push("── Szállítási adatok ──");
   lines.push(`Település: ${value.municipalityId === "budapest" ? "Budapest" : "Érd"}`);
   lines.push(
     `Kerület: ${value.municipalityId === "budapest" ? romanDistrict(value.districtId ?? 0) : "—"}`,
@@ -231,6 +265,13 @@ export function renderOrderEmail(
   } else {
     lines.push(PERMIT_NOTICE);
   }
+  lines.push("");
+  lines.push("── Kalkuláció és kért anyag ──");
+  lines.push(`Anyag és termékváltozat: ${sanitizeLine(materialName, 160)}`);
+  const wash = item ? itemWash(item) : null;
+  if (wash) lines.push(`Mosottság: ${sanitizeLine(wash.label, 80)}`);
+  if (item?.unclassified) lines.push("Minőségjelölés: osztályozatlan termék");
+  lines.push(`Mennyiség: ${value.m3} m³`);
   lines.push("");
   lines.push("── Árösszesítő (szerveroldalon újraszámolva) ──");
   for (const row of quoteSummaryLines(quote, ft)) lines.push(row);

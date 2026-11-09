@@ -102,7 +102,7 @@ const browser = await chromium.launch({ headless: true });
   check("a siker nem végleges megrendelés", /nem végleges megrendelés/.test(t));
   const raw = existsSync(mailFile) ? readFileSync(mailFile, "utf8") : "";
   const body = Buffer.from(raw.split(/\r?\n\r?\n/).slice(1).join("").replace(/\s+/g, ""), "base64").toString("utf8");
-  check("a levél az info@soderarak.hu címre szól", /^To: info@soderarak\.hu/m.test(raw));
+  check("a levél az megrendeles@soderarak.hu címre szól", /^To: megrendeles@soderarak\.hu/m.test(raw));
   check("Reply-To a beküldő", /^Reply-To: e2e@example\.com/m.test(raw));
   check("a levél tartalmazza a kalkulációt", body.includes("Név: E2E Teszt") && body.includes("Teljes bruttó tájékoztató összeg: 165 150 Ft") && body.includes("Szállítási cím (utca, házszám): E2E utca 1."));
   check("nincs kliensoldali hiba", errors.length === 0);

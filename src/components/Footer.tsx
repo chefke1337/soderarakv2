@@ -6,17 +6,10 @@ const FOOTER_GUIDES = 6;
 
 export default function Footer() {
   return (
-    <footer data-call-region="footer" className="on-dark bg-surface-dark text-on-dark">
-      {/* Rétegcsík: a hero anyag-rétegrendjének visszhangja, a lezárás jele */}
-      <div aria-hidden="true" className="flex h-2">
-        <span className="flex-[3] bg-mat-homok" />
-        <span className="flex-[4] bg-mat-soder" />
-        <span className="flex-[2] bg-mat-kavics" />
-        <span className="flex-[3] bg-accent" />
-        <span className="flex-[2] bg-mat-murva" />
-        <span className="flex-[1] bg-mat-andezit" />
-        <span className="flex-[3] bg-mat-fold" />
-      </div>
+    <footer data-call-region="footer" className="ftr on-dark bg-surface-dark text-on-dark">
+      {/* Narancs dizájncsík (ügyfél, 2026-11-08 17:21; globális) — a korábbi
+          rétegrend-sáv helyett. Dekoratív. */}
+      <div aria-hidden="true" className="footer-stripe" />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-8 sm:grid-cols-2 md:gap-10 md:pt-14 md:pb-10 md:px-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
           <Link href="/" aria-label="Sóderárak — főoldal" className="inline-block rounded-sm">

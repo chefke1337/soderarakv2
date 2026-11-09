@@ -42,6 +42,15 @@ import FractionScale from "@/components/FractionScale";
 import QuoteReceipt from "@/components/QuoteReceipt";
 import { WashBadge } from "@/components/MaterialLedger";
 import { trackQuoteRequest, sendArkalkulatorSubmit } from "@/lib/analytics";
+import BillingFields from "@/components/BillingFields";
+import {
+  BILLING_ERROR_KEYS,
+  billingErrors,
+  billingPayload,
+  EMPTY_BILLING,
+  type BillingFieldKey,
+  type BillingState,
+} from "@/lib/billing-form";
 
 /* ──────────────────── Piszkozat (CSAK a számítás, nem a kapcsolat) ──────────────────── */
 
@@ -139,6 +148,9 @@ export default function ArkalkulatorForm() {
   const [preferredDate, setPreferredDate] = useState("");
   const [note, setNote] = useState("");
   const [privacy, setPrivacy] = useState(false);
+  /* Számlázási adatok: csak memóriában (nincs böngészős tárolás) — lásd billing-form.ts */
+  const [billing, setBilling] = useState<BillingState>(EMPTY_BILLING);
+  const [billingTouched, setBillingTouched] = useState<Partial<Record<BillingFieldKey, boolean>>>({});
   const [honeypot, setHoneypot] = useState("");
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [submitAttempts, setSubmitAttempts] = useState(0);
@@ -158,6 +170,16 @@ export default function ArkalkulatorForm() {
     email: `${uid}-email`,
     phone: `${uid}-tel`,
     privacy: `${uid}-adatkezeles`,
+  };
+  const billingIds = {
+    group: `${uid}-szla-tipus`,
+    name: `${uid}-szla-nev`,
+    taxNumber: `${uid}-szla-adoszam`,
+    country: `${uid}-szla-orszag`,
+    postalCode: `${uid}-szla-isz`,
+    city: `${uid}-szla-telepules`,
+    streetAddress: `${uid}-szla-utca`,
+    additionalAddress: `${uid}-szla-tovabbi`,
   };
 
   /* ── Piszkozat visszaállítása (csak kliensen, SSR-barát) ── */
@@ -376,6 +398,8 @@ export default function ArkalkulatorForm() {
     setPreferredDate("");
     setNote("");
     setPrivacy(false);
+    setBilling(EMPTY_BILLING);
+    setBillingTouched({});
     setHoneypot("");
     setTouched({});
     setStepTried({});
@@ -396,15 +420,30 @@ export default function ArkalkulatorForm() {
   const contactValid = nameValid && emailValid && phoneValid && privacy;
   const err = (field: string, ok: boolean) => (touched[field] || submitAttempts > 0) && !ok;
 
+  /* Számlázási blokk: opcionális; csak megkezdett blokknál vannak hibák (közös séma) */
+  const billingClientErrors = billingErrors(billing);
+  const billingServerErrors = Object.fromEntries(
+    (Object.keys(BILLING_ERROR_KEYS) as BillingFieldKey[])
+      .filter((k) => serverErrors[BILLING_ERROR_KEYS[k]])
+      .map((k) => [k, serverErrors[BILLING_ERROR_KEYS[k]]!]),
+  ) as Partial<Record<BillingFieldKey, string>>;
+  const billingAllErrors = { ...billingServerErrors, ...billingClientErrors };
+  const billingValid = Object.keys(billingClientErrors).length === 0;
+  const BILLING_ORDER: BillingFieldKey[] = ["name", "taxNumber", "country", "postalCode", "city", "streetAddress", "additionalAddress"];
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitAttempts((n) => n + 1);
     setTouched((t) => ({ ...t, name: true, email: true, phone: true, privacy: true }));
     setServerErrors({});
-    if (!contactValid) {
+    if (!contactValid || !billingValid) {
       if (!nameValid) return focusField(ids.name);
       if (!emailValid) return focusField(ids.email);
       if (!phoneValid) return focusField(ids.phone);
+      if (!billingValid) {
+        const first = BILLING_ORDER.find((k) => billingClientErrors[k]);
+        if (first) return focusField(billingIds[first]);
+      }
       return focusField(ids.privacy);
     }
     // Biztonsági háló: a cím-lépés adatai nélkül nincs beküldés.
@@ -441,6 +480,8 @@ export default function ArkalkulatorForm() {
       districtId: municipalityId === "budapest" ? districtId : null,
       postalCode,
       address: address.trim(),
+      // Csak a kiválasztott vevőtípus mezői; üres blokk → nincs billing kulcs.
+      ...(billingPayload(billing) ? { billing: billingPayload(billing) } : {}),
       preferredDate: preferredDate.trim(),
       castleAnswer,
       // A 10 m³ feletti igényt a levélben is jelezzük (a mennyiség mező 1–10 m³).
@@ -1050,6 +1091,27 @@ export default function ArkalkulatorForm() {
                 />
               </div>
             </div>
+
+            <BillingFields
+              value={billing}
+              onChange={setBilling}
+              errors={billingAllErrors}
+              showErrors={submitAttempts > 0}
+              touched={billingTouched}
+              onTouch={(f) => setBillingTouched((t) => ({ ...t, [f]: true }))}
+              ids={billingIds}
+              contactName={name}
+              delivery={
+                addressValid && postalValid && municipalityId
+                  ? {
+                      postalCode,
+                      city: municipalityId === "budapest" ? "Budapest" : (municipalities.find((mm) => mm.id === municipalityId)?.name ?? ""),
+                      streetAddress: address.trim(),
+                    }
+                  : null
+              }
+              deliveryLabel={`${postalCode} ${municipalityId === "budapest" ? "Budapest" : (municipalities.find((mm) => mm.id === municipalityId)?.name ?? "")}, ${address.trim()}`}
+            />
 
             <label className="privacy mt-4">
               <input

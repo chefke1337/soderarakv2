@@ -619,3 +619,538 @@ egyezik az oldallal (0 eltérés) — az árakhoz/díjakhoz nem kellett nyúlni.
   rate limit, idempotencia, csapda-mező, 16 KB korlát. Siker csak tényleges
   átvételkor.
 - 10 m³ feletti igény a megjegyzés elején jelölve kerül a levélbe.
+
+## 2026-11-07 — Redesign: „Anyag és szerkezet" (fejléc, hero, anyagkatalógus)
+Branch: `redesign/anyag-es-szerkezet` (nem élesít; előnézet: `preview/redesign` → `preview-out`).
+- Fejléc: tömör `--color-limestone` sáv, `border-ink/20` alsó vonal, kapcsolat-zóna
+  függőleges vonallal leválasztva, szén (`.btn-ink`) telefongomb. Áttetszőség/blur ki.
+- Véletlenszerű többszínű csík: a hero-kickerből és a mobilmenüből eltávolítva; a
+  rétegrend-motívum a valódi anyagfotókból rakott hero-szelvénybe költözött.
+- Mobilmenü: teljes szélességű lap a fejléc alatt; Tab-kilépésre is zár.
+- Hero: `--color-mineral` alap, pötty/fényfolt nélkül; H1 változatlan; információs
+  sor (`dl`) badge-ek helyett; telefon elsődleges, kalkulátor másodlagos (`btn-outline`).
+  A korábbi ténysáv megszűnt: elemei az információs sorba / ármagyarázatba kerültek.
+- Andezit: nincs ellenőrzött fotó → a hero-szelvényben nem szerepel, a katalógusban
+  jelölt szemcse-illusztráció („illusztráció").
+- Anyagkatalógus (`MaterialCatalog`): mobil lista → sm 2 hasáb → lg 3×2, hajszálvonalak,
+  körbe tett nyilak nélkül; ármagyarázat a DISCLOSURE_* konstansokból.
+- `MaterialHeaps` / `HeapRail` törölve (nem maradt hivatkozás).
+Nyitott ármagyarázati kérdés: az anyagár bruttó, a fuvar nettó — a kettő nem adható
+össze közvetlenül; ezt a szöveg jelzi, de ügyféldöntés, hogy a fuvart is bruttóban mutassuk-e.
+
+### 2026-11-07 — Visszaállítás (ügyfél-utasítás)
+„A felső szegmenst tedd vissza a régire, csak a hátteret kértem módosítani."
+- Fejléc, mobilmenü, hero és az anyagsor (MaterialHeaps) a 0527c92 szerinti
+  állapotra visszaállítva; a HeroStrata/MaterialCatalog kikerült.
+- Egyetlen megtartott változás: a hero háttere egyszínű, a pöttyözött minta
+  (`.grain`) és a radiális fényfoltok nélkül.
+- Dupla/tripla hívógomb mobilon: a MobileCallBar elrejtőzik, amíg a hero
+  telefon-gombja látszik, és amíg a mobilmenü nyitva van.
+- (16:20) Ügyfél-irány: narancs horizont ki; a hero alját a térkő-rétegrend metszete
+  zárja az ügyfél referenciaképe szerint (beton térkő → ágyazat 2/4 → teherhordó 0/22 →
+  fagyvédő 0/56 → tömörített altalaj egyenes határral → természetes hullámos rétegek).
+  Statikus SVG: `public/hero/terko-retegrend.svg` (generátor: `scripts/build-hero-ground.py`).
+  A térkő feletti hero-háttér világos mészkő→homok átmenet; a hero szövegei, a
+  kupackártyák és a terület-címkék ehhez igazítva sötét szövegre.
+- (17:18) Ügyfél-irány: a térkövek kikerültek; csak a térkő alatti rétegrend absztrakt metszete marad, fele akkora magasságban (64/72/80 px).
+- (17:24) „Gagyi” visszajelzés után: a talaj-sáv letisztult műszaki metszetrajz lett (pontozott ágyazat, rakott szögletes 0/22 és 0/56 szemek, 45°-os vonalkázású tömörített altalaj, hajszálvonalas réteghatárok), 80 px magas viewBox.
+- (17:30) „Tudsz jobbat”: a metszet renderelt hatású lett (árnyalt, vetett árnyékos szemek, zaj-textúra, vágási mélységárnyék), md+ méreten műszaki rajz-szerű rétegfeliratokkal (HTML).
+- (17:40) „Életszerűbb, mi ez a csíkos föld”: a rajzolt SVG helyett a rétegek a katalógus valódi anyagfotóiból készült, varratmentes csempék (public/hero/talaj-*.webp, scripts/build-hero-ground.py); ágyazat=sóder, teherhordó=murva, fagyvédő=kavics, altalaj/természetes=föld fotó. Vonalkázás megszűnt.
+- (19:01) Ügyfél: „nem jó irány, maradj az absztraktnál, legyen grafika, kreatívan”: fotók ki; lapos „terrazzo + raszter” grafikus metszet (SVG), tömörített altalaj = lefelé ritkuló pontraszter (nem vonalkázás).
+- (19:08) Ügyfél: a rétegfeliratok lekerültek; a sáv tisztán grafika. Alap: soderarak.hu élő verziója (hosting/v3 e804f92 = v3 0527c92 + hosting-workflow).
+- (19:17) Kupacok valós léptékben (10 m³): kúp-közelítés + természetes rézsűszög (homok 34°, sóder 30°, kavics 35°, zúzott kő 40°, föld 35°; Engineering ToolBox, Wikipedia) → Ø 4,5–5,1 m, h 1,47–1,89 m; rajzlépték 33 egység/m. Szemcseméret a katalógus jellemző frakcióiból ugyanebben a léptékben (src/lib/pile.ts PILE_GRAIN); a MaterialGrain csempék (GRAIN_SHAPE) változatlanok.
+- (19:56) Ügyfél: hero háttér sárgább/bézs (#f0e1c0→#e2cb9b); anyagcsempék üveghatásúak (áttetsző, backdrop-blur, fényél) — kifejezett ügyfélkérés, felülírja a brief „no glassmorphism” pontját; a terület-címkék és a nyíl-körök ehhez igazítva.
+- (20:11) Ügyfél: csempék matt üveg (blur, nem tükröződés, nincs éles fényél; a kupac elmosott színe dereng át); a rétegsáv valós szemcsemérettel (1 egység ≈ 5,7 mm, ágyazat 2–4 mm, 0/22, 0/56 szemeloszlással, árnyalt zúzottkő); a sáv tetején építkezés-jelenet oldalnézetben (markoló, raklapon térkő, lerakott elemek) — public/hero/epitkezes.svg.
+- (20:21) Ügyfél: markoló ki; térkő jobbról a szélesség 65%-án lerakva (szegélykővel); rajta teljes + megbontott, majdnem üres raklap térkő, homokkupac, odatámasztott seprű.
+- (20:42) „Jobb elrendezés, fizika, grafika”: jelenet újrarendezve munkafront-logika szerint (megbontott raklap → homokkupac 1 m³/34° rézsű, lapáttal → teljes raklap → seprű a raklapélnek dőlve); egységes 0,8 egység/cm lépték, kontaktárnyékok jobbra (fény balról), beton- és homokszemcse-textúra, fa-erezet.
+- (21:24) Ügyfél: a térkő és minden felette lévő elem lekerült; csak a rétegek maradnak, valós vastagsággal (ágyazat 4, teherhordó 20, fagyvédő 25, altalaj 10, talaj 6 cm; 80 px = 65 cm) és frakció szerinti szemcsemérettel (0/22 ≤ 2,7 px, 0/56 ≤ 6,9 px).
+- (21:36) Ügyfél: a hero teteje túl egyszínű/fakó → két felső sarokban narancs/borostyán sarokfény, lassú CSS-lebegés (reduced-motion: áll). Kifejezett ügyfélkérés (felülírja a „no glow blob” pontot).
+- (21:44) Ügyfél: rétegsáv fele akkora (32/36/40 px), arányok valós vastagság szerint maradnak; a talajrétegek a ténysor színébe fakulnak.
+- (21:54) Ügyfél: vastagabb földrész (altalaj 15 + talaj 16 cm; sáv 80 egység = 80 cm); a hero háttere vissza sötétre (meleg bazalt átmenet), sötét matt üveg csempék, tompított sarokfények, halk horizont-derengés a rétegsáv fölött.
+- (22:10) Ügyfél (globális): a lábléc színes csíkja helyett ugyanaz a rétegrend-sáv (a sötét láblécbe fakul); a szekció-kickerek kis ikonja (.label-strata) a 6 anyag kupac-textúrájával (scripts/build-material-textures.py → --tex-* CSS-változók).
+- (22:10) Ügyfél: a térképen ne legyen név olyan településnél, ahová nem szállítunk; választás: „saját rajzolt térkép”. Az OSM-csempék helyett saját alaptérkép: OSM közigazgatási határok (23 kerület + környező települések), Duna, autópályák/főutak — egyszer letöltve CI-ben (tools/terkep-adat ág, scripts/terkep-adat.py), egyszerűsítve → public/terkep/alap.json (~104 KB, gzip ~23 KB). Rajta nincs felirat; csak a mi jelöléseink kapnak nevet. Kiszolgált (23 kerület + Érd, Diósd, Törökbálint, Tárnok, Sóskút, Pusztazámor) meleg kitöltés, többi semleges. OSM-attribúció marad (ODbL).
+- (22:55) Ügyfél: a térképen csak a 23 kerület és Érd (Budafok a XXII. képviselője marad, 2026-11-01-i kérés szerint); városrészek és egyedi egyeztetéses települések jelölése le, az alaptérképen sem kiemeltek. Aloldalaik megmaradnak.
+
+## 2026-11-07 — Teljes audit, új session (munkaág: `v3-audit`, 917e141 → f59e363)
+
+**Kiindulás:** a `docs/v3-audit-and-fixes.md` (2026-11-01) egy korábbi, teljes
+auditot már dokumentált, de a 2026-11-02 — 2026-11-07 közötti hullámok
+(ötlépéses kalkulátor-átírás, nyilvános díjtábla eltávolítása, üzemeltető
+Kft.-ről E.V.-re váltása, PHP rendelési végpont, hero/fejléc/térkép-redesign)
+ennél újabbak — ez a session ezeket vette alapul, nem ismételte meg a
+2026-11-01-i tételeket feltétel nélkül, hanem újra lefuttatta a valódi
+kapukat és kifejezetten a kalkulátor↔tudástár összhangot kereste.
+
+**Munkaterület-eltérés (fontos, a felhasználónak jelezve a végső összegzésben
+is):** a helyi git remote `chefke1337/soderarakv2.git` — NEM `soderarakv3`,
+ahogy a feladat feltételezte a GitHub Pages URL-ből. A `v3-audit` csak
+távolról létezett (`origin/v3-audit`), a helyi `v3` ág 917e141-től eltérő,
+divergált állapotban volt (1 saját commit, amit a push-olt `v3-audit`/`v3`
+nem tartalmazott) — ezért ÚJ helyi `v3-audit` ág jött létre `origin/v3-audit`
+alapján (917e141), a meglévő helyi `v3` ág érintetlen maradt.
+
+**Élő GH Pages előnézet ≠ ez az ág:** `origin/gh-pages` (a tényleges
+https://chefke1337.github.io/soderarakv3/ tartalma) az a9afc4c commitnál áll
+— ez megelőzi a teljes 2026-11-01-i auditot ÉS az azt követő összes
+hullámot. A live preview tehát NEM reprezentálja az aktuális ág állapotát;
+a vizuális ellenőrzés ezért saját, friss helyi buildből (`npm run build` +
+`npm run shots`), nem az élő URL-ről történt.
+
+**Talált és javított hibák (mind lokális, visszafordítható, build/teszt
+igazolja):**
+
+1. **P0 — bare `npm run build` megbízhatóan elhasalt** (`9474953` + `0f7264f`).
+   A `src/content/site.ts` `SITE_URL` fallback egy GH Pages alútvonalas URL
+   volt (előbb `.../soderarakv2`, a 2d0908f cherry-pick után `.../soderarakv3`),
+   miközben a `GH_PAGES_BASE_PATH` (next.config.ts) alapértelmezése üres —
+   ez az összhanghiány a 404-oldal og:image URL-jét alútvonalasnak láttatta
+   a validátorral szemben, ami minden env nélküli buildnél elhasalt
+   (`scripts/prepare-static-export.mjs: unexpected social image URL`).
+   Javítás: a fallback gyökér-URL (`https://soderarak.hu`, a meglévő
+   `company.site.domain`), összhangban a basePath alapértelmezett üres
+   értékével. A CI-munkafolyamatok (deploy-v3-pages.yml, deploy-v2-pages.yml,
+   preview-build.yml) explicit env-ekkel futnak, ezért a fallback-öket nem
+   érinti — ellenőrizve: CI-változókkal futtatott build (GH_PAGES_BASE_PATH=
+   /soderarakv3) változatlanul OK, noindex/canonical/sitemap helyes, OG-hash
+   egyezik. **Ez a hiba korábban rejtve maradt**, mert a 2026-10-31-i
+   újraellenőrzés dokumentáltan CI-változókkal futtatta a buildet, sosem
+   mezítelenül.
+2. **P2 — `npm run cta:map` (a CLAUDE.md szerinti „valódi böngészős audit”
+   egyike) megbízhatóan elhasalt** (`f59e363`), két okból: (a) az örökölt
+   `/anyagok/bazalt/` meta-refresh oldalon a Playwright `page.evaluate`
+   végrehajtási kontextusa megszűnt navigáció közben — az a11y-export.mjs
+   és mobile-layout-audit.mjs már kezeli ezt a mintát, a cta-position-map.mjs
+   nem; most ugyanazt a szűrést kapta. (b) a kimeneti `daekon/runs/` mappa
+   (gitignore-olt) nem létezett egy friss worktree-ben, és a szkript
+   `mkdirSync` nélkül írt bele → `ENOENT` a futás legvégén. Mindkettő
+   lokális, nem viselkedésváltoztató javítás; a szkript most végigfut a
+   teljes route-halmazon (desktop+mobil) és ír jelentést.
+
+**Újrafuttatott valódi kapuk (ebben a sessionben, nem csak idézve):**
+`tsc --noEmit` OK; `next lint` 2 örökölt figyelmeztetés (nem hiba,
+`ArkalkulatorForm.tsx` useEffect-dependency, `Section.tsx` unused var —
+mindkettő már a 2026-11-01-i audit előtt is megvolt, nem új); `npm run
+test:all` (pricing 181, freight 3635, quote 440, districts 117, area-pages
+83, order 136 — mind 0 FAIL; order-php kihagyva, **ebben a környezetben
+nincs PHP-futtató**, ezt nem lehetett ellenőrizni); `npm run build` (bare ÉS
+CI-változós is) OK; `npm run test:a11y` 63/63 route PASS (axe WCAG A/AA);
+`npm run test:mobile` 63/63 route PASS (360px); `npm run test:regression`
+139 OK / 0 FAIL / **0 WARN** (a korábban dokumentált időszakos React #418
+hidratációs hiba ebben a futásban nem jelentkezett — ettől még nyitott
+tételnek számít, egy tiszta futás nem cáfolja az intermittens jelenséget);
+`npm run test:smoke` 74/74 OK (helyi mock-rendelési szerverrel indítva —
+enélkül 3 teszt FAIL-t és egy timeoutot adott, ami környezeti hiányra, NEM
+alkalmazáshibára vezethető vissza); `npm run cta:map` lefut a javítás után;
+`LH_ALL=1 DAEKON_FULL_AUDIT=1 npm run perf:lighthouse` lásd lent.
+
+**Lighthouse-mérés (laborérték, egyetlen futás, nem valós CWV) — összevetve
+a 2026-11-01-i bázissal:**
+
+| Route | Perf (most) | Perf (11-01) | CLS (most) | CLS (11-01) |
+|---|---|---|---|---|
+| / | 84 | 86 | 0,054 | 0,001 |
+| /arkalkulator/ | 91 | 96 | 0,000 | 0,115 |
+| /arak/ | 89 | 89 | 0 | 0 |
+| /teruletek/ | 92 | 93 | 0,001 | 0 |
+| /teruletek/budapest-14-kerulet/ | 93 | 93 | 0 | 0 |
+| /utmutatok/ | 93 | 94 | 0 | 0 |
+| /anyagok/soder/ | 92 | 92 | 0 | 0 |
+| /teruletek/erd/ | 94 | 93 | 0 | 0 |
+
+A/B és BP: mindenhol A11y 100, Best Practices 100, SEO csak az `is-crawlable`
+(szándékos noindex) miatt bukik (66–69) — ez a preview-döntés következménye,
+nem hiba. A főoldal 86→84 és a kalkulátor 96→91 pontszám-csökkenés időben
+egybeesik a 2026-11-02-i (ötlépéses kalkulátor-átírás) és 2026-11-07-i
+(hero/fejléc/térkép-redesign, lábléc rétegsáv, kicker-ikonok) hullámokkal;
+a kalkulátor CLS-e viszont 0,115→0,000-ra JAVULT ugyanekkor. Egyik szám sem
+esik rossz (<0,1 CLS, Lighthouse 90 fölötti sávban a legtöbb route)
+tartományba, de a főoldal 84-es értéke a dokumentált 90-es célérték alatt
+van — ez lab-mérés, nem valós felhasználói Core Web Vitals, de követésre
+érdemes a következő tartalmi/vizuális változtatásnál.
+
+**Kalkulátor↔tudástár kereszt-ellenőrzés eredménye:** a kalkulátor
+ténylegesen egy explicit 5-lépéses űrlap (`STEP_LABELS`: Anyag, Mennyiség,
+Cím, Összesítés, Adatok — `src/components/ArkalkulatorForm.tsx`). Az
+„Árkalkulátor használata lépésről lépésre” útmutató (`utmutatok/
+arkalkulator-hasznalata`) ezt „A kalkulátor három dolgot kér: az anyagot, a
+mennyiséget és a szállítási címet” mondattal vezeti be, majd — bár nem
+számozza — ténylegesen helyesen írja le a 4. (összesítés) és 5. (adatok,
+„Megrendelem” gomb) lépést is a következő bekezdésekben. **Nincs tartalmi
+tévedés**, de a nyitó mondat pontatlanul sugallja, hogy a folyamat 3 lépéses
+— ügyfélnek nem jóváhagyásra váró, de szerkesztőségi finomításra érdemes
+(P2/P3, nem javítottam önkényesen szöveget üzleti tartalmi kérdésben).
+Minden más ellenőrzött kalkulátor-vonatkozású állítás (nincs nyilvános
+díjtábla, „pontos szállítási díjért használja az árkalkulátort”, a „beküldés
+nincs konfigurálva” üzenet, bruttó anyag/nettó fuvar szétválasztása, 10 m³
+feletti egyedi ajánlat, I. kerületi Vár-egyeztetés, andezit „stilizált
+illusztráció” jelölése a hiányzó valódi fotó helyett) a kódban ténylegesen
+implementált viselkedéssel egyezik — build-kimenetből és `test:regression`/
+`test:smoke` asszerciókból igazolva, nem feltételezve.
+
+**Biztonság:** nincs titok/kulcs a forrásban vagy a build-kimenetben (minta-
+és false-positive-ellenőrzéssel); a PHP rendelési végpont SMTP-jelszava
+kizárólag env/konfig-fájlból olvasódik, a repóban csak kitöltetlen minta van
+(`server/php/soderarak-rendeles-config.example.php`, explicit „TITKOT NE
+TÁROLJ A REPÓBAN” figyelmeztetéssel).
+
+**Nyitva maradt (üzleti döntést igényel, nem javítottam egyoldalúan):**
+- A 2026-11-01-i audit BLOCKED/nyitott tételei közül: a főoldal Performance
+  90 alatt marad (most 84, cél 90); a H-1 hidratációs hiba továbbra sem
+  reprodukálva/cáfolva ebben a futásban; indexelés élesítésének jóváhagyása.
+- Az „Árkalkulátor használata lépésről lépésre” nyitó mondatának pontosítása
+  (3 dolog → 5 lépés) — tartalmi szerkesztés, nem kódhiba.
+- A PHP-végpont (`test:order-php`) ebben a környezetben nem futtatható (nincs
+  PHP) — a 2026-11-04-i implementáció nem lett újra igazolva, csak a forrás
+  átolvasva.
+- (2026-11-08) Ügyfél: a kupacok textúrája „csíkos, rácsos” volt (pixel alatti szemek + kis csempe → moiré). Javítás: nagyított, jól látható szemek (≈1–3 px), 48×24-es csempe, közeli tónusok, feTurbulence felületi zaj; az anyagok egymáshoz viszonyított szemcsemérete megmarad.
+- (2026-11-08) Ügyfél: a csempék háttere maradjon a régi → a .heap-bleed a korábbi kupac-grafika rögzített 200×72-es raszteréből készül (public/kupac-hatter/*.webp, ~1,5 KB/db), független az új kupac-textúrától.
+
+## 2026-11-08 — Hero alatti „grafit" vizuális frissítés (ügyfél-brief, visszaállítható)
+
+**Cél:** a főoldal hero alatti részének egységes, sötét, anyag-központú
+építőipari karaktere — tartalmi, sorrendi, útvonal-, SEO- és
+kalkulátor-logikai változás NÉLKÜL.
+
+**Védett, érintetlen elemek** (pixelre azonosak 390/768/1440 px-en,
+képernyőkép-összevetéssel igazolva): fejléc + navigáció (`Header`,
+`NavLinks`, `MobileMenu`), a teljes hero szekció (`[data-call-region=hero]`:
+sötét háttér, `.hero-glow` sarokfények, `.hero-horizon`, `MaterialHeaps`
+csempék, `HeroGround` talajsáv, ténysor), a mobil hívósáv és a lábléc
+(`Footer`, aloldalakkal közös). Globális `@theme` token NEM változott.
+
+**Megvalósítás:** új fájl `src/app/v3-lower.css` (globals.css importálja),
+amely kizárólag a `.lx` osztályú szekciókon belül hat: ott a meglévő
+szín-tokeneket (és aliasaikat) sötét grafit értékekre definiálja újra, így a
+meglévő markup magától átszíneződik. A főoldalon (`page.tsx`) és a
+`CalculatorEntry`-ben csak osztálynevek kerültek hozzá; szöveg, sorrend,
+struktúra nem változott. Más oldal nem kapja meg a `.lx` osztályt.
+
+**Rendszer:**
+- Tónuslépcső: `lx-s1` #1d1814 (anyagok, „Miért mi") · `lx-s2` #231d18
+  (rendelés, GYIK) · `lx-s3` #28211c (lefedettség, enyhén kiemelt); a
+  terrakotta kalkulátorblokk és a sötétbarna záró CTA marad a két hangsúlyos
+  blokk (saját alapszínnel, finom sarokfénnyel). A Buda Konténer ajánló
+  szándékosan világos sáv marad (petrol megkülönböztetés, CLAUDE.md).
+- Statikus, alacsony intenzitású narancs sarokfény szekciónként más sarokban;
+  mobilon kisebb és halványabb. Halvány, maszkolt mérnöki rács csak az
+  anyaglistán és a GYIK-on.
+- Sarokjelek (rajzlap-illesztőjel) a tartalomtartó két sarkán.
+- Kártyák: emelt grafit, 1 px vonal; kiemelt nem kattintható panel (térkép,
+  „Amit Önnek nyújtunk") felső narancs éllel; interaktív anyagkártya
+  hoverre/nyitáskor oldalsó narancs él + keret/háttér-váltás, emelés nélkül
+  (a kép hover-nagyítása a hatókörben kikapcsolva).
+- Fókusz: #fb923c (≥ 5,9:1 minden sötét felületen). Szövegkontraszt:
+  krém 11,6–15:1, muted 7,4–9,6:1, faint ≥ 5,7:1.
+- A keretek box-shadow-val készültek, nem borderrel: minden szekció
+  magassága és tördelése bájtra azonos maradt (3 szélességen mérve).
+- A térkép belsejében (`.leaflet-container`) az eredeti világos tokenek
+  vannak visszaállítva, hogy a feliratok olvashatók maradjanak.
+- Nincs új JS, csomag, kép, animáció; az átmenetek a meglévő motion
+  tokeneket használják és a globális reduced-motion szabály alá esnek.
+
+**Visszaállítás:** a változás egyetlen commit; a korábbi állapotot a
+`pre-grafit-2026-11-08` helyi tag jelöli (7b79ba2). Visszavonás:
+`git revert <commit>` — vagy elég a négy `lx`-osztály eltávolítása /
+a `v3-lower.css` import törlése.
+
+### 2026-11-08 12:13 — módosítás: „túl barna" → világos sóder/bézs
+
+Ügyfél: a sötét grafit változat „túl barna", legyen bézs/sóder, világosabb,
+kicsit feldobva. A `v3-lower.css` hatókörös rendszere megmaradt (ugyanazok a
+`.lx` osztályok, ugyanaz a motívumrendszer), csak a tónusok lettek világosak:
+- `lx-s1` #efe5d3 világos sóder (anyagok, „Miért mi") · `lx-s2` #e6d8bf mélyebb
+  sóder (rendelés, GYIK) · `lx-s3` #f6efe2 legvilágosabb, kiemelt (lefedettség);
+  kártyák #fdf9f1. A szövegszín-tokenek a globális, világos felületre szánt
+  értékek maradtak (nincs szövegszín-felülírás).
+- „Feldobás": erősebb narancs + amber sarokfény-pár szekciónként más
+  sarokban; finom, szabálytalan sóderszem-szemcsézet (inline SVG
+  feTurbulence, nincs képfájl — szabályos pöttyrács kipróbálva, elvetve,
+  mert „pöttyözött háttér"-nek hatott); narancs sarokjelek; narancs élek.
+- Az „Amit Önnek nyújtunk" panel az egyetlen sötét kártya maradt, de
+  semleges antracit (#262320), nem barna, felső narancs éllel.
+- A terrakotta kalkulátorblokk és a sötét záró CTA változatlan alapszínű.
+- Fejléc+hero 390/768/1440 px-en pixelre azonos, szekciómagasságok azonosak.
+Visszaállítás: ez a módosítás külön commit (a sötét változat az előző
+commit); `git revert` bármelyikre külön is működik.
+
+### 2026-11-08 12:22 — módosítás: „élénkebb, ne fakó" (az irány marad)
+
+Ügyfél: a világos sóder irány jó, de fakó — élénkebb színek, feldobva.
+Ugyanaz a `.lx` rendszer, telítettebb értékekkel:
+- tónusok: `lx-s1` #f3e2c2 · `lx-s2` #ebd2a6 (aranyos sóder) · `lx-s3` #f9eedb;
+  kártya #fffaf0; vonalak #dcc297 / #b8975f;
+- sarokfények: narancs 0,26 + minden szekcióban második, amber fény
+  (0,20; a lefedettségnél 0,36); mobilon arányosan halványabb;
+- élénk narancs részletek: rendelés-numerálok (#e8590c, a záró #f97316),
+  anyagkártya-ikon (#fed7aa), GYIK-ikonok alapból narancs tónusúak,
+  nyitva/hoverre telt narancs; az antracit panelben narancs belső fény;
+- kontraszt: törzsszöveg ≥ 10,9:1, muted ≥ 5,3:1, ink-faint a hatókörben
+  #5d5347-re sötétítve (≥ 4,5:1 a legmélyebb sóderen is), link ≥ 5:1.
+- Fejléc+hero pixelre azonos, szekciómagasságok változatlanok (3 szélesség).
+
+### 2026-11-08 12:25 — módosítás: sarokfények helyett „kavicsperem" a szekciók között
+
+Ügyfél: az élénk sóder változat tetszik, de a narancs sarokfények „nem az
+igaziak"; legyen valami kreatív a szegmensek között / átfedésben.
+- A narancs/amber sarokfények és a sarokjelek eltávolítva (a kalkulátor-
+  és a záró blokkból is). Helyettük egyenletes, átlós világosodás.
+- Új szekcióhatár-motívum: minden váltásnál a KÖVETKEZŐ szekció színéből
+  kirajzolt kavicssor „kupacolódik fel" az előző sáv aljára (átfedés a két
+  szegmens között), néhány szórt szemmel, semleges árnyékívvel és
+  csillanással — így ugyanaz a minta terrakotta, sóder, krém és sötét
+  átmenetként is működik. Maszk + árnyalás: két inline SVG
+  (`scripts/build-seam-pebbles.py` generálja, determinisztikus; ~12,7 KB
+  CSS-ben, gzip után jóval kevesebb). Szekciónként eltolt minta.
+- A perem a szekció saját alsó paddingjében ül (28 px desktop / 22 px
+  mobil < 48 px padding): tartalmat nem takar, magasság nem változik, a
+  hero/fejléc fölé nem kerül (az anyaglista TETEJÉN nincs perem).
+- A mérnöki rács a tartalommezőre került (`.lx-grid > .mx-auto::before`).
+
+### 2026-11-08 12:30 — módosítás: kavicsperem helyett „metszet" szekcióhatár
+
+Ügyfél: a kavicsperem „nagyon gyenge" — legyen kreatívabb, komolyabb.
+- Új határ: ferde vágás (desktop 48 px, mobil 18 px emelkedés a teljes
+  szélességen), a következő szekció színével, és a vágás mentén futó
+  rétegcsík a hero-talajsáv rétegrendjére utalva: narancs jelölővonal ·
+  homok · sóder · kavics · andezit (anyagszín-tokenek). Az irány
+  szekciónként vált (balra/jobbra emelkedik), mint egy műszaki metszet.
+- Egyetlen CSS-gradiens, kép/SVG nélkül; a szög `atan2(H, 100vw)`, a
+  vágóvonal a perem-doboz közepén megy át, így a csík mindkét végén teljes
+  vastagságú. atan2 nélküli böngészőben a perem egyszerűen elmarad.
+- A szekciók és a kalkulátorblokk tetejéről a világosító átmenet lekerült,
+  hogy a perem színe varrat nélkül folytatódjon a következő sávban.
+- A kavicsperem-generátor (`scripts/build-seam-pebbles.py`) törölve.
+- Perem ≤ 84 px desktop / ≈ 43 px mobil, a 96/48 px alsó paddingen belül;
+  fejléc+hero pixelre azonos, szekciómagasságok változatlanok.
+
+### 2026-11-08 12:35 — a „metszet" szekcióhatár eltávolítva
+
+Ügyfél: „ebből a fajtából nem kell több" — a díszített szekcióhatár-csíkok
+(kavicsperem, ferde rétegcsík) iránya elvetve. A szekciók ismét egyenes,
+tiszta tónusváltással találkoznak; a következő kreatív irányt az ügyfél
+választja ki.
+
+### 2026-11-08 12:35 — ügyfélválasztás: „Óriás tipográfia"
+
+Négy felkínált irányból (anyagminta-szalag, átlógó kupacok, óriás
+tipográfia, átlógó kártyák) az ügyfél az óriás tipográfiát választotta.
+- Szekciónként hatalmas, halvány, körvonalas sorszám (Space Grotesk 700,
+  `clamp(8.5rem, 24vw, 21rem)`, narancs körvonal, enyhe fehér kitöltés;
+  terrakottán krém körvonal) a háttérben, a saját tartalom mögött.
+- Számozás: 01 Anyagok és árak · 02 Árkalkulátor · 03 Hol szállítunk ·
+  04 Miért mi · 05 GYIK. A „Rendelés menete" szándékosan számozatlan (ott
+  a 01–05 lépésszámok tartalmi elemek, nem keverjük). Az ajánló és a záró
+  CTA sem kap számot.
+- Átlógás: a 03 és a 04 a felső szekcióhatáron ~0,26 em-mel belóg az előző
+  sávba (jobbra/balra váltva); a 01 (hero ténysáv fölötte), a 02
+  (overflow-hidden blokk) és a 05 (fölötte a keskeny Buda Konténer-sáv
+  gombja) a saját sávjában marad.
+- Ellenőrizve 390/768/1024/1440/1920 px-en: a numerál más szekció egyetlen
+  szöveg-, link-, gomb- vagy képelemét sem fedi; nincs vízszintes görgetés
+  (`overflow-x: clip`); fejléc+hero pixelre azonos; magasságok változatlanok.
+- Akadálymentesség: generált tartalom üres alternatív szöveggel
+  (`content: var(--n) / ""`), pointer-events: none.
+
+### 2026-11-08 12:42 — a sorszámok eltávolítva (végleges állapot)
+
+Ügyfél: „így tetszik, de a számok ne legyenek rajta". Az óriás sorszámok
+lekerültek; minden más marad: élénk sóder tónuslépcső (#f3e2c2 · #ebd2a6 ·
+#f9eedb), szabálytalan sóderszem-szemcsézet, egyenletes háttérátmenet,
+maszkolt mérnöki rács (anyaglista, GYIK), emelt kártyák narancs élekkel,
+antracit „Amit Önnek nyújtunk" panel, narancs numerálok/ikonok/fókusz.
+Fejléc, hero, lábléc, aloldalak érintetlenek.
+
+### 2026-11-08 12:59 — a szemcsézett keret-csiszolás visszavonva, helyette tiszta keret
+
+Ügyfél: a szemcsézett változat „nagyon zavaros"; profi, a színek
+pozicionálására épülő megoldást kért, új elemek megengedettek. A 7627225
+commit `git revert`-tel visszavonva; új `src/app/v3-frame.css` zaj és
+textúra NÉLKÜL:
+- Fejléc: tiszta mészkő (#fbf6ec, 95%), #e2cfae alsó vonal, belső fényél
+  + lágy árnyék; narancs hover-/aktív jelzés a navigációban.
+- Hero: tisztább grafit alap (#211a16 → #17120f); a két lebegő sarokfény
+  helyett EGY irányított, statikus meleg fény a jobb felső sarokból a
+  hívás-oszlop felé, halk narancs padlófény a kupacsor mögött, a cím mögött
+  enyhe sötétítés (nyugodt mező, jobb kontraszt). Animáció nincs.
+- Új elem (csak lg+): sötét, áttetsző panel a hívás-oszlop mögött felső
+  narancs éllel (abszolút ::before — a méretek nem változnak); a mobil
+  elrendezés változatlan.
+- Ténysor: #ebd2a6 (a lenti sóder tónus), narancs jelölővonalak.
+- Lábléc: felül egyetlen halk borostyán derengés; oszlopcímek nagybetűs,
+  ritkított borostyán, narancs jelölővel; linkek hoverre aláhúzás; az alsó
+  jogi sáv kissé mélyebb.
+- Szekciómagasságok változatlanok (főoldal 390/768/1440 px).
+
+### 2026-11-08 13:23 — ügyfél-finomítások
+
+- A ténysor narancs jelölővonalai eltávolítva.
+- „Miért mi" ↔ GYIK tónuscsere: a „Miért mi" a mélyebb, aranyos sóder
+  (`lx-s2`, #ebd2a6), a GYIK a világosabb (`lx-s1`, #f3e2c2) — a sávok
+  felváltva sötétebb/világosabb tónusúak. (`lx-s1` ezért a
+  `--color-surface-muted`-et is beállítja, mert a GYIK `tone="muted"`.)
+- A lábléc felső borostyán derengése eltávolítva.
+
+## 2026-11-08 — Számlázási adatok az ajánlatkérésben (opcionális blokk)
+
+**Kérés:** az ajánlatkérő (árkalkulátor 5. lépés) egészüljön ki
+magánszemély / cég–egyéni vállalkozó választóval és számlázási adatokkal.
+Fejléc, hero, kalkuláció (képletek, árak, üzleti logika) változatlan; az
+ajánlatkérés nem vált fizetős megrendeléssé, és az adatok megadása nem
+indít számlakiállítást.
+
+**Vizsgálat (meglévő folyamat):** az ajánlatkérés az `ArkalkulatorForm`
+5. lépésében küldődik (`submitOrderRequest`, JSON POST). Két, azonos
+viselkedésű feldolgozó van: TS-handler (`src/server/order-handler.ts`,
+Worker/mock) és a tárhelyes PHP-végpont (`server/php/api/rendeles.php`).
+A szállítási cím strukturált: irányítószám + Budapest/Érd (+ kerület) +
+„utca, házszám" szövegmező. Számlázási adatmodell eddig nem volt.
+
+**Források és következtetések (hivatalos NAV-forrás):**
+- NAV: *Ajánlás számlázó programok fejlesztői számára* v1.0 (2021-03-01),
+  Ajánlás-12 és -20
+  (https://nav.gov.hu/pfile/file?path=%2Fado%2Fafa%2FSzamlazo_Fejlesztoi_Ajanlas_v1.0):
+  - nem áfaalany természetes személy vevő: a számlán a **neve és címe**
+    kötelező; **adószáma nincs**; adóazonosító jele van (10 jegy, 8-as
+    kezdet), de „ezt nem kell a számlán szerepeltetni"; az online
+    adatszolgáltatásban róla a jelzésen kívül tilos bármilyen adatot küldeni;
+  - belföldi áfaalany vevő: **név, cím és magyar adószám** a számlán; a
+    törzsszám 8 számjegy.
+- Az Áfa tv. szövegét (169. §) a hivatalos jogszabálytárak (njt.hu,
+  net.jogtar.hu) robots-tiltás miatt nem tudtam közvetlenül lekérni — a
+  fenti NAV-dokumentumra támaszkodom; a 11 jegyű adószám 8-1-2 tagolása
+  (törzsszám–áfakód–területi kód) másodlagos forrásból ismert, ezért CSAK
+  formai ellenőrzésre használjuk.
+- Következtetés: a vevőadatok a **számla kiállításához** kellenek, nem az
+  előzetes ajánlathoz. Jogszabály NEM írja elő, hogy már az ajánlatkérésnél
+  megadják őket → a blokk **opcionális** (üzleti döntés; dokumentált üzleti
+  követelmény a kötelezővé tételre nincs a projektben).
+  Ajánlathoz szükséges továbbra is: név, e-mail, telefon, szállítási cím
+  (a meglévő kötelezőség változatlan).
+
+**Felület:** az 5. lépésben, a kapcsolattartó mezői után, az adatkezelési
+jelölőnégyzet előtt: sötét antracit kártya felső narancs éllel,
+„Számlázási adatok" + „Nem kötelező" jelölés + rövid magyarázat (magázó
+hangnem). Valódi rádiócsoport (fieldset/legend), két kártya; a kiválasztott
+állapotot pipa-ikon, „Kiválasztva" felirat és keret is jelzi.
+- Magánszemély: számlázási név, ország, irányítószám, település, közterület
+  és házszám; épület/lépcsőház/emelet/ajtó kinyitható, opcionális sorban.
+  Adóazonosító jelet, igazolványszámot, születési adatot NEM kérünk.
+  „A kapcsolattartó nevének átvétele" gomb csak üres számlázási névnél.
+- Cég / egyéni vállalkozó: cégnév / számlázási név (cégforma nem kötelező),
+  adószám, ország, irányítószám, település, közterület és házszám, további
+  címadat (opcionális). Cégjegyzékszám, bankszámlaszám, közösségi adószám
+  NINCS. NAV-ellenőrzés nincs — a felület kimondja, hogy a formátum nem
+  igazolja az érvényességet.
+- Kapcsolattartó (név, e-mail, telefon) a meglévő helyén marad, nem kérjük
+  kétszer.
+- Címmásolás: „A számlázási cím megegyezik a szállítási címmel — átmásolom"
+  — EGYSZERI másolás (nem összekapcsolás), csak irányítószám, település
+  (Budapest/Érd), utca-házszám és ország; név/adószám/további címadat nem
+  változik; kitöltött eltérő mezőt csak megerősítés után ír felül.
+- A nem releváns mezők nincsenek a DOM-ban (nem fókuszálhatók, nem
+  validálódnak). Vevőtípus-váltáskor a másik típus adatai a memóriában
+  megmaradnak, de a beküldésbe NEM kerülnek (magánszemélynél adószám soha).
+- Részleges blokk: a beküldéskor konkrét hiánylista („A számlázási adatok
+  hiányosak: …") + a blokk törlésének lehetősége; üres blokk (csak
+  vevőtípus és alapértelmezett ország) = „nincs megadva", nem hiba.
+
+**Adatmodell** (`src/lib/order.ts` → `billingSchema`, a PHP ugyanezt
+ellenőrzi):
+`billing?: { customerType: "private"|"business", name, taxNumber (csak
+business; normalizálva 12345678-1-12), address: { country, postalCode,
+city, streetAddress, additionalAddress } }`. Magyar cím: 4 jegyű
+irányítószám; magyar cégnél adószám-formátum `\d{8}-?[1-5]-?\d{2}`;
+külföldi országnál 3–20 karakteres adóazonosító. A szerver a
+magánszemélynél küldött adószámot eldobja.
+
+**E-mail** (TS és PHP egyezően, sima szöveg, minden mező egysoros
+szűréssel): blokkok sorrendje — Vevő típusa · Számlázási adatok ·
+Kapcsolattartó · Szállítási adatok · Behajtás · Kalkuláció és kért anyag ·
+Árösszesítő. Számlázási adatok nélkül: „Nem adott meg számlázási adatot —
+számlázás előtt egyeztetni kell." Az adószám mellett: „formailag
+ellenőrizve, NAV-nál nem".
+
+**Adatvédelem:** számlázási adat nem kerül analitikai eseménybe
+(`trackQuoteRequest` változatlan), böngészős tárba (csak React-állapot —
+űrlaphiba esetén megmarad, oldalelhagyáskor eltűnik), URL-be vagy logba.
+
+**Tesztek:** `test:order` (+30 számlázási eset), új `test:billing` (26),
+`test:order-php` (+22, valódi `php -S`, levél fájlba, nincs valódi küldés);
+a kalkuláció változatlanságát a végösszeg-egyezés teszteli (165 150 Ft).
+
+**JÓVÁHAGYANDÓ (tulajdonos / adatvédelem):**
+1. Az adatkezelési tájékoztató (`/adatvedelem`) jelenleg NEM említi a
+   számlázási adatokat (vevő típusa, számlázási név, számlázási cím,
+   adószám). Kiegészítés kell; a jogalapot (pl. szerződés előkészítése /
+   jogi kötelezettség a számlázásnál) és a megőrzési időt (a számviteli
+   bizonylatmegőrzés szerinti idő vs. meg nem valósult ajánlatnál rövidebb)
+   az adatkezelőnek kell eldöntenie — nem írtam bele kitalált szöveget.
+2. Üzleti döntés: maradjon-e opcionális a blokk (jelenleg igen).
+3. A tárhelyes PHP-végpont frissítése csak a következő jóváhagyott
+   tárhely-telepítéssel élesedik.
+
+### 2026-11-08 16:45 — GYIK háttér és fejléc-szín (ügyfél, éles oldal mintájára)
+
+- GYIK (`.lx-faq`): sima, egyszínű #ead9bb (az éles soderarak.hu GYIK-
+  hátterével azonos), szemcsézet és átlós fény nélkül; csak az alsó 20%-on
+  mélyül aranyosabbra (#e4c48e). A mérnöki rács marad.
+- Fejléc (globális, minden oldal): az éles oldal homokszínéhez (#f4ead8)
+  igazítva, egy árnyalattal élénkebben: rgb(246 231 203 / 0.96), alsó
+  vonal #dcc297.
+
+### 2026-11-08 17:01 — hívás-oszlop: teljes keret helyett felső sarokív
+
+Ügyfél: a hero jobb oszlopa ne legyen teljesen bekeretezve, „csak a tetején
+a két sarokkal lehet valami". A panel kitöltése és teljes kerete megszűnt;
+helyette vékony (1,5 px) narancs felső vonal, amely a két felső sarokban
+lekerekedve indul lefelé, és ~3 rem után elhalványul (maszk); alul nincs
+keret. Felül halk narancs derengés, szintén elhalványulva.
+
+### 2026-11-08 17:13 — a hívás-oszlop íve alulra került
+
+Ügyfél: az ív inkább alul legyen, rövidebb oldalszárakkal. A narancs vonal
+most az oszlop ALATT fut, a két alsó sarokban lekerekedve indul felfelé, és
+~1,75 rem után elhalványul (korábban felül, ~3 rem szárral); felül nincs
+semmi. Halk narancs derengés alulról.
+
+### 2026-11-08 17:16 — a hívás-oszlop díszítése eltávolítva
+
+Ügyfél: „vedd le, nem kell a webre ez az elem". A hero jobb oszlopa mögötti
+panel / ív (`.hero-cta-col`) teljesen törölve; az oszlop az eredeti,
+díszítés nélküli állapotában marad.
+
+### 2026-11-08 17:21 — lábléc narancs dizájncsík; élénkebb narancs gombok
+
+- Lábléc (globális): a rétegrend-sáv (`HeroGround fadeTo="dark"`) helyett
+  narancs dizájncsík — 5 px-es, középen világosodó narancs fősáv, alatta
+  2 px-es, szélein elhalványuló kísérővonal; derengés nincs (`.footer-stripe`).
+  A hero alján a rétegrend-sáv marad.
+- Narancs gombok / hívógombok (globális: `.btn-primary`, `.bg-brand-dark`):
+  #cf4a0e háttér + fehér felirat (4,53:1). Ügyfél-választás három
+  lehetőségből: az „Így működik" számszíne (#e8590c) fehér felirattal csak
+  3,6:1 lenne (AA alatt), sötét felirattal pedig megváltozott volna a
+  gombok karaktere — az ügyfél a „kicsit élénkebb, fehér felirat"
+  változatot választotta. Hover: #a8380a.
+- Kalkulátor-blokk: #cf4a0e háttér, fehér szöveg (a világosító sáv kivéve,
+  hogy a kontraszt mindenhol ≥ 4,5:1 maradjon).
+- Tisztán grafikus narancs elemek (`.bg-accent`: ikonkörök, csomópontok,
+  sávok): a számszín, #ea580c.
+
+### 2026-11-08 18:16 — a narancs visszafogva
+
+Ügyfél: „túl élénk lett, ne legyen ennyire rikító". Gombok/hívógombok
+#cf4a0e → #c4470f (fehér felirat 4,93:1); kalkulátorblokk #cf4a0e →
+#b8461a (5,34:1); grafikus narancs elemek #ea580c → #d9622a. Mind
+élénkebb az eredeti #c2410c / #a8401a-nál, de kevésbé harsány.
+
+## 2026-11-09 — Rendelési cím: megrendeles@soderarak.hu (info@ helyett)
+- Felhasználói kérés: az info@soderarak.hu helyett a megrendeles@soderarak.hu
+  legyen a cím — a megjelenített kapcsolati e-mail (`site.ts`), a PHP-végpont
+  fix címzettje és alapértelmezett feladója, a TS-kezelő, a Worker, a tesztek
+  és a dokumentáció egyaránt.
+- Másolat-címzettek: két külső cím kap másolatot, de NEM a repóban: a
+  szerveroldali `ORDER_EXTRA_RECIPIENTS` (webgyökér fölötti config-fájl)
+  tartalmazza őket. A kliens továbbra sem írhatja felül a címzetteket.
+- Éles élesítés: a felhasználó kifejezett kérésére a legfrissebb V3 a
+  soderarak.hu-ra kerül a tárhely-ZIP-pel. A noindex a tárhely-buildben is
+  megmarad (a layoutból jön); kikapcsolásához külön jóváhagyás kell.

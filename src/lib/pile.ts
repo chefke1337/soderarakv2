@@ -11,7 +11,7 @@
  * Lágy anyag (homok, sóder, kavics, föld): sűrű mintavétel + Catmull–Rom
  * görbe. Szögletes anyag (murva, andezit): ritkább pontok, egyenes élek.
  */
-import { GRAIN_SEED, GRAIN_SHAPE, MATERIAL_COLOR, grainData, grainToSvg, type Tone } from "./grain";
+import { MATERIAL_COLOR, grainData, grainToSvg, type Tone } from "./grain";
 
 export const PILE_W = 200;
 export const PILE_H = 72;
@@ -36,25 +36,46 @@ export type PileSpec = {
   samples: number;
 };
 
+/*
+ * MÉRETARÁNY — egy valós, 10 m³-es lerakott kupac (2026-11-07 kutatás).
+ * Kúp-közelítés: V = π·r²·h/3, h = r·tg(φ) → r = ∛(3V / (π·tg φ)).
+ * Természetes rézsűszög (φ) források alapján (Engineering ToolBox
+ * „Angles of Repose", Wikipedia „Angle of repose"):
+ *   homok (száraz) ≈ 34° · sóder (homokos természetes kavics) ≈ 30° ·
+ *   kavics (mosott, gömbölyű) ≈ 35° · zúzott kő (murva, andezit) ≈ 40° ·
+ *   laza föld ≈ 35°
+ * 10 m³-re: φ=30° → Ø 5,1 m, h 1,47 m · φ=34° → Ø 4,85 m, h 1,63 m ·
+ *           φ=35° → Ø 4,8 m, h 1,67 m · φ=40° → Ø 4,5 m, h 1,89 m
+ * Rajzlépték: 33 egység / m (a legszélesebb, a sóder 168 egység). Így a
+ * kupacok egymáshoz képest is helyes arányúak (a zúzott kő keskenyebb és
+ * magasabb, a sóder laposabb és szélesebb).
+ */
+export const PILE_SCALE = 33; // viewBox-egység / méter
+
+const fromCone = (diaM: number, hM: number) => {
+  const half = (diaM * PILE_SCALE) / 2;
+  return { left: 100 - half, right: 100 + half, height: Math.round(hM * PILE_SCALE * 10) / 10 };
+};
+
 export const PILE: Record<Tone, PileSpec> = {
-  // vegyes szemcse: kissé balra tolt csúcs, változatos, de nyugodt felszín
-  soder: { left: 6, right: 194, peak: 0.46, height: 56, a: 1.75, b: 1.25, faceted: false, samples: 44,
-    ripples: [[1.1, 5, 0.4], [0.7, 11, 1.9], [0.35, 19, 0.2]] },
-  // homok: a leglágyabb, legsimább ív, hosszan elnyúló láb
-  homok: { left: 5, right: 195, peak: 0.54, height: 52, a: 2.1, b: 1.4, faceted: false, samples: 40,
-    ripples: [[0.6, 3, 2.1], [0.2, 9, 0.7]] },
-  // kavics: kerekdedebb tető, a kontúron gömbölyű „kavicsdudorok"
-  kavics: { left: 8, right: 192, peak: 0.5, height: 55, a: 2.3, b: 1.15, faceted: false, samples: 40,
-    ripples: [[0.7, 4, 1.2], [0.55, 10, 0.5], [0.35, 14, 2.4]] },
-  // murva: szögletes, enyhén egyenetlen, jobbra billenő csúcs
-  murva: { left: 6, right: 194, peak: 0.42, height: 54, a: 1.42, b: 1.2, faceted: true, samples: 19,
-    ripples: [[1.3, 6, 2.6], [0.8, 13, 1.1]] },
-  // andezit: kissé meredekebb, élesebb csúcs, tört élek
-  andezit: { left: 9, right: 191, peak: 0.56, height: 57, a: 1.45, b: 1.15, faceted: true, samples: 17,
-    ripples: [[1.6, 7, 0.3], [1.0, 15, 1.4]] },
-  // föld: organikus, rögös, kicsit kétpúpú
-  fold: { left: 5, right: 195, peak: 0.44, height: 52, a: 1.85, b: 1.3, faceted: false, samples: 46,
-    ripples: [[2.4, 2.6, 3.6], [1.2, 9, 0.8], [0.6, 17, 2.9]] },
+  // sóder (0–24, homokos kavics), φ≈30°: legszélesebb, leglaposabb
+  soder: { ...fromCone(5.1, 1.47), peak: 0.46, a: 1.75, b: 1.25, faceted: false, samples: 44,
+    ripples: [[0.8, 5, 0.4], [0.5, 11, 1.9], [0.25, 19, 0.2]] },
+  // homok, φ≈34°: lágy, sima ív
+  homok: { ...fromCone(4.85, 1.63), peak: 0.54, a: 2.1, b: 1.4, faceted: false, samples: 40,
+    ripples: [[0.4, 3, 2.1], [0.15, 9, 0.7]] },
+  // kavics (mosott, gömbölyű), φ≈35°
+  kavics: { ...fromCone(4.8, 1.67), peak: 0.5, a: 2.3, b: 1.15, faceted: false, samples: 40,
+    ripples: [[0.5, 4, 1.2], [0.35, 10, 0.5], [0.2, 14, 2.4]] },
+  // murva (zúzott), φ≈40°: keskenyebb, meredekebb, szögletes kontúr
+  murva: { ...fromCone(4.5, 1.89), peak: 0.42, a: 1.42, b: 1.2, faceted: true, samples: 19,
+    ripples: [[0.9, 6, 2.6], [0.5, 13, 1.1]] },
+  // andezit (zúzott), φ≈40°
+  andezit: { ...fromCone(4.5, 1.89), peak: 0.56, a: 1.45, b: 1.15, faceted: true, samples: 17,
+    ripples: [[1.0, 7, 0.3], [0.6, 15, 1.4]] },
+  // föld (laza), φ≈35°: organikus, rögös
+  fold: { ...fromCone(4.8, 1.67), peak: 0.44, a: 1.85, b: 1.3, faceted: false, samples: 46,
+    ripples: [[1.6, 2.6, 3.6], [0.8, 9, 0.8], [0.4, 17, 2.9]] },
 };
 
 function profile(spec: PileSpec, x: number): number {
@@ -120,16 +141,46 @@ export function pileTopY(tone: Tone): number {
 }
 
 /**
- * Anyagonkénti kiegészítő szemcseréteg a kupacon (a csempe fölött):
- * sóder finom frakció, murva/andezit apró szögletes törmelék világos
- * élekkel (textúrakontraszt), föld nagyobb, áttetsző rögök.
+ * SZEMCSEMÉRET a kupacon — valós léptékben (PILE_SCALE = 33 egység/m →
+ * 1 mm = 0,033 egység; a sugár = szemcseátmérő/2). A katalógus frakciói:
+ *   homok 0–1 mm / bányahomok  → egyedi szem nem látszik: csak finom tónuszaj
+ *   sóder 0–24 mm (jellemző)   → túlnyomóan finom, szórt 4–24 mm-es szemek
+ *   kavics 16–32 mm (jellemző) → sűrűn rakott, gömbölyű szemek
+ *   murva 0–22 mm (jellemző)   → finom zúzalék + 5–22 mm szögletes szemek
+ *   andezit 4–22 mm            → szögletes zúzalék, egyenletesebb
+ *   föld                       → 10–80 mm-es rögök + morzsa
+ * Valós léptékben a szem pixel alatti lenne (32 mm ≈ 0,7 px), ami a kártyán
+ * csíkos/rácsos moiré-t adott (ügyfél, 2026-11-08) — ezért a szemek
+ * ábrázolási célból NAGYÍTVA (≈1–3 CSS px) jelennek meg; az anyagok egymáshoz
+ * viszonyított szemcsemérete (homok < sóder finom része < murva < kavics,
+ * föld rögök) megmarad. A finom felületi zajt feTurbulence adja (nem csempe).
  */
-export const PILE_DETAIL: Partial<Record<Tone, { count: number; min: number; max: number; kind: "round" | "pebble" | "angular"; colors: string[]; opacity: number; seed: number }>> = {
-  soder: { count: 70, min: 0.35, max: 0.9, kind: "round", colors: ["#6e5a40", "#efe2c8"], opacity: 0.9, seed: 101 },
-  kavics: { count: 26, min: 0.9, max: 1.8, kind: "pebble", colors: ["#f0ebe2"], opacity: 0.55, seed: 103 },
-  murva: { count: 44, min: 0.8, max: 2, kind: "angular", colors: ["#857760", "#f6f1e7"], opacity: 0.9, seed: 107 },
-  andezit: { count: 46, min: 0.8, max: 2.2, kind: "angular", colors: ["#a39a90", "#4e4740", "#b8afa5"], opacity: 0.85, seed: 109 },
-  fold: { count: 16, min: 3, max: 6.5, kind: "round", colors: ["#4a3020", "#8a6644"], opacity: 0.45, seed: 113 },
+type GrainLayer = { count: number; min: number; max: number; kind: "round" | "pebble" | "angular"; colors: string[]; seed: number };
+export const PILE_GRAIN: Record<Tone, { tile: [number, number]; layers: GrainLayer[] }> = {
+  // 2026-11-08 ügyfél: „csíkos, rácsos" — a pixel alatti, kis csempés szemek
+  // moiré-t adtak. Most NAGYOBB, jól látható szemek (≈1–3 CSS px), nagyobb
+  // csempe és közeli tónusok → egyenletes, „szemcsés" felület, ismétlődés nélkül.
+  homok: { tile: [48, 24], layers: [
+    { count: 620, min: 0.42, max: 0.72, kind: "round", colors: ["#d9b462", "#e8cd8c", "#cfa652", "#efd9a2", "#c99d4a"], seed: 201 },
+  ] },
+  soder: { tile: [48, 24], layers: [
+    { count: 460, min: 0.45, max: 0.75, kind: "round", colors: ["#d4bb92", "#c3a67a", "#e0cba6", "#b8996b"], seed: 211 },
+    { count: 90, min: 0.9, max: 1.8, kind: "pebble", colors: ["#8c7457", "#e3d0ad", "#a68558", "#cfc9be", "#9e9389"], seed: 212 },
+  ] },
+  kavics: { tile: [48, 24], layers: [
+    { count: 330, min: 0.95, max: 1.7, kind: "pebble", colors: ["#c3bcb1", "#a9a297", "#b8af9f", "#9d978e", "#d0c9bd", "#8f897f"], seed: 221 },
+  ] },
+  murva: { tile: [48, 24], layers: [
+    { count: 340, min: 0.45, max: 0.8, kind: "round", colors: ["#c9bda6", "#ddd3c0", "#b3a68d"], seed: 231 },
+    { count: 170, min: 0.9, max: 1.7, kind: "angular", colors: ["#ece4d4", "#b7aa92", "#ddd3c0", "#9d907a"], seed: 232 },
+  ] },
+  andezit: { tile: [48, 24], layers: [
+    { count: 360, min: 0.75, max: 1.5, kind: "angular", colors: ["#8a8077", "#6e665e", "#9b9188", "#5f574f", "#a9a097"], seed: 241 },
+  ] },
+  fold: { tile: [48, 24], layers: [
+    { count: 420, min: 0.5, max: 1.0, kind: "round", colors: ["#6a4a33", "#83603f", "#5a3b26", "#94704d"], seed: 251 },
+    { count: 46, min: 1.2, max: 2.6, kind: "round", colors: ["#4a3020", "#8a6644", "#5a3b26"], seed: 252 },
+  ] },
 };
 
 /**
@@ -146,18 +197,17 @@ export function pileSvg(tone: Tone, id: string): string {
   const top = pileTopY(tone);
   const col = MATERIAL_COLOR[tone];
   const k = `pile-${id}`;
-  const tile = 0.82;
-  const base = grainData(GRAIN_SHAPE[tone], col.grains, GRAIN_SEED[tone], 120, 60).map(grainToSvg).join("");
-  const det = PILE_DETAIL[tone];
-  const detail = det
-    ? grainData({ count: det.count, min: det.min, max: det.max, kind: det.kind }, det.colors, det.seed, 70, 40).map(grainToSvg).join("")
-    : "";
+  const g = PILE_GRAIN[tone];
+  const [tw, th] = g.tile;
+  const grains = g.layers
+    .map((l) => grainData({ count: l.count, min: l.min, max: l.max, kind: l.kind }, l.colors, l.seed, tw, th).map(grainToSvg).join(""))
+    .join("");
   const light = tone === "andezit" || tone === "fold" ? 0.2 : 0.16;
   return [
     "<defs>",
-    `<pattern id="${k}-t" width="${120 * tile}" height="${60 * tile}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})"><rect width="120" height="60" fill="${col.base}"/>${base}</g></pattern>`,
-    det ? `<pattern id="${k}-d" width="${70 * tile}" height="${40 * tile}" patternUnits="userSpaceOnUse"><g transform="scale(${tile})" opacity="${det.opacity}">${detail}</g></pattern>` : "",
+    `<pattern id="${k}-t" width="${tw}" height="${th}" patternUnits="userSpaceOnUse"><rect width="${tw}" height="${th}" fill="${col.base}"/>${grains}</pattern>`,
     `<clipPath id="${k}-c"><path d="${d}"/></clipPath>`,
+    `<filter id="${k}-n" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="${tone.length * 7}"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1.2 -0.55"/></filter>`,
     `<linearGradient id="${k}-x" gradientUnits="userSpaceOnUse" x1="${spec.left}" y1="0" x2="${spec.right}" y2="0">`,
     `<stop offset="0" stop-color="#fff" stop-opacity="${light}"/>`,
     `<stop offset="${Math.max(0, px - 0.06).toFixed(2)}" stop-color="#fff" stop-opacity="0.05"/>`,
@@ -170,7 +220,7 @@ export function pileSvg(tone: Tone, id: string): string {
     `<ellipse class="pile-shadow" cx="${((spec.left + spec.right) / 2).toFixed(1)}" cy="${PILE_BASE + 0.5}" rx="${((spec.right - spec.left) / 2 + 4).toFixed(1)}" ry="5" fill="url(#${k}-s)"/>`,
     `<g clip-path="url(#${k}-c)">`,
     `<rect width="${PILE_W}" height="${PILE_H}" fill="url(#${k}-t)"/>`,
-    det ? `<rect width="${PILE_W}" height="${PILE_H}" fill="url(#${k}-d)"/>` : "",
+    `<rect width="${PILE_W}" height="${PILE_H}" filter="url(#${k}-n)" opacity="0.35"/>`,
     `<rect class="pile-shade" width="${PILE_W}" height="${PILE_H}" fill="url(#${k}-x)"/>`,
     `<rect width="${PILE_W}" height="${PILE_H}" fill="url(#${k}-y)"/>`,
     // perem-fény: a kontúr belső fele (a clip levágja a külsőt)

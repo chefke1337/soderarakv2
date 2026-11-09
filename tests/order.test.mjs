@@ -15,6 +15,8 @@ import {
   sanitizeBlock,
   sanitizeLine,
   validateOrderRequest,
+  isHuTaxNumberShape,
+  normalizeHuTaxNumber,
 } from "../src/lib/order.ts";
 import {
   createMemoryIdempotencyStore,
@@ -329,7 +331,7 @@ check(
   );
   check("a NUL karakter eltűnt a levélből", !mail.text.includes(NUL));
   check("az ügyfél címe válaszcím (reply-to)", mail.replyTo === "teszt@example.com");
-  eq("a címzett a jóváhagyott cím", mail.to, "info@soderarak.hu");
+  eq("a címzett a jóváhagyott cím", mail.to, "megrendeles@soderarak.hu");
 }
 
 /* ─────────────── 9. Mock mód egyértelmű jelölése ─────────────── */
@@ -448,6 +450,100 @@ section("A levél kötelező tartalma");
   check("a levél jelzi, hogy nincs tarifa erre a mennyiségre", /nincs tarifa/.test(mail.text));
   check("a levél jelzi a profil korlátját", /5 m³/.test(mail.text));
   check("a levél szerint a fuvar egyedi egyeztetés", /egyedi egyeztetés/.test(mail.text));
+}
+
+/* ─────────────── 11. Számlázási adatok (opcionális blokk) ─────────────── */
+section("Számlázási adatok");
+
+const privBilling = () => ({
+  customerType: "private",
+  name: "Árvíztűrő Tükörfúrógép Zsuzsanna",
+  taxNumber: "",
+  address: {
+    country: "Magyarország",
+    postalCode: "1221",
+    city: "Budapest",
+    streetAddress: "Nagytétényi út 123. (hosszú, ékezetes őrültség: ŐŰÁÉÍÓÖÜÚ)",
+    additionalAddress: "B lépcsőház, 4. emelet 12.",
+  },
+});
+const bizBilling = () => ({
+  customerType: "business",
+  name: "Példa Építő Kft.",
+  taxNumber: "12345678 2 42",
+  address: { country: "Magyarország", postalCode: "2030", city: "Érd", streetAddress: "Fő utca 1.", additionalAddress: "" },
+});
+
+{
+  const r = validateOrderRequest({ ...base(), idempotencyKey: "bill-none-001" });
+  check("számlázási blokk nélkül is érvényes az ajánlatkérés", r.ok);
+  check("billing hiányzik → nincs billing az adatban", r.ok && r.value.billing === undefined);
+  const r2 = validateOrderRequest({ ...base(), billing: null, idempotencyKey: "bill-null-001" });
+  check("billing: null is elfogadott (üres opcionális blokk)", r2.ok);
+}
+{
+  const r = validateOrderRequest({ ...base(), billing: privBilling(), idempotencyKey: "bill-priv-001" });
+  check("magánszemély: teljes blokk érvényes", r.ok);
+  const sneaky = { ...privBilling(), taxNumber: "12345678-2-42" };
+  const r2 = validateOrderRequest({ ...base(), billing: sneaky, idempotencyKey: "bill-priv-002" });
+  check("magánszemély: a kliens által küldött adószámot a szerver eldobja", r2.ok && r2.value.billing.taxNumber === "");
+  const mail = renderOrderEmail(r2.value, recomputeOrderQuote(r2.value), { mismatch: false, mock: false }).text;
+  check("magánszemély levél: nincs Adószám sor", !/Adószám/.test(mail));
+  check("magánszemély levél: Vevő típusa = Magánszemély", /── Vevő típusa ──\nMagánszemély/.test(mail));
+  check("levél: ékezetes hosszú név", mail.includes("Árvíztűrő Tükörfúrógép Zsuzsanna"));
+  check("levél: további címadat", mail.includes("B lépcsőház, 4. emelet 12."));
+  check("levél: a szállítási cím külön blokkban marad", /── Szállítási adatok ──[\s\S]*Teszt utca 1\./.test(mail));
+}
+{
+  const r = validateOrderRequest({ ...base(), billing: bizBilling(), idempotencyKey: "bill-biz-001" });
+  check("cég: teljes blokk érvényes", r.ok);
+  eq("cég: adószám normalizálva", r.ok && r.value.billing.taxNumber, "12345678-2-42");
+  const mail = renderOrderEmail(r.value, recomputeOrderQuote(r.value), { mismatch: false, mock: false }).text;
+  check("cég levél: Cég / egyéni vállalkozó", mail.includes("Cég / egyéni vállalkozó"));
+  check("cég levél: adószám + formai jelzés", mail.includes("Adószám: 12345678-2-42 (formailag ellenőrizve, NAV-nál nem)"));
+  check("cég levél: blokkok sorrendje", /Vevő típusa[\s\S]*Számlázási adatok[\s\S]*Kapcsolattartó[\s\S]*Szállítási adatok[\s\S]*Kalkuláció és kért anyag[\s\S]*Árösszesítő/.test(mail));
+  // egyéni vállalkozó: saját név, nincs cégforma-követelmény
+  const ev = { ...bizBilling(), name: "Kovács János e.v." };
+  check("egyéni vállalkozó neve cégforma nélkül is elfogadott", validateOrderRequest({ ...base(), billing: { ...ev, name: "Kovács János" }, idempotencyKey: "bill-ev-001" }).ok);
+}
+{
+  const noTax = { ...bizBilling(), taxNumber: "" };
+  const r = validateOrderRequest({ ...base(), billing: noTax, idempotencyKey: "bill-biz-002" });
+  check("cég adószám nélkül: hiba", !r.ok && Boolean(r.errors["billing.taxNumber"]));
+  const bad = { ...bizBilling(), taxNumber: "1234567-2-42" };
+  const r2 = validateOrderRequest({ ...base(), billing: bad, idempotencyKey: "bill-biz-003" });
+  check("rossz adószám-formátum: hiba", !r2.ok && /12345678-1-12/.test(r2.errors["billing.taxNumber"] ?? ""));
+  const badVat = { ...bizBilling(), taxNumber: "12345678-9-42" };
+  check("áfakód 1–5-ön kívül: hiba", !validateOrderRequest({ ...base(), billing: badVat, idempotencyKey: "bill-biz-004" }).ok);
+  check("formai ellenőrzés: 11 számjegy kötőjellel", isHuTaxNumberShape("12345678-1-12"));
+  check("formai ellenőrzés: kötőjel nélkül is", isHuTaxNumberShape("12345678112"));
+  eq("normalizálás", normalizeHuTaxNumber("12345678112"), "12345678-1-12");
+  const foreign = { ...bizBilling(), taxNumber: "ATU12345678", address: { ...bizBilling().address, country: "Ausztria", postalCode: "1010", city: "Wien" } };
+  const rf = validateOrderRequest({ ...base(), billing: foreign, idempotencyKey: "bill-biz-005" });
+  check("külföldi cég: nem magyar formátumú adóazonosító elfogadott", rf.ok && rf.value.billing.taxNumber === "ATU12345678");
+}
+{
+  const partial = { customerType: "private", name: "Teszt Elek", taxNumber: "", address: { country: "Magyarország", postalCode: "", city: "", streetAddress: "", additionalAddress: "" } };
+  const r = validateOrderRequest({ ...base(), billing: partial, idempotencyKey: "bill-part-001" });
+  check("részleges blokk: konkrét hiányzó mezőkre ad hibát", !r.ok && Boolean(r.errors["billing.address.postalCode"]) && Boolean(r.errors["billing.address.city"]) && Boolean(r.errors["billing.address.streetAddress"]));
+  check("részleges blokk: a meglévő mezőkre nincs hiba", !r.ok && !r.errors["billing.name"] && !r.errors["name"]);
+  const huZip = { ...privBilling(), address: { ...privBilling().address, postalCode: "12345" } };
+  check("magyar irányítószám: 4 számjegy", !validateOrderRequest({ ...base(), billing: huZip, idempotencyKey: "bill-zip-001" }).ok);
+}
+{
+  // injection: CR/LF a számlázási mezőkben nem törheti a levelet
+  const inj = { ...bizBilling(), name: "Rossz Kft.\r\nBcc: x@example.com", address: { ...bizBilling().address, streetAddress: "Fő u. 1.\nSubject: hack" } };
+  const r = validateOrderRequest({ ...base(), billing: inj, idempotencyKey: "bill-inj-001" });
+  const mail = renderOrderEmail(r.value, recomputeOrderQuote(r.value), { mismatch: false, mock: false }).text;
+  check("injection: a név egy sorban marad", mail.includes("Cégnév / számlázási név: Rossz Kft. Bcc: x@example.com"));
+  check("injection: nincs új Subject-sor", !/\nSubject: hack/.test(mail));
+}
+{
+  // a kalkuláció a számlázási adatoktól független
+  const a = validateOrderRequest({ ...base(), idempotencyKey: "bill-calc-001" }).value;
+  const b = validateOrderRequest({ ...base(), billing: bizBilling(), idempotencyKey: "bill-calc-002" }).value;
+  eq("a hiteles végösszeg nem függ a számlázási adatoktól", recomputeOrderQuote(b).totalGross, recomputeOrderQuote(a).totalGross);
+  eq("a végösszeg változatlan (165 150 Ft)", recomputeOrderQuote(b).totalGross, 165150);
 }
 
 finish("order.test.mjs");
