@@ -9,6 +9,7 @@ import {
   FREIGHT_VAT_RATE,
   FREIGHT_PUBLIC_NOTICE,
   guides,
+  IS_PREVIEW,
   MAX_ORDER_VOLUME,
   MIN_ORDER_VOLUME,
   quoteOnlyAreas,
@@ -39,8 +40,8 @@ export async function generateMetadata({
       description: guide.excerpt,
       path: `/utmutatok/${guide.slug}`,
     }),
-    // V2 preview: noindex, mint a teljes oldalon (lásd layout.tsx)
-    robots: { index: false, follow: true },
+    // A layout.tsx globális IS_PREVIEW-jával egyezően — nem külön hardkódolt literál.
+    robots: { index: !IS_PREVIEW, follow: true },
   };
 }
 
@@ -162,7 +163,7 @@ const BODY: Record<string, GuideSection[]> = {
     {
       h: "Lépésről lépésre",
       p: [
-        `A kalkulátor három dolgot kér: az anyagot, a mennyiséget és a szállítási címet. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a BRUTTÓ köbméterár. A mennyiség ${MIN_ORDER_VOLUME} és ${MAX_ORDER_VOLUME} köbméter között választható, hiszen a minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban pedig legfeljebb ${MAX_ORDER_VOLUME} m³ fér.`,
+        `A kalkulátor öt lépésben kéri be az adatokat: anyag, mennyiség, cím, összesítés, majd a kapcsolattartási adatok. Az anyaglistában anyagcsoport szerint válogathat — sódertől a földig —, és minden tétel mellett ott a BRUTTÓ köbméterár. A mennyiség ${MIN_ORDER_VOLUME} és ${MAX_ORDER_VOLUME} köbméter között választható, hiszen a minimum rendelés ${MIN_ORDER_VOLUME} m³, egy fuvarban pedig legfeljebb ${MAX_ORDER_VOLUME} m³ fér.`,
         "A címnél külön adja meg a települést, Budapest esetén a kerületet, és — kötelezően, külön mezőben — az irányítószámot és az utcát, házszámot. Ha a kerület és az irányítószám nem egyezik, a kalkulátor hibát jelez. A cím után külön összesítés következik; a „Megrendelem” gombbal léphet tovább a kapcsolattartási adatokhoz, és csak ott küldi el a rendelési igényt.",
       ],
       links: [

@@ -193,7 +193,14 @@ if (existsSync(BASELINE)) {
 }
 const uncovered = ogPngs.map(routeOf).filter((route) => !(route in baseline));
 check(uncovered.length === 0 && ogPngs.length > 0, true, `minden OG-kártya rögzítve a hash-bázisban (${ogPngs.length} PNG, ${uncovered.length} rögzítetlen)`);
-const brokenRefs = [...ogTargets].filter((f) => !ogPngs.includes(f));
+// Fájllétezés ellenőrzése, NEM az `ogPngs` (csak "opengraph-image.png" nevű
+// fájlok) listájával való tagsági egyezés: a főoldal szándékosan egy kézzel
+// elhelyezett, egyedi nevű megosztási képre hivatkozik (HOME_SHARE_IMAGE =
+// soderarak-share-v4.png, lásd prepare-static-export.mjs és src/lib/share.ts),
+// ami emiatt sosem kerül bele az `ogPngs` tömbbe — a korábbi (tagsági-alapú)
+// összevetés ezt HAMISAN törött hivatkozásnak jelölte, bár a fájl valóban
+// létezik és resolveOgFile már existsSync-kel ellenőrizte (2026-11-09 javítva).
+const brokenRefs = [...ogTargets].filter((f) => !existsSync(f));
 check(brokenRefs.length === 0, true, `minden hivatkozott OG-kép valós kártyafájl (${ogTargets.size} hivatkozás)`);
 
 // --- 5. Sitemap + robots -------------------------------------------------------

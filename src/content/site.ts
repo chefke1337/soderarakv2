@@ -52,7 +52,11 @@ const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? `https://${BUSINESS_DOMAIN}`
 ).replace(/\/+$/, "");
 
-/** true: ez egy nem publikus V3 előnézeti build → noindex. */
+/**
+ * true: ez egy nem publikus V3 előnézeti build → noindex (layout.tsx és az
+ * /utmutatok/[slug] oldalak `robots.index` mezője innen olvas, nem hardkódolt
+ * literálból — 2026-11-09-ig az utóbbi volt a hiba, lásd decisions.md).
+ */
 export const IS_PREVIEW = process.env.NEXT_PUBLIC_PREVIEW !== "false";
 
 export const company = {
@@ -475,7 +479,7 @@ export const nav = [
 ] as const;
 
 /** Az oldal utolsó tartalmi frissítése — a sitemap lastmod mezőjét etető érték. */
-export const updated = "2026-10-27";
+export const updated = "2026-11-08";
 
 /** SEO útmutatók — a sorrend a hub és a lábléc listáját is vezérli. */
 export const guides = [

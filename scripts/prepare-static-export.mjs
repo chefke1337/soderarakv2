@@ -235,15 +235,24 @@ for (const file of htmlFiles) {
           : tag;
       },
     );
+    // Minden csere globális (/g): a 404-dokumentum statikus exportja Next-oldali
+    // okokból DUPLÁN emeli ki a <head> metaadatait (gyökér-layout + a route saját
+    // metadata-felbontása) — egy nem globális replace csak az elsőt javítaná, a
+    // második, javítatlan példány pedig ütköző/elavult tartalommal maradna (ez a
+    // robots mezőnél valódi "index, follow" + "noindex" ütközést okozott, amíg
+    // IS_PREVIEW=false-lal nem derült ki — lásd decisions.md 2026-11-09).
     html = html
-      .replace(/<title>[\s\S]*?<\/title>/, "<title>404 — Az oldal nem található | Sóderárak</title>")
-      .replace(/(<meta name="description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Sóder, homok, kavics, murva, andezit és föld szállítás Budapestre és Érdre — hívjon, vagy indítsa el az árkalkulátort.$2`)
-      .replace(/(<meta property="og:title" content=")[^"]*("\/>)/, `$1404 — Az oldal nem található$2`)
-      .replace(/(<meta property="og:description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Hívjon, vagy indítsa el az árkalkulátort.$2`)
-      .replace(/(<meta name="twitter:title" content=")[^"]*("\/>)/, `$1404 — Az oldal nem található$2`)
-      .replace(/(<meta name="twitter:description" content=")[^"]*("\/>)/, `$1A kért oldal nem található. Hívjon, vagy indítsa el az árkalkulátort.$2`)
-      .replace(/<meta name="robots" content="([^"]*)"\/>/, (tag, content) =>
-        content.includes("noindex") ? tag : `<meta name="robots" content="${content}, noindex"/>`);
+      .replace(/<title>[\s\S]*?<\/title>/g, "<title>404 — Az oldal nem található | Sóderárak</title>")
+      .replace(/(<meta name="description" content=")[^"]*("\/>)/g, `$1A kért oldal nem található. Sóder, homok, kavics, murva, andezit és föld szállítás Budapestre és Érdre — hívjon, vagy indítsa el az árkalkulátort.$2`)
+      .replace(/(<meta property="og:title" content=")[^"]*("\/>)/g, `$1404 — Az oldal nem található$2`)
+      .replace(/(<meta property="og:description" content=")[^"]*("\/>)/g, `$1A kért oldal nem található. Hívjon, vagy indítsa el az árkalkulátort.$2`)
+      .replace(/(<meta name="twitter:title" content=")[^"]*("\/>)/g, `$1404 — Az oldal nem található$2`)
+      .replace(/(<meta name="twitter:description" content=")[^"]*("\/>)/g, `$1A kért oldal nem található. Hívjon, vagy indítsa el az árkalkulátort.$2`)
+      // Teljes felülírás, nem hozzáfűzés: ha a robots-mező "index, follow"
+      // (IS_PREVIEW=false production build), a puszta hozzáfűzés ütköző,
+      // egyszerre "index" ÉS "noindex" tokent tartalmazó taget eredményezne.
+      .replace(/<meta name="robots" content="([^"]*)"\/>/g, (tag, content) =>
+        content.includes("noindex") ? tag : `<meta name="robots" content="noindex, follow"/>`);
     if (!/name="robots"/.test(html)) {
       html = html.replace(/(<meta name="description"[^>]*\/>)/, `$1<meta name="robots" content="noindex"/>`);
     }

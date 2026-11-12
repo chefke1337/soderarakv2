@@ -1143,7 +1143,184 @@ díszítés nélküli állapotában marad.
 #b8461a (5,34:1); grafikus narancs elemek #ea580c → #d9622a. Mind
 élénkebb az eredeti #c2410c / #a8401a-nál, de kevésbé harsány.
 
-## 2026-11-09 — Rendelési cím: rendeles@soderarak.hu (info@ helyett)
+## 2026-11-08 (folytatás) — Teljes audit/javítás/újratesztelés, `v3-audit` ág
+
+**Kiindulás és verzióazonosítás (nem feltételezett, ellenőrzött):**
+- A publikált V3 (`https://chefke1337.github.io/soderarakv3/`) egy
+  **különálló repóból** (`chefke1337/soderarakv3`, `gh-pages` ág, ekkor
+  `c046de6`) épül, NEM ennek a repónak (`chefke1337/soderarakv2`) a saját
+  `gh-pages`-éből (az a V2-é). A deploy-commit üzenete igazolta a forrást:
+  `Deploy 798fd707… chefke1337/soderarakv2@798fd707…` — a build **2026-11-08
+  17:27:14 UTC-kor**, a vizsgálat kezdete előtt ~1 perccel futott le a `v3`
+  ág akkori csúcsáról.
+- A munkaterület (`v3-audit`, korábbi HEAD `b58b037`) ekkor 23 committal
+  **lemaradva** állt a tényleges publikációs forráshoz (`v3`@`798fd70`)
+  képest: `origin/v3-audit` 3, `origin/v3` további 20 commitot kapott
+  (hero/fejléc/lábléc csiszolás, számlázási blokk, narancs-szín finomítás)
+  — ez aktív, folyamatban lévő munka volt, nem elágazás/konfliktus
+  (`v3-audit` igazoltan egyenes ági őse `v3`-nak, `git merge-base
+  --is-ancestor` igazolta). Felhasználói jóváhagyással **fast-forward**:
+  `v3-audit` → `origin/v3` (`798fd70`), tisztán, ütközés nélkül.
+- Production (`https://soderarak.hu/`) ugyanezt a V3-kódbázist szolgálja ki
+  (azonos HTML-szerkezet, `noindex, follow`); ez **nem új felfedezés**, a
+  2026-11-01/07-i naplóban már rögzített, szándékos, élesítési jóváhagyásra
+  váró állapot (`robots: { index: false }`, `src/app/layout.tsx:65`,
+  env-független) — nem nyúltam hozzá.
+
+**Újrafuttatott valódi kapuk, a friss (`798fd70`) állapoton:**
+`tsc --noEmit` tiszta; `next lint` a korábbról ismert 2 figyelmeztetés
+(`ArkalkulatorForm.tsx` exhaustive-deps, `Section.tsx` unused var) — nincs
+új; `next build` (bare) + `prepare-static-export.mjs` + `og-hash.mjs` mind
+tiszta (64 HTML, 64 saját OG-kép, 59 sitemap URL, 62 OG-kártya hash egyezik
+a bázissal); `npm run test:all` **4647 OK, 0 FAIL** (pricing 181, freight
+3635, quote 440, districts 117, area-pages 83, order 166, billing-form 26 —
+az utóbbi kettő a számlázási blokkal bővült és nőtt a 11-07-i 136/0-ról;
+`order-php` ebben a környezetben PHP hiányában kihagyva, nem igazolt);
+`npm run test:a11y` 63/63 route PASS; `npm run test:mobile` 63/63 route PASS
+(360 px); `npm run test:smoke` 74/74 OK, 0 kliensoldali konzolhiba (helyi
+mock-rendelési szerver már futott — másik folyamat/session használta a
+8788-as portot, ez jelezte, hogy párhuzamos munka zajlik); `npm run
+test:regression` 139 OK / 0 FAIL / **0 WARN** (a H-1 #418 hidratációs hiba
+ismét nem jelentkezett — továbbra sem cáfolt, nyitott); `npm run cta:map`
+hiba nélkül lefutott mind a 20 route-on, asztali + mobil nézetben.
+
+**Lighthouse (`LH_ALL=1 DAEKON_FULL_AUDIT=1`, lab-mérés, egyetlen futás):**
+
+| Route | Performance | A11y | Best Practices | SEO |
+|---|---|---|---|---|
+| / | 84 | 100 | 100 | 69 (csak is-crawlable) |
+| /arkalkulator/ | 90 | 100 | 100 | 66 |
+| /arak/ | 87 | 100 | 100 | 66 |
+| /teruletek/ | 90 | 100 | 100 | 66 |
+| /teruletek/budapest-14-kerulet/ | 93 | 100 | 100 | 66 |
+| /utmutatok/ | 91 | 100 | 100 | 66 |
+| /anyagok/soder/ | 90 | 100 | 100 | 69 |
+| /teruletek/erd/ | 93 | 100 | 100 | 66 |
+
+A főoldal 84-es Performance-a a 2026-11-01/07-i mérésekkel összevethető
+tartományban van (nem regresszió az új 20 commit miatt) — a CLAUDE.md-ben
+dokumentált, korábban A/B-tesztelt „mért helyi maximum" továbbra is áll
+(font-preload, blokkoló CSS átrendezés, `font-display: optional` mind
+mérten rosszabb volt), ezért **nem próbálkoztam újabb spekulatív
+teljesítmény-beavatkozással** új mérési nyom nélkül — ez nyitott P2 tétel,
+nem ezúttal javított hiba. A11y és Best Practices mindenhol 100; a SEO
+pontszám kizárólag a szándékos noindex (`is-crawlable`) miatt bukik.
+
+**Biztonság:** nincs titok a forrásban (`SMTP`/`API_KEY`/`SECRET` minta és
+false-positive szűrés után, csak env-olvasás és teszt-fixture-ök); `.env`,
+`.env.local`, `.env*.local` gitignore-olt, csak `.env.example` van verzió
+alatt; az új számlázási blokk (PHP `rendeles.php` + TS `order.ts`/
+`order-handler.ts`) mindkét oldalon formailag validál (zod / preg_match),
+az adószám-ellenőrzés explicit **nem NAV-hitelesítés**-ként van feltüntetve,
+magánszemélynél az adószám sosem kerül tovább; az egysoros mezők CRLF/NUL-
+szűrése (fejléc-injekció elleni védelem) mindkét implementációban tesztelt
+és zöld.
+
+**Talált és javított hibák (biztonságos, üzleti szabályt nem érintő
+tartalmi pontosítás — commit `39faf07`):**
+1. **P2 — kalkulátor lépésszám félrevezető leírása.** Az „Árkalkulátor
+   használata lépésről lépésre" útmutató nyitó mondata („három dolgot kér")
+   a tényleges, kódban implementált 5 lépéses űrlapot (`STEP_LABELS`:
+   Anyag, Mennyiség, Cím, Összesítés, Adatok) 3 lépésnek sugallta — ezt már
+   a 2026-11-07-i audit is nyitott tételként jelölte, de nem javította.
+   Mivel a helyes üzleti működés a kódból egyértelműen megállapítható (nem
+   eldönthetetlen üzleti kérdés), a nyitó mondatot pontosítottam; a
+   bekezdés további, korábban is helyes tartalmát nem érintettem.
+2. **P2 — elavult sitemap `lastmod`.** `src/content/site.ts` `updated`
+   konstans 2026-10-27-en állt, miközben a tartalom (hero, fejléc/lábléc,
+   kalkulátor, számlázási blokk) ezóta érdemben változott — 2026-11-08-ra
+   frissítve. Build + export QA + OG-regresszió + regresszióteszt (139/139)
+   újrafuttatva a javítás után, mind zöld.
+
+**Nyitva maradt / ebben a sessionben NEM ellenőrzött (őszintén jelölve,
+nem állítva PASS-nak):**
+- Indexelés élesítési jóváhagyása — üzleti döntés, nem technikai hiba.
+- `test:order-php` — nincs PHP-futtató ebben a környezetben, a PHP-végpont
+  2026-11-08-i számlázási bővítése csak forrásból lett átolvasva, nem
+  futtatva.
+- H-1 (#418 hidratációs hiba) — sem reprodukálva, sem cáfolva.
+- Valódi cross-browser (iOS Safari, Android Chrome fizikai eszközön),
+  Search Console/analitika-hozzáférés, élő AI-kereső-lekérdezések,
+  platform-specifikus linkmegosztási előnézet-teszt (Facebook/WhatsApp/
+  LinkedIn debugger), versenytárs-kutatás, llms.txt tartalmi mélyvizsgálat,
+  DNS/levelezés — ebben a sessionben nem történt (részben eszközkorlát,
+  részben a feladat explicit korlátai miatt).
+- A `v3-audit` ág ezzel a sessionnel 20 (FF) + 1 (tartalmi javítás) commit-
+  tal áll **origin/v3-audit előtt, nem pusholva** — publikálásról nem
+  történt döntés.
+
+**Élesítési minősítés (a vizsgált körben):** FELTÉTELEKKEL ÉLESÍTHETŐ —
+minden lefuttatott automata kapu zöld, nincs talált biztonsági/adatvesztési
+hiba, de az indexelési jóváhagyás hiánya és a fent felsorolt nem tesztelt
+területek miatt teljes körű ÉLESÍTÉSRE ELŐKÉSZÍTETT minősítés nem adható.
+
+### 2026-11-08 (folytatás 2) — függőség-audit, H-1 reprodukálva, vizuális/strukturált adat ellenőrzés
+
+**Függőség-biztonság (commit `dc4cd8a`):** `npm audit` 1 kritikus (Next.js
+Image Optimization API RCE + Server Actions DoS — GHSA-2464-fhr4-w9xw,
+GHSA-p3m5-59mp-jv5r) és 2 magas (zod memóriakimerítés GHSA-mrhx-c7xc-m3w5;
+postcss XSS/path traversal, négy CVE) sérülékenységet talált. Az éles
+architektúra (`output: "export"`, statikus hosting + PHP backend) nem
+futtat Next-szervert, így az Image Optimization API és a Server Actions
+vektor ott nem elérhető — ez csökkenti, de nem nullázza a kockázatot (a zod
+séma ténylegesen fut a mock-rendelési szerveren és a tesztkörnyezetben).
+Biztonságos, a meglévő semver-tartományon belüli patch-bump: `next`
+^15.4.5→^15.5.29, `zod` ^4.6.5→^4.6.7 (nem major, nem breaking). Frissítés
+után a teljes kapu-készlet újra lefuttatva és zöld (lásd fent). **Szándékosan
+NEM javítva** (dokumentált, függőben hagyott döntés): a next@15-ben
+bundle-ölt postcss (csak next@16 major javítaná — valódi breaking change,
+külön jóváhagyást igényel); a lighthouse/puppeteer-core lánc beágyazott
+zod-ja (kizárólag saját dev-eszközként fut, sosem kerül élesbe); a
+`@typescript-eslint` lánc `minimatch`-je (szintén csak dev/lint-eszköz).
+
+**H-1 (#418 hidratációs hiba) — ezúttal reprodukálva, nem csak feltételezve.**
+A `npm run test:regression` újrafuttatásakor (a függőségfrissítés utáni
+friss exporton) **2× ténylegesen jelentkezett** a hiba (1× 360px, 1× 1440px,
+a 20 route-os seprés közben, nem egy konkrét route-hoz köthetően —
+`regression: 139 OK, 0 FAIL, 2 WARN (H-1 #418)`). A szkript ezt tudottan
+időszakos, nem blokkoló figyelmeztetésként kezeli (WARN, nem FAIL), de ez
+az első igazolt előfordulás a 2026-11-01 óta vezetett naplóban — korábban
+minden session „nem reprodukálva/nem cáfolva" státuszban zárta. **Továbbra
+is nyitott, vizsgálatot igénylő tétel**, most már megerősített
+gyakorisággal (kb. 1/20 route-seprés nagyságrend ennél a futásnál).
+
+**Strukturált adat (JSON-LD) átvizsgálva, oldaltípusonként:**
+`LocalBusiness` + `ContactPoint` (globális, `layout.tsx`, valós cím/telefon/
+nyitvatartás — nincs kitalált adat, nincs `aggregateRating`); `Service` +
+`areaServed` (terület-aloldalak); `BreadcrumbList` (útmutató, anyag,
+kapcsolat oldalak); `FAQPage` (anyag oldalak, a ténylegesen megjelenő
+FAQ-szövegből generálva). Nincs `Article`/`HowTo` típus az útmutató
+oldalakon — ez **nem hiba**, a breadcrumb+FAQ lefedettség érvényes és
+elegendő; `Article` hozzáadása opcionális, P3 fejlesztési ötlet, nem
+javítottam be kéretlenül.
+
+**Vizuális/reszponzív ellenőrzés:** a Claude in Chrome böngésző-bővítmény
+ebben a környezetben **nem elérhető** (nincs kapcsolódva) — valódi
+böngészős vizuális QA helyett a projekt saját Playwright-szkriptjét
+futtattam (`node scripts/v3-screenshots.mjs`): 48 képernyőkép, 6 töréspont
+(360/390/430/768/1024/1440 px) × 8 kulcsroute, **egyetlen mért szélességen
+sincs vízszintes túlcsordulás**. Kézi átnézés (főoldal, kalkulátor):
+egy elsődleges CTA látható szekciónként, nincs lila gradiens / üvegesítés /
+üres hero / lebegő kártya a design-tiltólistáról, az 5 lépéses kalkulátor-
+folyamat vizuálisan egyezik a kóddal. Ez asztali Chromium-renderelés, **nem
+valódi iOS Safari / Android Chrome fizikai eszköz** — az a tétel továbbra
+is nem tesztelt.
+
+**Nyitva maradt, ezzel a körrel bővítve:** H-1 most már megerősítve
+(lásd fent, nem csak feltételezve); next@16 major (postcss javítás) —
+üzleti/karbantartási döntés, külön munkamenetet igényel; valódi
+cross-browser/fizikai eszköz teszt továbbra sincs.
+
+## 2026-11-09 17:04–17:17 — Rendelési cím: rendeles@soderarak.hu (info@ helyett, párhuzamos session, `origin/v3`)
+
+**Megjegyzés (utólag, a mergeléskor beszúrva):** ez a bejegyzés egy
+**párhuzamos Claude Code session** munkája volt, közvetlenül az
+`origin/v3` ágra pusholva (commitok: `d044838`, `9e64716`), **nem** ennek
+az auditsessionnek (`v3-audit`) a munkája. A két ág a mai nap később
+(20:xx) össze lett mergelve — lásd a `v3-audit`↔`origin/v3` szinkron
+bejegyzést a napló végén. Időrendi helye itt van (17:04–17:17), a
+"18:49" bejegyzés már ennek ismeretében íródott.
+
 - Felhasználói kérés: az info@soderarak.hu helyett a rendeles@soderarak.hu
   legyen a cím — a megjelenített kapcsolati e-mail (`site.ts`), a PHP-végpont
   fix címzettje és alapértelmezett feladója, a TS-kezelő, a Worker, a tesztek
@@ -1155,3 +1332,437 @@ díszítés nélküli állapotában marad.
   soderarak.hu-ra kerül a tárhely-ZIP-pel. A noindex a tárhely-buildben is
   megmarad (a layoutból jön); kikapcsolásához külön jóváhagyás kell.
 - Pontosítás: a tárhelyen létrehozott postafiók rendeles@soderarak.hu, ezért a felhasználó döntése alapján ez lett a cím (megrendeles@ helyett).
+
+### 2026-11-09 18:49 — Piackutatás (8. szakasz) első köre; környezeti eltérés rögzítve
+
+**Felismert hiány:** a projekt dokumentumtörténetében (`docs/*.md`) a
+2026-11-01 óta vezetett auditnaplók technikai SEO-ra, tartalomra,
+teljesítményre, biztonságra és a11y-ra koncentráltak, de **a `CLAUDE.md`
+8. szakaszában kért piac- és versenytárskutatás egyszer sem futott le**
+(`grep -ri ambrus docs/` 0 találat a session elején). Ez volt a session
+induló diagnózisa, és ennek pótlására irányult ez a kör.
+
+**Elvégzett munka — `docs/market-research.md` (új fájl):**
+- Ambrus Fuvar azonosítva és ellenőrizve (NEM feltételezve): `ambrusfuvar.hu`,
+  közvetlen `WebFetch` a főoldalra, az árlistára (`/info/arlista`) és egy
+  kerületi aloldalra (`/soder/soder-szallitas-21`) — teljes árlista (termőföld,
+  sóder, murva, homok, kavics, homokos kavics, bazalt/andezit), NETTÓ árazás,
+  a fuvardíj explicit NEM publikus az árlistán.
+- Két mintakeresés (`WebSearch`, nem geolokalizált, ez a korlát a dokumentumban
+  is jelölve) feltárt 9 további organikus versenytársat ugyanazokra a
+  kereskedelmi keresésekre (soderexpress.hu, soderguru.hu, soderkiszallitas.hu,
+  soderbirodalom.hu, kavicsszallitas.hu, soderhaz.hu, homokszallitas.hu,
+  goltsepker.hu, soder-futar.hu, kovicsfuvar.hu) — ebből Sóder Express külön
+  lekérve ("árgarancia" + aznapi szállítás ígéret, sávos nettó fuvardíj
+  nyilvánosan közzétéve).
+- `soderarak.hu` a mintakeresésekben nem jelent meg — **nem új hiba**, a
+  már dokumentált, szándékos `noindex, follow` első, SERP-szintű, tényleges
+  megfigyelt következménye.
+- Teljes versenytársi mátrix (szereplő | kínálat | terület | ártranszparencia
+  | rendelési folyamat | tartalom | bizonyítékok | mobil | hiányosság |
+  lehetőség | forrás | bizonyosság), keresési szándék–lefedettség térkép
+  (meglévő `/utmutatok` 11 cikke, `/teruletek` 23 kerületi oldala, `/arak`,
+  `/arkalkulator` ellenében), és egy döntési szakasz (8.5) arról, mit NEM
+  kell/szabad tenni ebből (nincs bizonyított igény új oldaltípusra; nincs
+  "doorway"-stílus kerületi tartalom átvétele; a versenytárs feltételezett
+  hibáját — sablonos kerületi aloldalak — csak F-szintű, belső stratégiai
+  jelzésként rögzítettük, kereszt-ellenőrzés és publikálás nélkül).
+
+**Metodológiai korlát, explicit jelölve a dokumentumban:** a `WebFetch` egy
+kisebb modellel összefoglalja a lekért HTML-t (nem szó szerinti nyers
+tartalom), a `WebSearch` nem geolokalizált, bejelentkezés nélküli találati
+lista (nem azonos a tényleges Google-helyezéssel). Ezért semelyik
+versenytárs-megfigyelés nincs "A — élőben ellenőrzött, végleges" szinten
+rögzítve a legtöbb sorban; a mátrix oszloponként jelöli a bizonyosságot.
+
+**Környezeti eltérés, a piackutatás közben észrevéve (nem ehhez a körhöz
+tartozó munka, csak dokumentálva):** az éles oldal (`https://soderarak.hu/`)
+`Last-Modified` fejléce **2026-11-09 16:19:45 UTC** — azaz a session indulása
+előtt kb. 1,5 órával újra deployolódott. A publikációs forrás (`gh-pages`,
+`chefke1337/soderarakv3`) friss commitja (`fe9c073`, 2026-11-09 16:19:57 UTC)
+igazolja: `chefke1337/soderarakv2@9e64716` build. Ez egy **másik, párhuzamos
+Claude Code session** (ugyanaz a felhasználó, `hextech.void@gmail.com`,
+"Claude Opus 5.5" commit-attribúció) valódi kódváltozása volt — a rendelési
+e-mail cím `rendeles@soderarak.hu`-ra (a létrehozott postafiókra) állítása,
+`docs/decisions.md`, `server/php/*`, `src/server/order-handler.ts`,
+`src/content/site.ts` és a kapcsolódó tesztek módosításával, közvetlenül az
+`origin/v3` ágra pusholva. A jelen munkamenet `v3-audit` ága (`798fd70` +
+`7aaef56` + `4d95c2f`, mind pusholva `origin/v3-audit`-ra) **nem konfliktusos**
+ezzel — más fájlokat érint, közös ős (`798fd70`) utáni első valódi
+elágazás —, de a `v3-audit` jelenleg **1 valódi kódcommit-tal lemaradva**
+áll az `origin/v3`-tól. **Nem végeztem mergelést/pusholást** — ez a döntés
+(melyik ág a következő publikációs alap, kell-e összefésülni) a
+tulajdonosra/felhasználóra tartozik, különösen mivel a másik session
+aktívan dolgozhat még.
+
+**Nyitva maradt:** a versenytárskutatás 1.2/1.4-ben felsorolt, nem mélyebben
+ellenőrzött szereplői; valódi geolokalizált SERP-mérés; Google Cégprofil/
+Search Console-alapú helyi verseny (nincs hozzáférés); az Ambrus kerületi
+aloldal "doorway"-megfigyelésének második módszerrel történő megerősítése
+mielőtt bármilyen külső dokumentumba kerülne; `v3-audit` ↔ `origin/v3`
+szinkronizálásának döntése.
+
+### 2026-11-09 19:48 — Piackutatás 2. köre: a maradék 8 szereplő, domainklaszterek feltárva
+
+Felhasználói döntés: a piackutatást a maradék 8, csak név szerint
+azonosított organikus szereplőre is mélyítsük (ne térjünk még a
+tartalom/auditpassz fázisra). Mind a 8 domain egyenként lekérve
+(`WebFetch`, 2026-11-09): soderguru.hu, soderkiszallitas.hu,
+soderbirodalom.hu, kavicsszallitas.hu, soderhaz.hu, homokszallitas.hu,
+soder-futar.hu, kovicsfuvar.hu.
+
+**Legfontosabb új felismerés — két domainklaszter, nem független
+versenytársak:**
+- **Klaszter A:** Ambrus Fuvar + Sóder Guru + Homokszállítás.hu —
+  **számjegyre egyező** két telefonszám (`06309902614`, `06309660192`)
+  mindhárom oldalon (külön normalizálva és ellenőrizve, nem csak
+  WebFetch-összefoglalásra hagyatkozva), és szó szerint azonos
+  szolgáltatásiterület-megfogalmazás. A megbízásban névvel megjelölt
+  "Ambrus Fuvar" tehát egy ≥3 domaines kulcsszó-klaszter része, nem
+  egyetlen önálló honlap.
+- **Klaszter B:** Sóder Express + Sóder Futár + Kovics Fuvar — azonos
+  telefonszám (`+36 30 9775118`, normalizálva ellenőrizve) mindhárom
+  oldalon, és a soder-futar.hu / kovicsfuvar.hu is azonos üzemeltetőt
+  ("Kovács Kálmán") nevez meg.
+- Önálló, klaszterhez nem köthető szereplők: Sóder Birodalom (saját
+  márka/kontakt), Sóderház (Timb-Erd Kft., Érd — egyetlen vizsgált
+  szereplő valódi céges háttérrel, feltüntetett tesztimóniállal és
+  számszerű, **versenytárs saját, nem igazolt** ügyfélszám-állítással:
+  "1037 elégedett ügyfél"), Sóder Szállítás (Pap Ádám E.V. — **nincs**
+  online kalkulátora). `kavicsszallitas.hu` klasztertagsága nem
+  egyértelmű (nincs egyértelmű telefonszám-egyezés a lekért tartalomban)
+  — F-szinten jelölve, nem állítva se klasztertagnak, se függetlennek.
+
+**`docs/market-research.md` frissítve** (nem új fájl): új 1.2a/1.2b
+alszakasz a klaszterekről és az önálló szereplőkről (telefonszám-egyezés
+mint bizonyíték, cégjogi azonosítás híján "A" szintű, de "kinek a nevén
+fut a domain" kérdésben explicit jelölve, hogy ez **nem történt meg**);
+a 4. mátrix "Egyéb" gyűjtősora lecserélve 7 önálló, részletes sorra; az
+5. szakasz (döntési anyag) bővült a piacszerkezeti felismeréssel (a 10
+"szereplő" valójában ≤7 üzemeltető) és két új, bizonyított tanulsággal:
+(a) a kavicsszallitas.hu nyílt versenytárs-támadó hangneme
+("tartalomtolvaj") hitelességromboló — a soderarak.hu jelenlegi, higgadt
+hangneme ezzel szemben **bizonyítottan jobb gyakorlat**, megtartandó; (b)
+a fuvardíj-kalkulátor **nem egyedi** a piacon (több szereplőnél is van),
+de az irányítószám-pontos (nem csak kerület-sávos) díjszámítás igen —
+ez a tényleges, publikálható különbség, nem a kalkulátor megléte maga.
+
+**Ami NEM történt meg, és miért:** cégjogi/whois-azonosítás a két
+klaszter üzemeltetőjére — ez túlmutat a piackutatási megbízáson, és a
+felhasználó nem kérte; a kavicsszallitas.hu klasztertagságának
+megerősítése (további lekérés kellene, pl. impresszum-oldal); a
+"doorway"-megfigyelés második módszerrel történő megerősítése (korábbi
+kör nyitott tétele, ezzel a körrel sem zárult le).
+
+**Nem történt commit** — a felhasználó kilépett az automatikus módból a
+2. kör elején; a commitolás előtt megkérdezem, mielőtt bármit
+verzionálnék.
+
+(Utóbb a felhasználó jóváhagyta a commitot — lásd a `7b81ffe` commit a
+`v3-audit` ágon.)
+
+### 2026-11-09 19:56 — Üzleti tényjegyzék és adatbekérő lista (10./19.7. szakasz) — új dokumentum
+
+**Felismert hiány:** a `CLAUDE.md` 10. szakasza önálló "belső üzleti
+tényjegyzéket" kér (állítás | forrás | ellenőrzés | felhasználható oldalak
+| szükséges megerősítés), a 19. szakasz pedig ezt + egy adatbekérő listát
+önálló átadandó anyagként sorolja fel. Korábban ez **szétszórva** élt
+(`v3-audit-and-fixes.md` 7. szakasza "Ügyfélkérdések" alcíme,
+`decisions.md` több bejegyzése, és a mai piackutatás 2 új kérdése) — nem
+volt egy kereshető, önálló fájl.
+
+**`docs/business-facts.md` (új fájl):**
+- 1. szakasz: 15 jelenleg élő, publikált állítás forrással (`site.ts`,
+  `freight.ts`, `catalog.ts` konkrét sor-hivatkozásokkal) és ellenőrzési
+  szinttel (B = forráskódban ellenőrzött, D = ügyféladat, C = automata
+  teszttel is igazolva) — mindegyiknél jelölve, van-e nyitott kérdés.
+  Egy tényt (`info@soderarak.hu` mint általános e-mail) explicit
+  megjelöltem kereszt-ellenőrzésre szorulónak a párhuzamos session
+  rendelési-cím-változása miatt — **ellenőriztem**: `src/server/
+  order-handler.ts:104` ezen az ágon (`v3-audit`) még `DEFAULT_RECIPIENT
+  = "info@soderarak.hu"`, a `rendeles@soderarak.hu` csak az `origin/v3`
+  ágon (`9e64716`) él — a dokumentum ezt a pontos, aktuális állapotot
+  rögzíti, nem feltételezést.
+- 2. szakasz: 10 tételes adatbekérő lista, mindegyik eredettel és azzal,
+  miért fontos — ebből 2 tétel (árgarancia-vállalás, valós ügyfélszám/
+  tesztimónium kérdése) **a mai piackutatásból új**, 8 tétel korábbi
+  auditkörökből összegyűjtött, de addig sosem egy helyen rögzített kérdés
+  (XXIII. kerület irányítószám-lefedettség, 5 nevesített település tarifa
+  nélkül, andezit-fotó, next@16, H-1, Budafok-szövegek jóváhagyása,
+  `v3-audit`↔`origin/v3` szinkron, indexelés).
+
+**Mit NEM tartalmaz:** semmilyen új kitalált adatot — minden sor forrása
+vagy kódban ellenőrzött tény, vagy korábbi, dátumozott ügyféladat, vagy
+a mai piackutatás már naplózott megfigyelése.
+
+### 2026-11-09 19:59 — 30/60/90 napos mérési terv (18. szakasz) — meglévő `metrics-plan.md` bővítve
+
+**Felismert hiány:** a `docs/metrics-plan.md` (2026-10-03) már részletesen
+leírja a GA4/GSC/call-tracking mechanizmust (események, konverziók,
+riportok, CTA-pozíciós térkép), de a megbízás 18. szakaszának explicit
+kért **30/60/90 napos ütemezése** nem létezett benne — a dokumentum a
+"hogyan mérjünk" kérdést válaszolta meg, a "mikortól, milyen bázishoz,
+milyen korláttal" kérdést nem.
+
+**Hozzáadva (új "0." szakasz, a fájl elejére, nem új fájl — a brief 19.
+szakasza engedi az összevonást):**
+- Explicit rögzítve: a 30/60/90 nap **nem naptári nap mától**, hanem két
+  nyitott tulajdonosi döntéstől (indexelés élesítése + GA4 property
+  létrehozása, `business-facts.md` #1/#2) függő, jelenleg el sem
+  indítható óra — ezt a brief "hiányzó adat nem nulla" tiltása miatt
+  explicit ki kellett mondani, nem elhallgatni.
+- A mérési lépcső (organikus megjelenés → kattintás → céloldali
+  látogatás → telefonkattintás → sikeres ajánlatkérés → minősített lead
+  → bevétel) táblázatban, **szándékosan nem szinonimaként** felsorolva,
+  mindegyiknél jelölve, melyik automatizált (GA4/GSC) és melyik NEM (a
+  "minősített lead" és "bevétel" sor explicit: nincs automatizálva, csak
+  a tulajdonos saját nyilvántartásából jöhet).
+- Nap 0 / 30 / 60 / 90 táblázat: mit mérünk | milyen bázishoz | milyen
+  korláttal — konkrét célszám (pl. "+X% organikus forgalom") **nem**
+  szerepel benne, mert hozzáférés/bázisadat híján ez kitalált szám lenne.
+
+### 2026-11-09 20:00 — Prioritásos backlog (19.6. szakasz) — új dokumentum
+
+**`docs/backlog.md` (új fájl):** minden eddig szétszórva nyitva maradt
+tétel egy helyen, P0–P3 súlyozással (P0 = tulajdonosi döntés/adat-
+konzisztencia-kockázat, P1 = mért hatású hiányosság, P2 = polírozás,
+P3 = opcionális/feltáró). Tartalma a `v3-audit-and-fixes.md`,
+`decisions.md`, `market-research.md`, `business-facts.md` és
+`metrics-plan.md` korábbi, önálló bejegyzéseiből összegyűjtött, nem új
+tétel — kivéve a végén egy explicit "Kifejezetten NEM backlog-tétel"
+szakaszt, amely tudatosan rögzíti, mit NEM teszünk fel ide (kitalált
+kulcsszóvolumenre épülő új oldal, versenytárs-doorway/támadó-hangnem
+átvétele, GA4-azonosító kitalálása) — a megbízás több tiltását egy helyen
+összefogva, hogy later ne kerüljenek vissza javaslatként.
+
+**Nem történt commit még** — ezzel egy körben a végső auditpassz két
+alügynöke is fut a háttérben; a commitot egyben, a soron következő
+összefoglalóval teszem meg.
+
+### 2026-11-09 20:11 — Végső független auditpassz, A. rész (`senior-reviewer` alügynök) + saját ellenőrzés
+
+A 16. szakasz szerinti, elkülönített alügynökös auditpassz első fele
+befejeződött (28 lépéses korláton elakadt egyszer, `SendMessage`-dzsel
+folytatva). **A jelentést nem fogadtam el vakon** — a négy "release
+blocker" és a legsúlyosabb "must fix" tételt saját kódolvasással
+függetlenül újra-ellenőriztem, mielőtt bármit a projekt dokumentumaiba
+írtam volna.
+
+**Saját ellenőrzéssel megerősített, valódi új felismerések:**
+1. `IS_PREVIEW` (`site.ts:56`) exportálva, de **0 felhasználó** a
+   forrásban — a tényleges `noindex` `layout.tsx:65`-ön hardkódolt,
+   független tőle. Nincs egyetlen kapcsoló az élesítéshez.
+2. Az adatvédelmi tájékoztató (`adatvedelem/page.tsx`) nem sorolja fel a
+   számlázási adatokat (név, adószám, cím), amiket a `BillingFields.tsx`
+   + `order.ts:198` igazoltan gyűjt és küld — valódi, a 2026-11-07/08-i
+   számlázási bővítés óta nyitott GDPR-tájékoztatási rés.
+3. A CI (`deploy-v3-pages.yml`) build-lépése **kihagyja az `og-hash.mjs`**
+   kaput, amit a `package.json` `build` szkriptje és a `CLAUDE.md` is
+   terhelőként (load-bearing) nevez meg — a GitHub Pages demo-deploy
+   soha nem futtatja ezt a regressziós kaput.
+4. A valódi production-deploy útvonalat is megnéztem
+   (`daekon/deploy-checklist.md`, `scripts/package-deploy.mjs`): a
+   checklist "**nincs szerver-kód**"-ot állít, és semmilyen szkript nem
+   kezeli a `rendeles.php` PHP-backend vagy a `NEXT_PUBLIC_ORDER_API_URL`
+   bekötését — ez nem új ellentmondás (a korábbi audit már BLOCKED-ként
+   jelölte az e-mail-küldést), de most elsőként derült ki, hogy **magának
+   az aktiválásnak sincs szkriptelt útja**.
+5. `docs/business-facts.md` saját, e session alatt írt sora hibásan
+   mosta össze a XI. kerület 1112/1118 automata díjprofilját (`freight.ts:
+   161-173`, VAN automata ár) az I. kerületi Vár-kivétellel
+   (`CASTLE_DISTRICT_ID=1`, `freight.ts:85,378-382`, NINCS automata ár) —
+   **azonnal javítva**, lásd a fájl aktuális verzióját.
+6. `docs/v3-audit-and-fixes.md` 3 "PASS" sora elavult adatra hivatkozik
+   (impresszum régi cégnév — a céges adat a 2026-11-01-i audit UTÁN,
+   2026-11-03-án változott; kulé "mosott kavics"-jelölés, valójában
+   `ONCE_WASHED_KULE`; térkép "13 jelölés", gyanúsan alacsony a jelenlegi
+   `serviceAreas`-hoz képest) — dokumentáció-staleness, **nem élő hiba**.
+
+**Nem egyenként újra-ellenőrzött, de a jelentés addigi pontossága miatt
+hitelesnek tekintett tételek** (lásd `docs/independent-audit.md` A. rész
+teljes szövege): 6 használaton kívüli függőség, hardkódolt árak az
+útmutató-oldalon, hiányzó `aria-required` a kalkulátor 3. lépésén,
+versengő CTA-k, glassmorphism-mennyiség, és további ~10 kisebb tétel.
+
+**Új dokumentum:** `docs/independent-audit.md` — a 16. szakasz
+deliverable-je, explicit jelölve, hogy ez **nem külső tanúsítás**
+(a megbízás szövege szerint), csak elkülönített alügynökös ellenőrzés,
+amelyben a saját session utólag ellenőrizte a legsúlyosabb tételeket.
+
+**`docs/backlog.md` bővült:** 2 új P0 (nincs élesítési kapcsoló;
+adatvédelmi hiányosság), 4 új P1 (CI-kapu hiány, hardkódolt árak,
+a11y-rés, függőség-kérdés), 4 új P2 (2× dokumentáció-staleness, GA4-
+megfogalmazás, a nem egyenként ellenőrzött maradék tételek gyűjtősora).
+
+### 2026-11-09 20:14 — Végső független auditpassz, B. rész (`quality-auditor` alügynök) — befejezve
+
+A második alügynök is elakadt egyszer a lépéskorláton (`SendMessage`-
+dzsel folytatva), majd teljes jelentést adott: **minden valódi kapu
+frissen, saját futtatással** — typecheck, lint, build (139/139 statikus
+oldal, export QA, og-hash), 7 egységteszt-csomag (4648 OK, 0 FAIL),
+a11y, mobil, regresszió (4×, mind 0 WARN — H-1 ma nem jelentkezett,
+összefér a dokumentált ~1/20-os gyakorisággal), smoke (mock szerverrel
+74/74), Lighthouse (8 route, 4 kategória) — mind **PASS**;
+`test:order-php` **BLOCKED** (nincs PHP ebben a környezetben).
+Forráskód-ellenőrzés: `DEFAULT_RECIPIENT` és `company.email` **mindkettő
+`info@soderarak.hu`** ezen az ágon — nincs eltérés, a `rendeles@`-csere
+valóban csak az `origin/v3`-on él (megerősíti a P0-2 backlog-tételt).
+
+**Két önálló, új megállapítás ebből a körből (saját session is
+megerősíti, az alügynök módszertana ellenőrizhető/reprodukálható volt):**
+1. `decisions.md` korábbi "4647 OK" összesítése **aritmetikai hiba** —
+   a saját felsorolt részösszegek 4648-ra jönnek ki, és a mai friss
+   futtatás is 4648-at adott. Nem regresszió, csak elírás a naplóban.
+2. `test:a11y`/`test:mobile` **csendben cache-skip**-pel tér vissza
+   változatlan fán `DAEKON_FULL_AUDIT=1` nélkül — a korábbi "63/63 PASS"
+   naplósorokról retrospektíve nem dönthető el, kényszerített futásból
+   jöttek-e. Módszertani hiányosság, jövőbeli auditoknak explicit
+   kényszerítve kell futtatniuk és ezt naplózniuk.
+
+**Nem feloldott ellentmondás, szándékosan:** a `CLAUDE.md` "~95-97
+Lighthouse" állítása a főoldalra nem egyezik semelyik, 2026-11-01 utáni,
+ebben a repóban dokumentált méréssel (83-90 között). A `CLAUDE.md`
+tartalmát **nem módosítottam** — ez a projekt irányadó utasítása, nem
+auditbizonyíték, a frissítése tulajdonosi/karbantartói döntés.
+
+**`docs/independent-audit.md` és `docs/backlog.md` frissítve** a B.
+szakasz teljes táblájával és a 4 új, saját session által is megerősített
+tétellel (2 P2 dokumentációs/módszertani hiba, pontosítva a P0/P1
+tételek forrását).
+
+**A 16. szakasz szerinti végső független auditpassz ezzel lezárva** —
+mindkét alügynök befejezte, a legmagasabb kockázatú tételeket a saját
+session függetlenül újra-ellenőrizte, nem vette át vakon.
+
+### 2026-11-09 — `v3-audit` ↔ `origin/v3` szinkronizálva (P0-2 lezárva)
+
+A B. rész auditpassz óta nyitva hagyott P0-2 backlog-tétel: a `v3-audit`
+ág (ez a napló) és a párhuzamos session `origin/v3` ágra pusholt két
+e-mail-cím-commitja (`d044838`, `9e64716` — fentebb, 17:04–17:17-nél
+beillesztve) külön ágon éltek, közös ős `798fd70`. `git merge origin/v3`
+tiszta, ütközés nélkül az összes kódfájlon (`src/server/order-handler.ts`,
+`src/content/site.ts`, `server/php/*`, `scripts/*`, tesztek) — a két oldal
+diszjunkt fájlhalmazon dolgozott, egyetlen átfedés ez a napló volt
+(kézzel feloldva, időrendi sorrendbe illesztve, tartalomvesztés nélkül).
+Eredmény: `DEFAULT_RECIPIENT`/`company.email` ezen az ágon is
+**rendeles@soderarak.hu** — a B. részben dokumentált eltérés megszűnt.
+
+### 2026-11-09 20:36–21:24 — Kiadási csomag javítóköre: valódi indexelési kapcsoló + 2 kapu-szkript hiba
+
+**Kiindulás:** a felhasználó jogosan jelezte, hogy az addig elkészült
+`soderarak-deploy-2026-11-09T19-58-38.zip` NEM alkalmas feltöltésre: még
+kikapcsolt indexeléssel készült, a kötelező `npm run daekon` ellenőrzés
+nem futott le igazoltan, és a kiadás forrás-azonossága (branch/commit/
+dirty állapot) sem volt rögzítve. Explicit felhatalmazást kaptam a
+production indexelési tiltás valódi forrásának megszüntetésére ("A"
+kategóriás, nyilvános oldalakra), kizárólag a helyi forrás/teszt/csomag
+javítására — éles feltöltés, push, merge NEM történt.
+
+**Régi ZIP karanténba helyezve** (nem törölve): `dist/_SUPERSEDED_DO_NOT_UPLOAD/
+soderarak-deploy-2026-11-09T19-58-38.zip`.
+
+**Kiadás alapja (rögzítve, nem feltételezve):** branch `v3-audit`, HEAD
+`312a2c1` (tiszta munkaterület ellenőrizve `git status`-szal), + ezen a
+körön belüli, az alábbi commitokban rögzített módosítások. `origin/v3`
+(`9e64716`) igazoltan a HEAD őse (`git merge-base --is-ancestor`) — a
+korábbi merge óta nem érkezett új commit sem `origin/v3`-ra, sem
+`origin/v3-audit`-ra (friss `git fetch` ellenőrizve).
+
+**1. A valódi indexelési kapcsoló bekötve (`src/app/layout.tsx`,
+`src/app/utmutatok/[slug]/page.tsx`, `src/content/site.ts`):**
+A `.env.example` már dokumentálta a szándékot ("false" esetén
+indexelhető), és `IS_PREVIEW` (`site.ts:56`) ezt a logikát helyesen
+számolta ki — de a `layout.tsx`-ben és a `/utmutatok/[slug]`-ban a
+`robots` mező egy hardkódolt `{ index: false, follow: true }` literál
+volt, NEM `IS_PREVIEW`-ból olvasva (ez volt a korábbi audit P0-3
+tétele: "nincs egyetlen valódi kapcsoló"). Mindkét helyen
+`robots: { index: !IS_PREVIEW, follow: true }`-ra javítva. A GH Pages
+demo-deploy workflow-k (`deploy-v2-pages.yml`, `deploy-v3-pages.yml`,
+`preview-build.yml`) nem állítják a `NEXT_PUBLIC_PREVIEW` env-et, ezért
+alapértelmezetten (`!== "false"` → true) **változatlanul noindex
+marad** — a kategória C (demo/preview) nem sérül. A jogi/elavult oldalak
+(`impresszum`, `adatvedelem`, `anyagok/bazalt`) saját, explicit
+`{ index: false }`-ja érintetlen (kategória B, szándékos kizárás —
+nincs dokumentált bizonyíték arra, hogy ez a preview-kapcsolóval lenne
+összefüggésben, ezért konzervatívan nem nyúltam hozzá; owner-kérdésként
+jelölve). A production kiadáshoz a build `NEXT_PUBLIC_PREVIEW=false`-lal
+futott.
+
+**2. Valódi, a javítás által felfedett hiba a 404-oldal export-
+szkriptjében (`scripts/prepare-static-export.mjs`):** amíg a globális
+robots-mező mindig "noindex, follow" volt, rejtve maradt, hogy a Next
+statikus exportja a `/404` különleges dokumentumhoz **duplán** emeli ki
+a `<head>` metaadatait (robots, og:title, og:description, twitter:title,
+twitter:description — mind 2×, egy valódi `<head>`-en belül). A korábbi,
+nem globális (`/g` nélküli) `.replace()` csak az ELSŐ előfordulást
+javította — amint a robots mező valódivá vált ("index, follow"), ez
+ténylegesen **ütköző tartalmú, duplikált `<meta name="robots">`
+tageket** eredményezett volna a 404 dokumentumon (egyszerre "noindex"
+ÉS "index, follow"). Minden érintett `.replace()` `/g`-vel javítva —
+most mindkét 404-fájlban (`out/404.html`, `out/404/index.html`)
+konzisztensen "noindex", illetve a helyes 404-specifikus cím/leírás áll,
+duplikáció nélküli *tartalom* (a tag maga technikailag duplán marad a
+Next egy ismert exportsajátossága miatt, de többé nem ütköző — ez a
+keretrendszer-szintű kvirk, nem ebben a körben javítandó).
+
+**3. Valódi, a teljes `npm run daekon` első igazolt végigfuttatásakor
+felfedett FAIL (`daekon/agents/qa-regression.mjs`):** a "minden
+hivatkozott OG-kép valós kártyafájl" blokkoló kapu hamis pozitív
+FAIL-t adott — a főoldal szándékosan egy kézzel elhelyezett, egyedi
+nevű megosztási képre hivatkozik (`HOME_SHARE_IMAGE` =
+`soderarak-share-v4.png`, lásd `prepare-static-export.mjs` és
+`src/lib/share.ts`), ami emiatt sosem szerepel a csak
+"opengraph-image.png" nevű fájlokat gyűjtő `ogPngs` tömbben — a korábbi
+kód ez ellen a (szűkebb célú, hash-bázis-lefedettségi) listát
+hasonlította össze tagsági egyezéssel, holott a hivatkozott fájl
+létezése már korábban, `resolveOgFile`-ban `existsSync`-kel igazolva
+volt. A kapu mostantól valódi `existsSync`-et ellenőriz minden
+hivatkozott célra, nem a szűkebb lista tagságát. **Ez a hiba azért nem
+derült ki korábban, mert — amennyire a `docs/decisions.md` korábbi
+bejegyzéseiből megállapítható — a teljes `npm run daekon` parancs maga
+sosem futott le és lett rögzítve korábban; minden korábbi audit csak az
+egyedi almappancsokat (`test:a11y`, `test:mobile`, `build` stb.)
+futtatta külön-külön, amelyek NEM tartalmazzák a `gate-qa-regression`
+kaput.**
+
+**Újrafuttatott, igazolt eredmények (mind friss, ezen a körön):**
+`tsc --noEmit` tiszta; `next lint` ugyanaz a 2, korábbról ismert
+figyelmeztetés (nincs új); `npm run test:all` **4648 OK, 0 FAIL**
+(`test:order-php` BLOCKED — nincs PHP ebben a környezetben); teljes
+`npm run daekon` (`DAEKON_FULL_AUDIT=1 LH_ALL=1
+NEXT_PUBLIC_ORDER_API_URL=http://127.0.0.1:8788/order
+NEXT_PUBLIC_PREVIEW=false`) **verdict: PASS** — mind az 5 blocker kapu
+(`gate-static`, `gate-og`, `gate-a11y`, `gate-mobile`,
+`gate-qa-regression`) és az advisory `gate-perf` is PASS; a
+`humanize-scan` team-executor **NEM FUTOTT** (ismeretlen, ezen a körön
+felfedezett, ettől függetlenül meglévő hiba: `public/llms.txt`-et olvas,
+miközben az `llms.txt` ezen a projekten egy route handlerből
+(`src/app/llms.txt/route.ts`) jön, nem statikus fájlból — advisory,
+nem blokkoló, NEM javítva ebben a körben, kívül esik a kiadási csomag
+hatókörén). Lighthouse (advisory): `/` 83/100, `/arak/` 87/100,
+`/teruletek/` 89/100 — a korábban is dokumentált, mért helyi
+teljesítmény-maximum tartományban, nem új regresszió.
+
+**A kész ZIP-et önállóan, nem csak az `out/` mappát ellenőriztem:**
+`dist/soderarak-deploy-2026-11-09T20-23-15-VERIFIED.zip` (19 192 kB,
+SHA-256 `bf37275bc4056c89f466707132c7b8e1daee1df5e6d47728f95090635b450c48`,
+685 zip-bejegyzés, 569 fájl kibontva) — kibontva egy külön ideiglenes
+mappába, `diff -rq` az eredeti `out/`-tal **0 eltérés** (a csomagolás
+hűséges); mind a 206 `.gz` fájl érvényes gzip és byte-pontosan egyezik
+a kicsomagolt eredetijével; a robots/sitemap/robots.txt ellenőrzés
+megismételve közvetlenül a kicsomagolt tartalmon (ugyanaz az eredmény);
+a kicsomagolt mappát helyben kiszolgálva **valódi böngészős smoke teszt
+(`v3-smoke.mjs`, Playwright) lefutott a kicsomagolt tartalom ellen: 74
+OK, 0 FAIL**, a teljes kalkulátor- és rendelésiigény-folyamatot
+végigjátszva mock backenddel (valódi e-mail nem ment ki).
+
+**Nem állítható, csak élesben ellenőrizhető:** a tényleges Google-
+indexelés (ez csak a technikai indexelhetőséget javítja, nem a
+keresőbeli megjelenést); a PHP `rendeles.php` éles bekötése (a
+statikus export nem futtat Node-szervert, a rendelési űrlap jelenleg
+`NEXT_PUBLIC_ORDER_API_URL` nélkül, dokumentáltan, "nincs beállítva"
+konfigurációs hibát jelez — ez a régóta BLOCKED, nem új tétel); a
+feltöltés utáni valódi HTTP-fejlécek/cache-viselkedés.
+
+**Nem történt:** éles feltöltés, push, merge, release-publikálás —
+a feladat kifejezetten a helyi forrás/teszt/csomag javítására szólt.
