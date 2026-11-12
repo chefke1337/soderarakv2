@@ -2,7 +2,8 @@ name: Hosting ZIP (tárhelyre feltölthető statikus export)
 
 # A hosting/** ágakra: gyökérútvonalra (basePath nélkül) épített statikus
 # export, ZIP-be csomagolva, GitHub Release-ként. Semmit nem publikál a
-# Pages-re. A noindex a layoutból jön, ezért ez a build is noindex marad.
+# Pages-re. Éles (soderarak.hu) csomag: NEXT_PUBLIC_PREVIEW=false → indexelhető
+# (a GH Pages demo-buildek ezt nem állítják, ott a noindex marad).
 
 on:
   push:
@@ -18,6 +19,8 @@ jobs:
     env:
       GH_PAGES_BASE_PATH: ""
       NEXT_PUBLIC_SITE_URL: https://soderarak.hu
+      # Éles build: indexelhető (site.ts IS_PREVIEW → layout robots).
+      NEXT_PUBLIC_PREVIEW: "false"
       # A tárhelyre feltöltött PHP-végpont (server/php/api → out/api).
       NEXT_PUBLIC_ORDER_API_URL: /api/rendeles.php
       NEXT_TELEMETRY_DISABLED: "1"
@@ -60,4 +63,4 @@ jobs:
           gh release create "$TAG" soderarak-v3-tarhely.zip \
             --target "$GITHUB_SHA" \
             --title "Sóder Árak V3 — tárhelyre feltölthető csomag ($TAG)" \
-            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. A rendelési igényt az api/rendeles.php (PHP 8+) küldi a rendeles@soderarak.hu címre — beállítás: server/php/README.md. Az oldal noindex (keresőben nem jelenik meg)."
+            --notes "Statikus export a domain gyökerére (basePath nélkül), NEXT_PUBLIC_SITE_URL=https://soderarak.hu. A ZIP tartalmát a tárhely webgyökerébe (pl. public_html) kell kicsomagolni. A rendelési igényt az api/rendeles.php (PHP 8+) küldi a rendeles@soderarak.hu címre — beállítás: server/php/README.md. Indexelhető éles build (NEXT_PUBLIC_PREVIEW=false)."
