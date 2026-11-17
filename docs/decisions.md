@@ -1766,3 +1766,22 @@ feltöltés utáni valódi HTTP-fejlécek/cache-viselkedés.
 
 **Nem történt:** éles feltöltés, push, merge, release-publikálás —
 a feladat kifejezetten a helyi forrás/teszt/csomag javítására szólt.
+
+## 2026-11-17 — Főoldali hero: teherautós változat (ügyfél-mockupok ötvözése)
+Branch: `redesign/hero-kamion` (alap: `v3-audit`, benne az SEO-kör), előnézet: `preview/hero-kamion` → `preview-out`.
+- Ügyfélkérés: az első mockup (meglévő hero + teherautó jobbra) és a második
+  (ikonos ténysor, narancs nyílkörös kupackártyák) ötvözése; a meglévő kupac-
+  kártyák, elrendezés és színek maradnak.
+- Teherautó-kép: az ügyfél által küldött mockupból kivágva
+  (`public/hero/teherauto-{495,990}.webp`, a 990-es 2× felskálázott). Díszítő
+  (alt=""), xl-től a hero jobb felén a képernyő széléig, alatta tableten 2:1,
+  mobilon teljes szélességű sáv. Saját, valódi teherautó-fotó élesebb és
+  hitelesebb lenne — cserére előkészítve (ugyanaz a két fájlnév).
+- Ténysor: a homok sávból a hero-ba költözött, ikonokkal (ugyanaz a négy,
+  adatmodellből jövő állítás — új állítás nincs); a talajsáv most közvetlenül
+  az lx-s1 szakaszba fut ki.
+- Kupackártyák: narancs nyílkör (#c4470f), mélyebb felület, narancs hover-él.
+- Hívógomb: egyszeri fénycsík-animáció, reduced-motion alatt nincs.
+- Fejléc: „Hívható" nyitvatartás xl-től (korábban 2xl-től).
+- Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
+  vizuális ellenőrzés 390 / 1024 / 1280 / 1440 px.
