@@ -272,3 +272,15 @@
   background-color: #f4f2ef;
   color: #1a1b1e;
 }
+
+/* rövid narancs záróvonal a cím alatt (mindkét ügyfél-mockupon szerepel) */
+.hero-k-title::after {
+  content: "";
+  display: block;
+  width: 4.5rem;
+  height: 4px;
+  margin-top: 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c2410c, #f97316 60%, #fb923c);
+  box-shadow: 0 0 18px rgb(249 115 22 / 0.35);
+}
