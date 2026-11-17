@@ -1785,3 +1785,21 @@ Branch: `redesign/hero-kamion` (alap: `v3-audit`, benne az SEO-kör), előnézet
 - Fejléc: „Hívható" nyitvatartás xl-től (korábban 2xl-től).
 - Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
   vizuális ellenőrzés 390 / 1024 / 1280 / 1440 px.
+- 2026-11-17 21:00 ügyfél-kör: az „A" változat ment tovább (B mozivászon és
+  C keretezett fotó csak bemutatóképként készült, kódba nem került).
+  · Fejléc-logó: az ügyfél mockupjának jele vektorban újraépítve
+    (`LogoMark.tsx`: izometrikus, lépcsőzetes „S" kocka ezüst/fehér-fekete/
+    narancs lapokkal; 96/48/24/16 px-en ellenőrizve) + „SÓDER ÁRAK" és
+    „soderarak.hu" narancs vonalakkal. lg-n (1024–1279) csak a jel fér el.
+    A fejléc „Hívható" sora kikerült (nem fér el a lockup mellett; a hero
+    első sora mutatja).
+  · Sötét fejléc: grafit sáv, világos szöveg, alul halk narancs fényvonal; a
+    mobilmenü panelje világos marad.
+  · Hero: barnás helyett semleges grafit alap; a meleg fény csak a teherautó
+    mögött. A kép széle hosszú, lágy átmenettel olvad a háttérbe: xl-en egy
+    kiterjesztett (elmosott szélű) képváltozat (`teherauto-{800,1600}.webp`),
+    alatta a szoros kivágás (`teherauto-kozel-{720,1200}.webp`).
+  · Kép: a mockupból kivágott teherautó EDSR ×4 szuperfelbontással
+    (OpenCV dnn_superres) élesítve; az olvashatatlan ajtómatrica eltávolítva
+    és az új, éles logó-lockup került a helyére. A kép továbbra is
+    illusztráció (nem saját fotó).

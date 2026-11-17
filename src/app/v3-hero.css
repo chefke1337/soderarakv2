@@ -266,3 +266,9 @@
   --color-text-muted: #5a5145;
   color: #24211d;
 }
+/* mobil „Menü" gomb a sötét fejlécen: nyitva / hoverkor világos gomb, sötét felirat */
+.hdr button[aria-expanded]:hover,
+.hdr button[aria-expanded="true"] {
+  background-color: #f4f2ef;
+  color: #1a1b1e;
+}
