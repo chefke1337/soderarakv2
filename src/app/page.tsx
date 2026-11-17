@@ -125,7 +125,7 @@ export default function HomePage() {
               <source
                 media="(min-width: 1280px)"
                 srcSet={`${withBasePath("/hero/teherauto-800.webp")} 800w, ${withBasePath("/hero/teherauto-1600.webp")} 1600w`}
-                sizes="53vw"
+                sizes="48vw"
                 width={1600}
                 height={1102}
               />

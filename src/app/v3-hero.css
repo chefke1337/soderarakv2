@@ -48,10 +48,10 @@
     z-index: -1;
     margin: 0;
     aspect-ratio: auto;
-    top: clamp(-2.5rem, -1vw, -0.5rem);
+    top: clamp(-1.5rem, -0.5vw, 0rem);
     /* jobb széle a képernyő széle (a konténeren túlnyúlva) */
     right: calc((100% - 100vw) / 2);
-    width: min(53vw, 1000px);
+    width: min(48vw, 940px);
   }
   .hero-truck img {
     height: auto;
