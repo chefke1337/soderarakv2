@@ -9,6 +9,7 @@
 @import "./v3-lower.css";
 /* Fejléc / főoldali hero / lábléc: tiszta keret (.hdr, .hero-x, .ftr) */
 @import "./v3-frame.css";
+@import "./v3-hero.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)
