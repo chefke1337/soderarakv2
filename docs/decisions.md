@@ -1803,3 +1803,10 @@ Branch: `redesign/hero-kamion` (alap: `v3-audit`, benne az SEO-kör), előnézet
     (OpenCV dnn_superres) élesítve; az olvashatatlan ajtómatrica eltávolítva
     és az új, éles logó-lockup került a helyére. A kép továbbra is
     illusztráció (nem saját fotó).
+- 2026-11-17 23:22 ügyfél: „tedd fel a V3 helyére". A `redesign/hero-kamion`
+  (alap: `v3-audit`, az SEO-körrel) kerül a `v3` ágra → GitHub Pages V3.
+  SEO-kompatibilitás: metaadat, kanonikus URL, sitemap, JSON-LD, robots
+  változatlan (a V3 előnézet továbbra is noindex az IS_PREVIEW kapcsoló
+  alapértéke miatt; az éles tárhely-build `NEXT_PUBLIC_PREVIEW=false`-szal
+  indexelhető). A hero-kép díszítő (alt=""), nem LCP-prioritású; a cím (h1)
+  változatlan szöveggel az LCP-elem. Lábléc: ugyanaz a logó-lockup.
