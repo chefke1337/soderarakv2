@@ -17,8 +17,8 @@
   display: block;
   width: 100%;
   height: auto;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 74%, transparent 100%);
-  mask-image: linear-gradient(180deg, transparent 0%, #000 16%, #000 74%, transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 26%, #000 62%, transparent 100%);
 }
 @media (min-width: 768px) {
   .hero-truck {
@@ -30,12 +30,12 @@
     object-fit: cover;
     object-position: 62% 58%;
     -webkit-mask-image:
-      linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, #000 16%, #000 76%, transparent 100%);
+      linear-gradient(90deg, transparent 0%, #000 28%, #000 84%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 26%, #000 64%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%),
-      linear-gradient(180deg, transparent 0%, #000 16%, #000 76%, transparent 100%);
+      linear-gradient(90deg, transparent 0%, #000 28%, #000 84%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 26%, #000 64%, transparent 100%);
     mask-composite: intersect;
   }
 }
@@ -48,20 +48,20 @@
     z-index: -1;
     margin: 0;
     aspect-ratio: auto;
-    top: clamp(0.5rem, 2vw, 2rem);
+    top: clamp(-2.5rem, -1vw, -0.5rem);
     /* jobb széle a képernyő széle (a konténeren túlnyúlva) */
     right: calc((100% - 100vw) / 2);
-    width: min(38vw, 720px);
+    width: min(53vw, 1000px);
   }
   .hero-truck img {
     height: auto;
     -webkit-mask-image:
-      linear-gradient(90deg, transparent 0%, #000 24%),
-      linear-gradient(180deg, transparent 0%, #000 10%, #000 70%, transparent 100%);
+      linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.5) 17%, #000 30%),
+      linear-gradient(180deg, transparent 0%, #000 12%, #000 74%, transparent 100%);
     -webkit-mask-composite: source-in;
     mask-image:
-      linear-gradient(90deg, transparent 0%, #000 24%),
-      linear-gradient(180deg, transparent 0%, #000 10%, #000 70%, transparent 100%);
+      linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.5) 17%, #000 30%),
+      linear-gradient(180deg, transparent 0%, #000 12%, #000 74%, transparent 100%);
     mask-composite: intersect;
   }
   /* a hívás-oszlop olvashatósága a kép kifutó széle fölött */
@@ -189,4 +189,80 @@
     rgb(243 226 194 / 0.6) 70%,
     #f3e2c2 100%
   );
+}
+
+/* ═══ 2026-11-17 21:00 ügyfél: „inkább szürkésebb, mint barnás" + hosszabb
+   átmenet a kép és a háttér között → semleges grafit hero, a meleg fény csak
+   a teherautó mögött (naplemente) marad. ═══ */
+.hero-k > .hero-base {
+  background:
+    radial-gradient(80% 60% at 50% 115%, rgb(255 255 255 / 0.035), transparent 70%),
+    linear-gradient(180deg, #1c1d20 0%, #17181b 55%, #121315 100%);
+}
+.hero-k > .hero-base::after {
+  background: radial-gradient(50% 55% at 18% 35%, rgb(6 7 8 / 0.42) 0%, transparent 75%);
+}
+.hero-k .hero-glow::before {
+  background:
+    radial-gradient(46% 58% at 86% 18%, rgb(236 140 56 / 0.22) 0%, rgb(180 70 20 / 0.08) 50%, transparent 78%),
+    radial-gradient(34% 34% at 72% 42%, rgb(214 162 74 / 0.06) 0%, transparent 70%);
+}
+.hero-k .hero-glow::after {
+  background: radial-gradient(60% 70% at 50% 100%, rgb(249 115 22 / 0.07) 0%, transparent 70%);
+}
+.hero-k .hero-horizon {
+  background: radial-gradient(70% 100% at 50% 100%, rgb(200 200 205 / 0.06), transparent 70%);
+}
+/* a kép naplementéje kicsit visszafogottabb, hogy a grafitba simuljon */
+.hero-truck img {
+  filter: saturate(0.88) contrast(1.03);
+}
+.hero-facts {
+  border-color: rgb(255 255 255 / 0.08);
+  background: linear-gradient(90deg, rgb(14 15 17 / 0.72), rgb(14 15 17 / 0.45) 60%, rgb(14 15 17 / 0.62));
+}
+.hero-k .heap {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.065) 0%, rgb(255 255 255 / 0.025) 100%);
+  border-color: rgb(255 255 255 / 0.09);
+}
+.hero-k-call::before {
+  background: radial-gradient(closest-side, rgb(20 21 24 / 0.7), rgb(20 21 24 / 0) 100%);
+}
+
+/* ═══ Sötét fejléc (2026-11-17 ügyfél: „a fenti menü is sötétebb designt
+   kapjon") — grafit sáv, világos szöveg, alul halk narancs fényvonal. A
+   lenyíló mobilmenü panelje világos marad (tokenek visszaállítva). ═══ */
+.hdr {
+  background-color: rgb(22 23 26 / 0.94);
+  border-bottom-color: rgb(255 255 255 / 0.07);
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.05) inset, 0 12px 30px -20px rgb(0 0 0 / 0.85);
+  --color-ink: #f4f2ef;
+  --color-ink-soft: #c8c4be;
+  --color-text: #f4f2ef;
+  --color-text-muted: #c8c4be;
+  --color-line-strong: rgb(255 255 255 / 0.32);
+  color: #f4f2ef;
+}
+.hdr::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgb(234 88 12 / 0.55) 30%, rgb(251 146 60 / 0.8) 50%, rgb(234 88 12 / 0.55) 70%, transparent 100%);
+  pointer-events: none;
+}
+.hdr .hdr-word {
+  color: #f6f4f1;
+}
+.hdr a.text-brand-deep {
+  color: #fdba74;
+}
+.hdr .menu-panel {
+  --color-ink: #24211d;
+  --color-ink-soft: #5a5145;
+  --color-text: #24211d;
+  --color-text-muted: #5a5145;
+  color: #24211d;
 }

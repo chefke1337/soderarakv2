@@ -120,17 +120,27 @@ export default function HomePage() {
               széles, „mozivászon" kivágás), xl-től a hero jobb felén, a
               képernyő széléig kifutva. Díszítő kép. */}
           <div aria-hidden="true" className="hero-truck rise rise-3">
-            {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
-            <img
-              src={withBasePath("/hero/teherauto-1440.webp")}
-              srcSet={`${withBasePath("/hero/teherauto-720.webp")} 720w, ${withBasePath("/hero/teherauto-1440.webp")} 1440w`}
-              sizes="(min-width: 1280px) 38vw, 100vw"
-              width={1440}
-              height={1053}
-              alt=""
-              fetchPriority="high"
-              decoding="async"
-            />
+            <picture>
+              {/* xl+: kiterjesztett, lágy szélű változat a hosszú átmenethez */}
+              <source
+                media="(min-width: 1280px)"
+                srcSet={`${withBasePath("/hero/teherauto-800.webp")} 800w, ${withBasePath("/hero/teherauto-1600.webp")} 1600w`}
+                sizes="53vw"
+                width={1600}
+                height={1102}
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
+              <img
+                src={withBasePath("/hero/teherauto-kozel-1200.webp")}
+                srcSet={`${withBasePath("/hero/teherauto-kozel-720.webp")} 720w, ${withBasePath("/hero/teherauto-kozel-1200.webp")} 1200w`}
+                sizes="100vw"
+                width={1200}
+                height={878}
+                alt=""
+                fetchPriority="high"
+                decoding="async"
+              />
+            </picture>
           </div>
 
           {/* Ténysor — ikonos sáv a hero-ban. A <dl> KÖZVETLENÜL tartalmazza a
