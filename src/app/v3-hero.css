@@ -23,7 +23,7 @@
 @media (min-width: 768px) {
   .hero-truck {
     margin-inline: -1.5rem;
-    aspect-ratio: 21 / 9;
+    aspect-ratio: 2 / 1;
   }
   .hero-truck img {
     height: 100%;
@@ -51,7 +51,7 @@
     top: clamp(0.5rem, 2vw, 2rem);
     /* jobb széle a képernyő széle (a konténeren túlnyúlva) */
     right: calc((100% - 100vw) / 2);
-    width: min(41vw, 780px);
+    width: min(38vw, 720px);
   }
   .hero-truck img {
     height: auto;

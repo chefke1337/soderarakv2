@@ -80,7 +80,7 @@ export default function HomePage() {
         <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
 
         <div className="hero-k-inner mx-auto max-w-6xl px-4 pt-9 pb-10 md:px-6 md:pt-14 md:pb-12 lg:pt-16">
-          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12 xl:grid-cols-[minmax(0,30rem)_19rem] xl:items-center">
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12 xl:grid-cols-[minmax(0,28rem)_19rem] xl:gap-10 xl:items-center">
             <div className="min-w-0 lg:col-span-7 xl:col-span-1">
               <p className="hero-kicker rise text-sm font-semibold text-amber">
                 <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
@@ -124,7 +124,7 @@ export default function HomePage() {
             <img
               src={withBasePath("/hero/teherauto-990.webp")}
               srcSet={`${withBasePath("/hero/teherauto-495.webp")} 495w, ${withBasePath("/hero/teherauto-990.webp")} 990w`}
-              sizes="(min-width: 1280px) 40vw, 100vw"
+              sizes="(min-width: 1280px) 38vw, 100vw"
               width={990}
               height={724}
               alt=""
