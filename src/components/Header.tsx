@@ -3,6 +3,7 @@ import { company } from "@/content/site";
 import { IconPhone } from "@/lib/ui";
 import NavLinks from "@/components/NavLinks";
 import MobileMenu from "@/components/MobileMenu";
+import LogoMark from "@/components/LogoMark";
 
 /**
  * V2 fejléc — egyetlen sáv (a korábbi fekete topbar + fejléc + gradiens vonal
@@ -24,9 +25,18 @@ export default function Header() {
             className="-m-1 flex shrink-0 items-center rounded-sm p-1"
             aria-label="Sóderárak — főoldal"
           >
-            <span className="header-lockup font-display text-2xl leading-[0.92] font-bold tracking-tight uppercase sm:text-[1.75rem]">
-              <span className="block text-basalt">Sóder</span>
-              <span className="block text-brand-dark">Árak</span>
+            <span className="header-lockup flex items-center gap-2.5 sm:gap-3">
+              <LogoMark size={44} className="h-10 w-10 shrink-0 sm:h-11 sm:w-11" />
+              <span className="flex flex-col items-stretch lg:hidden xl:flex">
+                <span className="font-display text-[1.375rem] leading-none font-bold tracking-[0.01em] whitespace-nowrap text-basalt uppercase sm:text-[1.625rem]">
+                  Sóder Árak
+                </span>
+                <span className="lockup-domain mt-1 flex items-center gap-1.5 text-[0.5625rem] leading-none font-semibold tracking-[0.28em] text-ink-soft uppercase sm:text-[0.625rem]">
+                  <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+                  soderarak.hu
+                  <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+                </span>
+              </span>
             </span>
           </Link>
 
@@ -38,11 +48,6 @@ export default function Header() {
           </nav>
 
           <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
-            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft xl:block">
-              Hívható
-              <br />
-              <span className="num font-medium text-ink">{company.hours.short}</span>
-            </p>
             <a
               href={`tel:${company.phone.raw}`}
               className="num btn btn-primary min-h-11 whitespace-nowrap"

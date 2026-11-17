@@ -122,11 +122,11 @@ export default function HomePage() {
           <div aria-hidden="true" className="hero-truck rise rise-3">
             {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
             <img
-              src={withBasePath("/hero/teherauto-990.webp")}
-              srcSet={`${withBasePath("/hero/teherauto-495.webp")} 495w, ${withBasePath("/hero/teherauto-990.webp")} 990w`}
+              src={withBasePath("/hero/teherauto-1440.webp")}
+              srcSet={`${withBasePath("/hero/teherauto-720.webp")} 720w, ${withBasePath("/hero/teherauto-1440.webp")} 1440w`}
               sizes="(min-width: 1280px) 38vw, 100vw"
-              width={990}
-              height={724}
+              width={1440}
+              height={1053}
               alt=""
               fetchPriority="high"
               decoding="async"
