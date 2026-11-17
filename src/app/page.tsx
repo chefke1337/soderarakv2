@@ -80,17 +80,17 @@ export default function HomePage() {
         <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
 
         <div className="hero-k-inner mx-auto max-w-6xl px-4 pt-9 pb-10 md:px-6 md:pt-14 md:pb-12 lg:pt-16">
-          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-center lg:gap-10">
-            <div className="min-w-0 lg:col-span-5">
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12 xl:grid-cols-[minmax(0,30rem)_19rem] xl:items-center">
+            <div className="min-w-0 lg:col-span-7 xl:col-span-1">
               <p className="hero-kicker rise text-sm font-semibold text-amber">
                 <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
               </p>
-              <h1 className="hero-k-title rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[3.6rem] xl:text-[4.25rem]">
+              <h1 className="hero-k-title rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.25rem] xl:text-[4.25rem]">
                 {HERO.title}
               </h1>
             </div>
-            <div className="hero-k-call min-w-0 lg:col-span-4 xl:col-span-3">
-              <p className="rise rise-3 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted lg:text-[1.0625rem]">
+            <div className="hero-k-call min-w-0 lg:col-span-5 lg:pb-2 xl:col-span-1 xl:pb-0">
+              <p className="rise rise-3 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted xl:text-[1.0625rem]">
                 {HERO.lead}
               </p>
               <div className="rise rise-3 hero-areas mt-5">
@@ -116,14 +116,15 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Teherautó: mobilon a gombok alatt teljes szélességben, lg-től a
-              hero jobb felén, a képernyő széléig kifutva. Díszítő kép. */}
+          {/* Teherautó: xl alatt a gombok alatt teljes szélességben (tableten
+              széles, „mozivászon" kivágás), xl-től a hero jobb felén, a
+              képernyő széléig kifutva. Díszítő kép. */}
           <div aria-hidden="true" className="hero-truck rise rise-3">
             {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
             <img
               src={withBasePath("/hero/teherauto-990.webp")}
               srcSet={`${withBasePath("/hero/teherauto-495.webp")} 495w, ${withBasePath("/hero/teherauto-990.webp")} 990w`}
-              sizes="(min-width: 1024px) 46vw, 100vw"
+              sizes="(min-width: 1280px) 40vw, 100vw"
               width={990}
               height={724}
               alt=""

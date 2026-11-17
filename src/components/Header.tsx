@@ -38,7 +38,7 @@ export default function Header() {
           </nav>
 
           <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
-            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft 2xl:block">
+            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft xl:block">
               Hívható
               <br />
               <span className="num font-medium text-ink">{company.hours.short}</span>

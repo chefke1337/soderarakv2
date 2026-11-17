@@ -23,9 +23,23 @@
 @media (min-width: 768px) {
   .hero-truck {
     margin-inline: -1.5rem;
+    aspect-ratio: 21 / 9;
+  }
+  .hero-truck img {
+    height: 100%;
+    object-fit: cover;
+    object-position: 62% 58%;
+    -webkit-mask-image:
+      linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 16%, #000 76%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #000 18%, #000 92%, transparent 100%),
+      linear-gradient(180deg, transparent 0%, #000 16%, #000 76%, transparent 100%);
+    mask-composite: intersect;
   }
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .hero-k-inner {
     position: relative;
   }
@@ -33,12 +47,14 @@
     position: absolute;
     z-index: -1;
     margin: 0;
+    aspect-ratio: auto;
     top: clamp(0.5rem, 2vw, 2rem);
     /* jobb széle a képernyő széle (a konténeren túlnyúlva) */
     right: calc((100% - 100vw) / 2);
-    width: min(44vw, 780px);
+    width: min(41vw, 780px);
   }
   .hero-truck img {
+    height: auto;
     -webkit-mask-image:
       linear-gradient(90deg, transparent 0%, #000 24%),
       linear-gradient(180deg, transparent 0%, #000 10%, #000 70%, transparent 100%);
