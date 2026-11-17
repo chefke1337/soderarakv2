@@ -463,7 +463,7 @@ export default function HomePage() {
                 <IconPhone size={24} />
               </span>
             </PhoneLink>
-            <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
+            <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto_auto]">
               <div>
                 <dt className="text-on-dark-muted">Telefonos elérhetőség</dt>
                 <dd className="mt-1 font-semibold">
@@ -485,7 +485,7 @@ export default function HomePage() {
               </div>
               <div>
                 <dt className="text-on-dark-muted">E-mail</dt>
-                <dd className="mt-1 font-semibold break-all">
+                <dd className="mt-1 font-semibold whitespace-nowrap">
                   <MailLink className="underline decoration-on-dark/30 underline-offset-4 hover:decoration-on-dark" />
                 </dd>
               </div>

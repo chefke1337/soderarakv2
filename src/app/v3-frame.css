@@ -146,7 +146,7 @@
 .footer-stripe {
   position: relative;
   height: 1rem;
-  background: #231a14;
+  background: #17181b;
 }
 .footer-stripe::before,
 .footer-stripe::after {

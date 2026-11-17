@@ -25,8 +25,8 @@
   --color-surface: #fffaf1;         /* olvasható, funkcionális felület */
   --color-surface-muted: #ead9bb;   /* mélyebb homok sáv */
   --color-surface-accent: #a8401a;  /* égett terrakotta panel (krém szöveg 5,6:1) */
-  --color-surface-dark: #2b2019;    /* meleg sötétbarna kontrasztszekció */
-  --color-surface-dark-2: #3a2c22;  /* sötét felületen belüli emelt mező */
+  --color-surface-dark: #1d1e21;    /* grafit kontrasztszekció (2026-11-17: barnás helyett szürkés) */
+  --color-surface-dark-2: #2b2c30;  /* sötét felületen belüli emelt mező */
 
   --color-text: #24211d;
   --color-text-muted: #5a5145;      /* 6,5:1 page / 5,6:1 surface-muted */
