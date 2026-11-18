@@ -1824,3 +1824,8 @@ Branch: `redesign/dark` (a `redesign/hero-kamion` folytatása), előnézet: `pre
 - Az OG-kártyák (`src/lib/og.tsx`) nem változtak.
 - Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
   saját kontrasztszkenner 15 oldalon: 0 AA-hiba (a javítás után).
+- 2026-11-18 20:41 ügyfél: „finomítsd … utána mehet GitHub live" → a
+  `redesign/dark` gyorsított előrelépéssel (fast-forward) a `v3` ágra kerül
+  (GitHub Pages V3, noindex marad). Utolsó ellenőrzés: mobil (390 px) kép a
+  főoldalról, árakról, szállításról, kapcsolatról, útmutatókról; regresszió
+  139 OK.
