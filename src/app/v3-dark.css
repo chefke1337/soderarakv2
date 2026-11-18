@@ -1,0 +1,109 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SÓDERÁRAK — TELJES OLDAL SÖTÉT („grafit") TÉMA, 2026-11-18
+   Ügyfél (18:50): „az egész site designját csináld meg ilyen darkosra
+   [mint a hero / fejléc], nagyon jóra. A narancssárgák is kicsit
+   élénkebbek legyenek."
+
+   Megvalósítás: a globális szemantikus tokenek sötét értéket kapnak (minden
+   Tailwind-utility `var(--color-…)`-ot olvas, így az aloldalak is követik),
+   a főoldali `.lx` szakaszok világos „sóder" tokenjei grafit tónuslépcsőre
+   váltanak. Ez a fájl az utolsó import: felülírja a korábbi rétegeket.
+
+   Kontraszt (WCAG AA, mért értékek):
+     · szöveg #f1ede7 · page #131417 → 16,5:1; muted #b5ada3 → 8,2:1
+     · link/ár narancs #fb923c → 8,0:1 page-en, 7,2:1 surface-en
+     · gomb: fehér felirat #cc4a0e-n → 4,6:1 (a „élénkebb" hatást a felső
+       fény és a narancs izzás adja, nem a kontraszt rovására)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root,
+:host {
+  /* felületek — grafit tónuslépcső */
+  --color-page: #131417;
+  --color-surface: #1c1d21;
+  --color-surface-muted: #18191c;
+  --color-surface-accent: #c2440e;
+  --color-surface-dark: #0d0e10;
+  --color-surface-dark-2: #1f2024;
+
+  /* szöveg */
+  --color-text: #f1ede7;
+  --color-text-muted: #b5ada3;
+  --color-ink-faint: #9a9288;
+  --color-on-dark: #f6f1ea;
+  --color-on-dark-muted: #c4bcb1;
+  --color-on-accent-muted: #fff4e8;
+
+  /* vonalak */
+  --color-border: #2c2e33;
+  --color-border-strong: #43464d;
+
+  /* narancs — élénkebb */
+  --color-accent: #cc4a0e;
+  --color-accent-deep: #fb923c;
+  --color-brand: #fb7a1e;
+  --color-brand-soft: #3a2216;
+  --color-amber: #f0b04a;
+  --color-focus: #fb923c;
+  --color-clay: #e0703a;
+
+  --shadow-card: 0 1px 0 rgb(0 0 0 / 0.35);
+  --shadow-pop: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 24px 48px -26px rgb(0 0 0 / 0.85);
+
+  color-scheme: dark;
+}
+
+/* ── Gombok: élénkebb narancs felső fénnyel és izzással ── */
+.btn-primary,
+.bg-brand-dark {
+  background-color: #cc4a0e;
+  background-image: linear-gradient(180deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0) 55%);
+  color: #fff;
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.18) inset,
+    0 10px 26px -12px rgb(249 115 22 / 0.65);
+}
+.btn-primary:hover,
+.bg-brand-dark:hover,
+.hover\:bg-brand-deep:hover {
+  background-color: #b23f0b;
+}
+.bg-accent {
+  background-color: #e25a16;
+}
+
+/* ── Főoldali .lx szakaszok: sóder helyett grafit tónuslépcső ── */
+.lx {
+  --lx-base: #131417;
+  --lx-alt: #17181b;
+  --lx-hi: #1a1b1f;
+  --lx-raise: #1d1e22;
+  --lx-raise-2: #222328;
+  --lx-line: #2c2e33;
+  --lx-line-strong: #43464d;
+  --lx-edge: #fb7a1e;
+  --lx-grid: rgb(255 255 255 / 0.035);
+  --color-ink-faint: #9a9288;
+}
+.lx-faq {
+  --color-page: #16171a;
+  --color-surface-muted: #16171a;
+}
+.lx.lx-faq::before {
+  background: linear-gradient(180deg, transparent 0%, transparent 70%, rgb(249 115 22 / 0.06) 100%);
+}
+.lx::before {
+  background:
+    linear-gradient(180deg, transparent 0%, transparent 20%, rgb(255 255 255 / 0.018) 50%, transparent 80%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 -.38'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 220px 220px;
+}
+.lx .mat-card,
+.lx .lx-card {
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 14px 30px -20px rgb(0 0 0 / 0.8);
+}
+
+/* ── Hero → következő szakasz: a talajsáv a grafitba fut ki ── */
+.hero-k .ground::after,
+.hero-x .ground::after {
+  background: linear-gradient(180deg, rgb(19 20 23 / 0) 0%, rgb(19 20 23 / 0) 30%, rgb(19 20 23 / 0.6) 70%, #131417 100%);
+}
