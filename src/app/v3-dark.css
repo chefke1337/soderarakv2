@@ -131,6 +131,7 @@
   --color-petrol: #2dd4bf;
   --color-petrol-deep: #5eead4;
   --color-moss: #a3e635;
+  --color-petrol-soft: #0f3b37;
 }
 .hover\:bg-petrol:hover {
   background-color: #14b8a6;
