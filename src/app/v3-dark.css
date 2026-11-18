@@ -107,3 +107,20 @@
 .hero-x .ground::after {
   background: linear-gradient(180deg, rgb(19 20 23 / 0) 0%, rgb(19 20 23 / 0) 30%, rgb(19 20 23 / 0.6) 70%, #131417 100%);
 }
+
+/* ── Világos krém gomb (sötét/terrakotta felületen): sötét felirat ── */
+.btn-cream {
+  color: #1a1b1e;
+}
+
+/* ── Térkép: a Leaflet-felület világos marad (csempék, címkék, popupok) ── */
+.leaflet-container {
+  --color-text: #24211d;
+  --color-text-muted: #5a5145;
+  --color-ink-faint: #6e6457;
+  --color-surface: #fffaf1;
+  --color-page: #f4ead8;
+  --color-border: #d8c4a0;
+  --color-accent-deep: #9a3412;
+  color: #24211d;
+}
