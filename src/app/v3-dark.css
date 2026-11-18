@@ -276,3 +276,9 @@ a.border.rounded-lg:hover,
 html {
   scrollbar-color: #3a3c42 #131417;
 }
+@media (forced-colors: active) {
+  .sec-h1-head h1 {
+    background: none;
+    color: CanvasText;
+  }
+}
