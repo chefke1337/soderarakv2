@@ -1810,3 +1810,17 @@ Branch: `redesign/hero-kamion` (alap: `v3-audit`, benne az SEO-kör), előnézet
   alapértéke miatt; az éles tárhely-build `NEXT_PUBLIC_PREVIEW=false`-szal
   indexelhető). A hero-kép díszítő (alt=""), nem LCP-prioritású; a cím (h1)
   változatlan szöveggel az LCP-elem. Lábléc: ugyanaz a logó-lockup.
+
+## 2026-11-18 — Teljes oldal sötét („grafit") téma
+Branch: `redesign/dark` (a `redesign/hero-kamion` folytatása), előnézet: `preview/dark`.
+- Ügyfél (18:50): az egész site legyen olyan sötét, mint a hero/fejléc; a
+  narancsok kicsit élénkebbek. Megoldás: `src/app/v3-dark.css` (utolsó
+  import) — a globális szemantikus tokenek sötét értéket kapnak, így minden
+  aloldal követi; a főoldali `.lx` sóder-tokenek grafit tónuslépcsőre váltak.
+- Narancs: gombok #cc4a0e (fehér felirat 4,6:1, AA), felső fény + izzás;
+  linkek/árak/ikonok #fb923c / #fb7a1e (8:1 a háttéren); kalkulátor-blokk
+  #c94b10. Zöld (Buda Konténer, mosott-jelvény) sötéten olvasható türkiz.
+- A térkép (Leaflet) szándékosan világos marad, saját token-hatókörrel.
+- Az OG-kártyák (`src/lib/og.tsx`) nem változtak.
+- Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
+  saját kontrasztszkenner 15 oldalon: 0 AA-hiba (a javítás után).
