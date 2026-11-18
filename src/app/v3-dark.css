@@ -193,3 +193,86 @@ body {
   background-image: radial-gradient(70rem 34rem at 88% -6rem, rgb(249 115 22 / 0.085), transparent 70%);
   background-repeat: no-repeat;
 }
+
+/* ═══ 2026-11-18 19:19 „csináld meg jobbra" — finomítás ═══ */
+
+/* ── Aloldalak nyitó szakasza (h1-es Section): saját „lap-hero" ──
+   jobb felső meleg fény + halvány mérnöki rács a cím mögött, a cím alatt a
+   főoldali hero rövid narancs záróvonala. Csak díszítés (pointer-events nincs). */
+.sec-h1 {
+  isolation: isolate;
+  overflow: clip;
+}
+.sec-h1::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 34rem;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(48rem 26rem at 92% -4rem, rgb(249 115 22 / 0.16), rgb(194 65 12 / 0.05) 45%, transparent 72%),
+    radial-gradient(36rem 20rem at 8% 0%, rgb(255 255 255 / 0.035), transparent 70%),
+    linear-gradient(to right, rgb(255 255 255 / 0.03) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(to bottom, rgb(255 255 255 / 0.03) 1px, transparent 1px) 0 0 / 56px 56px;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+}
+.sec-h1-head h1 {
+  background: linear-gradient(180deg, #ffffff 0%, #f1ede7 55%, #d8d0c5 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.sec-h1-head::after {
+  content: "";
+  display: block;
+  width: 4.5rem;
+  height: 4px;
+  margin-top: 1.75rem;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c2410c, #f97316 60%, #fb923c);
+  box-shadow: 0 0 18px rgb(249 115 22 / 0.35);
+}
+.sec-h1-head.text-center::after {
+  margin-inline: auto;
+}
+
+/* ── Főoldal: a szakaszok között halk narancs fényvonal (1 px) ── */
+.lx + .lx,
+.lx + section,
+section + .lx {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(90deg, transparent 0%, rgb(249 115 22 / 0.28) 30%, rgb(251 146 60 / 0.45) 50%, rgb(249 115 22 / 0.28) 70%, transparent 100%) 1;
+}
+
+/* ── Kártyák: finom felső fényél, hoverre narancs perem (minden oldalon) ── */
+.bg-surface.border,
+.mat-card {
+  box-shadow: 0 1px 0 rgb(255 255 255 / 0.045) inset, 0 16px 34px -24px rgb(0 0 0 / 0.9);
+}
+a.bg-surface.border:hover,
+a.border.rounded-lg:hover,
+.mat-card:hover {
+  border-color: rgb(249 115 22 / 0.5);
+  box-shadow:
+    0 1px 0 rgb(255 255 255 / 0.06) inset,
+    0 0 0 1px rgb(249 115 22 / 0.15),
+    0 20px 40px -24px rgb(0 0 0 / 0.95);
+}
+@media (prefers-reduced-motion: no-preference) {
+  a.bg-surface.border,
+  a.border.rounded-lg,
+  .mat-card {
+    transition: border-color var(--dur-fast) var(--ease-out-soft), box-shadow var(--dur-ui) var(--ease-out-soft);
+  }
+}
+
+/* ── Szövegkijelölés és görgetősáv a témához ── */
+::selection {
+  background: rgb(249 115 22 / 0.4);
+  color: #fff;
+}
+html {
+  scrollbar-color: #3a3c42 #131417;
+}
