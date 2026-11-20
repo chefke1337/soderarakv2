@@ -1847,3 +1847,13 @@ Branch: `redesign/flotta`, előnézet: `preview/dark`.
   négyzetes hívógomb (képernyőolvasónak: „Hívás: +36 …").
 - Ellenőrzés: CI zöld; regresszió 139 OK; kontraszt 0 hiba; 390/768/1024/
   1280/1536/1920 px képek.
+- 2026-11-20 15:59 ügyfél: „csináld még jobbra … design upgradek, motions,
+  minden … aztán mehet gitre". `src/app/v3-motion.css` (CSS-only):
+  hero-kép letelepedés (scale) + xl-en görgetési parallaxis (translate),
+  cím alatti vonal kihúzás, ténysor-ikonok lépcsőzetes belépése, lassú meleg
+  pára a talaj fölött, gomb-emelés/izzás/nyomás, kupackártya-emelés és
+  kupac-közelítés, kártya-hover, GYIK magasság-animáció (interpolate-size,
+  progresszív), görgetésre felúszó szakaszok (view() timeline, csak
+  elmozdulás). Az LCP-elemek (H1, hero-kép) nem indulnak átlátszóságból; a
+  hero-kép fetchpriority=high. Reduced-motion alatt 0 futó animáció
+  (mérve). Kalkulátor-sáv: kavics-textúra (mockup 2). Ezután `v3`.
