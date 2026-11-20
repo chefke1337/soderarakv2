@@ -76,12 +76,12 @@ export default function MaterialHeaps() {
                   {g.name}
                 </span>
                 <span className="mt-1 flex items-center justify-between gap-1.5">
-                  <span className="num min-w-0 text-[0.8125rem] leading-snug font-semibold text-on-dark sm:text-sm">
+                  <span className="num min-w-0 text-[0.75rem] leading-snug font-semibold tracking-[-0.01em] whitespace-nowrap text-on-dark min-[400px]:text-[0.8125rem] sm:text-sm">
                     {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="heap-go flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark sm:h-7 sm:w-7 lg:h-8 lg:w-8"
+                    className="heap-go max-sm:absolute max-sm:top-1.5 max-sm:right-1.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark sm:h-7 sm:w-7 lg:h-8 lg:w-8"
                   >
                     <IconArrowRight size={14} className="heap-arrow" />
                   </span>
@@ -89,7 +89,8 @@ export default function MaterialHeaps() {
                 {groupWashed(g) && (
                   <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
                     <IconDroplets size={11} />
-                    {groupWashed(g)!.scope === "group" ? "mosott" : "mosott frakciók"}
+                    <span className="sm:hidden">mosott</span>
+                    <span className="hidden sm:inline">{groupWashed(g)!.scope === "group" ? "mosott" : "mosott frakciók"}</span>
                   </span>
                 )}
               </Link>
