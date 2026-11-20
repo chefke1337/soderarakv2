@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { EXAMPLE_CALC, FREIGHT_VAT_RATE } from "@/content/site";
 import { formatFt, IconArrowRight, IconCalculator } from "@/lib/ui";
+import { withBasePath } from "@/lib/basepath";
 
 /**
  * Kalkulátor-belépő terrakotta panel. A „szelvény" ugyanabból a közös
@@ -17,6 +18,19 @@ export default function CalculatorEntry() {
       className="lx-cta-accent on-accent relative isolate overflow-hidden bg-surface-accent text-on-dark"
     >
       <div aria-hidden="true" className="grain absolute inset-0 -z-10 opacity-40 mix-blend-multiply" />
+      {/* díszítő kavics-textúra a jobb szélen (ügyfél-mockup 2: kőhalom a
+          kalkulátor-sávban), a narancsba olvasztva */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, díszítő textúra */}
+      <img
+        aria-hidden="true"
+        src={withBasePath("/anyagok/arlista/kavics-foto.webp")}
+        alt=""
+        width={480}
+        height={480}
+        loading="lazy"
+        decoding="async"
+        className="calc-texture pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[60%] object-cover"
+      />
       <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 md:gap-10 md:px-6 md:py-20 lg:grid-cols-12 lg:gap-14">
         <div className="min-w-0 lg:col-span-6">
           <p className="label-strata text-on-dark">Árkalkulátor</p>

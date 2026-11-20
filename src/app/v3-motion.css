@@ -182,3 +182,12 @@
   from { translate: 0 28px; }
   to { translate: 0 0; }
 }
+
+/* ── Kalkulátor-sáv: kavics-textúra a narancsba olvasztva ── */
+.calc-texture {
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  filter: grayscale(0.4) contrast(1.15);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 55%);
+}
