@@ -1857,3 +1857,9 @@ Branch: `redesign/flotta`, előnézet: `preview/dark`.
   elmozdulás). Az LCP-elemek (H1, hero-kép) nem indulnak átlátszóságból; a
   hero-kép fetchpriority=high. Reduced-motion alatt 0 futó animáció
   (mérve). Kalkulátor-sáv: kavics-textúra (mockup 2). Ezután `v3`.
+- 2026-11-20 16:57 ügyfél: „élethűbb, blur-effektes … látszik, hogy AI-generált
+  a földön és a kupacon". A flotta-kép fotós mélységélességet kapott: a három
+  jármű (GrabCut-maszk) éles, a háttér (ég, üzem, kupac) közepes, az előtér-
+  talaj és a jobb alsó kupac lefelé erősödő életlenséget (lineáris fényben
+  számolt, korong alakú bokeh — a pocsolya-fények fényfoltokká nyílnak);
+  egyenletes filmszemcse. Fájlnevek és méretek változatlanok.
