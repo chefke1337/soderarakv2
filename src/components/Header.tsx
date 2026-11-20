@@ -3,6 +3,7 @@ import { company } from "@/content/site";
 import { IconPhone } from "@/lib/ui";
 import NavLinks from "@/components/NavLinks";
 import MobileMenu from "@/components/MobileMenu";
+import LogoMark from "@/components/LogoMark";
 
 /**
  * V2 fejléc — egyetlen sáv (a korábbi fekete topbar + fejléc + gradiens vonal
@@ -18,15 +19,24 @@ export default function Header() {
         Ugrás a tartalomra
       </a>
       <header className="header-bar hdr sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6">
+        <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
           <Link
             href="/"
             className="-m-1 flex shrink-0 items-center rounded-sm p-1"
             aria-label="Sóderárak — főoldal"
           >
-            <span className="header-lockup font-display text-2xl leading-[0.92] font-bold tracking-tight uppercase sm:text-[1.75rem]">
-              <span className="block text-basalt">Sóder</span>
-              <span className="block text-brand-dark">Árak</span>
+            <span className="header-lockup flex items-center gap-2.5 sm:gap-3">
+              <LogoMark size={44} className="h-10 w-10 shrink-0 sm:h-11 sm:w-11" />
+              <span className="flex flex-col items-stretch lg:hidden xl:flex">
+                <span className="font-display text-[1.375rem] leading-none font-bold tracking-[0.01em] hdr-word whitespace-nowrap uppercase sm:text-[1.625rem]">
+                  Sóder Árak
+                </span>
+                <span className="lockup-domain mt-1 flex items-center gap-1.5 text-[0.5625rem] leading-none font-semibold tracking-[0.28em] text-ink-soft uppercase sm:text-[0.625rem]">
+                  <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+                  soderarak.hu
+                  <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+                </span>
+              </span>
             </span>
           </Link>
 
@@ -38,10 +48,10 @@ export default function Header() {
           </nav>
 
           <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
-            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft 2xl:block">
-              Hívható
+            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft min-[1400px]:block">
+              Hívható:
               <br />
-              <span className="num font-medium text-ink">{company.hours.short}</span>
+              <span className="num">{company.hours.short}</span>
             </p>
             <a
               href={`tel:${company.phone.raw}`}
@@ -56,10 +66,13 @@ export default function Header() {
             <a
               data-call-region="header_topbar"
               href={`tel:${company.phone.raw}`}
-              className="num hidden min-h-11 items-center gap-1.5 rounded-sm px-2 text-sm font-semibold text-brand-deep min-[400px]:inline-flex sm:text-base"
+              className="hdr-call num inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-[var(--radius-sm)] px-3 text-sm font-semibold"
             >
-              <IconPhone size={16} />
-              {company.phone.display}
+              <IconPhone size={19} />
+              <span className="sr-only sm:not-sr-only">
+                <span className="sm:hidden">Hívás: </span>
+                {company.phone.display}
+              </span>
             </a>
             <MobileMenu />
           </div>

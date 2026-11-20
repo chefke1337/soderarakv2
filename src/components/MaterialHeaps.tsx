@@ -22,11 +22,21 @@ import HeapRail from "@/components/HeapRail";
 export default function MaterialHeaps() {
   return (
     <div>
-      <div className="mb-3 flex items-baseline justify-between gap-4 text-sm text-on-dark-muted">
-        <h2 className="font-display text-base font-bold text-on-dark">
-          Anyagok és induló árak
-        </h2>
-        <span className="num">bruttó Ft/m³-től</span>
+      <div className="mb-3 flex items-end justify-between gap-4 text-sm text-on-dark-muted lg:mb-4">
+        <div>
+          <h2 className="font-display text-lg leading-tight font-bold text-on-dark md:text-xl lg:text-2xl">
+            Anyagok és induló árak
+          </h2>
+          <span className="num mt-0.5 block text-xs md:text-sm">bruttó Ft/m³-től</span>
+        </div>
+        <Link
+          href="/anyagok"
+          className="heap-all inline-flex min-h-11 shrink-0 items-center gap-1.5 font-semibold text-on-dark underline-offset-4 hover:text-amber hover:underline"
+        >
+          <span className="sm:hidden">Összes anyag</span>
+          <span className="hidden sm:inline">Összes anyag megtekintése</span>
+          <IconArrowRight size={16} />
+        </Link>
       </div>
 
       {/* < lg: egyetlen, natívan lapozható sor (a következő kártya belóg, ezért
@@ -68,7 +78,7 @@ export default function MaterialHeaps() {
                   </span>
                   <span
                     aria-hidden="true"
-                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
+                    className="heap-go flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
                   >
                     <IconArrowRight size={15} className="heap-arrow" />
                   </span>

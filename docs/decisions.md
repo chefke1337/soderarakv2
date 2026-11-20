@@ -1766,3 +1766,100 @@ feltöltés utáni valódi HTTP-fejlécek/cache-viselkedés.
 
 **Nem történt:** éles feltöltés, push, merge, release-publikálás —
 a feladat kifejezetten a helyi forrás/teszt/csomag javítására szólt.
+
+## 2026-11-17 — Főoldali hero: teherautós változat (ügyfél-mockupok ötvözése)
+Branch: `redesign/hero-kamion` (alap: `v3-audit`, benne az SEO-kör), előnézet: `preview/hero-kamion` → `preview-out`.
+- Ügyfélkérés: az első mockup (meglévő hero + teherautó jobbra) és a második
+  (ikonos ténysor, narancs nyílkörös kupackártyák) ötvözése; a meglévő kupac-
+  kártyák, elrendezés és színek maradnak.
+- Teherautó-kép: az ügyfél által küldött mockupból kivágva
+  (`public/hero/teherauto-{495,990}.webp`, a 990-es 2× felskálázott). Díszítő
+  (alt=""), xl-től a hero jobb felén a képernyő széléig, alatta tableten 2:1,
+  mobilon teljes szélességű sáv. Saját, valódi teherautó-fotó élesebb és
+  hitelesebb lenne — cserére előkészítve (ugyanaz a két fájlnév).
+- Ténysor: a homok sávból a hero-ba költözött, ikonokkal (ugyanaz a négy,
+  adatmodellből jövő állítás — új állítás nincs); a talajsáv most közvetlenül
+  az lx-s1 szakaszba fut ki.
+- Kupackártyák: narancs nyílkör (#c4470f), mélyebb felület, narancs hover-él.
+- Hívógomb: egyszeri fénycsík-animáció, reduced-motion alatt nincs.
+- Fejléc: „Hívható" nyitvatartás xl-től (korábban 2xl-től).
+- Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
+  vizuális ellenőrzés 390 / 1024 / 1280 / 1440 px.
+- 2026-11-17 21:00 ügyfél-kör: az „A" változat ment tovább (B mozivászon és
+  C keretezett fotó csak bemutatóképként készült, kódba nem került).
+  · Fejléc-logó: az ügyfél mockupjának jele vektorban újraépítve
+    (`LogoMark.tsx`: izometrikus, lépcsőzetes „S" kocka ezüst/fehér-fekete/
+    narancs lapokkal; 96/48/24/16 px-en ellenőrizve) + „SÓDER ÁRAK" és
+    „soderarak.hu" narancs vonalakkal. lg-n (1024–1279) csak a jel fér el.
+    A fejléc „Hívható" sora kikerült (nem fér el a lockup mellett; a hero
+    első sora mutatja).
+  · Sötét fejléc: grafit sáv, világos szöveg, alul halk narancs fényvonal; a
+    mobilmenü panelje világos marad.
+  · Hero: barnás helyett semleges grafit alap; a meleg fény csak a teherautó
+    mögött. A kép széle hosszú, lágy átmenettel olvad a háttérbe: xl-en egy
+    kiterjesztett (elmosott szélű) képváltozat (`teherauto-{800,1600}.webp`),
+    alatta a szoros kivágás (`teherauto-kozel-{720,1200}.webp`).
+  · Kép: a mockupból kivágott teherautó EDSR ×4 szuperfelbontással
+    (OpenCV dnn_superres) élesítve; az olvashatatlan ajtómatrica eltávolítva
+    és az új, éles logó-lockup került a helyére. A kép továbbra is
+    illusztráció (nem saját fotó).
+- 2026-11-17 23:22 ügyfél: „tedd fel a V3 helyére". A `redesign/hero-kamion`
+  (alap: `v3-audit`, az SEO-körrel) kerül a `v3` ágra → GitHub Pages V3.
+  SEO-kompatibilitás: metaadat, kanonikus URL, sitemap, JSON-LD, robots
+  változatlan (a V3 előnézet továbbra is noindex az IS_PREVIEW kapcsoló
+  alapértéke miatt; az éles tárhely-build `NEXT_PUBLIC_PREVIEW=false`-szal
+  indexelhető). A hero-kép díszítő (alt=""), nem LCP-prioritású; a cím (h1)
+  változatlan szöveggel az LCP-elem. Lábléc: ugyanaz a logó-lockup.
+
+## 2026-11-18 — Teljes oldal sötét („grafit") téma
+Branch: `redesign/dark` (a `redesign/hero-kamion` folytatása), előnézet: `preview/dark`.
+- Ügyfél (18:50): az egész site legyen olyan sötét, mint a hero/fejléc; a
+  narancsok kicsit élénkebbek. Megoldás: `src/app/v3-dark.css` (utolsó
+  import) — a globális szemantikus tokenek sötét értéket kapnak, így minden
+  aloldal követi; a főoldali `.lx` sóder-tokenek grafit tónuslépcsőre váltak.
+- Narancs: gombok #cc4a0e (fehér felirat 4,6:1, AA), felső fény + izzás;
+  linkek/árak/ikonok #fb923c / #fb7a1e (8:1 a háttéren); kalkulátor-blokk
+  #c94b10. Zöld (Buda Konténer, mosott-jelvény) sötéten olvasható türkiz.
+- A térkép (Leaflet) szándékosan világos marad, saját token-hatókörrel.
+- Az OG-kártyák (`src/lib/og.tsx`) nem változtak.
+- Ellenőrzés: CI typecheck/lint/build zöld; v3-regression 139 OK / 0 FAIL;
+  saját kontrasztszkenner 15 oldalon: 0 AA-hiba (a javítás után).
+- 2026-11-18 20:41 ügyfél: „finomítsd … utána mehet GitHub live" → a
+  `redesign/dark` gyorsított előrelépéssel (fast-forward) a `v3` ágra kerül
+  (GitHub Pages V3, noindex marad). Utolsó ellenőrzés: mobil (390 px) kép a
+  főoldalról, árakról, szállításról, kapcsolatról, útmutatókról; regresszió
+  139 OK.
+
+## 2026-11-20 — Főoldali hero: „flotta" elrendezés (ügyfél desktop + mobil mockup)
+Branch: `redesign/flotta`, előnézet: `preview/dark`.
+- Kép: az ügyfél mockupjából kivágott három jármű (1 Iveco, 2 Scania); a
+  rárajzolt UI-szövegek eltávolítva (inpaint + valódi talaj-folt), EDSR ×2,
+  a három ajtómatrica az éles logó-lockupra cserélve, színkezelés. xl-en
+  felfelé kiterjesztett ég (`flotta-magas-*`), alatta `flotta-*`. Illusztráció,
+  nem saját fotó — saját flotta-fotóval cserélhető.
+- Elrendezés: xl-től a kép a hero teljes hátterében, balra cím, mellette fent
+  bevezető + területek, alul a két gomb, alatta ténysor narancs
+  elválasztókkal; xl alatt: cím → bevezető → kép-sáv → gombok → 4 hasábos
+  ténysor (ikon fölül) → kupacsor („Összes anyag" linkkel).
+- Ténysor: a mockup címkéi helyett a meglévő, igaz állítások (nincs „nincs
+  rejtett költség" / „megbízható" ígéret).
+- Fejléc: 1400 px fölött szélesebb konténer + „Hívható" sor; mobilon narancs
+  négyzetes hívógomb (képernyőolvasónak: „Hívás: +36 …").
+- Ellenőrzés: CI zöld; regresszió 139 OK; kontraszt 0 hiba; 390/768/1024/
+  1280/1536/1920 px képek.
+- 2026-11-20 15:59 ügyfél: „csináld még jobbra … design upgradek, motions,
+  minden … aztán mehet gitre". `src/app/v3-motion.css` (CSS-only):
+  hero-kép letelepedés (scale) + xl-en görgetési parallaxis (translate),
+  cím alatti vonal kihúzás, ténysor-ikonok lépcsőzetes belépése, lassú meleg
+  pára a talaj fölött, gomb-emelés/izzás/nyomás, kupackártya-emelés és
+  kupac-közelítés, kártya-hover, GYIK magasság-animáció (interpolate-size,
+  progresszív), görgetésre felúszó szakaszok (view() timeline, csak
+  elmozdulás). Az LCP-elemek (H1, hero-kép) nem indulnak átlátszóságból; a
+  hero-kép fetchpriority=high. Reduced-motion alatt 0 futó animáció
+  (mérve). Kalkulátor-sáv: kavics-textúra (mockup 2). Ezután `v3`.
+- 2026-11-20 16:57 ügyfél: „élethűbb, blur-effektes … látszik, hogy AI-generált
+  a földön és a kupacon". A flotta-kép fotós mélységélességet kapott: a három
+  jármű (GrabCut-maszk) éles, a háttér (ég, üzem, kupac) közepes, az előtér-
+  talaj és a jobb alsó kupac lefelé erősödő életlenséget (lineáris fényben
+  számolt, korong alakú bokeh — a pocsolya-fények fényfoltokká nyílnak);
+  egyenletes filmszemcse. Fájlnevek és méretek változatlanok.

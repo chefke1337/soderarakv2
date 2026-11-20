@@ -60,9 +60,9 @@ export default function Section({
 
   const heading = (
     <div
-      className={
-        layout === "split" ? "lg:sticky lg:top-28" : align === "center" ? "mx-auto max-w-3xl text-center" : undefined
-      }
+      className={`${big ? "sec-h1-head " : ""}${
+        layout === "split" ? "lg:sticky lg:top-28" : align === "center" ? "mx-auto max-w-3xl text-center" : ""
+      }`}
     >
       {kicker && (
         <p className={`label-strata ${dark ? "text-amber" : "text-brand-deep"} ${tone === "accent" ? "!text-on-dark" : ""}`}>
@@ -99,7 +99,7 @@ export default function Section({
     <section
       id={id}
       aria-labelledby={headingId}
-      className={`relative ${TONE[tone]}${cv ? " cv-auto" : ""} ${className}`}
+      className={`relative ${TONE[tone]}${big ? " sec-h1" : ""}${cv ? " cv-auto" : ""} ${className}`}
     >
       <div className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-24">
         {layout === "split" ? (

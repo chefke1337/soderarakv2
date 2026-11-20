@@ -22,10 +22,14 @@ import {
   IconCheck,
   IconMapPinned,
   IconPhone,
+  IconLayers,
+  IconTag,
+  IconTruck,
   MailLink,
   PhoneLink,
 } from "@/lib/ui";
 import { faqJsonLd, JsonLd } from "@/lib/meta";
+import { withBasePath } from "@/lib/basepath";
 import FaqAccordion from "@/components/FaqAccordion";
 import Section from "@/components/Section";
 import MaterialHeaps from "@/components/MaterialHeaps";
@@ -36,15 +40,21 @@ import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/Mat
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
-  // Ténysor — minden érték az adatmodellből vagy a V1/V2 meglévő állításaiból.
+  // Ténysor — a mockup sorrendjében, de csak a V1/V2-ben és az adatmodellben
+  // meglévő, igaz állításokkal (nincs „rejtett költség"-típusú új ígéret).
   const facts = [
-    { value: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³`, label: "egy fuvarban, saját teherautóval" },
-    { value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
+    { icon: IconTruck, value: "Gyakran aznap", label: "Budafok környékén" },
     {
-      value: `${budapestDistricts.length} kerület + Érd`,
-      label: "minden kerületbe szállítunk",
+      icon: IconLayers,
+      value: "Saját teherautó",
+      label: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³ egy fuvarban`,
     },
-    { value: "Bruttó árak", label: "az anyagárak az ÁFÁ-t tartalmazzák" },
+    {
+      icon: IconMapPinned,
+      value: `Budapest ${budapestDistricts.length} kerülete`,
+      label: "és Érd",
+    },
+    { icon: IconTag, value: "Bruttó árak", label: "anyagár ÁFÁ-val" },
   ];
 
   const featuredGuides = [
@@ -57,61 +67,114 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ─── Hero: üzenet + anyag-rétegrend ─── */}
+      {/* ─── Hero: teljes szélességű flotta-kép (ügyfél-mockup, 2026-11-20) ───
+          desktop: a kép a teljes színpad háttere, balra sötétülő átmenettel —
+          bal oszlopban a cím, mellette fent a bevezető és a területek, alul a
+          két gomb; mobil: cím → bevezető → kép-sáv → gombok → ténysor → kupacok. */}
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section
         data-call-region="hero"
-        className="hero-x on-dark relative isolate overflow-hidden text-on-dark"
+        className="hero-x hero-k hero-f on-dark relative isolate overflow-hidden text-on-dark"
       >
-        {/* Háttér (ügyfél, 2026-11-07 21:54): vissza sötétre — meleg bazalt
-            függőleges átmenet; a rétegsáv fölött halk „horizont" derengés. */}
-        <div
-          aria-hidden="true"
-          className="hero-base absolute inset-0 -z-20 bg-[linear-gradient(180deg,#2b211b_0%,#221a15_55%,#1d1612_100%)]"
-        />
-        <div aria-hidden="true" className="hero-horizon pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64" />
-        {/* Sarokfények (ügyfél-kérés, 2026-11-07): égett narancs + borostyán
-            fény a két felső sarokban, lassú, alig érzékelhető lebegéssel
-            (CSS, reduced-motion esetén áll) — nincs JS. */}
+        <div aria-hidden="true" className="hero-base absolute inset-0 -z-20" />
         <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
-        <div className="mx-auto max-w-6xl px-4 pt-10 pb-10 md:px-6 md:pt-16 md:pb-12 lg:pt-20">
-          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12">
-            <div className="min-w-0 lg:col-span-7">
-              <p className="hero-kicker rise text-sm font-semibold text-amber">
-                <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
-              </p>
-              <h1 className="rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.5rem] xl:text-[5rem]">
-                {HERO.title}
-              </h1>
+
+        <div className="hero-f-stage relative isolate">
+          <div className="hero-f-inner mx-auto max-w-6xl px-4 pt-7 md:px-6 md:pt-12 xl:pt-14 xl:pb-14 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,27rem)_minmax(0,23rem)] xl:items-start xl:gap-14">
+              <div className="min-w-0">
+                <p className="hero-kicker rise text-sm font-semibold text-amber">
+                  <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
+                </p>
+                <h1 className="hero-k-title rise-solid mt-4 font-display text-[2.125rem] leading-[1] font-bold tracking-display text-balance min-[400px]:text-[2.375rem] sm:text-[3.25rem] lg:text-[3.75rem] xl:mt-5 xl:leading-[0.98] xl:text-[4.125rem]">
+                  {HERO.title}
+                </h1>
+              </div>
+              <div className="hero-f-copy min-w-0 xl:pt-12">
+                <p className="rise rise-3 max-w-[44ch] text-[1.0625rem] leading-relaxed text-on-dark-muted md:text-lg xl:text-on-dark">
+                  {HERO.lead}
+                </p>
+                <div className="rise rise-3 hero-areas mt-4 xl:mt-5">
+                  <span className="hero-area-pill">
+                    <IconMapPinned size={13} />
+                    Budapest mind a {budapestDistricts.length} kerülete
+                  </span>
+                  <span className="hero-area-pill">
+                    <IconMapPinned size={13} />
+                    Érd
+                  </span>
+                </div>
+              </div>
             </div>
-            <div className="min-w-0 lg:col-span-5 lg:pb-2">
-              <p className="rise rise-3 max-w-[48ch] text-lg leading-relaxed text-on-dark-muted">
-                {HERO.lead}
-              </p>
-              <div className="rise rise-3 hero-areas mt-5">
-                <span className="hero-area-pill">
-                  <IconMapPinned size={13} />
-                  Budapest mind a {budapestDistricts.length} kerülete
-                </span>
-                <span className="hero-area-pill">
-                  <IconMapPinned size={13} />
-                  Érd
-                </span>
-              </div>
-              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:max-w-[24rem] lg:flex-col">
-                <PhoneLink className="num btn btn-lg btn-primary whitespace-nowrap">
-                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
-                  {company.phone.display}
-                </PhoneLink>
-                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
-                  Árkalkulátor indítása
-                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
-                </CalculatorCta>
-              </div>
+
+            {/* Flotta-kép: mobilon/tableten kép-sáv a bevezető után, lg-től a
+                színpad teljes szélességű háttere. Díszítő (alt=""). */}
+            <div aria-hidden="true" className="hero-f-photo rise rise-3">
+              <picture>
+                {/* xl+: felfelé kiterjesztett éggel, hogy a teljes színpadot kitöltse */}
+                <source
+                  media="(min-width: 1280px)"
+                  srcSet={`${withBasePath("/hero/flotta-magas-1600.webp")} 1600w, ${withBasePath("/hero/flotta-magas-2400.webp")} 2400w`}
+                  sizes="76vw"
+                  width={2400}
+                  height={1767}
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
+                <img
+                  src={withBasePath("/hero/flotta-1280.webp")}
+                  srcSet={`${withBasePath("/hero/flotta-900.webp")} 900w, ${withBasePath("/hero/flotta-1280.webp")} 1280w, ${withBasePath("/hero/flotta-2400.webp")} 2400w`}
+                  sizes="100vw"
+                  width={2400}
+                  height={1223}
+                  alt=""
+                  fetchPriority="high"
+                  decoding="async"
+                />
+              </picture>
+            </div>
+
+            <div className="hero-f-ctas rise rise-4 mt-6 flex flex-col gap-3 sm:flex-row xl:mt-28">
+              <PhoneLink className="hero-k-phone num btn btn-lg btn-primary whitespace-nowrap">
+                <IconPhone size={21} className="btn-icon btn-icon-ring" />
+                {company.phone.display}
+              </PhoneLink>
+              <CalculatorCta className="btn btn-lg btn-outline-cream hero-f-calc whitespace-nowrap">
+                Árkalkulátor indítása
+                <IconArrowRight size={18} className="btn-icon btn-icon-move" />
+              </CalculatorCta>
             </div>
           </div>
+        </div>
 
-          {/* Mintasor: hat anyaghalom teljes szélességben */}
+        <div className="mx-auto max-w-6xl px-4 pb-10 md:px-6 md:pb-12 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
+          {/* Ténysor — mobilon 4 keskeny hasáb (ikon fölül), lg-től ikon + szöveg
+              egymás mellett, függőleges elválasztókkal. A <dl> KÖZVETLENÜL a
+              dt/dd párokat burkoló <div>-eket tartalmazza (WCAG 1.3.1). */}
+          <dl className="hero-f-facts rise rise-4 mt-7 grid grid-cols-4 xl:mt-2">
+            {facts.map((f) => {
+              const Icon = f.icon;
+              return (
+                <div key={f.value} className="hero-f-fact">
+                  <span aria-hidden="true" className="hero-f-fact-icon">
+                    <Icon size={26} />
+                  </span>
+                  <span className="min-w-0">
+                    <dt className="sr-only">{f.label}</dt>
+                    <dd>
+                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base min-[1400px]:text-lg">
+                        {f.value}
+                      </span>
+                      <span className="mt-0.5 block text-xs leading-snug text-on-dark-muted md:text-sm xl:text-[0.9375rem]">
+                        {f.label}
+                      </span>
+                    </dd>
+                  </span>
+                </div>
+              );
+            })}
+          </dl>
+
+          {/* Mintasor: hat anyaghalom */}
           <div className="mt-9 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
@@ -120,33 +183,8 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Talaj: a térkő alatti rétegrend metszete valódi anyagfotókból,
-            a tartalom alatt, kihagyással (lásd HeroGround). */}
+        {/* Talaj: a térkő alatti rétegrend metszete (lásd HeroGround). */}
         <HeroGround />
-
-        {/* Ténysor — homok sáv a hero alján.
-            A <dl> KÖZVETLENÜL tartalmazza a dt/dd párokat burkoló <div>-eket:
-            a <dl> > <div> > <div> > dt/dd beágyazás WCAG 1.3.1 sértés lenne. */}
-        <div className="facts-x bg-surface-muted text-text">
-          <dl className="mx-auto grid max-w-6xl grid-cols-2 px-4 md:grid-cols-4 md:px-6">
-            {facts.map((f, i) => (
-              <div
-                key={f.value}
-                className={`fact-cell py-4 pr-4 md:py-6 ${i % 2 === 1 ? "pl-4 md:pl-5" : ""} ${
-                  i >= 2 ? "border-t border-border-strong/60 md:border-t-0" : ""
-                } ${i === 2 ? "md:pl-5" : ""}`}
-              >
-                <dt className="sr-only">{f.label}</dt>
-                <dd>
-                  <span className="num block font-display text-heading-sm font-bold md:text-heading-md">
-                    {f.value}
-                  </span>
-                  <span className="mt-1 block text-sm leading-snug text-text-muted">{f.label}</span>
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
       </section>
 
       {/* ─── Anyagok + bruttó árlista — egy blokk ─── */}
@@ -431,7 +469,7 @@ export default function HomePage() {
                 <IconPhone size={24} />
               </span>
             </PhoneLink>
-            <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-3">
+            <dl className="mt-6 grid gap-x-6 gap-y-4 text-sm sm:grid-cols-[minmax(0,1fr)_auto_auto]">
               <div>
                 <dt className="text-on-dark-muted">Telefonos elérhetőség</dt>
                 <dd className="mt-1 font-semibold">
@@ -453,7 +491,7 @@ export default function HomePage() {
               </div>
               <div>
                 <dt className="text-on-dark-muted">E-mail</dt>
-                <dd className="mt-1 font-semibold break-all">
+                <dd className="mt-1 font-semibold whitespace-nowrap">
                   <MailLink className="underline decoration-on-dark/30 underline-offset-4 hover:decoration-on-dark" />
                 </dd>
               </div>

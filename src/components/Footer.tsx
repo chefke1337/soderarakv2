@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoMark from "@/components/LogoMark";
 import { company, guides, nav } from "@/content/site";
 import { MailLink, PhoneLink } from "@/lib/ui";
 
@@ -12,8 +13,16 @@ export default function Footer() {
       <div aria-hidden="true" className="footer-stripe" />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pt-10 pb-8 sm:grid-cols-2 md:gap-10 md:pt-14 md:pb-10 md:px-6 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <Link href="/" aria-label="Sóderárak — főoldal" className="inline-block rounded-sm">
-            <span className="font-display text-2xl font-bold">Sóder árak</span>
+          <Link href="/" aria-label="Sóderárak — főoldal" className="inline-flex items-center gap-3 rounded-sm">
+            <LogoMark size={48} className="h-12 w-12 shrink-0" />
+            <span className="flex flex-col">
+              <span className="font-display text-2xl leading-none font-bold uppercase">Sóder Árak</span>
+              <span className="mt-1.5 flex items-center gap-1.5 text-[0.625rem] leading-none font-semibold tracking-[0.28em] text-on-dark-muted uppercase">
+                <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+                soderarak.hu
+                <span aria-hidden="true" className="h-px flex-1 bg-brand" />
+              </span>
+            </span>
           </Link>
           <p className="mt-4 text-sm text-on-dark-muted">{company.businessUnit}</p>
           <p className="mt-4 text-sm leading-relaxed text-on-dark-muted">

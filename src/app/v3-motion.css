@@ -1,0 +1,193 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SÓDERÁRAK — mozgás- és részletréteg („motion pass"), 2026-11-20
+   Elvek (CLAUDE.md): CSS-first, nulla új JS; minden mozgás
+   `prefers-reduced-motion: no-preference` alatt; a hero H1 (és a hero-kép,
+   amely mobilon/desktopon az LCP-elem lehet) SOHA nem indul átlátszóságból —
+   csak elmozdul/skálázódik, így az LCP-t nem késlelteti. Görgetéshez kötött
+   effektek csak `@supports (animation-timeline …)` mögött, és csak
+   transzformációval (nincs rejtett tartalom, ha a böngésző nem támogatja).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ── Hero-kép: „letelepedő" kameramozgás betöltéskor (1,06 → 1) ── */
+  .hero-f-photo img {
+    animation: hero-settle 2.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+    transform-origin: 60% 70%;
+  }
+
+  /* ── Cím alatti narancs vonal: kihúzódik ── */
+  .hero-k-title::after,
+  .sec-h1-head::after {
+    animation: bar-draw 0.9s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: left center;
+  }
+  .sec-h1-head.text-center::after {
+    transform-origin: center;
+  }
+
+  /* ── Ténysor: ikonok lépcsőzetesen „bekapcsolnak" ── */
+  .hero-f-fact-icon {
+    animation: icon-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: calc(0.45s + var(--fi, 0) * 0.09s);
+  }
+  .hero-f-fact:nth-child(1) { --fi: 0; }
+  .hero-f-fact:nth-child(2) { --fi: 1; }
+  .hero-f-fact:nth-child(3) { --fi: 2; }
+  .hero-f-fact:nth-child(4) { --fi: 3; }
+
+  /* ── Meleg pára a talaj fölött: lassú, alig érzékelhető sodródás ── */
+  .hero-f-stage::before {
+    content: "";
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: 0;
+    height: 42%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(40% 60% at 30% 100%, rgb(249 140 60 / 0.07), transparent 70%),
+      radial-gradient(35% 50% at 75% 100%, rgb(255 190 120 / 0.05), transparent 70%);
+    animation: haze-drift 18s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+
+  /* ── Gombok: emelkedés + mélyülő izzás, nyomásra besüllyed ── */
+  .btn {
+    transition:
+      transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.22s ease,
+      background-color 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  .btn-primary:hover,
+  .hero-k-phone:hover {
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.22) inset,
+      0 16px 34px -12px rgb(249 115 22 / 0.75);
+  }
+  .btn:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.08s;
+  }
+
+  /* ── Kupackártyák: felemelkednek, a kupac kicsit közelebb jön ── */
+  .heap {
+    transition:
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.2s ease,
+      box-shadow 0.35s ease;
+  }
+  .heap:hover {
+    transform: translateY(-4px);
+  }
+  .heap .pile-img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .heap:hover .pile-img {
+    transform: scale(1.05) translateY(-2px);
+  }
+  .heap:hover .heap-go {
+    box-shadow: 0 0 0 4px rgb(249 115 22 / 0.18), 0 8px 18px -6px rgb(249 115 22 / 0.8);
+  }
+
+  /* ── Kattintható kártyák (árlista, útmutatók, területek): finom emelés ── */
+  a.bg-surface.border:hover,
+  a.border.rounded-lg:hover {
+    transform: translateY(-2px);
+  }
+  a.bg-surface.border,
+  a.border.rounded-lg {
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.2s ease,
+      box-shadow 0.3s ease;
+  }
+}
+
+/* ── GYIK / lenyitható blokkok: magasság-animáció (progresszív, ahol a
+   böngésző tudja interpolálni az „auto" méretet) ── */
+@supports (interpolate-size: allow-keywords) {
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      interpolate-size: allow-keywords;
+    }
+    details.group::details-content,
+    details.area-row::details-content {
+      block-size: 0;
+      overflow-y: clip;
+      transition:
+        block-size 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        content-visibility 0.38s allow-discrete;
+    }
+    details.group[open]::details-content,
+    details.area-row[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+/* ── Görgetéshez kötött rétegek (csak transzformáció; támogatás nélkül
+   minden a helyén, látható) ── */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* hero-kép (csak desktop-háttérként): enyhe parallaxis */
+    @media (min-width: 1280px) {
+      .hero-f-photo {
+        animation: photo-parallax linear both;
+        animation-timeline: scroll(root);
+        animation-range: 0 700px;
+      }
+    }
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* a főoldali szakaszok tartalma finoman „felúszik", ahogy beér —
+       csak elmozdulás, nincs átlátszóság (a11y/kontraszt-biztos) */
+    .lx > .mx-auto > *,
+    .sec-h1 ~ section > .mx-auto > * {
+      animation: drift-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@keyframes hero-settle {
+  from { scale: 1.07; }
+  to { scale: 1; }
+}
+@keyframes bar-draw {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes icon-pop {
+  0% { transform: translateY(6px) scale(0.6); }
+  100% { transform: none; }
+}
+@keyframes haze-drift {
+  from { transform: translateX(-3%); }
+  to { transform: translateX(3%); }
+}
+@keyframes photo-parallax {
+  from { translate: 0 0; }
+  to { translate: 0 90px; }
+}
+@keyframes drift-in {
+  from { translate: 0 28px; }
+  to { translate: 0 0; }
+}
+
+/* ── Kalkulátor-sáv: kavics-textúra a narancsba olvasztva ── */
+.calc-texture {
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+  filter: grayscale(0.35) contrast(1.1);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.6) 30%, #000 60%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgb(0 0 0 / 0.6) 30%, #000 60%);
+}
