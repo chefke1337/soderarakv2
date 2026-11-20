@@ -150,7 +150,7 @@ export default function HomePage() {
           {/* Ténysor — mobilon 4 keskeny hasáb (ikon fölül), lg-től ikon + szöveg
               egymás mellett, függőleges elválasztókkal. A <dl> KÖZVETLENÜL a
               dt/dd párokat burkoló <div>-eket tartalmazza (WCAG 1.3.1). */}
-          <dl className="hero-f-facts rise rise-4 mt-7 grid grid-cols-4 xl:mt-2">
+          <dl className="hero-f-facts rise rise-4 mt-4 grid grid-cols-4 sm:mt-7 xl:mt-2">
             {facts.map((f) => {
               const Icon = f.icon;
               return (
@@ -175,7 +175,7 @@ export default function HomePage() {
           </dl>
 
           {/* Mintasor: hat anyaghalom */}
-          <div className="mt-9 md:mt-12 lg:mt-14">
+          <div className="mt-6 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
           <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">
