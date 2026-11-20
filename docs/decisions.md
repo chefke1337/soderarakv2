@@ -1829,3 +1829,21 @@ Branch: `redesign/dark` (a `redesign/hero-kamion` folytatása), előnézet: `pre
   (GitHub Pages V3, noindex marad). Utolsó ellenőrzés: mobil (390 px) kép a
   főoldalról, árakról, szállításról, kapcsolatról, útmutatókról; regresszió
   139 OK.
+
+## 2026-11-20 — Főoldali hero: „flotta" elrendezés (ügyfél desktop + mobil mockup)
+Branch: `redesign/flotta`, előnézet: `preview/dark`.
+- Kép: az ügyfél mockupjából kivágott három jármű (1 Iveco, 2 Scania); a
+  rárajzolt UI-szövegek eltávolítva (inpaint + valódi talaj-folt), EDSR ×2,
+  a három ajtómatrica az éles logó-lockupra cserélve, színkezelés. xl-en
+  felfelé kiterjesztett ég (`flotta-magas-*`), alatta `flotta-*`. Illusztráció,
+  nem saját fotó — saját flotta-fotóval cserélhető.
+- Elrendezés: xl-től a kép a hero teljes hátterében, balra cím, mellette fent
+  bevezető + területek, alul a két gomb, alatta ténysor narancs
+  elválasztókkal; xl alatt: cím → bevezető → kép-sáv → gombok → 4 hasábos
+  ténysor (ikon fölül) → kupacsor („Összes anyag" linkkel).
+- Ténysor: a mockup címkéi helyett a meglévő, igaz állítások (nincs „nincs
+  rejtett költség" / „megbízható" ígéret).
+- Fejléc: 1400 px fölött szélesebb konténer + „Hívható" sor; mobilon narancs
+  négyzetes hívógomb (képernyőolvasónak: „Hívás: +36 …").
+- Ellenőrzés: CI zöld; regresszió 139 OK; kontraszt 0 hiba; 390/768/1024/
+  1280/1536/1920 px képek.
