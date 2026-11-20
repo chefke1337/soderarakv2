@@ -268,3 +268,9 @@
   background-color: rgb(255 255 255 / 0.08);
   color: #fff;
 }
+
+/* a hero meleg fénye lágyan fusson ki (mobilon látható sávhatár nélkül) */
+.hero-f .hero-glow {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 45%, transparent 100%);
+}
