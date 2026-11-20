@@ -68,14 +68,18 @@
   }
   /* olvashatóság: sötét fátyol a cím mögött (bal), a bevezető mögött (fent)
      és a gombok mögött (lent) — a kép közepe, a teherautók tiszták */
-  .hero-f-photo::after {
+  /* a fátyol a teljes színpadon van (nem csak a kép dobozán), így a kép
+     bal széle nem rajzol látható függőleges határt */
+  .hero-f-stage::after {
     content: "";
     position: absolute;
-    inset: 0;
+    inset: 0 0 -3rem 0;
+    z-index: -1;
+    pointer-events: none;
     background:
-      radial-gradient(34rem 18rem at 18% 22%, rgb(16 17 20 / 0.82), transparent 72%),
-      radial-gradient(30rem 9rem at 10% 88%, rgb(16 17 20 / 0.7), transparent 75%),
-      linear-gradient(90deg, rgb(16 17 20 / 0.55) 0%, transparent 30%);
+      radial-gradient(40rem 20rem at 48% 26%, rgb(16 17 20 / 0.72), transparent 72%),
+      radial-gradient(36rem 10rem at 22% 84%, rgb(16 17 20 / 0.6), transparent 75%),
+      linear-gradient(90deg, rgb(20 21 24 / 0.7) 0%, rgb(20 21 24 / 0.45) 28%, transparent 46%);
   }
   .hero-f .hero-k-title,
   .hero-f-copy {
