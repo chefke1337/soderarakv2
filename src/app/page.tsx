@@ -80,21 +80,21 @@ export default function HomePage() {
         <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
 
         <div className="hero-f-stage relative isolate">
-          <div className="hero-f-inner mx-auto max-w-6xl px-4 pt-7 md:px-6 md:pt-12 lg:pt-14 lg:pb-14 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
-            <div className="grid gap-5 lg:grid-cols-[minmax(0,25rem)_minmax(0,22rem)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,27rem)_minmax(0,23rem)] xl:gap-14">
+          <div className="hero-f-inner mx-auto max-w-6xl px-4 pt-7 md:px-6 md:pt-12 xl:pt-14 xl:pb-14 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
+            <div className="grid gap-5 xl:grid-cols-[minmax(0,27rem)_minmax(0,23rem)] xl:items-start xl:gap-14">
               <div className="min-w-0">
                 <p className="hero-kicker rise text-sm font-semibold text-amber">
                   <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
                 </p>
-                <h1 className="hero-k-title rise-solid mt-4 font-display text-[2.125rem] leading-[1] font-bold tracking-display text-balance min-[400px]:text-[2.375rem] sm:text-[3.25rem] lg:mt-5 lg:text-[3.75rem] lg:leading-[0.98] xl:text-[4.125rem]">
+                <h1 className="hero-k-title rise-solid mt-4 font-display text-[2.125rem] leading-[1] font-bold tracking-display text-balance min-[400px]:text-[2.375rem] sm:text-[3.25rem] lg:text-[3.75rem] xl:mt-5 xl:leading-[0.98] xl:text-[4.125rem]">
                   {HERO.title}
                 </h1>
               </div>
-              <div className="hero-f-copy min-w-0 lg:pt-12">
-                <p className="rise rise-3 max-w-[44ch] text-[1.0625rem] leading-relaxed text-on-dark-muted lg:text-lg lg:text-on-dark">
+              <div className="hero-f-copy min-w-0 xl:pt-12">
+                <p className="rise rise-3 max-w-[44ch] text-[1.0625rem] leading-relaxed text-on-dark-muted md:text-lg xl:text-on-dark">
                   {HERO.lead}
                 </p>
-                <div className="rise rise-3 hero-areas mt-4 lg:mt-5">
+                <div className="rise rise-3 hero-areas mt-4 xl:mt-5">
                   <span className="hero-area-pill">
                     <IconMapPinned size={13} />
                     Budapest mind a {budapestDistricts.length} kerülete
@@ -114,7 +114,7 @@ export default function HomePage() {
               <img
                 src={withBasePath("/hero/flotta-1280.webp")}
                 srcSet={`${withBasePath("/hero/flotta-900.webp")} 900w, ${withBasePath("/hero/flotta-1280.webp")} 1280w, ${withBasePath("/hero/flotta-2400.webp")} 2400w`}
-                sizes="(min-width: 1024px) 84vw, 100vw"
+                sizes="(min-width: 1280px) 76vw, 100vw"
                 width={2400}
                 height={1223}
                 alt=""
@@ -122,7 +122,7 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="hero-f-ctas rise rise-4 mt-6 flex flex-col gap-3 sm:flex-row lg:mt-24 xl:mt-28">
+            <div className="hero-f-ctas rise rise-4 mt-6 flex flex-col gap-3 sm:flex-row xl:mt-28">
               <PhoneLink className="hero-k-phone num btn btn-lg btn-primary whitespace-nowrap">
                 <IconPhone size={21} className="btn-icon btn-icon-ring" />
                 {company.phone.display}
@@ -139,7 +139,7 @@ export default function HomePage() {
           {/* Ténysor — mobilon 4 keskeny hasáb (ikon fölül), lg-től ikon + szöveg
               egymás mellett, függőleges elválasztókkal. A <dl> KÖZVETLENÜL a
               dt/dd párokat burkoló <div>-eket tartalmazza (WCAG 1.3.1). */}
-          <dl className="hero-f-facts rise rise-4 mt-7 grid grid-cols-4 lg:mt-2">
+          <dl className="hero-f-facts rise rise-4 mt-7 grid grid-cols-4 xl:mt-2">
             {facts.map((f) => {
               const Icon = f.icon;
               return (
@@ -150,10 +150,10 @@ export default function HomePage() {
                   <span className="min-w-0">
                     <dt className="sr-only">{f.label}</dt>
                     <dd>
-                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base lg:text-lg">
+                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base xl:text-lg">
                         {f.value}
                       </span>
-                      <span className="mt-0.5 block text-xs leading-snug text-on-dark-muted md:text-sm lg:text-[0.9375rem]">
+                      <span className="mt-0.5 block text-xs leading-snug text-on-dark-muted md:text-sm xl:text-[0.9375rem]">
                         {f.label}
                       </span>
                     </dd>
