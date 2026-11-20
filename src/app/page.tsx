@@ -20,9 +20,9 @@ import {
   CalculatorCta,
   IconArrowRight,
   IconCheck,
-  IconClock,
   IconMapPinned,
   IconPhone,
+  IconLayers,
   IconTag,
   IconTruck,
   MailLink,
@@ -40,20 +40,21 @@ import MaterialLedger, { GrossPriceBanner, LedgerHeader } from "@/components/Mat
 import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
-  // Ténysor — minden érték az adatmodellből vagy a V1/V2 meglévő állításaiból.
+  // Ténysor — a mockup sorrendjében, de csak a V1/V2-ben és az adatmodellben
+  // meglévő, igaz állításokkal (nincs „rejtett költség"-típusú új ígéret).
   const facts = [
+    { icon: IconTruck, value: "Gyakran aznap", label: "Budafok környékén" },
     {
-      icon: IconTruck,
-      value: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³`,
-      label: "egy fuvarban, saját teherautóval",
+      icon: IconLayers,
+      value: "Saját teherautó",
+      label: `${MIN_ORDER_M3}–${SINGLE_TRIP_MAX_M3} m³ egy fuvarban`,
     },
-    { icon: IconClock, value: "Gyakran aznap", label: "kiszállítás Budafok környékén" },
     {
       icon: IconMapPinned,
-      value: `${budapestDistricts.length} kerület + Érd`,
-      label: "minden kerületbe szállítunk",
+      value: `Budapest ${budapestDistricts.length} kerülete`,
+      label: "és Érd",
     },
-    { icon: IconTag, value: "Bruttó árak", label: "az anyagárak az ÁFÁ-t tartalmazzák" },
+    { icon: IconTag, value: "Bruttó árak", label: "anyagár ÁFÁ-val" },
   ];
 
   const featuredGuides = [
@@ -66,99 +67,93 @@ export default function HomePage() {
 
   return (
     <>
-      {/* ─── Hero: cím · hívás · teherautó, alatta ténysor és kupacsor ─── */}
+      {/* ─── Hero: teljes szélességű flotta-kép (ügyfél-mockup, 2026-11-20) ───
+          desktop: a kép a teljes színpad háttere, balra sötétülő átmenettel —
+          bal oszlopban a cím, mellette fent a bevezető és a területek, alul a
+          két gomb; mobil: cím → bevezető → kép-sáv → gombok → ténysor → kupacok. */}
       {/* data-call-region="hero": a hero hívógombjának call_location-je (metrics-plan §5) */}
       <section
         data-call-region="hero"
-        className="hero-x hero-k on-dark relative isolate overflow-hidden text-on-dark"
+        className="hero-x hero-k hero-f on-dark relative isolate overflow-hidden text-on-dark"
       >
-        <div
-          aria-hidden="true"
-          className="hero-base absolute inset-0 -z-20 bg-[linear-gradient(180deg,#2b211b_0%,#221a15_55%,#1d1612_100%)]"
-        />
-        <div aria-hidden="true" className="hero-horizon pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-64" />
+        <div aria-hidden="true" className="hero-base absolute inset-0 -z-20" />
         <div aria-hidden="true" className="hero-glow pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem]" />
 
-        <div className="hero-k-inner mx-auto max-w-6xl px-4 pt-9 pb-10 md:px-6 md:pt-14 md:pb-12 lg:pt-16">
-          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-end lg:gap-12 xl:grid-cols-[minmax(0,28rem)_19rem] xl:gap-10 xl:items-center">
-            <div className="min-w-0 lg:col-span-7 xl:col-span-1">
-              <p className="hero-kicker rise text-sm font-semibold text-amber">
-                <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
-              </p>
-              <h1 className="hero-k-title rise-solid mt-5 font-display text-[2.5rem] leading-[0.98] font-bold tracking-display text-balance sm:text-[3.5rem] lg:text-[4.25rem] xl:text-[4.25rem]">
-                {HERO.title}
-              </h1>
-            </div>
-            <div className="hero-k-call min-w-0 lg:col-span-5 lg:pb-2 xl:col-span-1 xl:pb-0">
-              <p className="rise rise-3 max-w-[44ch] text-lg leading-relaxed text-on-dark-muted xl:text-[1.0625rem]">
-                {HERO.lead}
-              </p>
-              <div className="rise rise-3 hero-areas mt-5">
-                <span className="hero-area-pill">
-                  <IconMapPinned size={13} />
-                  Budapest mind a {budapestDistricts.length} kerülete
-                </span>
-                <span className="hero-area-pill">
-                  <IconMapPinned size={13} />
-                  Érd
-                </span>
+        <div className="hero-f-stage relative isolate">
+          <div className="hero-f-inner mx-auto max-w-6xl px-4 pt-7 md:px-6 md:pt-12 lg:pt-14 lg:pb-14 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
+            <div className="grid gap-5 lg:grid-cols-[minmax(0,25rem)_minmax(0,22rem)] lg:items-start lg:gap-12 xl:grid-cols-[minmax(0,27rem)_minmax(0,23rem)] xl:gap-14">
+              <div className="min-w-0">
+                <p className="hero-kicker rise text-sm font-semibold text-amber">
+                  <span className="whitespace-nowrap">Hívható: {company.hours.short}</span>
+                </p>
+                <h1 className="hero-k-title rise-solid mt-4 font-display text-[2.125rem] leading-[1] font-bold tracking-display text-balance min-[400px]:text-[2.375rem] sm:text-[3.25rem] lg:mt-5 lg:text-[3.75rem] lg:leading-[0.98] xl:text-[4.125rem]">
+                  {HERO.title}
+                </h1>
               </div>
-              <div className="rise rise-4 mt-7 flex flex-col gap-3 sm:flex-row lg:flex-col">
-                <PhoneLink className="hero-k-phone num btn btn-lg btn-primary whitespace-nowrap">
-                  <IconPhone size={21} className="btn-icon btn-icon-ring" />
-                  {company.phone.display}
-                </PhoneLink>
-                <CalculatorCta className="btn btn-lg btn-outline-cream whitespace-nowrap">
-                  Árkalkulátor indítása
-                  <IconArrowRight size={18} className="btn-icon btn-icon-move" />
-                </CalculatorCta>
+              <div className="hero-f-copy min-w-0 lg:pt-12">
+                <p className="rise rise-3 max-w-[44ch] text-[1.0625rem] leading-relaxed text-on-dark-muted lg:text-lg lg:text-on-dark">
+                  {HERO.lead}
+                </p>
+                <div className="rise rise-3 hero-areas mt-4 lg:mt-5">
+                  <span className="hero-area-pill">
+                    <IconMapPinned size={13} />
+                    Budapest mind a {budapestDistricts.length} kerülete
+                  </span>
+                  <span className="hero-area-pill">
+                    <IconMapPinned size={13} />
+                    Érd
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Teherautó: xl alatt a gombok alatt teljes szélességben (tableten
-              széles, „mozivászon" kivágás), xl-től a hero jobb felén, a
-              képernyő széléig kifutva. Díszítő kép. */}
-          <div aria-hidden="true" className="hero-truck rise rise-3">
-            <picture>
-              {/* xl+: kiterjesztett, lágy szélű változat a hosszú átmenethez */}
-              <source
-                media="(min-width: 1280px)"
-                srcSet={`${withBasePath("/hero/teherauto-800.webp")} 800w, ${withBasePath("/hero/teherauto-1600.webp")} 1600w`}
-                sizes="48vw"
-                width={1600}
-                height={1102}
-              />
+            {/* Flotta-kép: mobilon/tableten kép-sáv a bevezető után, lg-től a
+                színpad teljes szélességű háttere. Díszítő (alt=""). */}
+            <div aria-hidden="true" className="hero-f-photo rise rise-3">
               {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
               <img
-                src={withBasePath("/hero/teherauto-kozel-1200.webp")}
-                srcSet={`${withBasePath("/hero/teherauto-kozel-720.webp")} 720w, ${withBasePath("/hero/teherauto-kozel-1200.webp")} 1200w`}
-                sizes="100vw"
-                width={1200}
-                height={878}
+                src={withBasePath("/hero/flotta-1280.webp")}
+                srcSet={`${withBasePath("/hero/flotta-900.webp")} 900w, ${withBasePath("/hero/flotta-1280.webp")} 1280w, ${withBasePath("/hero/flotta-2400.webp")} 2400w`}
+                sizes="(min-width: 1024px) 84vw, 100vw"
+                width={2400}
+                height={1223}
                 alt=""
                 decoding="async"
               />
-            </picture>
-          </div>
+            </div>
 
-          {/* Ténysor — ikonos sáv a hero-ban. A <dl> KÖZVETLENÜL tartalmazza a
-              dt/dd párokat burkoló <div>-eket (WCAG 1.3.1). */}
-          <dl className="hero-facts rise rise-4 mt-9 grid grid-cols-2 gap-y-5 md:mt-12 lg:mt-14 lg:grid-cols-4">
+            <div className="hero-f-ctas rise rise-4 mt-6 flex flex-col gap-3 sm:flex-row lg:mt-24 xl:mt-28">
+              <PhoneLink className="hero-k-phone num btn btn-lg btn-primary whitespace-nowrap">
+                <IconPhone size={21} className="btn-icon btn-icon-ring" />
+                {company.phone.display}
+              </PhoneLink>
+              <CalculatorCta className="btn btn-lg btn-outline-cream hero-f-calc whitespace-nowrap">
+                Árkalkulátor indítása
+                <IconArrowRight size={18} className="btn-icon btn-icon-move" />
+              </CalculatorCta>
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-6xl px-4 pb-10 md:px-6 md:pb-12 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
+          {/* Ténysor — mobilon 4 keskeny hasáb (ikon fölül), lg-től ikon + szöveg
+              egymás mellett, függőleges elválasztókkal. A <dl> KÖZVETLENÜL a
+              dt/dd párokat burkoló <div>-eket tartalmazza (WCAG 1.3.1). */}
+          <dl className="hero-f-facts rise rise-4 mt-7 grid grid-cols-4 lg:mt-2">
             {facts.map((f) => {
               const Icon = f.icon;
               return (
-                <div key={f.value} className="hero-fact flex items-start gap-3 pr-3 lg:px-6">
-                  <span aria-hidden="true" className="hero-fact-icon">
-                    <Icon size={22} />
+                <div key={f.value} className="hero-f-fact">
+                  <span aria-hidden="true" className="hero-f-fact-icon">
+                    <Icon size={26} />
                   </span>
                   <span className="min-w-0">
                     <dt className="sr-only">{f.label}</dt>
                     <dd>
-                      <span className="num block font-display text-[1.0625rem] leading-tight font-bold text-on-dark md:text-lg">
+                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base lg:text-lg">
                         {f.value}
                       </span>
-                      <span className="mt-0.5 block text-[0.8125rem] leading-snug text-on-dark-muted md:text-sm">
+                      <span className="mt-0.5 block text-xs leading-snug text-on-dark-muted md:text-sm lg:text-[0.9375rem]">
                         {f.label}
                       </span>
                     </dd>
@@ -168,8 +163,8 @@ export default function HomePage() {
             })}
           </dl>
 
-          {/* Mintasor: hat anyaghalom teljes szélességben */}
-          <div className="mt-10 md:mt-12 lg:mt-14">
+          {/* Mintasor: hat anyaghalom */}
+          <div className="mt-9 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
           <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">

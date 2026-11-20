@@ -19,7 +19,7 @@ export default function Header() {
         Ugrás a tartalomra
       </a>
       <header className="header-bar hdr sticky top-0 z-50 border-b border-border bg-page/95 backdrop-blur-sm">
-        <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6">
+        <div className="mx-auto flex h-[4.25rem] max-w-6xl items-center justify-between gap-4 px-4 md:h-[4.75rem] md:px-6 min-[1400px]:max-w-[86rem] min-[1400px]:px-10">
           <Link
             href="/"
             className="-m-1 flex shrink-0 items-center rounded-sm p-1"
@@ -48,6 +48,11 @@ export default function Header() {
           </nav>
 
           <div data-call-region="header_nav" className="hidden items-center gap-4 lg:flex">
+            <p className="hidden text-right text-xs leading-tight whitespace-nowrap text-ink-soft min-[1400px]:block">
+              Hívható:
+              <br />
+              <span className="num">{company.hours.short}</span>
+            </p>
             <a
               href={`tel:${company.phone.raw}`}
               className="num btn btn-primary min-h-11 whitespace-nowrap"
@@ -61,10 +66,13 @@ export default function Header() {
             <a
               data-call-region="header_topbar"
               href={`tel:${company.phone.raw}`}
-              className="num hidden min-h-11 items-center gap-1.5 rounded-sm px-2 text-sm font-semibold text-brand-deep min-[400px]:inline-flex sm:text-base"
+              className="hdr-call num inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-[var(--radius-sm)] px-3 text-sm font-semibold"
             >
-              <IconPhone size={16} />
-              {company.phone.display}
+              <IconPhone size={19} />
+              <span className="sr-only sm:not-sr-only">
+                <span className="sm:hidden">Hívás: </span>
+                {company.phone.display}
+              </span>
             </a>
             <MobileMenu />
           </div>

@@ -127,6 +127,16 @@ export function IconTag({ size = 20, className }: IconProps) {
   );
 }
 
+export function IconLayers({ size = 20, className }: IconProps) {
+  return (
+    <svg {...svgProps(size)} className={className}>
+      <path d="m12 2.5 9.5 5-9.5 5-9.5-5z" />
+      <path d="m2.5 12 9.5 5 9.5-5" />
+      <path d="m2.5 16.5 9.5 5 9.5-5" />
+    </svg>
+  );
+}
+
 export function IconBox({ size = 20, className }: IconProps) {
   return (
     <svg {...svgProps(size)} className={className}>
