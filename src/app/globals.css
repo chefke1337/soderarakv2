@@ -13,6 +13,7 @@
 /* Teljes oldal sötét téma (2026-11-18) — utolsó réteg */
 @import "./v3-dark.css";
 @import "./v3-flotta.css";
+@import "./v3-motion.css";
 
 /* ─────────────────────────────────────────────────────────────────────────
    V2.1 „Rétegrend" design rendszer — docs/v2-design-direction.md (§ V2.1)

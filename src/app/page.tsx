@@ -127,6 +127,7 @@ export default function HomePage() {
                   width={2400}
                   height={1223}
                   alt=""
+                  fetchPriority="high"
                   decoding="async"
                 />
               </picture>
