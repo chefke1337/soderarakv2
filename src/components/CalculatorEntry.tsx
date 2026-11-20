@@ -23,10 +23,10 @@ export default function CalculatorEntry() {
       {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, díszítő textúra */}
       <img
         aria-hidden="true"
-        src={withBasePath("/anyagok/arlista/kavics-foto.webp")}
+        src={withBasePath("/hero/kavics-textura-1200.webp")}
         alt=""
-        width={480}
-        height={480}
+        width={1200}
+        height={1184}
         loading="lazy"
         decoding="async"
         className="calc-texture pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[60%] object-cover"
