@@ -110,16 +110,26 @@ export default function HomePage() {
             {/* Flotta-kép: mobilon/tableten kép-sáv a bevezető után, lg-től a
                 színpad teljes szélességű háttere. Díszítő (alt=""). */}
             <div aria-hidden="true" className="hero-f-photo rise rise-3">
-              {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
-              <img
-                src={withBasePath("/hero/flotta-1280.webp")}
-                srcSet={`${withBasePath("/hero/flotta-900.webp")} 900w, ${withBasePath("/hero/flotta-1280.webp")} 1280w, ${withBasePath("/hero/flotta-2400.webp")} 2400w`}
-                sizes="(min-width: 1280px) 76vw, 100vw"
-                width={2400}
-                height={1223}
-                alt=""
-                decoding="async"
-              />
+              <picture>
+                {/* xl+: felfelé kiterjesztett éggel, hogy a teljes színpadot kitöltse */}
+                <source
+                  media="(min-width: 1280px)"
+                  srcSet={`${withBasePath("/hero/flotta-magas-1600.webp")} 1600w, ${withBasePath("/hero/flotta-magas-2400.webp")} 2400w`}
+                  sizes="76vw"
+                  width={2400}
+                  height={1767}
+                />
+                {/* eslint-disable-next-line @next/next/no-img-element -- statikus export, előre méretezett webp */}
+                <img
+                  src={withBasePath("/hero/flotta-1280.webp")}
+                  srcSet={`${withBasePath("/hero/flotta-900.webp")} 900w, ${withBasePath("/hero/flotta-1280.webp")} 1280w, ${withBasePath("/hero/flotta-2400.webp")} 2400w`}
+                  sizes="100vw"
+                  width={2400}
+                  height={1223}
+                  alt=""
+                  decoding="async"
+                />
+              </picture>
             </div>
 
             <div className="hero-f-ctas rise rise-4 mt-6 flex flex-col gap-3 sm:flex-row xl:mt-28">
@@ -150,7 +160,7 @@ export default function HomePage() {
                   <span className="min-w-0">
                     <dt className="sr-only">{f.label}</dt>
                     <dd>
-                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base xl:text-lg">
+                      <span className="block font-display text-[0.8125rem] leading-tight font-bold text-on-dark min-[400px]:text-[0.875rem] md:text-base min-[1400px]:text-lg">
                         {f.value}
                       </span>
                       <span className="mt-0.5 block text-xs leading-snug text-on-dark-muted md:text-sm xl:text-[0.9375rem]">
