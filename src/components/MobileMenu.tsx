@@ -68,13 +68,13 @@ export default function MobileMenu() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
-        className="btn min-h-11 border-[1.5px] border-text/70 px-3.5 text-sm hover:bg-text hover:text-surface aria-expanded:bg-text aria-expanded:text-surface"
+        className="menu-btn btn h-11 w-11 min-h-11 justify-center rounded-[var(--radius-sm)] p-0 text-sm"
       >
-        Menü
-        <span aria-hidden="true" className="relative block h-3 w-4">
-          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-[var(--dur-ui)] top-0 ${open ? "translate-y-[5px] rotate-45" : ""}`} />
-          <span className={`absolute top-[5px] left-0 h-[2px] w-4 rounded bg-current transition-opacity duration-[var(--dur-ui)] ${open ? "opacity-0" : ""}`} />
-          <span className={`absolute left-0 h-[2px] w-4 rounded bg-current transition-transform duration-[var(--dur-ui)] top-[10px] ${open ? "-translate-y-[5px] -rotate-45" : ""}`} />
+        <span className="sr-only">Menü</span>
+        <span aria-hidden="true" className="relative block h-[16px] w-[22px]">
+          <span className={`absolute left-0 h-[2.5px] w-[22px] rounded bg-current transition-transform duration-[var(--dur-ui)] top-0 ${open ? "translate-y-[6.75px] rotate-45" : ""}`} />
+          <span className={`absolute top-[6.75px] left-0 h-[2.5px] w-[22px] rounded bg-current transition-opacity duration-[var(--dur-ui)] ${open ? "opacity-0" : ""}`} />
+          <span className={`absolute left-0 h-[2.5px] w-[22px] rounded bg-current transition-transform duration-[var(--dur-ui)] top-[13.5px] ${open ? "-translate-y-[6.75px] -rotate-45" : ""}`} />
         </span>
       </button>
 

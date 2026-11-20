@@ -48,7 +48,7 @@ export default function MaterialHeaps() {
           return (
             <li
               key={g.slug}
-              className="heap-in w-[clamp(7.75rem,40vw,10rem)] shrink-0 snap-start lg:w-auto"
+              className="heap-in w-[calc((100vw-2rem-1.25rem)/3)] shrink-0 snap-start sm:w-[clamp(7.75rem,26vw,10rem)] lg:w-auto"
               style={{ "--i": i } as React.CSSProperties}
             >
               <Link
@@ -71,20 +71,20 @@ export default function MaterialHeaps() {
                   fetchPriority={i < 3 ? "high" : "auto"}
                   className="pile-img block h-auto w-full"
                 />
-                {/* név + nyíl egy sorban, alatta az ár teljes szélességben */}
-                <span className="mt-1 flex items-center justify-between gap-2">
-                  <span className="min-w-0 font-display text-[1.0625rem] leading-tight font-bold text-on-dark lg:text-lg">
-                    {g.name}
+                {/* név, alatta ár + nyíl egy sorban (app-szerű kártya, mockup 2026-11-20) */}
+                <span className="mt-1 block min-w-0 font-display text-[1rem] leading-tight font-bold text-on-dark sm:text-[1.0625rem] lg:text-lg">
+                  {g.name}
+                </span>
+                <span className="mt-1 flex items-center justify-between gap-1.5">
+                  <span className="num min-w-0 text-[0.8125rem] leading-snug font-semibold text-on-dark sm:text-sm">
+                    {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                   </span>
                   <span
                     aria-hidden="true"
-                    className="heap-go flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark lg:h-8 lg:w-8"
+                    className="heap-go flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-on-dark/12 text-on-dark transition-colors duration-[var(--dur-fast)] group-hover:bg-accent group-hover:text-on-dark group-focus-visible:bg-accent group-focus-visible:text-on-dark sm:h-7 sm:w-7 lg:h-8 lg:w-8"
                   >
-                    <IconArrowRight size={15} className="heap-arrow" />
+                    <IconArrowRight size={14} className="heap-arrow" />
                   </span>
-                </span>
-                <span className="num mt-0.5 block text-sm leading-snug font-semibold text-on-dark">
-                  {min !== null ? `${formatFt(min)}-tól` : "egyeztetés után"}
                 </span>
                 {groupWashed(g) && (
                   <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
