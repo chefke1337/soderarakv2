@@ -24,7 +24,7 @@ export default function MaterialHeaps() {
     <div>
       <div className="mb-3 flex items-end justify-between gap-4 text-sm text-on-dark-muted lg:mb-4">
         <div>
-          <h2 className="font-display text-lg leading-tight font-bold text-on-dark md:text-xl lg:text-2xl">
+          <h2 className="font-display text-[1.0625rem] leading-tight font-bold text-on-dark min-[400px]:text-lg md:text-xl lg:text-2xl">
             Anyagok és induló árak
           </h2>
           <span className="num mt-0.5 block text-xs md:text-sm">bruttó Ft/m³-től</span>
