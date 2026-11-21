@@ -175,7 +175,7 @@ export default function HomePage() {
           </dl>
 
           {/* Mintasor: hat anyaghalom */}
-          <div className="mt-5 md:mt-12 lg:mt-14">
+          <div className="mt-3 md:mt-12 lg:mt-14">
             <MaterialHeaps />
           </div>
           <p className="mt-3 max-w-[80ch] text-[0.8125rem] leading-relaxed text-on-dark-muted lg:mt-6">

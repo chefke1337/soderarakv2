@@ -22,12 +22,12 @@ import HeapRail from "@/components/HeapRail";
 export default function MaterialHeaps() {
   return (
     <div>
-      <div className="mb-3 flex items-end justify-between gap-4 text-sm text-on-dark-muted lg:mb-4">
+      <div className="mb-2 flex items-end justify-between gap-4 text-sm text-on-dark-muted sm:mb-3 lg:mb-4">
         <div>
           <h2 className="font-display text-[1.0625rem] leading-tight font-bold text-on-dark min-[400px]:text-lg md:text-xl lg:text-2xl">
             Anyagok és induló árak
           </h2>
-          <span className="num mt-0.5 block text-xs md:text-sm">bruttó Ft/m³-től</span>
+          <span className="num block text-[0.6875rem] sm:mt-0.5 sm:text-xs md:text-sm">bruttó Ft/m³-től</span>
         </div>
         <Link
           href="/anyagok"
