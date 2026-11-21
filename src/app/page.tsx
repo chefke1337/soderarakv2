@@ -41,7 +41,7 @@ import LefedettsegTerkepLazy from "@/components/LefedettsegTerkepLazy";
 
 export default function HomePage() {
   // Ténysor — a mockup sorrendjében, de csak a V1/V2-ben és az adatmodellben
-  // meglévő, igaz állításokkal (nincs „rejtett költség"-típusú új ígéret).
+  // meglévő állításokkal; a „nincs rejtett költség" az ügyfél kérése (2026-11-21).
   const facts = [
     { icon: IconTruck, value: "Gyakran aznap", label: "Budafok környékén" },
     {
