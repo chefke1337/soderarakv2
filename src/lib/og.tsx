@@ -119,10 +119,10 @@ function Lockup() {
     <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
       <LogoMark size={64} />
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", color: TEXT, fontSize: 34, fontWeight: 700, letterSpacing: 0.4, lineHeight: 1 }}>SÓDER ÁRAK</div>
+        <div style={{ display: "flex", color: TEXT, fontFamily: "Grotesk", fontSize: 34, fontWeight: 700, letterSpacing: 0.4, lineHeight: 1 }}>SÓDER ÁRAK</div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 7 }}>
           <div style={{ display: "flex", width: 22, height: 2, backgroundColor: ORANGE }} />
-          <div style={{ display: "flex", color: MUTED, fontSize: 13, fontWeight: 700, letterSpacing: 4 }}>SODERARAK.HU</div>
+          <div style={{ display: "flex", color: MUTED, fontSize: 13, fontWeight: 600, letterSpacing: 4 }}>SODERARAK.HU</div>
           <div style={{ display: "flex", width: 22, height: 2, backgroundColor: ORANGE }} />
         </div>
       </div>
@@ -134,41 +134,41 @@ function OgDark({ input }: { input: OgCardInput }) {
   const v = input.variant ?? "standard";
   const material = v === "material" && input.tone ? input.tone : null;
   const chips = chipsFor(input).slice(0, 3);
-  const titleSize = input.title.length > 46 ? 52 : input.title.length > 30 ? 60 : 70;
-  const textWidth = material ? 640 : 760;
+  const titleSize = input.title.length > 40 ? 50 : input.title.length > 24 ? 58 : 68;
+  const textWidth = material ? 620 : 600;
   const kicker = (input.kicker ?? KICKER[v]).toLocaleUpperCase("hu-HU");
 
   return (
-    <div style={{ width: "100%", height: "100%", position: "relative", display: "flex", overflow: "hidden", backgroundColor: BG, color: TEXT, fontFamily: "sans-serif" }}>
+    <div style={{ width: "100%", height: "100%", position: "relative", display: "flex", overflow: "hidden", backgroundColor: BG, color: TEXT, fontFamily: "Inter" }}>
       {/* kép */}
       {material ? (
         // eslint-disable-next-line @next/next/no-img-element -- satori-kép (OG renderer)
         <img src={photo(material)} width={560} height={630} alt="" style={{ position: "absolute", right: 0, top: 0, width: 560, height: 630, objectFit: "cover" }} />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- satori-kép (OG renderer)
-        <img src={photo("flotta")} width={1200} height={630} alt="" style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, objectFit: "cover" }} />
+        <img src={photo("flotta")} width={860} height={630} alt="" style={{ position: "absolute", left: 340, top: 0, width: 860, height: 630, objectFit: "cover", objectPosition: "60% 100%" }} />
       )}
       {/* olvashatósági fátylak */}
-      <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: material ? `linear-gradient(90deg, ${BG} 0%, ${BG} 50%, rgba(19,20,23,0.55) 66%, rgba(19,20,23,0.1) 100%)` : `linear-gradient(90deg, rgba(19,20,23,0.96) 0%, rgba(19,20,23,0.86) 42%, rgba(19,20,23,0.35) 72%, rgba(19,20,23,0.15) 100%)` }} />
-      <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "linear-gradient(180deg, rgba(19,20,23,0.55) 0%, rgba(19,20,23,0) 30%, rgba(19,20,23,0) 62%, rgba(19,20,23,0.92) 100%)" }} />
-      <div style={{ position: "absolute", inset: 0, display: "flex", backgroundImage: "radial-gradient(ellipse at 92% 0%, rgba(249,115,22,0.28), rgba(249,115,22,0) 48%)" }} />
+      <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: material ? `linear-gradient(90deg, ${BG} 0%, ${BG} 53%, rgba(19,20,23,0.5) 68%, rgba(19,20,23,0.05) 100%)` : `linear-gradient(90deg, ${BG} 0%, ${BG} 30%, rgba(19,20,23,0.78) 44%, rgba(19,20,23,0.2) 62%, rgba(19,20,23,0) 100%)` }} />
+      <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "linear-gradient(180deg, rgba(19,20,23,0.7) 0%, rgba(19,20,23,0) 26%, rgba(19,20,23,0) 70%, rgba(19,20,23,0.85) 100%)" }} />
+      <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: "radial-gradient(ellipse at 92% 0%, rgba(249,115,22,0.22), rgba(249,115,22,0) 48%)" }} />
       {/* felső narancs fényvonal */}
       <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 4, display: "flex", backgroundImage: "linear-gradient(90deg, #c2410c, #fb923c 50%, #c2410c)" }} />
 
       <div style={{ position: "relative", width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "48px 64px 46px" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Lockup />
-          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 18px", borderRadius: 10, backgroundColor: "#cc4a0e", color: "#fff", fontSize: 22, fontWeight: 700 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 18px", borderRadius: 10, backgroundColor: "#cc4a0e", color: "#fff", fontFamily: "Grotesk", fontSize: 22, fontWeight: 700 }}>
             {input.contactPhone ?? company.phone.display}
           </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", width: textWidth }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, color: ORANGE_SOFT, fontSize: 18, fontWeight: 700, letterSpacing: 3 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, color: ORANGE_SOFT, fontSize: 17, fontWeight: 600, letterSpacing: 3 }}>
             <div style={{ display: "flex", width: 34, height: 3, backgroundColor: ORANGE }} />
             {kicker}
           </div>
-          <div style={{ display: "flex", marginTop: 16, fontSize: titleSize, fontWeight: 700, lineHeight: 1.04, letterSpacing: -1.5, color: TEXT }}>{input.title}</div>
+          <div style={{ display: "flex", marginTop: 16, fontFamily: "Grotesk", fontSize: titleSize, fontWeight: 700, lineHeight: 1.04, letterSpacing: -1.5, color: TEXT }}>{input.title}</div>
           <div style={{ display: "flex", marginTop: 20, width: 96, height: 5, borderRadius: 4, backgroundImage: "linear-gradient(90deg, #c2410c, #fb923c)" }} />
           {input.subtitle ? <div style={{ display: "flex", marginTop: 18, color: MUTED, fontSize: 22, lineHeight: 1.35, width: textWidth - 40 }}>{input.subtitle}</div> : null}
         </div>
@@ -176,12 +176,12 @@ function OgDark({ input }: { input: OgCardInput }) {
         <div style={{ display: "flex", alignItems: "stretch", gap: 14 }}>
           {chips.map((c) => (
             <div key={c.label + c.value} style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 5, padding: "12px 18px", minWidth: 180, maxWidth: chips.length === 1 ? 720 : 340, borderRadius: 12, backgroundColor: "rgba(28,29,33,0.88)", border: "1px solid rgba(255,255,255,0.12)", borderTop: `3px solid ${ORANGE}` }}>
-              <div style={{ display: "flex", color: MUTED, fontSize: 14, fontWeight: 700, letterSpacing: 1.5 }}>{c.label.toLocaleUpperCase("hu-HU")}</div>
-              <div style={{ display: "flex", color: TEXT, fontSize: 23, fontWeight: 700, lineHeight: 1.15 }}>{c.value}</div>
+              <div style={{ display: "flex", color: MUTED, fontSize: 13, fontWeight: 600, letterSpacing: 1.5 }}>{c.label.toLocaleUpperCase("hu-HU")}</div>
+              <div style={{ display: "flex", color: TEXT, fontFamily: "Grotesk", fontSize: 23, fontWeight: 700, lineHeight: 1.15 }}>{c.value}</div>
             </div>
           ))}
           {chips.length === 0 ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 12, color: MUTED, fontSize: 19, fontWeight: 700 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, color: MUTED, fontSize: 19, fontWeight: 600 }}>
               <div style={{ display: "flex", width: 40, height: 2, backgroundColor: ORANGE }} />
               {company.businessUnit} · {company.hours.short}
             </div>
@@ -192,6 +192,19 @@ function OgDark({ input }: { input: OgCardInput }) {
   );
 }
 
+/* betűk: Space Grotesk (címek) + Inter (szöveg), OFL — src/lib/og-fonts */
+let fontCache: { name: string; data: Buffer; weight: 400 | 600 | 700; style: "normal" }[] | null = null;
+function fonts() {
+  if (fontCache) return fontCache;
+  const dir = join(process.cwd(), "src", "lib", "og-fonts");
+  fontCache = [
+    { name: "Grotesk", data: readFileSync(join(dir, "SpaceGrotesk-Bold.ttf")), weight: 700, style: "normal" },
+    { name: "Inter", data: readFileSync(join(dir, "Inter-Regular.otf")), weight: 400, style: "normal" },
+    { name: "Inter", data: readFileSync(join(dir, "Inter-SemiBold.otf")), weight: 600, style: "normal" },
+  ];
+  return fontCache;
+}
+
 export function ogCard(input: OgCardInput): ImageResponse {
-  return new ImageResponse(<OgDark input={input} />, OG_SIZE);
+  return new ImageResponse(<OgDark input={input} />, { ...OG_SIZE, fonts: fonts() });
 }
