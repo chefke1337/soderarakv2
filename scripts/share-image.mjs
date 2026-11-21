@@ -3,7 +3,7 @@
  * árlista-anyagfotókból — statikus fájl, nincs futásidejű OG-generálás.
  *
  * Futtatás: node scripts/share-image.mjs
- * Kimenet:  public/soderarak-share-v4.png (a src/lib/share.ts hivatkozza)
+ * Kimenet:  public/soderarak-share-v5.png (a src/lib/share.ts hivatkozza)
  *
  * Tartalomváltozásnál új fájlnév (v4, …), hogy a megosztó platformok
  * cache-e ne a régi képet mutassa.
@@ -13,7 +13,7 @@ import { join } from "node:path";
 import { chromium } from "playwright";
 
 const ROOT = process.cwd();
-const OUT = join(ROOT, "public", "soderarak-share-v4.png");
+const OUT = join(ROOT, "public", "soderarak-share-v5.png");
 const photo = (slug) =>
   `data:image/webp;base64,${readFileSync(join(ROOT, "public", "anyagok", "arlista", `${slug}-foto.webp`)).toString("base64")}`;
 

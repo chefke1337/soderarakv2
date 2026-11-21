@@ -96,6 +96,12 @@ function photo(name: string): string {
 
 type Chip = { label: string; value: string };
 
+function clip(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[,;:—–-]$/, "").trimEnd()}…`;
+}
+
 function chipsFor(input: OgCardInput): Chip[] {
   const v = input.variant ?? "standard";
   if (v === "pricing" && input.priceCards?.length) return input.priceCards.map((c) => ({ label: c.label, value: c.value }));
@@ -136,7 +142,8 @@ function OgDark({ input }: { input: OgCardInput }) {
   const chips = chipsFor(input).slice(0, 3);
   const titleSize = input.title.length > 40 ? 50 : input.title.length > 24 ? 58 : 68;
   const textWidth = material ? 620 : 600;
-  const kicker = (input.kicker ?? KICKER[v]).toLocaleUpperCase("hu-HU");
+  const kicker = clip((input.kicker ?? KICKER[v]).toLocaleUpperCase("hu-HU"), 44);
+  const subtitle = input.subtitle ? clip(input.subtitle, 150) : null;
 
   return (
     <div style={{ width: "100%", height: "100%", position: "relative", display: "flex", overflow: "hidden", backgroundColor: BG, color: TEXT, fontFamily: "Inter" }}>
@@ -146,7 +153,7 @@ function OgDark({ input }: { input: OgCardInput }) {
         <img src={photo(material)} width={560} height={630} alt="" style={{ position: "absolute", right: 0, top: 0, width: 560, height: 630, objectFit: "cover" }} />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- satori-kép (OG renderer)
-        <img src={photo("flotta")} width={860} height={630} alt="" style={{ position: "absolute", left: 340, top: 0, width: 860, height: 630, objectFit: "cover", objectPosition: "60% 100%" }} />
+        <img src={photo("flotta")} width={880} height={462} alt="" style={{ position: "absolute", left: 320, top: 168, width: 880, height: 462 }} />
       )}
       {/* olvashatósági fátylak */}
       <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 630, display: "flex", backgroundImage: material ? `linear-gradient(90deg, ${BG} 0%, ${BG} 53%, rgba(19,20,23,0.5) 68%, rgba(19,20,23,0.05) 100%)` : `linear-gradient(90deg, ${BG} 0%, ${BG} 30%, rgba(19,20,23,0.78) 44%, rgba(19,20,23,0.2) 62%, rgba(19,20,23,0) 100%)` }} />
@@ -170,7 +177,7 @@ function OgDark({ input }: { input: OgCardInput }) {
           </div>
           <div style={{ display: "flex", marginTop: 16, fontFamily: "Grotesk", fontSize: titleSize, fontWeight: 700, lineHeight: 1.04, letterSpacing: -1.5, color: TEXT }}>{input.title}</div>
           <div style={{ display: "flex", marginTop: 20, width: 96, height: 5, borderRadius: 4, backgroundImage: "linear-gradient(90deg, #c2410c, #fb923c)" }} />
-          {input.subtitle ? <div style={{ display: "flex", marginTop: 18, color: MUTED, fontSize: 22, lineHeight: 1.35, width: textWidth - 40 }}>{input.subtitle}</div> : null}
+          {subtitle ? <div style={{ display: "flex", marginTop: 18, color: MUTED, fontSize: 21, lineHeight: 1.38, width: textWidth - 40 }}>{subtitle}</div> : null}
         </div>
 
         <div style={{ display: "flex", alignItems: "stretch", gap: 14 }}>

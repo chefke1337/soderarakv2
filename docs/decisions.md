@@ -1874,3 +1874,16 @@ Branch: `redesign/flotta`, előnézet: `preview/dark`.
   kiemelve szerepeljen, hogy nincs rejtett költség → a ténysor 4. eleme:
   „Bruttó árak / nincs rejtett költség" (az állítás az ügyféltől származik;
   a kalkulátor minden tételt — anyag, nettó fuvar, ÁFA — külön mutat).
+
+## 2026-11-21 — Linkelőnézet-képek (OG) a sötét arculatra
+- Ügyfél: „a link alatt megjelenő képek is legyenek ilyen darkosak, új logóval".
+  `src/lib/og.tsx` újraírva: egy egységes grafit elrendezés minden
+  oldaltípusra (S-embléma + SÓDER ÁRAK / soderarak.hu lockup, narancs
+  kicker és záróvonal, max. 3 adatkártya, telefonszám), flotta-fotó
+  (`public/og/flotta.jpg`), anyagoldalakon az anyag fotója
+  (`public/og/<anyag>.jpg`). Betűk: Space Grotesk Bold + Inter (OFL,
+  `src/lib/og-fonts/`). Az üzleti adatok továbbra is a hívó oldalakból
+  (site.ts) jönnek; hosszú alcím/kicker szóhatáron rövidítve.
+- Főoldali megosztási kép: `soderarak-share-v5.png` (új fájlnév a
+  platform-cache miatt), ugyanebben az arculatban.
+- OG-hash bázis frissítve az új kártyákra (szándékos változás).
