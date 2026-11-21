@@ -1870,3 +1870,7 @@ Branch: `redesign/flotta`, előnézet: `preview/dark`.
   régi, ajtóél-átlógó logók eltávolítva, álló elrendezésű matrica teljesen az
   ajtólapon, enyhe perspektíva, a fényezés árnyalását követő tónus. A
   változtatás a V3-ra is felkerül (az ügyfél ott nézi a telefonján).
+- 2026-11-21 16:22 ügyfél kifejezett kérése: a mobil első képernyőjén
+  kiemelve szerepeljen, hogy nincs rejtett költség → a ténysor 4. eleme:
+  „Bruttó árak / nincs rejtett költség" (az állítás az ügyféltől származik;
+  a kalkulátor minden tételt — anyag, nettó fuvar, ÁFA — külön mutat).

@@ -54,7 +54,7 @@ export default function HomePage() {
       value: `Budapest ${budapestDistricts.length} kerülete`,
       label: "és Érd",
     },
-    { icon: IconTag, value: "Bruttó árak", label: "anyagár ÁFÁ-val" },
+    { icon: IconTag, value: "Bruttó árak", label: "nincs rejtett költség" },
   ];
 
   const featuredGuides = [
