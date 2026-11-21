@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">
+  <defs>
+    <radialGradient id="bg" cx="32%" cy="24%">
+      <stop offset="0%" stop-color="#7c736a"/>
+      <stop offset="100%" stop-color="#4e4740"/>
+    </radialGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <g>
+    <polygon points="30,62 62,44 86,66 58,86" fill="#938a80"/><polygon points="44,60 68,52 74,68 52,76" fill="#a79d93"/>
+    <polygon points="112,38 148,30 160,56 126,64" fill="#857c73"/><polygon points="124,44 146,40 150,54 130,58" fill="#9b9188"/>
+    <polygon points="196,52 232,42 246,70 212,82" fill="#9b9188"/><polygon points="208,56 232,52 236,68 214,72" fill="#b0a69b"/>
+    <polygon points="276,36 310,30 322,58 288,66" fill="#7f766d"/>
+    <polygon points="344,56 382,46 394,76 358,86" fill="#938a80"/>
+    <polygon points="18,132 56,120 72,150 36,164" fill="#8a8077"/><polygon points="32,136 56,130 60,148 38,152" fill="#a0968c"/>
+    <polygon points="94,116 132,108 148,138 110,148" fill="#a39a90"/>
+    <polygon points="170,128 206,116 222,146 184,160" fill="#7c736a"/><polygon points="182,134 206,128 210,144 188,150" fill="#938a80"/>
+    <polygon points="248,112 286,104 300,134 262,144" fill="#9b9188"/>
+    <polygon points="322,124 360,114 374,144 336,156" fill="#857c73"/>
+    <polygon points="38,206 76,194 92,224 54,238" fill="#a39a90"/><polygon points="52,210 76,204 80,222 58,226" fill="#b8afa5"/>
+    <polygon points="116,192 152,182 168,212 130,224" fill="#7f766d"/>
+    <polygon points="192,204 230,192 246,224 208,236" fill="#938a80"/>
+    <polygon points="268,188 306,180 320,210 282,220" fill="#8a8077"/><polygon points="280,194 304,188 308,204 286,210" fill="#a0968c"/>
+    <polygon points="344,200 382,190 394,220 358,232" fill="#9b9188"/>
+    <polygon points="62,268 98,258 112,286 76,298" fill="#857c73"/>
+    <polygon points="146,262 182,252 196,282 160,294" fill="#a39a90"/>
+    <polygon points="232,268 268,256 282,288 246,298" fill="#7c736a"/>
+    <polygon points="312,258 350,250 364,280 326,292" fill="#938a80"/>
+  </g>
+</svg>
