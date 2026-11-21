@@ -17,7 +17,8 @@ import HeapRail from "@/components/HeapRail";
  * link az anyag aloldalára.
  *
  * Mobilon/tableten szándékosan EGYETLEN, oldalirányban görgethető sor
- * (HeapRail) — nem lesz belőle magas, boltíves kártyarács. lg-től 6 hasáb.
+ * (HeapRail). 2026-11-21 ügyfél: mobilon NE görögjön oldalra — 3 hasábos
+ * rács (6 anyag = 2 sor), lg-től 6 hasáb egy sorban.
  */
 export default function MaterialHeaps() {
   return (
@@ -42,13 +43,13 @@ export default function MaterialHeaps() {
       {/* < lg: egyetlen, natívan lapozható sor (a következő kártya belóg, ezért
           egyértelmű, hogy van még); csak ez a sáv görget oldalra, az oldal nem.
           lg+: a változatlan hathasábos rács. */}
-      <HeapRail className="heap-rail -mx-4 flex snap-x snap-mandatory scroll-px-4 gap-2.5 overflow-x-auto px-4 pt-2 pb-3 md:-mx-6 md:scroll-px-6 md:px-6 lg:mx-0 lg:grid lg:snap-none lg:grid-cols-6 lg:gap-3 lg:overflow-visible lg:px-0 lg:pt-0 lg:pb-0">
+      <HeapRail className="heap-rail grid grid-cols-3 gap-2.5 pt-1 sm:gap-3 lg:grid-cols-6 lg:pt-0">
         {materialGroups.map((g, i) => {
           const min = minPrice(g.items);
           return (
             <li
               key={g.slug}
-              className="heap-in w-[calc((100vw-2rem-1.25rem)/3)] shrink-0 snap-start sm:w-[clamp(7.75rem,26vw,10rem)] lg:w-auto"
+              className="heap-in min-w-0"
               style={{ "--i": i } as React.CSSProperties}
             >
               <Link
