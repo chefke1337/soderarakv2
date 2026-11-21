@@ -87,7 +87,7 @@ export default function MaterialHeaps() {
                   </span>
                 </span>
                 {groupWashed(g) && (
-                  <span className="mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
+                  <span className="heap-washed mt-1 inline-flex items-center gap-1 text-[0.6875rem] font-semibold text-amber">
                     <IconDroplets size={11} />
                     <span className="sm:hidden">mosott</span>
                     <span className="hidden sm:inline">{groupWashed(g)!.scope === "group" ? "mosott" : "mosott frakciók"}</span>

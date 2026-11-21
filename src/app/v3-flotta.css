@@ -286,6 +286,24 @@
   }
 }
 
+/* kis telefonok (<380 px, pl. 360×780, 375×812): még tömörebb, hogy a
+   kártyasor is beférjen a hívósáv fölé; a „mosott" jelölés a kártya
+   részletoldalán és az árlistán marad */
+@media (max-width: 379px) {
+  .hero-f-photo {
+    aspect-ratio: 2.25 / 1;
+  }
+  .hero-f-ctas .btn {
+    min-height: 2.625rem;
+  }
+  .hero-f-facts {
+    margin-top: 0.5rem;
+  }
+  .hero-f .heap-washed {
+    display: none;
+  }
+}
+
 /* ikonos menügomb a sötét fejlécen */
 .hdr .menu-btn {
   border: 0;
