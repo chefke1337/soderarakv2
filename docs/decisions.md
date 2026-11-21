@@ -1863,3 +1863,10 @@ Branch: `redesign/flotta`, előnézet: `preview/dark`.
   talaj és a jobb alsó kupac lefelé erősödő életlenséget (lineáris fényben
   számolt, korong alakú bokeh — a pocsolya-fények fényfoltokká nyílnak);
   egyenletes filmszemcse. Fájlnevek és méretek változatlanok.
+- 2026-11-20 20:02 ügyfél (telefonos képernyőkép a V3-ról): mobilon „mint egy
+  applikáció" + élethű ajtómatrica. Mobil (<640 px): tömör hero — cím
+  clamp(26–31 px), 14 px bevezető, 2,35:1 kép, 16rem széles gombpár; 375×667-en
+  a cím–kép–gombok egy képernyőn, 390×844-en a ténysor is. Ajtómatricák: a
+  régi, ajtóél-átlógó logók eltávolítva, álló elrendezésű matrica teljesen az
+  ajtólapon, enyhe perspektíva, a fényezés árnyalását követő tónus. A
+  változtatás a V3-ra is felkerül (az ügyfél ott nézi a telefonján).

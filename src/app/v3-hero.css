@@ -259,19 +259,7 @@
 .hdr a.text-brand-deep {
   color: #fdba74;
 }
-.hdr .menu-panel {
-  --color-ink: #24211d;
-  --color-ink-soft: #5a5145;
-  --color-text: #24211d;
-  --color-text-muted: #5a5145;
-  color: #24211d;
-}
-/* mobil „Menü" gomb a sötét fejlécen: nyitva / hoverkor világos gomb, sötét felirat */
-.hdr button[aria-expanded]:hover,
-.hdr button[aria-expanded="true"] {
-  background-color: #f4f2ef;
-  color: #1a1b1e;
-}
+/* (2026-11-20) a mobilmenü panelje a sötét témát követi; a menügomb stílusa: v3-flotta.css */
 
 /* rövid narancs záróvonal a cím alatt (mindkét ügyfél-mockupon szerepel) */
 .hero-k-title::after {
